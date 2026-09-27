@@ -1,0 +1,1673 @@
+{
+  "$schemaVersion": "0.1",
+  "version": "0.1.0",
+  "updatedAt": "2026-09-27",
+  "sprites": [
+    {
+      "id": "sp-1",
+      "no": 1,
+      "name": "Dimo",
+      "nameZh": "",
+      "stage": 3,
+      "elements": [
+        "Light"
+      ],
+      "race": {
+        "hp": 120,
+        "atk": 80,
+        "defense": 105,
+        "spatk": 80,
+        "spdef": 105,
+        "speed": 92
+      },
+      "trait": {
+        "name": "Best Partner",
+        "desc": "After dealing advantaged damage, this Jini gains +20% to attacks, defenses, and Speed, and restores 2 energy.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020370",
+        "sk-7060090",
+        "sk-7020780",
+        "sk-7020630",
+        "sk-7060160",
+        "sk-7040370",
+        "sk-7020620",
+        "sk-7030440",
+        "sk-7050360",
+        "sk-7110200",
+        "sk-7060100",
+        "sk-7060140",
+        "sk-7090250",
+        "sk-7080300",
+        "sk-7190210",
+        "sk-7060240",
+        "sk-7060120",
+        "sk-7060180",
+        "sk-7060130"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/1"
+    },
+    {
+      "id": "sp-2",
+      "no": 2,
+      "name": "Mewmew",
+      "nameZh": "",
+      "stage": 1,
+      "elements": [
+        "Grass"
+      ],
+      "race": {
+        "hp": 65,
+        "atk": 66,
+        "defense": 49,
+        "spatk": 66,
+        "spdef": 91,
+        "speed": 33
+      },
+      "trait": {
+        "name": "Oxygen Cycle",
+        "desc": "After this Jini uses a Grass-type skill, it restores 10% Health.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020360",
+        "sk-7020640",
+        "sk-7030440",
+        "sk-7020390",
+        "sk-7030200",
+        "sk-7020780",
+        "sk-7030220",
+        "sk-7030460",
+        "sk-7030320",
+        "sk-7030480",
+        "sk-7030230",
+        "sk-7030260",
+        "sk-7030180",
+        "sk-7030280",
+        "sk-7030300",
+        "sk-7030210"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/2"
+    },
+    {
+      "id": "sp-3",
+      "no": 3,
+      "name": "Mewoo",
+      "nameZh": "",
+      "stage": 2,
+      "elements": [
+        "Grass"
+      ],
+      "race": {
+        "hp": 86,
+        "atk": 87,
+        "defense": 65,
+        "spatk": 87,
+        "spdef": 121,
+        "speed": 44
+      },
+      "trait": {
+        "name": "Oxygen Cycle",
+        "desc": "After this Jini uses a Grass-type skill, it restores 10% Health.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020360",
+        "sk-7020640",
+        "sk-7030440",
+        "sk-7020390",
+        "sk-7030200",
+        "sk-7020780",
+        "sk-7030220",
+        "sk-7030460",
+        "sk-7030320",
+        "sk-7030480",
+        "sk-7030230",
+        "sk-7030260",
+        "sk-7030180",
+        "sk-7030280",
+        "sk-7030300",
+        "sk-7030210"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/3"
+    },
+    {
+      "id": "sp-4",
+      "no": 4,
+      "name": "Magimew",
+      "nameZh": "",
+      "stage": 3,
+      "elements": [
+        "Grass"
+      ],
+      "race": {
+        "hp": 108,
+        "atk": 109,
+        "defense": 81,
+        "spatk": 109,
+        "spdef": 151,
+        "speed": 55
+      },
+      "trait": {
+        "name": "Oxygen Cycle",
+        "desc": "After this Jini uses a Grass-type skill, it restores 10% Health.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020360",
+        "sk-7020640",
+        "sk-7030440",
+        "sk-7020390",
+        "sk-7030200",
+        "sk-7020780",
+        "sk-7030220",
+        "sk-7030460",
+        "sk-7030320",
+        "sk-7030480",
+        "sk-7030230",
+        "sk-7030260",
+        "sk-7030180",
+        "sk-7030280",
+        "sk-7030300",
+        "sk-7030210"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/4"
+    },
+    {
+      "id": "sp-5",
+      "no": 5,
+      "name": "Sparkit",
+      "nameZh": "",
+      "stage": 1,
+      "elements": [
+        "Fire"
+      ],
+      "race": {
+        "hp": 70,
+        "atk": 84,
+        "defense": 56,
+        "spatk": 37,
+        "spdef": 43,
+        "speed": 78
+      },
+      "trait": {
+        "name": "Fuel the Fire",
+        "desc": "After using a Fire-type skill, this Jini gains +20% to both attacks.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020370",
+        "sk-7040170",
+        "sk-7020620",
+        "sk-7040390",
+        "sk-7020780",
+        "sk-7040200",
+        "sk-7021100",
+        "sk-7040440",
+        "sk-7040220",
+        "sk-7040320",
+        "sk-7040270",
+        "sk-7040180",
+        "sk-7040250"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/5"
+    },
+    {
+      "id": "sp-6",
+      "no": 6,
+      "name": "Blazework",
+      "nameZh": "",
+      "stage": 2,
+      "elements": [
+        "Fire"
+      ],
+      "race": {
+        "hp": 93,
+        "atk": 111,
+        "defense": 75,
+        "spatk": 49,
+        "spdef": 58,
+        "speed": 104
+      },
+      "trait": {
+        "name": "Fuel the Fire",
+        "desc": "After using a Fire-type skill, this Jini gains +20% to both attacks.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020370",
+        "sk-7040170",
+        "sk-7020620",
+        "sk-7040390",
+        "sk-7020780",
+        "sk-7040200",
+        "sk-7021100",
+        "sk-7040440",
+        "sk-7040220",
+        "sk-7040320",
+        "sk-7040270",
+        "sk-7040180",
+        "sk-7040250"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/6"
+    },
+    {
+      "id": "sp-7",
+      "no": 7,
+      "name": "Pyrogod",
+      "nameZh": "",
+      "stage": 3,
+      "elements": [
+        "Fire"
+      ],
+      "race": {
+        "hp": 117,
+        "atk": 139,
+        "defense": 94,
+        "spatk": 61,
+        "spdef": 72,
+        "speed": 130
+      },
+      "trait": {
+        "name": "Fuel the Fire",
+        "desc": "After using a Fire-type skill, this Jini gains +20% to both attacks.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020370",
+        "sk-7040170",
+        "sk-7020620",
+        "sk-7040390",
+        "sk-7020780",
+        "sk-7040200",
+        "sk-7021100",
+        "sk-7040440",
+        "sk-7040220",
+        "sk-7040320",
+        "sk-7040270",
+        "sk-7040180",
+        "sk-7040250"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/7"
+    },
+    {
+      "id": "sp-8",
+      "no": 8,
+      "name": "Aquablue",
+      "nameZh": "",
+      "stage": 1,
+      "elements": [
+        "Water"
+      ],
+      "race": {
+        "hp": 75,
+        "atk": 35,
+        "defense": 56,
+        "spatk": 76,
+        "spdef": 79,
+        "speed": 51
+      },
+      "trait": {
+        "name": "Soak In",
+        "desc": "After this Jini uses a Water-type skill, all its skills cost 1 less energy.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020780",
+        "sk-7020880",
+        "sk-7050160",
+        "sk-7050180",
+        "sk-7020630",
+        "sk-7050270",
+        "sk-7050190",
+        "sk-7050400",
+        "sk-7050260",
+        "sk-7050390",
+        "sk-7050250",
+        "sk-7050420",
+        "sk-7050210"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/8"
+    },
+    {
+      "id": "sp-9",
+      "no": 9,
+      "name": "Bobola",
+      "nameZh": "",
+      "stage": 2,
+      "elements": [
+        "Water"
+      ],
+      "race": {
+        "hp": 100,
+        "atk": 46,
+        "defense": 75,
+        "spatk": 102,
+        "spdef": 106,
+        "speed": 68
+      },
+      "trait": {
+        "name": "Soak In",
+        "desc": "After this Jini uses a Water-type skill, all its skills cost 1 less energy.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020780",
+        "sk-7020880",
+        "sk-7050160",
+        "sk-7050180",
+        "sk-7020630",
+        "sk-7050270",
+        "sk-7050190",
+        "sk-7050400",
+        "sk-7050260",
+        "sk-7050390",
+        "sk-7050250",
+        "sk-7050420",
+        "sk-7050210"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/9"
+    },
+    {
+      "id": "sp-10",
+      "no": 10,
+      "name": "Aquaspirit",
+      "nameZh": "",
+      "stage": 3,
+      "elements": [
+        "Water"
+      ],
+      "race": {
+        "hp": 125,
+        "atk": 58,
+        "defense": 94,
+        "spatk": 127,
+        "spdef": 132,
+        "speed": 85
+      },
+      "trait": {
+        "name": "Soak In",
+        "desc": "After this Jini uses a Water-type skill, all its skills cost 1 less energy.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020780",
+        "sk-7020880",
+        "sk-7050160",
+        "sk-7050180",
+        "sk-7020630",
+        "sk-7050270",
+        "sk-7050190",
+        "sk-7050400",
+        "sk-7050260",
+        "sk-7050390",
+        "sk-7050250",
+        "sk-7050420",
+        "sk-7050210"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/10"
+    },
+    {
+      "id": "sp-11",
+      "no": 11,
+      "name": "Duckjiji",
+      "nameZh": "",
+      "stage": 3,
+      "elements": [
+        "Normal"
+      ],
+      "race": {
+        "hp": 136,
+        "atk": 95,
+        "defense": 55,
+        "spatk": 35,
+        "spdef": 45,
+        "speed": 105
+      },
+      "trait": {
+        "name": "Puff Up",
+        "desc": "Equipped skills with an energy cost of 1 are 50% more powerful.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020370",
+        "sk-7020620",
+        "sk-7020390",
+        "sk-7020780",
+        "sk-7020640",
+        "sk-7020480",
+        "sk-7020670",
+        "sk-7021130",
+        "sk-7020430",
+        "sk-7020700",
+        "sk-7021090",
+        "sk-7020990",
+        "sk-7020690"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/11"
+    },
+    {
+      "id": "sp-12",
+      "no": 12,
+      "name": "Plank Shell",
+      "nameZh": "",
+      "stage": 1,
+      "elements": [
+        "Water"
+      ],
+      "race": {
+        "hp": 67,
+        "atk": 28,
+        "defense": 64,
+        "spatk": 72,
+        "spdef": 81,
+        "speed": 45
+      },
+      "trait": {
+        "name": "Withdraw",
+        "desc": "Equipped defense skills cost 2 less energy.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7050340",
+        "sk-7020780",
+        "sk-7020630",
+        "sk-7050180",
+        "sk-7050400",
+        "sk-7021020",
+        "sk-7050270",
+        "sk-7050290",
+        "sk-7050250",
+        "sk-7050190",
+        "sk-7050260",
+        "sk-7050210",
+        "sk-7050280"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/12"
+    },
+    {
+      "id": "sp-13",
+      "no": 13,
+      "name": "Clacker Shell",
+      "nameZh": "",
+      "stage": 2,
+      "elements": [
+        "Water"
+      ],
+      "race": {
+        "hp": 90,
+        "atk": 37,
+        "defense": 85,
+        "spatk": 96,
+        "spdef": 107,
+        "speed": 60
+      },
+      "trait": {
+        "name": "Withdraw",
+        "desc": "Equipped defense skills cost 2 less energy.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7050340",
+        "sk-7020780",
+        "sk-7020630",
+        "sk-7050180",
+        "sk-7050400",
+        "sk-7021020",
+        "sk-7050270",
+        "sk-7050290",
+        "sk-7050250",
+        "sk-7050190",
+        "sk-7050260",
+        "sk-7050210",
+        "sk-7050280"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/13"
+    },
+    {
+      "id": "sp-14",
+      "no": 14,
+      "name": "Bubble Shell",
+      "nameZh": "",
+      "stage": 3,
+      "elements": [
+        "Water"
+      ],
+      "race": {
+        "hp": 112,
+        "atk": 46,
+        "defense": 107,
+        "spatk": 120,
+        "spdef": 134,
+        "speed": 75
+      },
+      "trait": {
+        "name": "Withdraw",
+        "desc": "Equipped defense skills cost 2 less energy.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7050340",
+        "sk-7020780",
+        "sk-7020630",
+        "sk-7050180",
+        "sk-7050400",
+        "sk-7021020",
+        "sk-7050270",
+        "sk-7050290",
+        "sk-7050250",
+        "sk-7050190",
+        "sk-7050260",
+        "sk-7050210",
+        "sk-7050280"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/14"
+    },
+    {
+      "id": "sp-15",
+      "no": 15,
+      "name": "Pintail Lamb",
+      "nameZh": "",
+      "stage": 1,
+      "elements": [
+        "Ghost"
+      ],
+      "race": {
+        "hp": 67,
+        "atk": 66,
+        "defense": 72,
+        "spatk": 29,
+        "spdef": 49,
+        "speed": 66
+      },
+      "trait": {
+        "name": "Staged Crash",
+        "desc": "After this Jini uses a Dark-type skill, the enemy loses 2 energy.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7180080",
+        "sk-7020620",
+        "sk-7170200",
+        "sk-7170250",
+        "sk-7180330",
+        "sk-7170140",
+        "sk-7180110",
+        "sk-7180170",
+        "sk-7020430",
+        "sk-7170130",
+        "sk-7180130",
+        "sk-7180190",
+        "sk-7170120"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/15"
+    },
+    {
+      "id": "sp-16",
+      "no": 16,
+      "name": "Lilybell Lamb",
+      "nameZh": "",
+      "stage": 2,
+      "elements": [
+        "Ghost"
+      ],
+      "race": {
+        "hp": 89,
+        "atk": 89,
+        "defense": 96,
+        "spatk": 39,
+        "spdef": 65,
+        "speed": 88
+      },
+      "trait": {
+        "name": "Staged Crash",
+        "desc": "After this Jini uses a Dark-type skill, the enemy loses 2 energy.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7180080",
+        "sk-7020620",
+        "sk-7170200",
+        "sk-7170250",
+        "sk-7180330",
+        "sk-7170140",
+        "sk-7180110",
+        "sk-7180170",
+        "sk-7020430",
+        "sk-7170130",
+        "sk-7180130",
+        "sk-7180190",
+        "sk-7170120"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/16"
+    },
+    {
+      "id": "sp-17",
+      "no": 17,
+      "name": "Bloomshade Antelope",
+      "nameZh": "",
+      "stage": 3,
+      "elements": [
+        "Ghost",
+        "Dark"
+      ],
+      "race": {
+        "hp": 112,
+        "atk": 111,
+        "defense": 120,
+        "spatk": 48,
+        "spdef": 81,
+        "speed": 110
+      },
+      "trait": {
+        "name": "Staged Crash",
+        "desc": "After this Jini uses a Dark-type skill, the enemy loses 2 energy.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7180080",
+        "sk-7020620",
+        "sk-7170200",
+        "sk-7170250",
+        "sk-7180330",
+        "sk-7170140",
+        "sk-7180110",
+        "sk-7180170",
+        "sk-7020430",
+        "sk-7170130",
+        "sk-7180130",
+        "sk-7180190",
+        "sk-7170120"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/17"
+    },
+    {
+      "id": "sp-18",
+      "no": 18,
+      "name": "Snowdown",
+      "nameZh": "",
+      "stage": 1,
+      "elements": [
+        "Wing"
+      ],
+      "race": {
+        "hp": 54,
+        "atk": 77,
+        "defense": 65,
+        "spatk": 33,
+        "spdef": 44,
+        "speed": 69
+      },
+      "trait": {
+        "name": "Tailwind",
+        "desc": "If this skill is used before the enemy attacks, it is 50% more powerful for this attack.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7150050",
+        "sk-7020620",
+        "sk-7020970",
+        "sk-7150120",
+        "sk-7020780",
+        "sk-7150060",
+        "sk-7150300",
+        "sk-7150250",
+        "sk-7150130",
+        "sk-7150240",
+        "sk-7020690",
+        "sk-7150200",
+        "sk-7150110"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/18"
+    },
+    {
+      "id": "sp-19",
+      "no": 19,
+      "name": "Winterplume",
+      "nameZh": "",
+      "stage": 2,
+      "elements": [
+        "Wing"
+      ],
+      "race": {
+        "hp": 72,
+        "atk": 103,
+        "defense": 86,
+        "spatk": 44,
+        "spdef": 59,
+        "speed": 92
+      },
+      "trait": {
+        "name": "Tailwind",
+        "desc": "If this skill is used before the enemy attacks, it is 50% more powerful for this attack.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7150050",
+        "sk-7020620",
+        "sk-7020970",
+        "sk-7150120",
+        "sk-7020780",
+        "sk-7150060",
+        "sk-7150300",
+        "sk-7150250",
+        "sk-7150130",
+        "sk-7150240",
+        "sk-7020690",
+        "sk-7150200",
+        "sk-7150110"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/19"
+    },
+    {
+      "id": "sp-20",
+      "no": 20,
+      "name": "Galewing",
+      "nameZh": "",
+      "stage": 3,
+      "elements": [
+        "Wing"
+      ],
+      "race": {
+        "hp": 90,
+        "atk": 128,
+        "defense": 108,
+        "spatk": 55,
+        "spdef": 74,
+        "speed": 115
+      },
+      "trait": {
+        "name": "Tailwind",
+        "desc": "If this skill is used before the enemy attacks, it is 50% more powerful for this attack.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7150050",
+        "sk-7020620",
+        "sk-7020970",
+        "sk-7150120",
+        "sk-7020780",
+        "sk-7150060",
+        "sk-7150300",
+        "sk-7150250",
+        "sk-7150130",
+        "sk-7150240",
+        "sk-7020690",
+        "sk-7150200",
+        "sk-7150110"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/20"
+    },
+    {
+      "id": "sp-21",
+      "no": 21,
+      "name": "Sporeling",
+      "nameZh": "",
+      "stage": 1,
+      "elements": [
+        "Ghost"
+      ],
+      "race": {
+        "hp": 67,
+        "atk": 59,
+        "defense": 62,
+        "spatk": 59,
+        "spdef": 82,
+        "speed": 45
+      },
+      "trait": {
+        "name": "Poison Mushroom",
+        "desc": "At the end of each turn, this Jini steals 1 energy from every enemy Jini on the field.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020780",
+        "sk-7170090",
+        "sk-7030250",
+        "sk-7030160",
+        "sk-7030340",
+        "sk-7170240",
+        "sk-7020360",
+        "sk-7170140",
+        "sk-7170150",
+        "sk-7170200",
+        "sk-7030320",
+        "sk-7030200",
+        "sk-7170230",
+        "sk-7030460",
+        "sk-7170100",
+        "sk-7030530"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/21"
+    },
+    {
+      "id": "sp-22",
+      "no": 22,
+      "name": "Illuspori",
+      "nameZh": "",
+      "stage": 2,
+      "elements": [
+        "Ghost",
+        "Grass"
+      ],
+      "race": {
+        "hp": 89,
+        "atk": 79,
+        "defense": 83,
+        "spatk": 79,
+        "spdef": 109,
+        "speed": 60
+      },
+      "trait": {
+        "name": "Poison Mushroom",
+        "desc": "At the end of each turn, this Jini steals 1 energy from every enemy Jini on the field.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020780",
+        "sk-7170090",
+        "sk-7030250",
+        "sk-7030160",
+        "sk-7030340",
+        "sk-7170240",
+        "sk-7020360",
+        "sk-7170140",
+        "sk-7170150",
+        "sk-7170200",
+        "sk-7030320",
+        "sk-7030200",
+        "sk-7170230",
+        "sk-7030460",
+        "sk-7170100",
+        "sk-7030530"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/22"
+    },
+    {
+      "id": "sp-23",
+      "no": 23,
+      "name": "Phantaspori",
+      "nameZh": "",
+      "stage": 3,
+      "elements": [
+        "Ghost",
+        "Grass"
+      ],
+      "race": {
+        "hp": 111,
+        "atk": 98,
+        "defense": 103,
+        "spatk": 98,
+        "spdef": 136,
+        "speed": 75
+      },
+      "trait": {
+        "name": "Poison Mushroom",
+        "desc": "At the end of each turn, this Jini steals 1 energy from every enemy Jini on the field.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020780",
+        "sk-7170090",
+        "sk-7030250",
+        "sk-7030160",
+        "sk-7030340",
+        "sk-7170240",
+        "sk-7020360",
+        "sk-7170140",
+        "sk-7170150",
+        "sk-7170200",
+        "sk-7030320",
+        "sk-7030200",
+        "sk-7170230",
+        "sk-7030460",
+        "sk-7170100",
+        "sk-7030530"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/23"
+    },
+    {
+      "id": "sp-24",
+      "no": 24,
+      "name": "Stoneskin Skink",
+      "nameZh": "",
+      "stage": 1,
+      "elements": [
+        "Earth"
+      ],
+      "race": {
+        "hp": 69,
+        "atk": 61,
+        "defense": 72,
+        "spatk": 60,
+        "spdef": 50,
+        "speed": 57
+      },
+      "trait": {
+        "name": "Spiked Skin",
+        "desc": "Each time this Jini takes 1 instance of attack damage, it deals 50-power physical damage to the attacking Jini.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020780",
+        "sk-7080280",
+        "sk-7080360",
+        "sk-7020890",
+        "sk-7080370",
+        "sk-7080290",
+        "sk-7080230",
+        "sk-7080310",
+        "sk-7080150",
+        "sk-7080250",
+        "sk-7020420",
+        "sk-7080140",
+        "sk-7020800",
+        "sk-7080330",
+        "sk-7080220"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/24"
+    },
+    {
+      "id": "sp-25",
+      "no": 25,
+      "name": "Stonespike Skink",
+      "nameZh": "",
+      "stage": 2,
+      "elements": [
+        "Earth"
+      ],
+      "race": {
+        "hp": 92,
+        "atk": 81,
+        "defense": 96,
+        "spatk": 80,
+        "spdef": 67,
+        "speed": 76
+      },
+      "trait": {
+        "name": "Spiked Skin",
+        "desc": "Each time this Jini takes 1 instance of attack damage, it deals 50-power physical damage to the attacking Jini.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020780",
+        "sk-7080280",
+        "sk-7080360",
+        "sk-7020890",
+        "sk-7080370",
+        "sk-7080290",
+        "sk-7080230",
+        "sk-7080310",
+        "sk-7080150",
+        "sk-7080250",
+        "sk-7020420",
+        "sk-7080140",
+        "sk-7020800",
+        "sk-7080330",
+        "sk-7080220"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/25"
+    },
+    {
+      "id": "sp-26",
+      "no": 26,
+      "name": "Stonecrown Basilisk",
+      "nameZh": "",
+      "stage": 3,
+      "elements": [
+        "Earth"
+      ],
+      "race": {
+        "hp": 115,
+        "atk": 101,
+        "defense": 120,
+        "spatk": 100,
+        "spdef": 84,
+        "speed": 95
+      },
+      "trait": {
+        "name": "Spiked Skin",
+        "desc": "Each time this Jini takes 1 instance of attack damage, it deals 50-power physical damage to the attacking Jini.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020780",
+        "sk-7080280",
+        "sk-7080360",
+        "sk-7020890",
+        "sk-7080370",
+        "sk-7080290",
+        "sk-7080230",
+        "sk-7080310",
+        "sk-7080150",
+        "sk-7080250",
+        "sk-7020420",
+        "sk-7080140",
+        "sk-7020800",
+        "sk-7080330",
+        "sk-7080220"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/26"
+    },
+    {
+      "id": "sp-27",
+      "no": 27,
+      "name": "Busystone",
+      "nameZh": "",
+      "stage": 1,
+      "elements": [
+        "Earth"
+      ],
+      "race": {
+        "hp": 78,
+        "atk": 86,
+        "defense": 101,
+        "spatk": 33,
+        "spdef": 95,
+        "speed": 42
+      },
+      "trait": {
+        "name": "Earth Vein",
+        "desc": "This Jini starts with 0 energy. Before it enters the field, each time an allied Jini uses an Earth-type skill, this Jini restores 3 energy.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020780",
+        "sk-7080120",
+        "sk-7020620",
+        "sk-7080340",
+        "sk-7080230",
+        "sk-7080150",
+        "sk-7080380",
+        "sk-7020990",
+        "sk-7080240",
+        "sk-7080470",
+        "sk-7080140",
+        "sk-7080180",
+        "sk-7080210",
+        "sk-7080130",
+        "sk-7080410"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/27"
+    },
+    {
+      "id": "sp-28",
+      "no": 28,
+      "name": "Busyrock",
+      "nameZh": "",
+      "stage": 2,
+      "elements": [
+        "Earth"
+      ],
+      "race": {
+        "hp": 104,
+        "atk": 115,
+        "defense": 134,
+        "spatk": 43,
+        "spdef": 127,
+        "speed": 56
+      },
+      "trait": {
+        "name": "Earth Vein",
+        "desc": "This Jini starts with 0 energy. Before it enters the field, each time an allied Jini uses an Earth-type skill, this Jini restores 3 energy.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020780",
+        "sk-7080120",
+        "sk-7020620",
+        "sk-7080340",
+        "sk-7080230",
+        "sk-7080150",
+        "sk-7080380",
+        "sk-7020990",
+        "sk-7080240",
+        "sk-7080470",
+        "sk-7080140",
+        "sk-7080180",
+        "sk-7080210",
+        "sk-7080130",
+        "sk-7080410"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/28"
+    },
+    {
+      "id": "sp-29",
+      "no": 29,
+      "name": "Bucklerock",
+      "nameZh": "",
+      "stage": 3,
+      "elements": [
+        "Earth"
+      ],
+      "race": {
+        "hp": 130,
+        "atk": 144,
+        "defense": 168,
+        "spatk": 54,
+        "spdef": 159,
+        "speed": 70
+      },
+      "trait": {
+        "name": "Earth Vein",
+        "desc": "This Jini starts with 0 energy. Before it enters the field, each time an allied Jini uses an Earth-type skill, this Jini restores 3 energy.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020780",
+        "sk-7080120",
+        "sk-7020620",
+        "sk-7080340",
+        "sk-7080230",
+        "sk-7080150",
+        "sk-7080380",
+        "sk-7020990",
+        "sk-7080240",
+        "sk-7080470",
+        "sk-7080140",
+        "sk-7080180",
+        "sk-7080210",
+        "sk-7080130",
+        "sk-7080410"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/29"
+    },
+    {
+      "id": "sp-30",
+      "no": 30,
+      "name": "Demon Ding",
+      "nameZh": "",
+      "stage": 2,
+      "elements": [
+        "Dark",
+        "Wing"
+      ],
+      "race": {
+        "hp": 90,
+        "atk": 100,
+        "defense": 80,
+        "spatk": 42,
+        "spdef": 56,
+        "speed": 84
+      },
+      "trait": {
+        "name": "Craving",
+        "desc": "When this Jini enters the field, it gains 50% <desc_id=1029></>.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7180070",
+        "sk-7150120",
+        "sk-7020360",
+        "sk-7020780",
+        "sk-7180160",
+        "sk-7150190",
+        "sk-7180110",
+        "sk-7180320",
+        "sk-7150090",
+        "sk-7150060",
+        "sk-7180340",
+        "sk-7180120",
+        "sk-7150110"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/30"
+    },
+    {
+      "id": "sp-31",
+      "no": 31,
+      "name": "Dingding Demon",
+      "nameZh": "",
+      "stage": 3,
+      "elements": [
+        "Dark",
+        "Wing"
+      ],
+      "race": {
+        "hp": 117,
+        "atk": 125,
+        "defense": 103,
+        "spatk": 53,
+        "spdef": 73,
+        "speed": 105
+      },
+      "trait": {
+        "name": "Craving",
+        "desc": "When this Jini enters the field, it gains 50% <desc_id=1029></>.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7180070",
+        "sk-7150120",
+        "sk-7020360",
+        "sk-7020780",
+        "sk-7180160",
+        "sk-7150190",
+        "sk-7180110",
+        "sk-7180320",
+        "sk-7150090",
+        "sk-7150060",
+        "sk-7180340",
+        "sk-7180120",
+        "sk-7150110"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/31"
+    },
+    {
+      "id": "sp-32",
+      "no": 32,
+      "name": "Fluffle",
+      "nameZh": "",
+      "stage": 1,
+      "elements": [
+        "Bug",
+        "Cute"
+      ],
+      "race": {
+        "hp": 32,
+        "atk": 28,
+        "defense": 40,
+        "spatk": 28,
+        "spdef": 40,
+        "speed": 60
+      },
+      "trait": {
+        "name": "Cocooning",
+        "desc": "When this Jini would take lethal damage, it gains 1 stack of <desc_id=1006></> and becomes immune to that damage. (Triggers up to 2 times.)",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7130240",
+        "sk-7130190",
+        "sk-7020780",
+        "sk-7130260",
+        "sk-7130170",
+        "sk-7130250",
+        "sk-7160160",
+        "sk-7130220",
+        "sk-7160230",
+        "sk-7130310",
+        "sk-7160140",
+        "sk-7160200",
+        "sk-7130280",
+        "sk-7160260",
+        "sk-7020960"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/32"
+    },
+    {
+      "id": "sp-33",
+      "no": 33,
+      "name": "Crawlie",
+      "nameZh": "",
+      "stage": 2,
+      "elements": [
+        "Bug",
+        "Cute"
+      ],
+      "race": {
+        "hp": 42,
+        "atk": 37,
+        "defense": 53,
+        "spatk": 37,
+        "spdef": 53,
+        "speed": 80
+      },
+      "trait": {
+        "name": "Cocooning",
+        "desc": "When this Jini would take lethal damage, it gains 1 stack of <desc_id=1006></> and becomes immune to that damage. (Triggers up to 2 times.)",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7130240",
+        "sk-7130190",
+        "sk-7020780",
+        "sk-7130260",
+        "sk-7130170",
+        "sk-7130250",
+        "sk-7160160",
+        "sk-7130220",
+        "sk-7160230",
+        "sk-7130310",
+        "sk-7160140",
+        "sk-7160200",
+        "sk-7130280",
+        "sk-7160260",
+        "sk-7020960"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/33"
+    },
+    {
+      "id": "sp-34",
+      "no": 34,
+      "name": "Morphwing",
+      "nameZh": "",
+      "stage": 3,
+      "elements": [
+        "Bug",
+        "Cute"
+      ],
+      "race": {
+        "hp": 53,
+        "atk": 46,
+        "defense": 66,
+        "spatk": 46,
+        "spdef": 66,
+        "speed": 100
+      },
+      "trait": {
+        "name": "Cocooning",
+        "desc": "When this Jini would take lethal damage, it gains 1 stack of <desc_id=1006></> and becomes immune to that damage. (Triggers up to 2 times.)",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7130240",
+        "sk-7130190",
+        "sk-7020780",
+        "sk-7130260",
+        "sk-7130170",
+        "sk-7130250",
+        "sk-7160160",
+        "sk-7130220",
+        "sk-7160230",
+        "sk-7130310",
+        "sk-7160140",
+        "sk-7160200",
+        "sk-7130280",
+        "sk-7160260",
+        "sk-7020960"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/34"
+    },
+    {
+      "id": "sp-35",
+      "no": 35,
+      "name": "Shadetree",
+      "nameZh": "",
+      "stage": 3,
+      "elements": [
+        "Ghost",
+        "Grass"
+      ],
+      "race": {
+        "hp": 111,
+        "atk": 96,
+        "defense": 65,
+        "spatk": 96,
+        "spdef": 123,
+        "speed": 80
+      },
+      "trait": {
+        "name": "Petty Theft",
+        "desc": "When this Jini enters the field, it steals 2 energy from every enemy Jini on the field.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020780",
+        "sk-7170190",
+        "sk-7170250",
+        "sk-7030340",
+        "sk-7030500",
+        "sk-7030190",
+        "sk-7030240",
+        "sk-7170260",
+        "sk-7170120",
+        "sk-7170140",
+        "sk-7030430",
+        "sk-7170130",
+        "sk-7170170",
+        "sk-7030230",
+        "sk-7021060"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/35"
+    },
+    {
+      "id": "sp-36",
+      "no": 36,
+      "name": "Mousotter",
+      "nameZh": "",
+      "stage": 1,
+      "elements": [
+        "Normal",
+        "Water"
+      ],
+      "race": {
+        "hp": 73,
+        "atk": 57,
+        "defense": 60,
+        "spatk": 57,
+        "spdef": 60,
+        "speed": 48
+      },
+      "trait": {
+        "name": "Conservative",
+        "desc": "If this Jini's total skill energy cost is less than 4, it gains +80% to both defenses.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020660",
+        "sk-7020870",
+        "sk-7020780",
+        "sk-7020360",
+        "sk-7050400",
+        "sk-7050320",
+        "sk-7020670",
+        "sk-7050270",
+        "sk-7050330",
+        "sk-7021040",
+        "sk-7020940",
+        "sk-7021110",
+        "sk-7050190",
+        "sk-7020460",
+        "sk-7050280"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/36"
+    },
+    {
+      "id": "sp-37",
+      "no": 37,
+      "name": "Swallowtail Otter",
+      "nameZh": "",
+      "stage": 2,
+      "elements": [
+        "Normal",
+        "Water"
+      ],
+      "race": {
+        "hp": 97,
+        "atk": 77,
+        "defense": 81,
+        "spatk": 77,
+        "spdef": 81,
+        "speed": 64
+      },
+      "trait": {
+        "name": "Conservative",
+        "desc": "If this Jini's total skill energy cost is less than 4, it gains +80% to both defenses.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020660",
+        "sk-7020870",
+        "sk-7020780",
+        "sk-7020360",
+        "sk-7050400",
+        "sk-7050320",
+        "sk-7020670",
+        "sk-7050270",
+        "sk-7050330",
+        "sk-7021040",
+        "sk-7020940",
+        "sk-7021110",
+        "sk-7050190",
+        "sk-7020460",
+        "sk-7050280"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/37"
+    },
+    {
+      "id": "sp-38",
+      "no": 38,
+      "name": "Curlwhisker Giant Otter",
+      "nameZh": "",
+      "stage": 3,
+      "elements": [
+        "Normal",
+        "Water"
+      ],
+      "race": {
+        "hp": 121,
+        "atk": 96,
+        "defense": 101,
+        "spatk": 96,
+        "spdef": 101,
+        "speed": 80
+      },
+      "trait": {
+        "name": "Conservative",
+        "desc": "If this Jini's total skill energy cost is less than 4, it gains +80% to both defenses.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020660",
+        "sk-7020870",
+        "sk-7020780",
+        "sk-7020360",
+        "sk-7050400",
+        "sk-7050320",
+        "sk-7020670",
+        "sk-7050270",
+        "sk-7050330",
+        "sk-7021040",
+        "sk-7020940",
+        "sk-7021110",
+        "sk-7050190",
+        "sk-7020460",
+        "sk-7050280"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/38"
+    },
+    {
+      "id": "sp-39",
+      "no": 39,
+      "name": "Orebug",
+      "nameZh": "",
+      "stage": 2,
+      "elements": [
+        "Light",
+        "Earth"
+      ],
+      "race": {
+        "hp": 79,
+        "atk": 77,
+        "defense": 102,
+        "spatk": 81,
+        "spdef": 75,
+        "speed": 52
+      },
+      "trait": {
+        "name": "Polarize",
+        "desc": "This Jini takes 40% less attack damage from types matching its equipped skills.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020630",
+        "sk-7060190",
+        "sk-7080400",
+        "sk-7080270",
+        "sk-7060140",
+        "sk-7060230",
+        "sk-7080380",
+        "sk-7080240",
+        "sk-7080110",
+        "sk-7080120",
+        "sk-7060150",
+        "sk-7020890",
+        "sk-7060100",
+        "sk-7080130"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/39"
+    },
+    {
+      "id": "sp-40",
+      "no": 40,
+      "name": "Crystalsnail",
+      "nameZh": "",
+      "stage": 3,
+      "elements": [
+        "Light",
+        "Earth"
+      ],
+      "race": {
+        "hp": 99,
+        "atk": 96,
+        "defense": 128,
+        "spatk": 101,
+        "spdef": 94,
+        "speed": 65
+      },
+      "trait": {
+        "name": "Polarize",
+        "desc": "This Jini takes 40% less attack damage from types matching its equipped skills.",
+        "params": {}
+      },
+      "skillList": [
+        "sk-7020630",
+        "sk-7060190",
+        "sk-7080400",
+        "sk-7080270",
+        "sk-7060140",
+        "sk-7060230",
+        "sk-7080380",
+        "sk-7080240",
+        "sk-7080110",
+        "sk-7080120",
+        "sk-7060150",
+        "sk-7020890",
+        "sk-7060100",
+        "sk-7080130"
+      ],
+      "leaderAllowed": true,
+      "source": "https://roco.world/jini/40"
+    }
+  ]
+}

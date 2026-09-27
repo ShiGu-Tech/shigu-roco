@@ -1,0 +1,51 @@
+{
+  "$schemaVersion": "0.1",
+  "version": "0.1.0",
+  "updatedAt": "2026-09-27",
+  "magic": {
+    "initialPerSide": 3,
+    "perFaint": 1,
+    "note": "初始魔力与阵亡扣魔数值【待校准】。"
+  },
+  "wish": {
+    "maxUses": 2,
+    "cooldown": 1,
+    "changeSkillFactor": 1.5,
+    "note": "愿力魔法最大 2 次、CD、变化技能 1.5× 伤害，来自需求文档；CD 具体回合数【待校准】。"
+  },
+  "leader": {
+    "once": true,
+    "attackBoost": 0.0,
+    "note": "首领化全局一次；种族提升幅度【待校准】，暂以 attackBoost=0 占位。"
+  },
+  "defense": {
+    "damageReduction": 0.7,
+    "note": "防御技能减伤示例值【待校准】。"
+  },
+  "turnPhases": ["magic", "switch", "skill", "settle"],
+  "switchOrderBasis": "oldActive",
+  "damageFormula": {
+    "kind": "roco_v1",
+    "level": 50,
+    "levelFactor": 2,
+    "powerScale": 1.0,
+    "attackDefScale": 1.0,
+    "stab": 1.5,
+    "critRate": 0.0625,
+    "critFactor": 1.5,
+    "randomRange": [0.85, 1.0],
+    "note": "通用伤害形态，全部系数可校准；与真机的公式差异待对拍修正。"
+  },
+  "mctsEval": {
+    "wMagic": 0.4,
+    "wHpRatio": 2.0,
+    "wBench": 0.2,
+    "note": "推演截断的启发式估值权重【待调优】。"
+  },
+  "opponentPrior": {
+    "A": 1,
+    "D": 1,
+    "S": 1,
+    "note": "贝叶斯对手模型冷启动先验（A 攻击 / D 防御 / S 状态）。"
+  }
+}

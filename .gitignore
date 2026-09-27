@@ -1,0 +1,39 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.pytest_cache/
+.venv/
+venv/
+engine/.venv/
+build/
+dist/
+.mypy_cache/
+.ruff_cache/
+
+# --- Node / Next ---
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+.pnpm-store/
+
+# --- 运行产物 ---
+logs/
+.cache/
+tmp/
+
+# --- 本地环境 ---
+.env
+.env.local
+.env.*.local
+
+# --- 编辑器 / 系统 ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- 抓取原始素材（可选保留） ---
+engine/ingest/raw/
