@@ -10,18 +10,18 @@
 Next.js 前端 (127.0.0.1:26900)
   ├─ /api/engine/*   → 内置 TS 引擎（Node Route Handler，读 data/*.json）
   └─ Web Worker      → 浏览器内跑 MCTS，不阻塞主线程
-        模拟器(MDP) + MCTS + 贝叶斯对手 + 养成后验
-                              │ 只读加载
-                          data/*.json
+        模拟器(MDP) + 机制扩展层 + MCTS + 贝叶斯对手 + 养成后验
+                               │ 只读加载
+                   data/*.json / mechanisms.json
 ```
 
 ## 目录
 
 | 路径 | 说明 |
 | --- | --- |
-| `apps/web/src/modules/engine/` | TS 引擎：模拟器、MCTS、贝叶斯对手、养成换算、API handler、Worker |
+| `apps/web/src/modules/engine/` | TS 引擎：模拟器、机制扩展层、MCTS、贝叶斯对手、养成换算、API handler、Worker |
 | `apps/web/` | Next.js 16 + React 19 + Tailwind v4 + shadcn/ui（对战台 / 详细录入） |
-| `data/` | 七份结构化 JSON（精灵 / 技能 / 印记 / 天气 / 属性 / 规则 / 养成） |
+| `data/` | 结构化 JSON（精灵 / 技能 / 印记 / 天气 / 属性 / 规则 / 养成；可选机制定义） |
 | `docs/` | 设计稿（唯一入口 `docs/README.md`） |
 | `scripts/` | 环境初始化与一键开发脚本 |
 
@@ -36,6 +36,13 @@ pwsh scripts/dev.ps1
 ```
 
 打开 http://127.0.0.1:26900 使用对战台。
+
+## 当前能力边界
+
+- 已支持：离线对战台、逐回合模拟、MCTS 推荐、对手行为与养成后验、对手库、养成录入。
+- 已接入机制扩展基础设施：触发器、条件、效果命令、行动队列、状态事务和战斗事件。
+- 具体精灵特性、复杂技能、印记、天气和技能池变更仍按实战规则逐项补齐，未支持效果会标记为 `unsupported-effect`。
+- 数据参考：[roco.world](https://roco.world)；具体战斗机制以实战确认和真机对拍为准。
 
 ## 自验
 
@@ -54,7 +61,7 @@ pnpm -F web test    # 引擎回归测试
 
 - 总览：`docs/项目全景手册.md`、`docs/项目状态.md`
 - 架构：`docs/architecture/引擎TS化-设计-v0.1.md`
-- 模块：`docs/modules/`（数据层 / 战斗模拟器 / MCTS 决策 / 养成资质与对手库 / 对局辅助台 / 对战台）
+- 模块：`docs/modules/`（数据层 / 战斗模拟器 / 战斗机制事实 / 机制扩展层 / MCTS 决策 / 养成资质与对手库 / 对局辅助台 / 对战台）
 
 工程约定见 `AGENTS.md`。
 
