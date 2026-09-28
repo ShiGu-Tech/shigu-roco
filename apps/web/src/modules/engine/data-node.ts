@@ -9,9 +9,9 @@ import path from "node:path";
 import { DataError, buildBundle, REQUIRED_FILES } from "./data";
 import type { DataBundle, Dict } from "./types";
 
-function readJson(file: string): Dict {
+function readJson<T = Dict>(file: string): T {
   try {
-    return JSON.parse(readFileSync(/* turbopackIgnore: true */ file, "utf8")) as Dict;
+    return JSON.parse(readFileSync(/* turbopackIgnore: true */ file, "utf8")) as T;
   } catch (err) {
     throw new DataError(`读取 ${path.basename(file)} 失败: ${(err as Error).message}`);
   }
@@ -42,6 +42,7 @@ export function loadData(dataDir?: string): DataBundle {
   };
   const statsFile = path.join(/* turbopackIgnore: true */ root, "stats.json");
   const assetsFile = path.join(/* turbopackIgnore: true */ root, "assets.json");
+  const mechanismsFile = path.join(/* turbopackIgnore: true */ root, "mechanisms.json");
   const raw = {
     sprites: read(REQUIRED_FILES.sprites),
     skills: read(REQUIRED_FILES.skills),
@@ -51,6 +52,7 @@ export function loadData(dataDir?: string): DataBundle {
     rules: read(REQUIRED_FILES.rules),
     stats: existsSync(/* turbopackIgnore: true */ statsFile) ? read("stats.json") : {},
     assets: existsSync(/* turbopackIgnore: true */ assetsFile) ? read("assets.json") : {},
+    mechanisms: existsSync(/* turbopackIgnore: true */ mechanismsFile) ? readJson<unknown>(mechanismsFile) : [],
   };
   return buildBundle(raw);
 }

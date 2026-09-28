@@ -32,6 +32,13 @@ export class ActionQueue {
     return true;
   }
 
+  setPriority(id: string, priority: number): boolean {
+    const entry = this.actions.find((candidate) => candidate.id === id && candidate.status === "queued");
+    if (!entry) return false;
+    entry.priority = priority;
+    return true;
+  }
+
   forceFirst(id: string): boolean {
     const entry = this.actions.find((candidate) => candidate.id === id && candidate.status === "queued");
     if (!entry) return false;

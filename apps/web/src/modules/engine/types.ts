@@ -32,6 +32,7 @@ export interface ActiveSprite {
   debuffs: Record<string, number>;
   marks: Record<string, number>;
   statuses: Record<string, number>;
+  cooldowns?: Record<string, number>;
   profile?: StatProfile;
 }
 
@@ -132,6 +133,8 @@ export interface DataBundle {
   rules: Dict;
   stats: StatsData;
   assets: Dict;
+  /** 可选机制扩展定义；缺失时使用空注册表。 */
+  mechanisms?: unknown[];
   warnings: string[];
   dataVersion: string;
   dataUpdatedAt: string;
@@ -146,6 +149,7 @@ export interface RawDataFiles {
   rules: Dict;
   stats?: Dict;
   assets?: Dict;
+  mechanisms?: unknown;
 }
 
 // ---------------------------------------------------------------- 工具

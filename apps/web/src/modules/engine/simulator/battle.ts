@@ -8,6 +8,7 @@ import { cloneState } from "../state";
 import type { Action, BattleEvent, BattleState, DataBundle, Side, StepResult, Terminal } from "../types";
 import { asDict, toArray, toNum, toStr } from "../types";
 import { clearMarksOnSwitch, settleMarks } from "./marks";
+import { ActionQueue, MechanismRegistry, MechanismRuntime } from "../mechanisms";
 
 const SIDES: Side[] = ["player", "enemy"];
 
@@ -17,9 +18,14 @@ function otherSide(side: Side): Side {
 
 export class Simulator {
   readonly bundle: DataBundle;
+  readonly mechanisms: MechanismRuntime;
 
   constructor(bundle: DataBundle) {
     this.bundle = bundle;
+    this.mechanisms = new MechanismRuntime(new MechanismRegistry());
+    for (const definition of bundle.mechanisms ?? []) {
+      this.mechanisms.registry.register(definition as never);
+    }
   }
 
   private sideState(state: BattleState, who: Side) {
@@ -102,21 +108,43 @@ export class Simulator {
       logs.push(`switch: ${side} -> ${actions[side].benchId ?? ""}`);
     }
 
-    // ③ 精灵技能阶段（含聚能）
-    const actors = SIDES.filter((s) => actions[s].kind === "skill" || actions[s].kind === "energy");
-    actors.sort((a, b) => this.compareOrder(st, a, actions[a], b, actions[b]));
-    actors.forEach((side, idx) => {
+    // ③ 精灵技能阶段（含聚能）：先发布 actionDeclared，再由扩展层修改行动队列。
+    const queue = new ActionQueue();
+    const actionIds: Record<Side, string> = { player: `action-${st.turn}-player`, enemy: `action-${st.turn}-enemy` };
+    const actorSides = SIDES.filter((s) => actions[s].kind === "skill" || actions[s].kind === "energy");
+    actorSides.forEach((side, index) => {
+      const [priority, speed] = this.orderKey(st, side, actions[side]);
+      queue.enqueue({ id: actionIds[side], actorSide: side, action: actions[side], declaredAt: index, priority, speedSnapshot: speed, status: "queued" });
+    });
+    for (const side of actorSides) {
+      const commands = this.mechanisms.dispatch({
+        state: st,
+        trigger: "actionDeclared",
+        actorSide: side,
+        targetSide: otherSide(side),
+        action: actions[side],
+        event: { action: actions[side], actionId: actionIds[side] },
+      });
+      const mechanismEvents = this.mechanisms.applyActionCommands(queue, commands, actionIds, () => `action-${st.turn}-extra-${queue.all().length}`);
+      events.push(...mechanismEvents.map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+      const stateEvents = this.mechanisms.applyStateCommands(st, commands);
+      events.push(...stateEvents.map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+    }
+    queue.ordered().forEach((entry, idx) => {
+      if (entry.status !== "queued") return;
+      const side = entry.actorSide;
       const caster = this.sideState(st, side).active;
       if (caster.hp <= 0) return;
       const opp = otherSide(side);
       const defenderAction = this.actionType(actions[opp]);
-      if (actions[side].kind === "energy") {
+      if (entry.action.kind === "energy") {
         events.push(...this.applyEnergy(st, side));
         logs.push(`energy: ${side}`);
       } else {
-        events.push(...this.executeSkill(st, side, actions[side], defenderAction, idx === 0, rng));
-        logs.push(`skill: ${side} -> ${actions[side].skillId ?? ""}`);
+        events.push(...this.executeSkill(st, side, entry.action, defenderAction, idx === 0, rng));
+        logs.push(`skill: ${side} -> ${entry.action.skillId ?? ""}`);
       }
+      entry.status = "resolved";
     });
 
     // ④ 结算阶段
@@ -157,6 +185,15 @@ export class Simulator {
       priority = Math.floor(toNum(getSkill(this.bundle, action.skillId).priority, 0));
     }
     return [priority, this.speedOf(st, side)];
+  }
+
+  private asBattleEvent(type: string, side: Side | null, event: { data: Record<string, unknown>; mechanismId?: string; effectType?: string }): BattleEvent {
+    return {
+      type,
+      side,
+      text: event.mechanismId ? `机制 ${event.mechanismId}：${type}` : type,
+      data: { ...event.data, mechanismId: event.mechanismId, effectType: event.effectType },
+    };
   }
 
   private applyEnergy(st: BattleState, side: Side): BattleEvent[] {

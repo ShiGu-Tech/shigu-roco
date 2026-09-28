@@ -6,6 +6,7 @@
 
 import type { DataBundle, Dict, RawDataFiles } from "./types";
 import { asDict, toArray, toNum, toStr } from "./types";
+import { mechanismsFromData } from "./mechanisms";
 
 export class DataError extends Error {}
 
@@ -93,6 +94,7 @@ export function buildBundle(raw: RawDataFiles): DataBundle {
     rules: raw.rules,
     stats: (raw.stats ?? {}) as DataBundle["stats"],
     assets: raw.assets ?? {},
+    mechanisms: mechanismsFromData(raw.mechanisms),
     warnings,
     dataVersion: toStr(raw.sprites.version, "0.0.0"),
     dataUpdatedAt: toStr(raw.sprites.updatedAt, ""),
