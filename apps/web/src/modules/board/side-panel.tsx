@@ -208,7 +208,7 @@ function SkillTile({
               {recommended && <Badge variant="success">推荐</Badge>}
             </div>
             <div className="mt-1 truncate text-[11px] text-muted-foreground">
-              {sk.category} · 能耗{sk.cost}
+              {sk.categoryZh ?? sk.category} · 能耗{sk.cost}
               {sk.power ? ` · 威力${sk.power}` : ""}
               {sk.priority ? ` · 先手+${sk.priority}` : ""}
             </div>

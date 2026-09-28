@@ -149,7 +149,7 @@ function TeamEditor({
               <option value="">— 选择精灵 —</option>
               {catalog.sprites.map((s) => (
                 <option key={s.id} value={s.id}>
-                  #{s.no} {s.name} [{s.elements.join("/")}]
+                  #{s.no} {s.name} [{s.elements.map((element) => elementZh(catalog, element)).join("/")}]
                 </option>
               ))}
             </NativeSelect>

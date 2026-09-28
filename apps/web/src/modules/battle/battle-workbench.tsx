@@ -122,7 +122,15 @@ function MarksEditor({
   );
 }
 
-const PANEL_LABEL: Record<string, string> = { hp: "体力", atk: "攻击", defense: "防御" };
+const IV_STATS = ["hp", "atk", "spatk", "defense", "spdef", "speed"] as const;
+const STAT_LABEL: Record<string, string> = {
+  hp: "体力",
+  atk: "物攻",
+  spatk: "魔攻",
+  defense: "物防",
+  spdef: "魔防",
+  speed: "速度",
+};
 
 function TrainingEditor({
   active,
@@ -137,7 +145,7 @@ function TrainingEditor({
 }) {
   const stats = catalog.stats as StatsData | undefined;
   const natures = catalog.stats?.natures ?? [];
-  const panels = (catalog.stats?.training as { panels?: string[] } | undefined)?.panels ?? ["hp", "atk", "defense"];
+  const maxIv = Number((catalog.stats?.individual as { maxPerStat?: number } | undefined)?.maxPerStat ?? 60);
   if (!sprite || !stats) return null;
 
   const recompute = (a: ActiveSpriteState) => {
@@ -147,7 +155,7 @@ function TrainingEditor({
 
   return (
     <div className="space-y-2">
-      <Label>养成资质（性格 + 三维）</Label>
+      <Label>养成资质（性格 + 个体值 0~{maxIv}）</Label>
       <div className="grid grid-cols-2 gap-2 min-[520px]:grid-cols-4">
         <div className="col-span-2 space-y-1 min-[520px]:col-span-1">
           <Label className="text-xs text-muted-foreground">性格</Label>
@@ -168,18 +176,19 @@ function TrainingEditor({
             ))}
           </NativeSelect>
         </div>
-        {panels.map((panel) => (
-          <div key={panel} className="space-y-1">
-            <Label className="text-xs text-muted-foreground">{PANEL_LABEL[panel] ?? panel}</Label>
+        {IV_STATS.map((stat) => (
+          <div key={stat} className="space-y-1">
+            <Label className="text-xs text-muted-foreground">{STAT_LABEL[stat] ?? stat}</Label>
             <Input
               type="number"
               min={0}
-              value={active.profile?.training?.[panel as "hp" | "atk" | "defense"] ?? 0}
+              max={maxIv}
+              value={active.profile?.iv?.[stat] ?? 0}
               onChange={(e) =>
                 onChange((a) => {
                   a.profile = {
                     ...a.profile,
-                    training: { ...a.profile?.training, [panel]: Number(e.target.value) },
+                    iv: { ...a.profile?.iv, [stat]: Number(e.target.value) },
                   };
                   recompute(a);
                 })
@@ -222,7 +231,7 @@ function ActiveCard({
           onChange={(id) => {
             const sp = catalog.sprites.find((s) => s.id === id);
             onChange((a) => {
-              const fresh = sp ? activeFromSprite(sp) : active;
+              const fresh = sp ? activeFromSprite(sp, catalog.stats) : active;
               Object.assign(a, fresh);
             });
           }}
@@ -479,7 +488,7 @@ export function BattleWorkbench() {
                   variant="secondary"
                   onClick={() =>
                     patch((d) => {
-                      if (playerSprite) d.player.bench.push(activeFromSprite(playerSprite));
+                      if (playerSprite) d.player.bench.push(activeFromSprite(playerSprite, catalog.stats));
                     })
                   }
                 >

@@ -1,23 +1,39 @@
-/** 养成资质换算：基础资质（race） × 性格 + 三维培养面板。
+/** 面板真实数值换算（洛克王国 60 级 PVP 口径）。
  *
- * 幅度与映射来自 data/stats.json，全部可校准（占位值标【待校准】）。
+ * 生命：round( round(种族×raceFactor + 个体×ivFactor + base) × 性格 ) + result
+ * 其他：同上（default 面板）。
+ * 系数与常数来自 data/stats.json.panels，全部可校准；等级 60 已折进系数。
  * 只依赖 StatsData，前端（持有 catalog.stats）与引擎共用同一份换算。
  */
 
-import type { ActiveSprite, Dict, NatureDef, StatsData, StatProfile, TrainingPanel } from "./types";
-import { asDict, toNum, toStr } from "./types";
+import type { ActiveSprite, Dict, NatureDef, StatsData, StatProfile } from "./types";
+import { asDict, toNum } from "./types";
 
 export const STAT_KEYS = ["hp", "atk", "defense", "spatk", "spdef", "speed"] as const;
 export type StatKey = (typeof STAT_KEYS)[number];
 
-const DEFAULT_PANEL_STAT: Record<TrainingPanel, string> = {
-  hp: "hp",
-  atk: "atk",
-  defense: "defense",
-};
+const DEFAULT_PANEL = { raceFactor: 1.1, ivFactor: 0.55, base: 10, result: 50 };
+const DEFAULT_HP_PANEL = { raceFactor: 1.7, ivFactor: 0.85, base: 70, result: 100 };
+
+function panelDef(stats: StatsData, stat: string) {
+  const panels = asDict((stats as Dict).panels);
+  const fallback = stat === "hp" ? DEFAULT_HP_PANEL : DEFAULT_PANEL;
+  const def = asDict(panels[stat === "hp" ? "hp" : "default"]);
+  return {
+    raceFactor: toNum(def.raceFactor, fallback.raceFactor),
+    ivFactor: toNum(def.ivFactor, fallback.ivFactor),
+    base: toNum(def.base, fallback.base),
+    result: toNum(def.result, fallback.result),
+  };
+}
 
 export function raceStat(spriteDef: Dict, stat: string): number {
   return toNum(asDict(spriteDef.race)[stat], 0);
+}
+
+/** 个体值（天分 × 星级系数），0~60。 */
+export function ivOf(profile: StatProfile | undefined, stat: string): number {
+  return toNum(asDict(profile?.iv)[stat], 0);
 }
 
 export function findNature(stats: StatsData, natureId: string | null | undefined): NatureDef | undefined {
@@ -28,31 +44,19 @@ export function findNature(stats: StatsData, natureId: string | null | undefined
 export function natureMultiplier(stats: StatsData, profile: StatProfile | undefined, stat: string): number {
   const nature = findNature(stats, profile?.nature);
   if (!nature) return 1;
-  const upFactor = toNum(nature.upFactor, 1.1);
+  const upFactor = toNum(nature.upFactor, 1.2);
   const downFactor = toNum(nature.downFactor, 0.9);
   if (nature.up === stat) return upFactor;
   if (nature.down === stat) return downFactor;
   return 1;
 }
 
-export function trainingBonus(stats: StatsData, profile: StatProfile | undefined, stat: string): number {
-  const training = profile?.training;
-  if (!training) return 0;
-  const perPanel = asDict(asDict(stats.training).perPanel);
-  let bonus = 0;
-  for (const [panel, points] of Object.entries(training)) {
-    const def = asDict(perPanel[panel]);
-    const targetStat = toStr(def.stat, DEFAULT_PANEL_STAT[panel as TrainingPanel] ?? "");
-    if (targetStat !== stat) continue;
-    bonus += toNum(def.perPoint, 1) * toNum(points, 0);
-  }
-  return bonus;
-}
-
-/** 基础资质（race）× 性格 + 培养加成。 */
+/** 面板真实数值：性格只乘括号，末尾常数在舍入与性格之外。 */
 export function statWithProfile(stats: StatsData, spriteDef: Dict, profile: StatProfile | undefined, stat: string): number {
-  const base = raceStat(spriteDef, stat) * natureMultiplier(stats, profile, stat);
-  return base + trainingBonus(stats, profile, stat);
+  const p = panelDef(stats, stat);
+  const inner = raceStat(spriteDef, stat) * p.raceFactor + ivOf(profile, stat) * p.ivFactor + p.base;
+  const nature = natureMultiplier(stats, profile, stat);
+  return Math.round(Math.round(inner) * nature) + p.result;
 }
 
 export function computeStats(stats: StatsData, spriteDef: Dict, profile?: StatProfile): Record<StatKey, number> {

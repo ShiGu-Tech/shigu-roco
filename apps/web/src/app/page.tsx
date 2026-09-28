@@ -1,4 +1,5 @@
 import { BattleBoard } from "@/modules/board/board";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -11,9 +12,12 @@ export default function Home() {
             手动选择双方动作，逐回合查看推演胜率与战斗状态。离线运行，不读取画面，不自动操作。
           </p>
         </div>
-        <div className="flex items-center gap-2 self-start rounded-full border bg-card/80 px-3 py-1.5 text-xs text-muted-foreground shadow-sm min-[520px]:self-auto">
-          <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_0_3px_oklch(0.8_0.12_150_/_0.35)]" />
-          引擎就绪 · 本地模式
+        <div className="flex flex-wrap items-center gap-3 self-start min-[520px]:self-auto">
+          <Link href="/data" className="text-sm text-primary underline-offset-4 hover:underline">基础数据</Link>
+          <div className="flex items-center gap-2 rounded-full border bg-card/80 px-3 py-1.5 text-xs text-muted-foreground shadow-sm">
+            <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_0_3px_oklch(0.8_0.12_150_/_0.35)]" />
+            引擎就绪 · 本地模式
+          </div>
         </div>
       </header>
       <BattleBoard />

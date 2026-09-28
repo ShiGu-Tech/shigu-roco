@@ -7,7 +7,7 @@ export function cloneProfile(p: StatProfile | undefined): StatProfile | undefine
   return {
     level: p.level,
     nature: p.nature,
-    training: p.training ? { ...p.training } : undefined,
+    iv: p.iv ? { ...p.iv } : undefined,
   };
 }
 

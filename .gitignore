@@ -11,6 +11,7 @@ coverage/
 logs/
 .cache/
 tmp/
+data/registry/
 
 # --- 本地环境 ---
 .env

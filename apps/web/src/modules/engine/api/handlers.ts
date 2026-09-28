@@ -34,7 +34,7 @@ function parseProfile(raw: unknown): StatProfile | undefined {
   return {
     level: p.level === undefined ? undefined : toNum(p.level, 0),
     nature: p.nature === undefined || p.nature === null ? (p.nature as null | undefined) : toStr(p.nature),
-    training: p.training ? numDict(p.training) : undefined,
+    iv: p.iv ? intDict(p.iv) : undefined,
   };
 }
 
@@ -111,13 +111,18 @@ function skillBrief(bundle: DataBundle, sk: Dict, icons: Dict): Dict {
   return {
     id,
     name: toStr(sk.skillName, id),
+    nameZh: toStr(sk.nameZh, toStr(sk.skillName, id)),
     element: toStr(sk.element),
+    elementZh: toStr(sk.elementZh),
     category: toStr(sk.category),
+    categoryZh: toStr(sk.categoryZh, toStr(sk.category)),
     actionType: toStr(sk.actionType),
+    actionTypeZh: toStr(sk.actionTypeZh, toStr(sk.actionType)),
     power: toNum(sk.power, 0),
     cost: toNum(sk.cost, 0),
     priority: toNum(sk.priority, 0),
-    icon: icons[id] ?? null,
+    icon: toStr(sk.icon) || icons[id] || null,
+    description: toStr(sk.description, toStr(sk.rawText)),
   };
 }
 
@@ -140,8 +145,8 @@ export function catalog(bundle: DataBundle): Dict {
       race: asDict(sp.race),
       trait: asDict(sp.trait),
       leaderAllowed: sp.leaderAllowed !== false,
-      image: asset.image ?? null,
-      head: asset.head ?? null,
+       image: asset.image ?? sp.image ?? null,
+       head: asset.head ?? sp.head ?? null,
       skills,
     };
   });
@@ -155,8 +160,8 @@ export function catalog(bundle: DataBundle): Dict {
     elements: toArray(asDict(bundle.elements).elements),
     sprites,
     allSkills,
-    marks: Object.values(bundle.marks).map((m) => ({ id: toStr(m.id), name: toStr(m.name), maxStack: toNum(m.maxStack, 0) })),
-    weather: Object.values(bundle.weather).map((w) => ({ id: toStr(w.id), name: toStr(w.name) })),
+    marks: Object.values(bundle.marks).map((m) => ({ id: toStr(m.id), name: toStr(m.nameZh, toStr(m.name)), nameZh: toStr(m.nameZh, toStr(m.name)), description: toStr(m.description, toStr(m.rawText)), maxStack: toNum(m.maxStack, 0) })),
+    weather: Object.values(bundle.weather).map((w) => ({ id: toStr(w.id), name: toStr(w.nameZh, toStr(w.name)), nameZh: toStr(w.nameZh, toStr(w.name)), description: toStr(w.description, toStr(w.rawText)) })),
     rules: {
       initialMagic: toNum(asDict(rules.magic).initialPerSide, 4),
       magicMax: toNum(asDict(rules.magic).maxPerSide, 4),
@@ -166,8 +171,10 @@ export function catalog(bundle: DataBundle): Dict {
       energy: { recover: toNum(energy.recover, 5), max: toNum(energy.max, 10), initial: toNum(energy.initial, 10) },
     },
     stats: {
+      level: toNum(asDict(stats.level).default, 60),
+      panels: stats.panels ?? {},
+      individual: stats.individual ?? {},
       natures: stats.natures ?? [],
-      training: stats.training ?? {},
       trainingProfiles: stats.trainingProfiles ?? { options: [] },
     },
     warnings: bundle.warnings.slice(0, 50),

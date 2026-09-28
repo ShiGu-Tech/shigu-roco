@@ -1,5 +1,6 @@
-/** 数据层加载：把 data/*.json 读成只读 DataBundle，并做引用校验。
+/** 数据层装配：把原始 JSON 读成只读 DataBundle，并做引用校验。
  *
+ * 资源数据（精灵 / 技能 / 印记 / 天气 / 属性）来自激活图鉴；引擎参数来自 data/*.json。
  * 与 Python config.py 等价：未知 op / 引用只记 warning，不中断（数据先行）。
  * 本模块是纯函数，不含 fs —— Node 侧读盘见 data-node.ts。
  */
@@ -9,15 +10,6 @@ import { asDict, toArray, toNum, toStr } from "./types";
 import { mechanismsFromData } from "./mechanisms";
 
 export class DataError extends Error {}
-
-export const REQUIRED_FILES = {
-  sprites: "sprites.json",
-  skills: "skills.json",
-  marks: "marks.json",
-  weather: "weather.json",
-  elements: "elements.json",
-  rules: "rules.json",
-} as const;
 
 function indexItems(items: Dict[], key: string): Record<string, Dict> {
   const out: Record<string, Dict> = {};
@@ -102,31 +94,30 @@ export function counts(bundle: DataBundle): Record<string, number> {
   };
 }
 
-/** 双系倍率：逐系相乘，可被 overrides / clampTo 配置覆盖。 */
+/** 双系倍率：按「克制 / 抵抗计数」。
+ * weak=0/1/2 → ×1 / ×counter / ×counter3；resist=0/1/2 → ×1 / ×resisted / ×resisted4；两者相乘。
+ * 可被 overrides / clampTo 配置覆盖。
+ */
 export function typeMultiplier(elements: Dict, attack: string, defend: string[]): number {
   const matrix = asDict(elements.matrix);
   const combine = asDict(elements.combine);
   const values = asDict(elements.values);
   const counter = toNum(values.counter, 2.0);
   const counter3 = toNum(values.counter3, 3.0);
-  const counter4 = toNum(values.counter4, 4.0);
-  const neutral = toNum(values.neutral, 1.0);
   const resisted = toNum(values.resisted, 0.5);
-  const resisted3 = toNum(values.resisted3, 1 / 3);
   const resisted4 = toNum(values.resisted4, 0.25);
 
   const row = asDict(matrix[attack]);
-  let mult = 1.0;
+  let weak = 0;
+  let resist = 0;
   for (const d of defend) {
-    const entry = row[d];
-    if (entry === undefined || entry === null) {
-      mult *= neutral;
-    } else if (typeof entry === "string") {
-      mult *= entry === "counter" ? counter : entry === "counter3" ? counter3 : entry === "counter4" ? counter4 : entry === "resisted" ? resisted : entry === "resisted3" ? resisted3 : entry === "resisted4" ? resisted4 : neutral;
-    } else {
-      mult *= toNum(entry, neutral);
-    }
+    const entry = toStr(row[d]);
+    if (entry.startsWith("counter")) weak += 1;
+    else if (entry.startsWith("resisted")) resist += 1;
   }
+  const offense = weak <= 0 ? 1 : weak === 1 ? counter : weak === 2 ? counter3 : counter3 + (weak - 2);
+  const defense = resist <= 0 ? 1 : resist === 1 ? resisted : resist === 2 ? resisted4 : resisted4 / Math.pow(2, resist - 2);
+  let mult = offense * defense;
 
   for (const ov of toArray<Dict>(combine.overrides)) {
     if (toStr(ov.attack) !== attack) continue;

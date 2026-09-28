@@ -6,7 +6,6 @@
 
 export type Side = "player" | "enemy";
 export type ActionKind = "skill" | "defend" | "switch" | "wish" | "leader" | "energy";
-export type TrainingPanel = "hp" | "atk" | "defense";
 
 /** 宽松 JSON 对象（游戏数据条目）。 */
 export type Dict = Record<string, unknown>;
@@ -16,8 +15,8 @@ export type Dict = Record<string, unknown>;
 export interface StatProfile {
   level?: number;
   nature?: string | null;
-  /** 三维面板点数：体力 / 攻击 / 防御。 */
-  training?: Partial<Record<TrainingPanel, number>>;
+  /** 个体值（天分 × 星级系数），按 stat key（hp/atk/spatk/defense/spdef/speed），各 0~60。 */
+  iv?: Record<string, number>;
 }
 
 // ---------------------------------------------------------------- 运行时模型
@@ -100,11 +99,19 @@ export interface NatureDef {
   downFactor?: number;
 }
 
-export interface TrainingPanelDef {
-  stat: string;
-  perPoint: number;
-  min?: number;
-  max?: number;
+/** 面板换算系数：round( round(种族×raceFactor + 个体×ivFactor + base) × 性格 ) + result。 */
+export interface StatsPanelDef {
+  raceFactor: number;
+  ivFactor: number;
+  base: number;
+  result: number;
+}
+
+export interface IndividualDef {
+  starMultiplier?: number;
+  maxPerStat?: number;
+  starMax?: number;
+  investCount?: number;
 }
 
 export interface TrainingProfileDef {
@@ -112,17 +119,15 @@ export interface TrainingProfileDef {
   label?: string;
   prior?: number;
   nature?: string | null;
-  training?: Partial<Record<TrainingPanel, number>>;
+  iv?: Record<string, number>;
 }
 
 export interface StatsData {
   level?: { default?: number };
+  panels?: { hp?: StatsPanelDef; default?: StatsPanelDef };
+  individual?: IndividualDef;
   natures?: NatureDef[];
-  training?: {
-    panels?: string[];
-    perPanel?: Record<string, TrainingPanelDef>;
-  };
-  trainingProfiles?: { options?: TrainingProfileDef[] };
+  trainingProfiles?: { options?: TrainingProfileDef[]; sigma?: number };
 }
 
 // ---------------------------------------------------------------- 数据层

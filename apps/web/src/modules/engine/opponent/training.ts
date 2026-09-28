@@ -12,9 +12,9 @@ import type { DataBundle, Dict, StatProfile, TrainingProfileDef } from "../types
 import { toNum } from "../types";
 
 export const DEFAULT_TRAINING_PROFILES: TrainingProfileDef[] = [
-  { id: "untrained", label: "未培养", prior: 1, training: { hp: 0, atk: 0, defense: 0 } },
-  { id: "half", label: "半培养", prior: 1, training: { hp: 50, atk: 50, defense: 50 } },
-  { id: "full", label: "满培养", prior: 1, training: { hp: 100, atk: 100, defense: 100 } },
+  { id: "none", label: "无个体", prior: 1, iv: {} },
+  { id: "half", label: "半个体", prior: 1, iv: { hp: 30, atk: 30, spatk: 30, defense: 30, spdef: 30, speed: 30 } },
+  { id: "full", label: "满个体", prior: 1, iv: { hp: 60, atk: 60, speed: 60 } },
 ];
 
 export function profileOptions(bundle: DataBundle): TrainingProfileDef[] {
@@ -27,7 +27,7 @@ export function priorOf(profiles: TrainingProfileDef[]): number[] {
 }
 
 export function profileToStatProfile(p: TrainingProfileDef): StatProfile {
-  return { nature: p.nature ?? null, training: { ...(p.training ?? {}) } };
+  return { nature: p.nature ?? null, iv: { ...(p.iv ?? {}) } };
 }
 
 /** 后验期望 P(profile) = (α + n) / (Σα + n)。 */

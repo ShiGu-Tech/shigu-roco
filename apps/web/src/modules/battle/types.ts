@@ -1,3 +1,5 @@
+import type { StatsData } from "@/modules/engine/types";
+
 export type ActionKind = "skill" | "defend" | "switch" | "wish" | "leader" | "energy";
 
 export interface EngineAction {
@@ -10,7 +12,8 @@ export interface EngineAction {
 export interface StatProfileState {
   level?: number;
   nature?: string | null;
-  training?: Partial<Record<"hp" | "atk" | "defense", number>>;
+  /** 个体值（天分 × 星级系数）：hp/atk/spatk/defense/spdef/speed，各 0~60。 */
+  iv?: Record<string, number>;
 }
 
 export interface ActiveSpriteState {
@@ -48,19 +51,26 @@ export interface CatalogElement {
   id: number;
   name: string;
   nameZh?: string;
+  nameFullZh?: string;
   color?: string;
+  icon?: string | null;
 }
 
 export interface CatalogSkill {
   id: string;
   name: string;
+  nameZh?: string;
   element: string;
+  elementZh?: string;
   category: string;
+  categoryZh?: string;
   actionType: string;
+  actionTypeZh?: string;
   power: number;
   cost: number;
   priority: number;
   icon?: string | null;
+  description?: string;
 }
 
 export interface CatalogSprite {
@@ -94,14 +104,10 @@ export interface Catalog {
   elements: CatalogElement[];
   sprites: CatalogSprite[];
   allSkills: CatalogSkill[];
-  marks: { id: string; name: string; maxStack: number }[];
-  weather: { id: string; name: string }[];
+  marks: { id: string; name: string; nameZh?: string; description?: string; maxStack: number }[];
+  weather: { id: string; name: string; nameZh?: string; description?: string }[];
   rules: Record<string, unknown>;
-  stats?: {
-    natures?: CatalogNature[];
-    training?: Record<string, unknown>;
-    trainingProfiles?: { options?: { id: string; label?: string }[] };
-  };
+  stats?: StatsData;
   warnings: string[];
 }
 

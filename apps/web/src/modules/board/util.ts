@@ -128,7 +128,7 @@ function sideFromTeam(catalog: Catalog, team: string[], magic: number, wish: num
   const actives = team
     .map((id) => spriteOf(catalog, id))
     .filter((s): s is CatalogSprite => Boolean(s))
-    .map((s) => activeFromSprite(s, initialEnergy));
+    .map((s) => activeFromSprite(s, catalog.stats, initialEnergy));
   return {
     magic,
     active: actives[0] ?? emptyActive(),

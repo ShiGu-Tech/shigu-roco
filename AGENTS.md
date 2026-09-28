@@ -5,7 +5,8 @@
 ## 定位红线（任何改动都不得违反）
 
 - **非外挂**：不读取游戏画面、不读内存、不抓包、不自动操作游戏、不联网（运行时）。
-- **数据与代码解耦**：精灵 / 技能 / 印记 / 天气 / 属性 / 规则全部在 `data/*.json`；版本更新只改 JSON。
+- **数据与代码解耦**：精灵 / 技能 / 印记 / 天气 / 属性全部来自 `roco.world/zh/` 同步注册的图鉴（`data/registry/catalogs/`，现查）；引擎参数（规则 / 养成 / 资产 / 机制）在 `data/*.json`。版本更新只改数据，不改代码。
+- **唯一外部数据源**：`https://roco.world/zh/` 中文站。不得把临时导出包、`dist-share` 或其他镜像作为后续数据源；中文名称、说明、机制词条和图片优先保留中文站原始字段。
 - **模拟器是固定规则，MCTS 是搜索模型**：不在 MCTS 里写游戏策略硬编码。
 
 ## 大功能流程（硬性）
@@ -20,29 +21,29 @@
 ```text
 apps/web/src/modules/engine/  TS 引擎（模拟器 + MCTS + 贝叶斯 + 养成 + API/Worker）
 apps/web/                     Next.js 16 前端
-data/                         结构化 JSON（唯一数据事实源）
+data/                         引擎参数 JSON + 图鉴注册（registry/catalogs/）
 docs/                         设计稿（索引进 docs/README.md）
-scripts/                      setup / dev
+scripts/                      setup / dev / 同步
 ```
 
 - 前端：`@/*` → `apps/web/src/*`；业务按 `src/modules/<name>/` 组织，纯逻辑与展示分离。
 - 引擎：`modules/engine/` 包内按 `types / rng / data / stats / effects / simulator / mcts / opponent / api / worker` 分层。
-- 数据加载只认 `data/`；代码中不得出现精灵 / 技能 / 倍率等游戏数据魔法数字（算法常量除外）。
+- 运行时资源只认激活图鉴（`data/registry/catalogs/`）；引擎参数只认 `data/*.json`；**无静态兜底**，缺激活图鉴直接报错。代码中不得出现精灵 / 技能 / 倍率等游戏数据魔法数字（算法常量除外）。
 
 ## 自验与命令
 
-- 引擎：`pnpm -F web test`（vitest：数据校验、伤害、印记、结算、MCTS 复现、养成）。
+- 引擎：`pnpm -F web test`（vitest：图鉴归一化、机制注册 / 行动队列 / 事务结算）。
 - 前端：`pnpm -F web lint && pnpm -F web typecheck`。
 - 全量：`pnpm check`（= 前端 lint+typecheck + 引擎测试；由根 `package.json` 代理）。
-- 数据改动：必须过引擎数据测试（`data.ts` 校验 + `__tests__/engine.test.ts` 数据组；schema + 引用完整性）。
+- 数据改动：必须过引擎测试（`catalog.test.ts` 归一化 + `data.ts` 引用校验）；注册后经 `/api/engine/health` 确认 counts 与 warnings。
 - 每次改动完成：跑 `pnpm check`，并在本地 `26900` 冒烟相关页面（引擎内置，无需单独启动）。
 
 ## 数据维护流程
 
-1. 官方公告 / Wiki → 定位受影响 JSON 条目。
-2. 按下文格式修改，更新该文件 `version` 与 `updatedAt`；不确定项在 `params.note` 标 `【待校准】`。
+1. 资源数据：`node scripts/sync-roco-world.mjs --register`（需 dev 在 26900 运行）从中文站同步并注册新版图鉴，注册即激活；这是精灵 / 技能 / 印记 / 天气 / 属性的唯一来源。
+2. 引擎参数：改 `data/{rules,stats,assets,mechanisms}.json`，更新 `version` / `updatedAt`；不确定项在 `params.note` 标 `【待校准】`。
 3. 引擎 reload（`POST /api/engine/admin/reload` 或重启前端）→ `/api/engine/health` 确认 `dataVersion` 与 warnings。
-4. 跑数据回归测试。
+4. 跑 `pnpm check`。
 5. 模拟器与 MCTS 代码**不得**因数据更新而改动。
 
 ## 约定

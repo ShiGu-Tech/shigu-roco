@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import * as handlers from "@/modules/engine/api/handlers";
+import * as catalogHandlers from "@/modules/engine/catalog/api-node";
 import { getBundle, reloadBundle } from "@/modules/engine/server";
 import type { Dict } from "@/modules/engine/types";
 
@@ -29,6 +30,7 @@ async function handle(request: Request, ctx: { params: Promise<{ path: string[] 
     if (method === "GET" && route === "health") return json(handlers.health(getBundle()));
     if (method === "GET" && route === "catalog") return json(handlers.catalog(getBundle()));
     if (method === "GET" && route === "bundle") return json(handlers.bundlePayload(getBundle()));
+    if (method === "GET" && route === "admin/catalog/registry") return json(catalogHandlers.catalogRegistry());
     if (method === "POST" && route === "admin/reload") return json(handlers.health(reloadBundle()));
 
     const body = await readJson(request);
@@ -43,6 +45,16 @@ async function handle(request: Request, ctx: { params: Promise<{ path: string[] 
         return json(handlers.leader(getBundle(), body));
       case "opponent/observe":
         return json(handlers.observe(getBundle(), body));
+      case "admin/catalog/register": {
+        const result = catalogHandlers.registerCatalog(body);
+        reloadBundle();
+        return json(result);
+      }
+      case "admin/catalog/activate": {
+        const result = catalogHandlers.activateCatalog(body);
+        reloadBundle();
+        return json(result);
+      }
       default:
         return json({ error: `未知路由: ${route}` }, 404);
     }

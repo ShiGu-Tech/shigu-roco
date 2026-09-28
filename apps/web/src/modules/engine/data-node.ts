@@ -1,13 +1,15 @@
-/** Node 侧数据加载：从磁盘读 data/*.json 组装 DataBundle。
+/** Node 侧数据加载：只读引擎参数（rules / stats / assets / mechanisms）。
  *
- * 仅用于服务端（Route Handler / 测试），Worker 与浏览器侧用 buildBundle + bundle。
+ * 精灵 / 技能 / 印记 / 天气 / 属性一律来自激活图鉴（现查，registry/catalogs/active），
+ * 不存在 data/*.json 静态兜底。仅用于服务端（Route Handler / 测试）；
+ * Worker 与浏览器侧用 buildBundle + bundle。
  */
 
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
-import { DataError, buildBundle, REQUIRED_FILES } from "./data";
-import type { DataBundle, Dict } from "./types";
+import { DataError, buildBundle } from "./data";
+import type { DataBundle, Dict, RawDataFiles } from "./types";
 
 function readJson<T = Dict>(file: string): T {
   try {
@@ -17,15 +19,15 @@ function readJson<T = Dict>(file: string): T {
   }
 }
 
-/** 从 cwd 逐级向上寻找含 data/sprites.json 的目录，支持 ROCO_DATA_DIR 覆盖。 */
+/** 从 cwd 逐级向上寻找含 data/rules.json 的目录，支持 ROCO_DATA_DIR 覆盖。 */
 export function resolveDataDir(): string {
   const env = process.env.ROCO_DATA_DIR;
-  if (env && existsSync(/* turbopackIgnore: true */ path.join(env, "sprites.json"))) return env;
+  if (env && existsSync(/* turbopackIgnore: true */ path.join(env, "rules.json"))) return env;
 
   let dir = process.cwd();
   for (let i = 0; i < 6; i++) {
     const cand = path.join(dir, "data");
-    if (existsSync(/* turbopackIgnore: true */ path.join(cand, "sprites.json"))) return cand;
+    if (existsSync(/* turbopackIgnore: true */ path.join(cand, "rules.json"))) return cand;
     const parent = path.dirname(dir);
     if (parent === dir) break;
     dir = parent;
@@ -33,26 +35,26 @@ export function resolveDataDir(): string {
   throw new DataError("未找到 data/ 目录（可用环境变量 ROCO_DATA_DIR 指定）");
 }
 
+/** 只加载引擎参数，资源位留空——图鉴在 server.getBundle 装配。 */
 export function loadData(dataDir?: string): DataBundle {
   const root = dataDir ?? resolveDataDir();
-  const read = (name: string) => {
+  const optional = (name: string, fallback: unknown): unknown => {
     const file = path.join(/* turbopackIgnore: true */ root, name);
-    if (!existsSync(/* turbopackIgnore: true */ file)) throw new DataError(`缺少数据文件: ${file}`);
-    return readJson(file);
+    return existsSync(/* turbopackIgnore: true */ file) ? readJson<unknown>(file) : fallback;
   };
-  const statsFile = path.join(/* turbopackIgnore: true */ root, "stats.json");
-  const assetsFile = path.join(/* turbopackIgnore: true */ root, "assets.json");
-  const mechanismsFile = path.join(/* turbopackIgnore: true */ root, "mechanisms.json");
-  const raw = {
-    sprites: read(REQUIRED_FILES.sprites),
-    skills: read(REQUIRED_FILES.skills),
-    marks: read(REQUIRED_FILES.marks),
-    weather: read(REQUIRED_FILES.weather),
-    elements: read(REQUIRED_FILES.elements),
-    rules: read(REQUIRED_FILES.rules),
-    stats: existsSync(/* turbopackIgnore: true */ statsFile) ? read("stats.json") : {},
-    assets: existsSync(/* turbopackIgnore: true */ assetsFile) ? read("assets.json") : {},
-    mechanisms: existsSync(/* turbopackIgnore: true */ mechanismsFile) ? readJson<unknown>(mechanismsFile) : [],
+  const rulesFile = path.join(/* turbopackIgnore: true */ root, "rules.json");
+  if (!existsSync(/* turbopackIgnore: true */ rulesFile)) throw new DataError(`缺少数据文件: ${rulesFile}`);
+
+  const raw: RawDataFiles = {
+    sprites: { sprites: [] },
+    skills: { skills: [] },
+    marks: { marks: [] },
+    weather: { weather: [] },
+    elements: {},
+    rules: readJson(rulesFile),
+    stats: optional("stats.json", {}) as Dict,
+    assets: optional("assets.json", {}) as Dict,
+    mechanisms: optional("mechanisms.json", []),
   };
   return buildBundle(raw);
 }

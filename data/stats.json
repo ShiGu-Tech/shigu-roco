@@ -1,39 +1,54 @@
 {
-  "$schemaVersion": "0.1",
-  "version": "0.1.0",
+  "$schemaVersion": "0.2",
+  "version": "0.2.0",
   "updatedAt": "2026-09-28",
-  "source": "人工维护模板；幅度与映射均【待校准】",
+  "source": "RocoDiviner 数值公式（60 级 PVP 口径）",
   "level": {
-    "default": 50,
-    "note": "等级对属性的换算口径尚未确认【待校准】；当前仅作默认值占位。"
+    "default": 60,
+    "note": "PVP 视为固定 60 级；等级已折进面板系数，不再单独参与换算。"
+  },
+  "panels": {
+    "hp": {
+      "raceFactor": 1.7,
+      "ivFactor": 0.85,
+      "base": 70,
+      "result": 100,
+      "note": "生命：round( round(种族×1.7 + 个体×0.85 + 70) × 性格 ) + 100"
+    },
+    "default": {
+      "raceFactor": 1.1,
+      "ivFactor": 0.55,
+      "base": 10,
+      "result": 50,
+      "note": "攻/防/速：round( round(种族×1.1 + 个体×0.55 + 10) × 性格 ) + 50"
+    }
+  },
+  "individual": {
+    "starMultiplier": 6,
+    "maxPerStat": 60,
+    "starMax": 5,
+    "investCount": 3,
+    "note": "天分 0~10 × 星级系数（5★=×6）→ 个体值 0~60；只能加在 3 项上。"
   },
   "natures": [
     { "id": "neutral", "name": "坦率", "nameZh": "坦率", "up": null, "down": null, "upFactor": 1.0, "downFactor": 1.0 },
-    { "id": "adamant", "name": "固执", "nameZh": "固执", "up": "atk", "down": "spatk", "upFactor": 1.1, "downFactor": 0.9 },
-    { "id": "modest", "name": "内敛", "nameZh": "内敛", "up": "spatk", "down": "atk", "upFactor": 1.1, "downFactor": 0.9 },
-    { "id": "bold", "name": "大胆", "nameZh": "大胆", "up": "defense", "down": "atk", "upFactor": 1.1, "downFactor": 0.9 },
-    { "id": "calm", "name": "温和", "nameZh": "温和", "up": "spdef", "down": "atk", "upFactor": 1.1, "downFactor": 0.9 },
-    { "id": "careful", "name": "慎重", "nameZh": "慎重", "up": "spdef", "down": "spatk", "upFactor": 1.1, "downFactor": 0.9 },
-    { "id": "timid", "name": "胆小", "nameZh": "胆小", "up": "speed", "down": "atk", "upFactor": 1.1, "downFactor": 0.9 },
-    { "id": "jolly", "name": "爽朗", "nameZh": "爽朗", "up": "speed", "down": "spatk", "upFactor": 1.1, "downFactor": 0.9 },
-    { "id": "impish", "name": "淘气", "nameZh": "淘气", "up": "defense", "down": "spatk", "upFactor": 1.1, "downFactor": 0.9 }
+    { "id": "adamant", "name": "固执", "nameZh": "固执", "up": "atk", "down": "spatk", "upFactor": 1.2, "downFactor": 0.9 },
+    { "id": "modest", "name": "内敛", "nameZh": "内敛", "up": "spatk", "down": "atk", "upFactor": 1.2, "downFactor": 0.9 },
+    { "id": "bold", "name": "大胆", "nameZh": "大胆", "up": "defense", "down": "atk", "upFactor": 1.2, "downFactor": 0.9 },
+    { "id": "calm", "name": "温和", "nameZh": "温和", "up": "spdef", "down": "atk", "upFactor": 1.2, "downFactor": 0.9 },
+    { "id": "careful", "name": "慎重", "nameZh": "慎重", "up": "spdef", "down": "spatk", "upFactor": 1.2, "downFactor": 0.9 },
+    { "id": "timid", "name": "胆小", "nameZh": "胆小", "up": "speed", "down": "atk", "upFactor": 1.2, "downFactor": 0.9 },
+    { "id": "jolly", "name": "爽朗", "nameZh": "爽朗", "up": "speed", "down": "spatk", "upFactor": 1.2, "downFactor": 0.9 },
+    { "id": "impish", "name": "淘气", "nameZh": "淘气", "up": "defense", "down": "spatk", "upFactor": 1.2, "downFactor": 0.9 }
   ],
-  "training": {
-    "panels": ["hp", "atk", "defense"],
-    "perPanel": {
-      "hp": { "stat": "hp", "perPoint": 0.3, "min": 0, "max": 100 },
-      "atk": { "stat": "atk", "perPoint": 0.3, "min": 0, "max": 100 },
-      "defense": { "stat": "defense", "perPoint": 0.3, "min": 0, "max": 100 }
-    },
-    "note": "三维 = 体力 / 攻击 / 防御 三个培养面板；每点加成系数【待校准】。"
-  },
+  "natureNote": "名称→属性映射【待校准】：图例「大胆(物攻+20%)」与现表「大胆=防御+/攻击-」冲突，需按游戏核实。",
   "trainingProfiles": {
     "options": [
-      { "id": "untrained", "label": "未培养", "prior": 1, "training": { "hp": 0, "atk": 0, "defense": 0 } },
-      { "id": "half", "label": "半培养", "prior": 1, "training": { "hp": 50, "atk": 50, "defense": 50 } },
-      { "id": "full", "label": "满培养", "prior": 1, "training": { "hp": 100, "atk": 100, "defense": 100 } }
+      { "id": "none", "label": "无个体", "prior": 1, "nature": null, "iv": {} },
+      { "id": "half", "label": "半个体", "prior": 1, "nature": null, "iv": { "hp": 30, "atk": 30, "spatk": 30, "defense": 30, "spdef": 30, "speed": 30 } },
+      { "id": "full", "label": "满个体（攻/速）", "prior": 1, "nature": null, "iv": { "hp": 60, "atk": 60, "speed": 60 } }
     ],
     "sigma": 0.05,
-    "note": "对手养成先验档位与似然带宽【待校准】。"
+    "note": "对手个体先验档位与似然带宽【待校准】。"
   }
 }
