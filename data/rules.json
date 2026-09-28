@@ -3,15 +3,16 @@
   "version": "0.1.0",
   "updatedAt": "2026-09-27",
   "magic": {
-    "initialPerSide": 3,
+    "initialPerSide": 4,
+    "maxPerSide": 4,
     "perFaint": 1,
-    "note": "初始魔力与阵亡扣魔数值【待校准】。"
+    "note": "魔力一般为 4 颗爱心（开局满 4）；每次精灵阵亡 -1，减到 0 判负【待校准】。"
   },
   "wish": {
     "maxUses": 2,
-    "cooldown": 1,
+    "cooldown": 4,
     "changeSkillFactor": 1.5,
-    "note": "愿力魔法最大 2 次、CD、变化技能 1.5× 伤害，来自需求文档；CD 具体回合数【待校准】。"
+    "note": "愿力冲击为全队（背包）技能，最多 2 次、冷却 4 回合；伤害/效果数据站点未提供【待校准】。"
   },
   "leader": {
     "once": true,
@@ -21,6 +22,12 @@
   "defense": {
     "damageReduction": 0.7,
     "note": "防御技能减伤示例值【待校准】。"
+  },
+  "energy": {
+    "initial": 10,
+    "recover": 5,
+    "max": 10,
+    "note": "精灵进场能量默认 10（=上限）；「聚能」固定回复 5、占用当回合动作（低于上限时可用）【待校准】；聚能在应对判定中暂按状态技能处理。"
   },
   "turnPhases": ["magic", "switch", "skill", "settle"],
   "switchOrderBasis": "oldActive",

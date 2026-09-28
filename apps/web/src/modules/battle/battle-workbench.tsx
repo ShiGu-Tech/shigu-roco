@@ -16,12 +16,19 @@ import { activeFromSprite, createInitialState } from "./state";
 import {
   deleteSave,
   listSaves,
+  loadOpponentLibrary,
   loadOpponentModel,
+  recordOpponentAction,
+  recordOpponentTraining,
+  saveOpponentLibrary,
   saveOpponentModel,
   saveState,
+  type OpponentLibrary,
   type SaveEntry,
 } from "./storage";
 import type { ActiveSpriteState, BattleState, Catalog, CatalogSprite, RecommendResult } from "./types";
+import { maxHpFromRace } from "@/modules/engine/stats";
+import type { StatsData } from "@/modules/engine/types";
 
 const PRESETS = {
   fast: { label: "快速 0.3s", maxIterations: 400, timeLimitMs: 300 },
@@ -115,6 +122,76 @@ function MarksEditor({
   );
 }
 
+const PANEL_LABEL: Record<string, string> = { hp: "体力", atk: "攻击", defense: "防御" };
+
+function TrainingEditor({
+  active,
+  sprite,
+  catalog,
+  onChange,
+}: {
+  active: ActiveSpriteState;
+  sprite?: CatalogSprite;
+  catalog: Catalog;
+  onChange: (mutate: (a: ActiveSpriteState) => void) => void;
+}) {
+  const stats = catalog.stats as StatsData | undefined;
+  const natures = catalog.stats?.natures ?? [];
+  const panels = (catalog.stats?.training as { panels?: string[] } | undefined)?.panels ?? ["hp", "atk", "defense"];
+  if (!sprite || !stats) return null;
+
+  const recompute = (a: ActiveSpriteState) => {
+    a.maxHp = maxHpFromRace(stats, sprite.race, a.profile);
+    if (a.hp > a.maxHp) a.hp = a.maxHp;
+  };
+
+  return (
+    <div className="space-y-2">
+      <Label>养成资质（性格 + 三维）</Label>
+      <div className="grid grid-cols-2 gap-2 min-[520px]:grid-cols-4">
+        <div className="col-span-2 space-y-1 min-[520px]:col-span-1">
+          <Label className="text-xs text-muted-foreground">性格</Label>
+          <NativeSelect
+            value={active.profile?.nature ?? ""}
+            onChange={(e) =>
+              onChange((a) => {
+                a.profile = { ...a.profile, nature: e.target.value || null };
+                recompute(a);
+              })
+            }
+          >
+            <option value="">未设</option>
+            {natures.map((n) => (
+              <option key={n.id} value={n.id}>
+                {n.nameZh ?? n.name ?? n.id}
+              </option>
+            ))}
+          </NativeSelect>
+        </div>
+        {panels.map((panel) => (
+          <div key={panel} className="space-y-1">
+            <Label className="text-xs text-muted-foreground">{PANEL_LABEL[panel] ?? panel}</Label>
+            <Input
+              type="number"
+              min={0}
+              value={active.profile?.training?.[panel as "hp" | "atk" | "defense"] ?? 0}
+              onChange={(e) =>
+                onChange((a) => {
+                  a.profile = {
+                    ...a.profile,
+                    training: { ...a.profile?.training, [panel]: Number(e.target.value) },
+                  };
+                  recompute(a);
+                })
+              }
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ActiveCard({
   title,
   subtitle,
@@ -156,6 +233,7 @@ function ActiveCard({
             {sprite.trait?.name ? ` · 特性 ${sprite.trait.name}` : ""}
           </p>
         )}
+        <TrainingEditor active={active} sprite={sprite} catalog={catalog} onChange={onChange} />
         <div className="grid grid-cols-3 gap-2">
           <div className="space-y-1">
             <Label>当前 HP</Label>
@@ -197,6 +275,8 @@ export function BattleWorkbench() {
   const [saves, setSaves] = useState<SaveEntry[]>(() => listSaves());
   const [saveName, setSaveName] = useState("");
   const [opponent, setOpponent] = useState<Record<string, number>>(() => loadOpponentModel());
+  const [library, setLibrary] = useState<OpponentLibrary>(() => loadOpponentLibrary());
+  const [trainingProfile, setTrainingProfile] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -232,6 +312,7 @@ export function BattleWorkbench() {
         rolloutMaxTurns: 12,
         seed: state.seed,
         opponentModel: opponent,
+        opponentLibrary: library as unknown as Record<string, unknown>,
       });
       setResult(r);
       toast.success(`推演完成：${r.meta.iterations} 次模拟 / ${r.meta.elapsedMs}ms`);
@@ -254,19 +335,36 @@ export function BattleWorkbench() {
     const next = { ...opponent, [cls]: (opponent[cls] ?? 0) + 1 };
     setOpponent(next);
     saveOpponentModel(next);
-    toast.success(`已记录对手动作：${cls}`);
+    const enemyId = state?.enemy.active.spriteId;
+    if (enemyId) {
+      const lib = recordOpponentAction(library, enemyId, cls);
+      setLibrary(lib);
+      saveOpponentLibrary(lib);
+      toast.success(`已记录 ${enemyId} 动作：${cls}`);
+    } else {
+      toast.success(`已记录对手动作：${cls}`);
+    }
+  }
+
+  function recordTraining() {
+    const enemyId = state?.enemy.active.spriteId;
+    if (!enemyId || !trainingProfile) return;
+    const lib = recordOpponentTraining(library, enemyId, trainingProfile);
+    setLibrary(lib);
+    saveOpponentLibrary(lib);
+    toast.success(`已记录 ${enemyId} 养成：${trainingProfile}`);
   }
 
   if (error) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-destructive">引擎未连接</CardTitle>
+          <CardTitle className="text-destructive">引擎未就绪</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
           <p>{error}</p>
           <p className="text-muted-foreground">
-            请先启动引擎：<code className="rounded bg-muted px-1">pwsh scripts/dev.ps1</code>（引擎监听 127.0.0.1:26901）。
+            请启动前端：<code className="rounded bg-muted px-1">pwsh scripts/dev.ps1</code>（内置 TS 引擎，127.0.0.1:26900）。
           </p>
         </CardContent>
       </Card>
@@ -454,6 +552,35 @@ export function BattleWorkbench() {
                     状态 S ({opponent.S})
                   </Button>
                 </div>
+              </div>
+              <div className="space-y-1">
+                <Label>记录对手养成档位（写入对手库，随精灵累积）</Label>
+                <div className="flex gap-2">
+                  <NativeSelect
+                    className="flex-1"
+                    value={trainingProfile || catalog.stats?.trainingProfiles?.options?.[0]?.id || ""}
+                    onChange={(e) => setTrainingProfile(e.target.value)}
+                  >
+                    {(catalog.stats?.trainingProfiles?.options ?? []).map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.label ?? p.id}
+                      </option>
+                    ))}
+                  </NativeSelect>
+                  <Button type="button" size="sm" variant="secondary" onClick={recordTraining}>
+                    记录
+                  </Button>
+                </div>
+                {state.enemy.active.spriteId && (
+                  <p className="text-xs text-muted-foreground">
+                    对手库 {state.enemy.active.spriteId}：出招 A
+                    {library.opponents[state.enemy.active.spriteId]?.actions.A ?? 0} / D
+                    {library.opponents[state.enemy.active.spriteId]?.actions.D ?? 0} / S
+                    {library.opponents[state.enemy.active.spriteId]?.actions.S ?? 0}
+                    {library.opponents[state.enemy.active.spriteId]?.training &&
+                      ` · 养成 ${JSON.stringify(library.opponents[state.enemy.active.spriteId].training)}`}
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>

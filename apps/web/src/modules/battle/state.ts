@@ -1,12 +1,13 @@
 import type { ActiveSpriteState, BattleState, Catalog, CatalogSprite } from "./types";
 
-export function activeFromSprite(sprite: CatalogSprite, energy = 3): ActiveSpriteState {
+export function activeFromSprite(sprite: CatalogSprite, energy = 10): ActiveSpriteState {
   const maxHp = Math.max(1, Number(sprite.race.hp ?? 1));
   return {
     spriteId: sprite.id,
     hp: maxHp,
     maxHp,
     energy,
+    loadout: sprite.skills.slice(0, 4).map((s) => s.id),
     buffs: {},
     debuffs: {},
     marks: {},
@@ -15,7 +16,17 @@ export function activeFromSprite(sprite: CatalogSprite, energy = 3): ActiveSprit
 }
 
 export function emptyActive(): ActiveSpriteState {
-  return { spriteId: "", hp: 1, maxHp: 1, energy: 0, buffs: {}, debuffs: {}, marks: {}, statuses: {} };
+  return {
+    spriteId: "",
+    hp: 1,
+    maxHp: 1,
+    energy: 0,
+    loadout: [],
+    buffs: {},
+    debuffs: {},
+    marks: {},
+    statuses: {},
+  };
 }
 
 export function createInitialState(catalog: Catalog): BattleState {

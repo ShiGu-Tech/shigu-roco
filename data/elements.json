@@ -1,7 +1,7 @@
 {
   "$schemaVersion": "0.1",
   "version": "0.1.0",
-  "updatedAt": "2026-09-27",
+  "updatedAt": "2026-09-28",
   "values": {
     "counter": 2.0,
     "neutral": 1.0,
@@ -11,14 +11,16 @@
     {
       "id": 2,
       "name": "Normal",
-      "nameZh": "",
+      "nameZh": "普通",
+      "nameFullZh": "普通系",
       "color": "#CEF7FFFF",
       "statusImmunities": []
     },
     {
       "id": 3,
       "name": "Grass",
-      "nameZh": "",
+      "nameZh": "草",
+      "nameFullZh": "草系",
       "color": "#70ECA0FF",
       "statusImmunities": [
         {
@@ -32,7 +34,8 @@
     {
       "id": 4,
       "name": "Fire",
-      "nameZh": "",
+      "nameZh": "火",
+      "nameFullZh": "火系",
       "color": "#FF7B7AFF",
       "statusImmunities": [
         {
@@ -46,28 +49,32 @@
     {
       "id": 5,
       "name": "Water",
-      "nameZh": "",
+      "nameZh": "水",
+      "nameFullZh": "水系",
       "color": "#51BCFFFF",
       "statusImmunities": []
     },
     {
       "id": 6,
       "name": "Light",
-      "nameZh": "",
+      "nameZh": "光",
+      "nameFullZh": "光系",
       "color": "#FFE071FF",
       "statusImmunities": []
     },
     {
       "id": 8,
       "name": "Earth",
-      "nameZh": "",
+      "nameZh": "地",
+      "nameFullZh": "地系",
       "color": "#FFBF7CFF",
       "statusImmunities": []
     },
     {
       "id": 9,
       "name": "Ice",
-      "nameZh": "",
+      "nameZh": "冰",
+      "nameFullZh": "冰系",
       "color": "#52efff",
       "statusImmunities": [
         {
@@ -81,14 +88,16 @@
     {
       "id": 10,
       "name": "Dragon",
-      "nameZh": "",
+      "nameZh": "龙",
+      "nameFullZh": "龙系",
       "color": "#72309c",
       "statusImmunities": []
     },
     {
       "id": 11,
       "name": "Electric",
-      "nameZh": "",
+      "nameZh": "电",
+      "nameFullZh": "电系",
       "color": "#fdc801",
       "statusImmunities": [
         {
@@ -102,7 +111,8 @@
     {
       "id": 12,
       "name": "Poison",
-      "nameZh": "",
+      "nameZh": "毒",
+      "nameFullZh": "毒系",
       "color": "#b91dfc",
       "statusImmunities": [
         {
@@ -116,56 +126,64 @@
     {
       "id": 13,
       "name": "Bug",
-      "nameZh": "",
+      "nameZh": "虫",
+      "nameFullZh": "虫系",
       "color": "#D0FF7BFF",
       "statusImmunities": []
     },
     {
       "id": 14,
       "name": "Martial",
-      "nameZh": "",
+      "nameZh": "武",
+      "nameFullZh": "武系",
       "color": "#994d35",
       "statusImmunities": []
     },
     {
       "id": 15,
       "name": "Wing",
-      "nameZh": "",
+      "nameZh": "翼",
+      "nameFullZh": "翼系",
       "color": "#79FFE3FF",
       "statusImmunities": []
     },
     {
       "id": 16,
       "name": "Cute",
-      "nameZh": "",
+      "nameZh": "萌",
+      "nameFullZh": "萌系",
       "color": "#ff5198",
       "statusImmunities": []
     },
     {
       "id": 17,
       "name": "Ghost",
-      "nameZh": "",
+      "nameZh": "幽",
+      "nameFullZh": "幽系",
       "color": "#7C80FFFF",
       "statusImmunities": []
     },
     {
       "id": 18,
       "name": "Dark",
-      "nameZh": "",
+      "nameZh": "恶",
+      "nameFullZh": "恶系",
       "color": "#AA57FFFF",
       "statusImmunities": []
     },
     {
       "id": 19,
       "name": "Machine",
-      "nameZh": "",
+      "nameZh": "机械",
+      "nameFullZh": "机械系",
       "color": "#85c8ef",
       "statusImmunities": []
     },
     {
       "id": 20,
       "name": "Illusion",
-      "nameZh": "",
+      "nameZh": "幻",
+      "nameFullZh": "幻系",
       "color": "#929feb",
       "statusImmunities": []
     }

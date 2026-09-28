@@ -1,13 +1,14 @@
 {
   "$schemaVersion": "0.1",
   "version": "0.1.0",
-  "updatedAt": "2026-09-27",
+  "updatedAt": "2026-09-28",
   "sprites": [
     {
       "id": "sp-1",
       "no": 1,
-      "name": "Dimo",
-      "nameZh": "",
+      "name": "迪莫",
+      "nameEn": "Dimo",
+      "nameZh": "迪莫",
       "stage": 3,
       "elements": [
         "Light"
@@ -21,8 +22,8 @@
         "speed": 92
       },
       "trait": {
-        "name": "Best Partner",
-        "desc": "After dealing advantaged damage, this Jini gains +20% to attacks, defenses, and Speed, and restores 2 energy.",
+        "name": "最好的伙伴",
+        "desc": "造成克制伤害后，获得攻防速+20%，并回复2能量。",
         "params": {}
       },
       "skillList": [
@@ -47,13 +48,14 @@
         "sk-7060130"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/1"
+      "source": "https://roco.world/zh/jini/1"
     },
     {
       "id": "sp-2",
       "no": 2,
-      "name": "Mewmew",
-      "nameZh": "",
+      "name": "喵喵",
+      "nameEn": "Mewmew",
+      "nameZh": "喵喵",
       "stage": 1,
       "elements": [
         "Grass"
@@ -67,8 +69,8 @@
         "speed": 33
       },
       "trait": {
-        "name": "Oxygen Cycle",
-        "desc": "After this Jini uses a Grass-type skill, it restores 10% Health.",
+        "name": "氧循环",
+        "desc": "使用草系技能后，回复10%生命。",
         "params": {}
       },
       "skillList": [
@@ -90,13 +92,14 @@
         "sk-7030210"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/2"
+      "source": "https://roco.world/zh/jini/2"
     },
     {
       "id": "sp-3",
       "no": 3,
-      "name": "Mewoo",
-      "nameZh": "",
+      "name": "喵呜",
+      "nameEn": "Mewoo",
+      "nameZh": "喵呜",
       "stage": 2,
       "elements": [
         "Grass"
@@ -110,8 +113,8 @@
         "speed": 44
       },
       "trait": {
-        "name": "Oxygen Cycle",
-        "desc": "After this Jini uses a Grass-type skill, it restores 10% Health.",
+        "name": "氧循环",
+        "desc": "使用草系技能后，回复10%生命。",
         "params": {}
       },
       "skillList": [
@@ -133,13 +136,14 @@
         "sk-7030210"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/3"
+      "source": "https://roco.world/zh/jini/3"
     },
     {
       "id": "sp-4",
       "no": 4,
-      "name": "Magimew",
-      "nameZh": "",
+      "name": "魔力猫",
+      "nameEn": "Magimew",
+      "nameZh": "魔力猫",
       "stage": 3,
       "elements": [
         "Grass"
@@ -153,8 +157,8 @@
         "speed": 55
       },
       "trait": {
-        "name": "Oxygen Cycle",
-        "desc": "After this Jini uses a Grass-type skill, it restores 10% Health.",
+        "name": "氧循环",
+        "desc": "使用草系技能后，回复10%生命。",
         "params": {}
       },
       "skillList": [
@@ -176,13 +180,14 @@
         "sk-7030210"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/4"
+      "source": "https://roco.world/zh/jini/4"
     },
     {
       "id": "sp-5",
       "no": 5,
-      "name": "Sparkit",
-      "nameZh": "",
+      "name": "火花",
+      "nameEn": "Sparkit",
+      "nameZh": "火花",
       "stage": 1,
       "elements": [
         "Fire"
@@ -196,8 +201,8 @@
         "speed": 78
       },
       "trait": {
-        "name": "Fuel the Fire",
-        "desc": "After using a Fire-type skill, this Jini gains +20% to both attacks.",
+        "name": "助燃",
+        "desc": "使用火系技能后，获得双攻+20%。",
         "params": {}
       },
       "skillList": [
@@ -216,13 +221,14 @@
         "sk-7040250"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/5"
+      "source": "https://roco.world/zh/jini/5"
     },
     {
       "id": "sp-6",
       "no": 6,
-      "name": "Blazework",
-      "nameZh": "",
+      "name": "焰火",
+      "nameEn": "Blazework",
+      "nameZh": "焰火",
       "stage": 2,
       "elements": [
         "Fire"
@@ -236,8 +242,8 @@
         "speed": 104
       },
       "trait": {
-        "name": "Fuel the Fire",
-        "desc": "After using a Fire-type skill, this Jini gains +20% to both attacks.",
+        "name": "助燃",
+        "desc": "使用火系技能后，获得双攻+20%。",
         "params": {}
       },
       "skillList": [
@@ -256,13 +262,14 @@
         "sk-7040250"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/6"
+      "source": "https://roco.world/zh/jini/6"
     },
     {
       "id": "sp-7",
       "no": 7,
-      "name": "Pyrogod",
-      "nameZh": "",
+      "name": "火神",
+      "nameEn": "Pyrogod",
+      "nameZh": "火神",
       "stage": 3,
       "elements": [
         "Fire"
@@ -276,8 +283,8 @@
         "speed": 130
       },
       "trait": {
-        "name": "Fuel the Fire",
-        "desc": "After using a Fire-type skill, this Jini gains +20% to both attacks.",
+        "name": "助燃",
+        "desc": "使用火系技能后，获得双攻+20%。",
         "params": {}
       },
       "skillList": [
@@ -296,13 +303,14 @@
         "sk-7040250"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/7"
+      "source": "https://roco.world/zh/jini/7"
     },
     {
       "id": "sp-8",
       "no": 8,
-      "name": "Aquablue",
-      "nameZh": "",
+      "name": "水蓝蓝",
+      "nameEn": "Aquablue",
+      "nameZh": "水蓝蓝",
       "stage": 1,
       "elements": [
         "Water"
@@ -316,8 +324,8 @@
         "speed": 51
       },
       "trait": {
-        "name": "Soak In",
-        "desc": "After this Jini uses a Water-type skill, all its skills cost 1 less energy.",
+        "name": "浸润",
+        "desc": "使用水系技能后，全技能能耗-1。",
         "params": {}
       },
       "skillList": [
@@ -336,13 +344,14 @@
         "sk-7050210"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/8"
+      "source": "https://roco.world/zh/jini/8"
     },
     {
       "id": "sp-9",
       "no": 9,
-      "name": "Bobola",
-      "nameZh": "",
+      "name": "波波拉",
+      "nameEn": "Bobola",
+      "nameZh": "波波拉",
       "stage": 2,
       "elements": [
         "Water"
@@ -356,8 +365,8 @@
         "speed": 68
       },
       "trait": {
-        "name": "Soak In",
-        "desc": "After this Jini uses a Water-type skill, all its skills cost 1 less energy.",
+        "name": "浸润",
+        "desc": "使用水系技能后，全技能能耗-1。",
         "params": {}
       },
       "skillList": [
@@ -376,13 +385,14 @@
         "sk-7050210"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/9"
+      "source": "https://roco.world/zh/jini/9"
     },
     {
       "id": "sp-10",
       "no": 10,
-      "name": "Aquaspirit",
-      "nameZh": "",
+      "name": "水灵",
+      "nameEn": "Aquaspirit",
+      "nameZh": "水灵",
       "stage": 3,
       "elements": [
         "Water"
@@ -396,8 +406,8 @@
         "speed": 85
       },
       "trait": {
-        "name": "Soak In",
-        "desc": "After this Jini uses a Water-type skill, all its skills cost 1 less energy.",
+        "name": "浸润",
+        "desc": "使用水系技能后，全技能能耗-1。",
         "params": {}
       },
       "skillList": [
@@ -416,13 +426,14 @@
         "sk-7050210"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/10"
+      "source": "https://roco.world/zh/jini/10"
     },
     {
       "id": "sp-11",
       "no": 11,
-      "name": "Duckjiji",
-      "nameZh": "",
+      "name": "鸭吉吉",
+      "nameEn": "Duckjiji",
+      "nameZh": "鸭吉吉",
       "stage": 3,
       "elements": [
         "Normal"
@@ -436,8 +447,8 @@
         "speed": 105
       },
       "trait": {
-        "name": "Puff Up",
-        "desc": "Equipped skills with an energy cost of 1 are 50% more powerful.",
+        "name": "挺起胸脯",
+        "desc": "携带的能耗为1的技能，威力+50%。",
         "params": {}
       },
       "skillList": [
@@ -456,13 +467,14 @@
         "sk-7020690"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/11"
+      "source": "https://roco.world/zh/jini/11"
     },
     {
       "id": "sp-12",
       "no": 12,
-      "name": "Plank Shell",
-      "nameZh": "",
+      "name": "板板壳",
+      "nameEn": "Plank Shell",
+      "nameZh": "板板壳",
       "stage": 1,
       "elements": [
         "Water"
@@ -476,8 +488,8 @@
         "speed": 45
       },
       "trait": {
-        "name": "Withdraw",
-        "desc": "Equipped defense skills cost 2 less energy.",
+        "name": "缩壳",
+        "desc": "携带的防御技能能耗-2。",
         "params": {}
       },
       "skillList": [
@@ -496,13 +508,14 @@
         "sk-7050280"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/12"
+      "source": "https://roco.world/zh/jini/12"
     },
     {
       "id": "sp-13",
       "no": 13,
-      "name": "Clacker Shell",
-      "nameZh": "",
+      "name": "咔咔壳",
+      "nameEn": "Clacker Shell",
+      "nameZh": "咔咔壳",
       "stage": 2,
       "elements": [
         "Water"
@@ -516,8 +529,8 @@
         "speed": 60
       },
       "trait": {
-        "name": "Withdraw",
-        "desc": "Equipped defense skills cost 2 less energy.",
+        "name": "缩壳",
+        "desc": "携带的防御技能能耗-2。",
         "params": {}
       },
       "skillList": [
@@ -536,13 +549,14 @@
         "sk-7050280"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/13"
+      "source": "https://roco.world/zh/jini/13"
     },
     {
       "id": "sp-14",
       "no": 14,
-      "name": "Bubble Shell",
-      "nameZh": "",
+      "name": "水泡壳",
+      "nameEn": "Bubble Shell",
+      "nameZh": "水泡壳",
       "stage": 3,
       "elements": [
         "Water"
@@ -556,8 +570,8 @@
         "speed": 75
       },
       "trait": {
-        "name": "Withdraw",
-        "desc": "Equipped defense skills cost 2 less energy.",
+        "name": "缩壳",
+        "desc": "携带的防御技能能耗-2。",
         "params": {}
       },
       "skillList": [
@@ -576,13 +590,14 @@
         "sk-7050280"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/14"
+      "source": "https://roco.world/zh/jini/14"
     },
     {
       "id": "sp-15",
       "no": 15,
-      "name": "Pintail Lamb",
-      "nameZh": "",
+      "name": "锥尾羊",
+      "nameEn": "Pintail Lamb",
+      "nameZh": "锥尾羊",
       "stage": 1,
       "elements": [
         "Ghost"
@@ -596,8 +611,8 @@
         "speed": 66
       },
       "trait": {
-        "name": "Staged Crash",
-        "desc": "After this Jini uses a Dark-type skill, the enemy loses 2 energy.",
+        "name": "碰瓷",
+        "desc": "自己使用恶系技能后，敌方失去2能量。",
         "params": {}
       },
       "skillList": [
@@ -616,13 +631,14 @@
         "sk-7170120"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/15"
+      "source": "https://roco.world/zh/jini/15"
     },
     {
       "id": "sp-16",
       "no": 16,
-      "name": "Lilybell Lamb",
-      "nameZh": "",
+      "name": "铃兰羊",
+      "nameEn": "Lilybell Lamb",
+      "nameZh": "铃兰羊",
       "stage": 2,
       "elements": [
         "Ghost"
@@ -636,8 +652,8 @@
         "speed": 88
       },
       "trait": {
-        "name": "Staged Crash",
-        "desc": "After this Jini uses a Dark-type skill, the enemy loses 2 energy.",
+        "name": "碰瓷",
+        "desc": "自己使用恶系技能后，敌方失去2能量。",
         "params": {}
       },
       "skillList": [
@@ -656,13 +672,14 @@
         "sk-7170120"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/16"
+      "source": "https://roco.world/zh/jini/16"
     },
     {
       "id": "sp-17",
       "no": 17,
-      "name": "Bloomshade Antelope",
-      "nameZh": "",
+      "name": "花影羚羊",
+      "nameEn": "Bloomshade Antelope",
+      "nameZh": "花影羚羊",
       "stage": 3,
       "elements": [
         "Ghost",
@@ -677,8 +694,8 @@
         "speed": 110
       },
       "trait": {
-        "name": "Staged Crash",
-        "desc": "After this Jini uses a Dark-type skill, the enemy loses 2 energy.",
+        "name": "碰瓷",
+        "desc": "自己使用恶系技能后，敌方失去2能量。",
         "params": {}
       },
       "skillList": [
@@ -697,13 +714,14 @@
         "sk-7170120"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/17"
+      "source": "https://roco.world/zh/jini/17"
     },
     {
       "id": "sp-18",
       "no": 18,
-      "name": "Snowdown",
-      "nameZh": "",
+      "name": "雪绒鸟",
+      "nameEn": "Snowdown",
+      "nameZh": "雪绒鸟",
       "stage": 1,
       "elements": [
         "Wing"
@@ -717,8 +735,8 @@
         "speed": 69
       },
       "trait": {
-        "name": "Tailwind",
-        "desc": "If this skill is used before the enemy attacks, it is 50% more powerful for this attack.",
+        "name": "顺风",
+        "desc": "若先于敌方攻击，本次技能威力+50%。",
         "params": {}
       },
       "skillList": [
@@ -737,13 +755,14 @@
         "sk-7150110"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/18"
+      "source": "https://roco.world/zh/jini/18"
     },
     {
       "id": "sp-19",
       "no": 19,
-      "name": "Winterplume",
-      "nameZh": "",
+      "name": "冬羽雀",
+      "nameEn": "Winterplume",
+      "nameZh": "冬羽雀",
       "stage": 2,
       "elements": [
         "Wing"
@@ -757,8 +776,8 @@
         "speed": 92
       },
       "trait": {
-        "name": "Tailwind",
-        "desc": "If this skill is used before the enemy attacks, it is 50% more powerful for this attack.",
+        "name": "顺风",
+        "desc": "若先于敌方攻击，本次技能威力+50%。",
         "params": {}
       },
       "skillList": [
@@ -777,13 +796,14 @@
         "sk-7150110"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/19"
+      "source": "https://roco.world/zh/jini/19"
     },
     {
       "id": "sp-20",
       "no": 20,
-      "name": "Galewing",
-      "nameZh": "",
+      "name": "岚鸟",
+      "nameEn": "Galewing",
+      "nameZh": "岚鸟",
       "stage": 3,
       "elements": [
         "Wing"
@@ -797,8 +817,8 @@
         "speed": 115
       },
       "trait": {
-        "name": "Tailwind",
-        "desc": "If this skill is used before the enemy attacks, it is 50% more powerful for this attack.",
+        "name": "顺风",
+        "desc": "若先于敌方攻击，本次技能威力+50%。",
         "params": {}
       },
       "skillList": [
@@ -817,13 +837,14 @@
         "sk-7150110"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/20"
+      "source": "https://roco.world/zh/jini/20"
     },
     {
       "id": "sp-21",
       "no": 21,
-      "name": "Sporeling",
-      "nameZh": "",
+      "name": "小灵菇",
+      "nameEn": "Sporeling",
+      "nameZh": "小灵菇",
       "stage": 1,
       "elements": [
         "Ghost"
@@ -837,8 +858,8 @@
         "speed": 45
       },
       "trait": {
-        "name": "Poison Mushroom",
-        "desc": "At the end of each turn, this Jini steals 1 energy from every enemy Jini on the field.",
+        "name": "毒蘑菇",
+        "desc": "回合结束时，偷取敌方场上所有精灵1能量。",
         "params": {}
       },
       "skillList": [
@@ -860,13 +881,14 @@
         "sk-7030530"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/21"
+      "source": "https://roco.world/zh/jini/21"
     },
     {
       "id": "sp-22",
       "no": 22,
-      "name": "Illuspori",
-      "nameZh": "",
+      "name": "幻灵菇",
+      "nameEn": "Illuspori",
+      "nameZh": "幻灵菇",
       "stage": 2,
       "elements": [
         "Ghost",
@@ -881,8 +903,8 @@
         "speed": 60
       },
       "trait": {
-        "name": "Poison Mushroom",
-        "desc": "At the end of each turn, this Jini steals 1 energy from every enemy Jini on the field.",
+        "name": "毒蘑菇",
+        "desc": "回合结束时，偷取敌方场上所有精灵1能量。",
         "params": {}
       },
       "skillList": [
@@ -904,13 +926,14 @@
         "sk-7030530"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/22"
+      "source": "https://roco.world/zh/jini/22"
     },
     {
       "id": "sp-23",
       "no": 23,
-      "name": "Phantaspori",
-      "nameZh": "",
+      "name": "幻影灵菇",
+      "nameEn": "Phantaspori",
+      "nameZh": "幻影灵菇",
       "stage": 3,
       "elements": [
         "Ghost",
@@ -925,8 +948,8 @@
         "speed": 75
       },
       "trait": {
-        "name": "Poison Mushroom",
-        "desc": "At the end of each turn, this Jini steals 1 energy from every enemy Jini on the field.",
+        "name": "毒蘑菇",
+        "desc": "回合结束时，偷取敌方场上所有精灵1能量。",
         "params": {}
       },
       "skillList": [
@@ -948,13 +971,14 @@
         "sk-7030530"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/23"
+      "source": "https://roco.world/zh/jini/23"
     },
     {
       "id": "sp-24",
       "no": 24,
-      "name": "Stoneskin Skink",
-      "nameZh": "",
+      "name": "石肤蜥",
+      "nameEn": "Stoneskin Skink",
+      "nameZh": "石肤蜥",
       "stage": 1,
       "elements": [
         "Earth"
@@ -968,8 +992,8 @@
         "speed": 57
       },
       "trait": {
-        "name": "Spiked Skin",
-        "desc": "Each time this Jini takes 1 instance of attack damage, it deals 50-power physical damage to the attacking Jini.",
+        "name": "刺肤",
+        "desc": "每受到1次攻击伤害，对攻击自己的精灵造成50威力物理伤害。",
         "params": {}
       },
       "skillList": [
@@ -990,13 +1014,14 @@
         "sk-7080220"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/24"
+      "source": "https://roco.world/zh/jini/24"
     },
     {
       "id": "sp-25",
       "no": 25,
-      "name": "Stonespike Skink",
-      "nameZh": "",
+      "name": "石刺蜥",
+      "nameEn": "Stonespike Skink",
+      "nameZh": "石刺蜥",
       "stage": 2,
       "elements": [
         "Earth"
@@ -1010,8 +1035,8 @@
         "speed": 76
       },
       "trait": {
-        "name": "Spiked Skin",
-        "desc": "Each time this Jini takes 1 instance of attack damage, it deals 50-power physical damage to the attacking Jini.",
+        "name": "刺肤",
+        "desc": "每受到1次攻击伤害，对攻击自己的精灵造成50威力物理伤害。",
         "params": {}
       },
       "skillList": [
@@ -1032,13 +1057,14 @@
         "sk-7080220"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/25"
+      "source": "https://roco.world/zh/jini/25"
     },
     {
       "id": "sp-26",
       "no": 26,
-      "name": "Stonecrown Basilisk",
-      "nameZh": "",
+      "name": "石冠王蜥",
+      "nameEn": "Stonecrown Basilisk",
+      "nameZh": "石冠王蜥",
       "stage": 3,
       "elements": [
         "Earth"
@@ -1052,8 +1078,8 @@
         "speed": 95
       },
       "trait": {
-        "name": "Spiked Skin",
-        "desc": "Each time this Jini takes 1 instance of attack damage, it deals 50-power physical damage to the attacking Jini.",
+        "name": "刺肤",
+        "desc": "每受到1次攻击伤害，对攻击自己的精灵造成50威力物理伤害。",
         "params": {}
       },
       "skillList": [
@@ -1074,13 +1100,14 @@
         "sk-7080220"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/26"
+      "source": "https://roco.world/zh/jini/26"
     },
     {
       "id": "sp-27",
       "no": 27,
-      "name": "Busystone",
-      "nameZh": "",
+      "name": "布是石",
+      "nameEn": "Busystone",
+      "nameZh": "布是石",
       "stage": 1,
       "elements": [
         "Earth"
@@ -1094,8 +1121,8 @@
         "speed": 42
       },
       "trait": {
-        "name": "Earth Vein",
-        "desc": "This Jini starts with 0 energy. Before it enters the field, each time an allied Jini uses an Earth-type skill, this Jini restores 3 energy.",
+        "name": "地脉",
+        "desc": "初始能量为0，入场前己方精灵每放1次地系技能，回复3能量。",
         "params": {}
       },
       "skillList": [
@@ -1116,13 +1143,14 @@
         "sk-7080410"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/27"
+      "source": "https://roco.world/zh/jini/27"
     },
     {
       "id": "sp-28",
       "no": 28,
-      "name": "Busyrock",
-      "nameZh": "",
+      "name": "布是岩",
+      "nameEn": "Busyrock",
+      "nameZh": "布是岩",
       "stage": 2,
       "elements": [
         "Earth"
@@ -1136,8 +1164,8 @@
         "speed": 56
       },
       "trait": {
-        "name": "Earth Vein",
-        "desc": "This Jini starts with 0 energy. Before it enters the field, each time an allied Jini uses an Earth-type skill, this Jini restores 3 energy.",
+        "name": "地脉",
+        "desc": "初始能量为0，入场前己方精灵每放1次地系技能，回复3能量。",
         "params": {}
       },
       "skillList": [
@@ -1158,13 +1186,14 @@
         "sk-7080410"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/28"
+      "source": "https://roco.world/zh/jini/28"
     },
     {
       "id": "sp-29",
       "no": 29,
-      "name": "Bucklerock",
-      "nameZh": "",
+      "name": "布克棱岩",
+      "nameEn": "Bucklerock",
+      "nameZh": "布克棱岩",
       "stage": 3,
       "elements": [
         "Earth"
@@ -1178,8 +1207,8 @@
         "speed": 70
       },
       "trait": {
-        "name": "Earth Vein",
-        "desc": "This Jini starts with 0 energy. Before it enters the field, each time an allied Jini uses an Earth-type skill, this Jini restores 3 energy.",
+        "name": "地脉",
+        "desc": "初始能量为0，入场前己方精灵每放1次地系技能，回复3能量。",
         "params": {}
       },
       "skillList": [
@@ -1200,13 +1229,14 @@
         "sk-7080410"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/29"
+      "source": "https://roco.world/zh/jini/29"
     },
     {
       "id": "sp-30",
       "no": 30,
-      "name": "Demon Ding",
-      "nameZh": "",
+      "name": "恶魔叮",
+      "nameEn": "Demon Ding",
+      "nameZh": "恶魔叮",
       "stage": 2,
       "elements": [
         "Dark",
@@ -1221,8 +1251,8 @@
         "speed": 84
       },
       "trait": {
-        "name": "Craving",
-        "desc": "When this Jini enters the field, it gains 50% <desc_id=1029></>.",
+        "name": "渴求",
+        "desc": "入场时获得50%<desc_id=1029>吸血</>。",
         "params": {}
       },
       "skillList": [
@@ -1241,13 +1271,14 @@
         "sk-7150110"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/30"
+      "source": "https://roco.world/zh/jini/30"
     },
     {
       "id": "sp-31",
       "no": 31,
-      "name": "Dingding Demon",
-      "nameZh": "",
+      "name": "叮叮恶魔",
+      "nameEn": "Dingding Demon",
+      "nameZh": "叮叮恶魔",
       "stage": 3,
       "elements": [
         "Dark",
@@ -1262,8 +1293,8 @@
         "speed": 105
       },
       "trait": {
-        "name": "Craving",
-        "desc": "When this Jini enters the field, it gains 50% <desc_id=1029></>.",
+        "name": "渴求",
+        "desc": "入场时获得50%<desc_id=1029>吸血</>。",
         "params": {}
       },
       "skillList": [
@@ -1282,13 +1313,14 @@
         "sk-7150110"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/31"
+      "source": "https://roco.world/zh/jini/31"
     },
     {
       "id": "sp-32",
       "no": 32,
-      "name": "Fluffle",
-      "nameZh": "",
+      "name": "毛毛",
+      "nameEn": "Fluffle",
+      "nameZh": "毛毛",
       "stage": 1,
       "elements": [
         "Bug",
@@ -1303,8 +1335,8 @@
         "speed": 60
       },
       "trait": {
-        "name": "Cocooning",
-        "desc": "When this Jini would take lethal damage, it gains 1 stack of <desc_id=1006></> and becomes immune to that damage. (Triggers up to 2 times.)",
+        "name": "化茧",
+        "desc": "受到致命伤害时，获得1层<desc_id=1006>萌化</>，并免疫此次伤害。（最多触发2次）",
         "params": {}
       },
       "skillList": [
@@ -1325,13 +1357,14 @@
         "sk-7020960"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/32"
+      "source": "https://roco.world/zh/jini/32"
     },
     {
       "id": "sp-33",
       "no": 33,
-      "name": "Crawlie",
-      "nameZh": "",
+      "name": "爬爬",
+      "nameEn": "Crawlie",
+      "nameZh": "爬爬",
       "stage": 2,
       "elements": [
         "Bug",
@@ -1346,8 +1379,8 @@
         "speed": 80
       },
       "trait": {
-        "name": "Cocooning",
-        "desc": "When this Jini would take lethal damage, it gains 1 stack of <desc_id=1006></> and becomes immune to that damage. (Triggers up to 2 times.)",
+        "name": "化茧",
+        "desc": "受到致命伤害时，获得1层<desc_id=1006>萌化</>，并免疫此次伤害。（最多触发2次）",
         "params": {}
       },
       "skillList": [
@@ -1368,13 +1401,14 @@
         "sk-7020960"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/33"
+      "source": "https://roco.world/zh/jini/33"
     },
     {
       "id": "sp-34",
       "no": 34,
-      "name": "Morphwing",
-      "nameZh": "",
+      "name": "化蝶",
+      "nameEn": "Morphwing",
+      "nameZh": "化蝶",
       "stage": 3,
       "elements": [
         "Bug",
@@ -1389,8 +1423,8 @@
         "speed": 100
       },
       "trait": {
-        "name": "Cocooning",
-        "desc": "When this Jini would take lethal damage, it gains 1 stack of <desc_id=1006></> and becomes immune to that damage. (Triggers up to 2 times.)",
+        "name": "化茧",
+        "desc": "受到致命伤害时，获得1层<desc_id=1006>萌化</>，并免疫此次伤害。（最多触发2次）",
         "params": {}
       },
       "skillList": [
@@ -1411,13 +1445,14 @@
         "sk-7020960"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/34"
+      "source": "https://roco.world/zh/jini/34"
     },
     {
       "id": "sp-35",
       "no": 35,
-      "name": "Shadetree",
-      "nameZh": "",
+      "name": "幽影树",
+      "nameEn": "Shadetree",
+      "nameZh": "幽影树",
       "stage": 3,
       "elements": [
         "Ghost",
@@ -1432,8 +1467,8 @@
         "speed": 80
       },
       "trait": {
-        "name": "Petty Theft",
-        "desc": "When this Jini enters the field, it steals 2 energy from every enemy Jini on the field.",
+        "name": "小偷小摸",
+        "desc": "入场时偷取敌方场上所有精灵2能量。",
         "params": {}
       },
       "skillList": [
@@ -1454,13 +1489,14 @@
         "sk-7021060"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/35"
+      "source": "https://roco.world/zh/jini/35"
     },
     {
       "id": "sp-36",
       "no": 36,
-      "name": "Mousotter",
-      "nameZh": "",
+      "name": "小鼠獭",
+      "nameEn": "Mousotter",
+      "nameZh": "小鼠獭",
       "stage": 1,
       "elements": [
         "Normal",
@@ -1475,8 +1511,8 @@
         "speed": 48
       },
       "trait": {
-        "name": "Conservative",
-        "desc": "If this Jini's total skill energy cost is less than 4, it gains +80% to both defenses.",
+        "name": "保守派",
+        "desc": "总技能能耗小于4时，自己获得双防+80%。",
         "params": {}
       },
       "skillList": [
@@ -1497,13 +1533,14 @@
         "sk-7050280"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/36"
+      "source": "https://roco.world/zh/jini/36"
     },
     {
       "id": "sp-37",
       "no": 37,
-      "name": "Swallowtail Otter",
-      "nameZh": "",
+      "name": "燕尾獭",
+      "nameEn": "Swallowtail Otter",
+      "nameZh": "燕尾獭",
       "stage": 2,
       "elements": [
         "Normal",
@@ -1518,8 +1555,8 @@
         "speed": 64
       },
       "trait": {
-        "name": "Conservative",
-        "desc": "If this Jini's total skill energy cost is less than 4, it gains +80% to both defenses.",
+        "name": "保守派",
+        "desc": "总技能能耗小于4时，自己获得双防+80%。",
         "params": {}
       },
       "skillList": [
@@ -1540,13 +1577,14 @@
         "sk-7050280"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/37"
+      "source": "https://roco.world/zh/jini/37"
     },
     {
       "id": "sp-38",
       "no": 38,
-      "name": "Curlwhisker Giant Otter",
-      "nameZh": "",
+      "name": "卷胡巨獭",
+      "nameEn": "Curlwhisker Giant Otter",
+      "nameZh": "卷胡巨獭",
       "stage": 3,
       "elements": [
         "Normal",
@@ -1561,8 +1599,8 @@
         "speed": 80
       },
       "trait": {
-        "name": "Conservative",
-        "desc": "If this Jini's total skill energy cost is less than 4, it gains +80% to both defenses.",
+        "name": "保守派",
+        "desc": "总技能能耗小于4时，自己获得双防+80%。",
         "params": {}
       },
       "skillList": [
@@ -1583,13 +1621,14 @@
         "sk-7050280"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/38"
+      "source": "https://roco.world/zh/jini/38"
     },
     {
       "id": "sp-39",
       "no": 39,
-      "name": "Orebug",
-      "nameZh": "",
+      "name": "矿晶虫",
+      "nameEn": "Orebug",
+      "nameZh": "矿晶虫",
       "stage": 2,
       "elements": [
         "Light",
@@ -1604,8 +1643,8 @@
         "speed": 52
       },
       "trait": {
-        "name": "Polarize",
-        "desc": "This Jini takes 40% less attack damage from types matching its equipped skills.",
+        "name": "偏振",
+        "desc": "受到自己携带技能系别的攻击伤害-40%。",
         "params": {}
       },
       "skillList": [
@@ -1625,13 +1664,14 @@
         "sk-7080130"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/39"
+      "source": "https://roco.world/zh/jini/39"
     },
     {
       "id": "sp-40",
       "no": 40,
-      "name": "Crystalsnail",
-      "nameZh": "",
+      "name": "晶石蜗",
+      "nameEn": "Crystalsnail",
+      "nameZh": "晶石蜗",
       "stage": 3,
       "elements": [
         "Light",
@@ -1646,8 +1686,8 @@
         "speed": 65
       },
       "trait": {
-        "name": "Polarize",
-        "desc": "This Jini takes 40% less attack damage from types matching its equipped skills.",
+        "name": "偏振",
+        "desc": "受到自己携带技能系别的攻击伤害-40%。",
         "params": {}
       },
       "skillList": [
@@ -1667,7 +1707,7 @@
         "sk-7080130"
       ],
       "leaderAllowed": true,
-      "source": "https://roco.world/jini/40"
+      "source": "https://roco.world/zh/jini/40"
     }
   ]
 }

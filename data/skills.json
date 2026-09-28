@@ -1,11 +1,12 @@
 {
   "$schemaVersion": "0.1",
   "version": "0.1.0",
-  "updatedAt": "2026-09-27",
+  "updatedAt": "2026-09-28",
   "skills": [
     {
       "id": "sk-7020370",
-      "skillName": "Savage Slam",
+      "skillName": "猛烈撞击",
+      "nameEn": "Savage Slam",
       "element": "Normal",
       "category": "Physical",
       "actionType": "Attack",
@@ -21,13 +22,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/1"
+      "source": "https://roco.world/zh/jini/1"
     },
     {
       "id": "sk-7020620",
-      "skillName": "Power Boost",
+      "skillName": "力量增效",
+      "nameEn": "Power Boost",
       "element": "Normal",
       "category": "Status",
       "actionType": "Status",
@@ -51,13 +54,15 @@
           "value": 100
         }
       ],
-      "rawText": "This Jini gains +100% Physical ATK.",
+      "rawText": "自己获得物攻+100%。",
+      "descriptionEn": "This Jini gains +100% Physical ATK.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/1"
+      "source": "https://roco.world/zh/jini/1"
     },
     {
       "id": "sk-7020630",
-      "skillName": "Magic Boost",
+      "skillName": "魔法增效",
+      "nameEn": "Magic Boost",
       "element": "Normal",
       "category": "Status",
       "actionType": "Status",
@@ -81,13 +86,15 @@
           "value": 70
         }
       ],
-      "rawText": "This Jini gains +70% Magic ATK.",
+      "rawText": "自己获得魔攻+70%。",
+      "descriptionEn": "This Jini gains +70% Magic ATK.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/1"
+      "source": "https://roco.world/zh/jini/1"
     },
     {
       "id": "sk-7020780",
-      "skillName": "Defend",
+      "skillName": "防御",
+      "nameEn": "Defend",
       "element": "Normal",
       "category": "Defense",
       "actionType": "Defense",
@@ -103,13 +110,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Reduces damage by 70%. <desc_id=1016></>.",
+      "rawText": "减伤70%，<desc_id=1016>应对攻击</>。",
+      "descriptionEn": "Reduces damage by 70%. <desc_id=1016></>.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/1"
+      "source": "https://roco.world/zh/jini/1"
     },
     {
       "id": "sk-7030440",
-      "skillName": "Thorn Spike",
+      "skillName": "棘突",
+      "nameEn": "Thorn Spike",
       "element": "Grass",
       "category": "Magic",
       "actionType": "Attack",
@@ -125,13 +134,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成魔法伤害。",
+      "descriptionEn": "Deals magic damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/1"
+      "source": "https://roco.world/zh/jini/1"
     },
     {
       "id": "sk-7040370",
-      "skillName": "Flame Arrow",
+      "skillName": "火焰箭",
+      "nameEn": "Flame Arrow",
       "element": "Fire",
       "category": "Physical",
       "actionType": "Attack",
@@ -147,13 +158,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/1"
+      "source": "https://roco.world/zh/jini/1"
     },
     {
       "id": "sk-7050360",
-      "skillName": "Tidal Surge",
+      "skillName": "潮涌",
+      "nameEn": "Tidal Surge",
       "element": "Water",
       "category": "Physical",
       "actionType": "Attack",
@@ -169,13 +182,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/1"
+      "source": "https://roco.world/zh/jini/1"
     },
     {
       "id": "sk-7060090",
-      "skillName": "Flash",
+      "skillName": "闪光",
+      "nameEn": "Flash",
       "element": "Light",
       "category": "Magic",
       "actionType": "Attack",
@@ -191,13 +206,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成魔法伤害。",
+      "descriptionEn": "Deals magic damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/1"
+      "source": "https://roco.world/zh/jini/1"
     },
     {
       "id": "sk-7060100",
-      "skillName": "Flash Impact",
+      "skillName": "闪光冲击",
+      "nameEn": "Flash Impact",
       "element": "Light",
       "category": "Physical",
       "actionType": "Attack",
@@ -213,13 +230,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/1"
+      "source": "https://roco.world/zh/jini/1"
     },
     {
       "id": "sk-7060120",
-      "skillName": "Overexposure",
+      "skillName": "过曝",
+      "nameEn": "Overexposure",
       "element": "Light",
       "category": "Magic",
       "actionType": "Attack",
@@ -235,13 +254,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage. For each non-matching-type skill used, this skill permanently gains 30 power.",
+      "rawText": "造成魔伤，每使用过1个其他系别技能，本技能威力永久+30。",
+      "descriptionEn": "Deals magic damage. For each non-matching-type skill used, this skill permanently gains 30 power.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/1"
+      "source": "https://roco.world/zh/jini/1"
     },
     {
       "id": "sk-7060130",
-      "skillName": "Refraction",
+      "skillName": "折射",
+      "nameEn": "Refraction",
       "element": "Light",
       "category": "Magic",
       "actionType": "Attack",
@@ -257,13 +278,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage. Equipped skills of other types give this skill different effects.",
+      "rawText": "造成魔伤，携带其他系别技能会给本技能带来不同效果。",
+      "descriptionEn": "Deals magic damage. Equipped skills of other types give this skill different effects.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/1"
+      "source": "https://roco.world/zh/jini/1"
     },
     {
       "id": "sk-7060140",
-      "skillName": "Diffuse Reflection",
+      "skillName": "漫反射",
+      "nameEn": "Diffuse Reflection",
       "element": "Light",
       "category": "Status",
       "actionType": "Status",
@@ -279,13 +302,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Up to 1 skill of each type gains +35 power.",
+      "rawText": "每种系别中的至多1个技能，威力+35。",
+      "descriptionEn": "Up to 1 skill of each type gains +35 power.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/1"
+      "source": "https://roco.world/zh/jini/1"
     },
     {
       "id": "sk-7060160",
-      "skillName": "Light Orb",
+      "skillName": "光球",
+      "nameEn": "Light Orb",
       "element": "Light",
       "category": "Magic",
       "actionType": "Attack",
@@ -301,13 +326,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成魔法伤害。",
+      "descriptionEn": "Deals magic damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/1"
+      "source": "https://roco.world/zh/jini/1"
     },
     {
       "id": "sk-7060180",
-      "skillName": "Light Blade",
+      "skillName": "光刃",
+      "nameEn": "Light Blade",
       "element": "Light",
       "category": "Physical",
       "actionType": "Attack",
@@ -323,13 +350,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/1"
+      "source": "https://roco.world/zh/jini/1"
     },
     {
       "id": "sk-7060240",
-      "skillName": "Clear Skies",
+      "skillName": "放晴",
+      "nameEn": "Clear Skies",
       "element": "Light",
       "category": "Status",
       "actionType": "Status",
@@ -345,13 +374,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Light-type skills permanently gain +50% power. <desc_id=1017></>: instead, they permanently gain +100% power.",
+      "rawText": "光系技能威力永久+50%，<desc_id=1017>应对防御</>：改为永久+100%。",
+      "descriptionEn": "Light-type skills permanently gain +50% power. <desc_id=1017></>: instead, they permanently gain +100% power.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/1"
+      "source": "https://roco.world/zh/jini/1"
     },
     {
       "id": "sk-7080300",
-      "skillName": "Scorching Sand",
+      "skillName": "热砂",
+      "nameEn": "Scorching Sand",
       "element": "Earth",
       "category": "Magic",
       "actionType": "Attack",
@@ -367,13 +398,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成魔法伤害。",
+      "descriptionEn": "Deals magic damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/1"
+      "source": "https://roco.world/zh/jini/1"
     },
     {
       "id": "sk-7090250",
-      "skillName": "Ice Claw",
+      "skillName": "冰爪",
+      "nameEn": "Ice Claw",
       "element": "Ice",
       "category": "Physical",
       "actionType": "Attack",
@@ -389,13 +422,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/1"
+      "source": "https://roco.world/zh/jini/1"
     },
     {
       "id": "sk-7110200",
-      "skillName": "Superconduct",
+      "skillName": "超导",
+      "nameEn": "Superconduct",
       "element": "Electric",
       "category": "Magic",
       "actionType": "Attack",
@@ -411,13 +446,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage. <desc_id=1010></>: this skill costs 2 less energy.",
+      "rawText": "造成魔伤，<desc_id=1010>迸发</>：本技能能耗-2。",
+      "descriptionEn": "Deals magic damage. <desc_id=1010></>: this skill costs 2 less energy.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/1"
+      "source": "https://roco.world/zh/jini/1"
     },
     {
       "id": "sk-7190210",
-      "skillName": "Psychic Surge",
+      "skillName": "念力膨胀",
+      "nameEn": "Psychic Surge",
       "element": "Illusion",
       "category": "Physical",
       "actionType": "Attack",
@@ -433,13 +470,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/1"
+      "source": "https://roco.world/zh/jini/1"
     },
     {
       "id": "sk-7020360",
-      "skillName": "Scratch",
+      "skillName": "抓挠",
+      "nameEn": "Scratch",
       "element": "Normal",
       "category": "Physical",
       "actionType": "Attack",
@@ -455,13 +494,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. This Jini restores 1 energy.",
+      "rawText": "造成物伤，自己回复1能量。",
+      "descriptionEn": "Deals physical damage. This Jini restores 1 energy.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/2"
+      "source": "https://roco.world/zh/jini/2"
     },
     {
       "id": "sk-7020390",
-      "skillName": "Tail Sweep",
+      "skillName": "扫尾",
+      "nameEn": "Tail Sweep",
       "element": "Normal",
       "category": "Physical",
       "actionType": "Attack",
@@ -477,13 +518,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/2"
+      "source": "https://roco.world/zh/jini/2"
     },
     {
       "id": "sk-7020640",
-      "skillName": "Rest and Recover",
+      "skillName": "休息回复",
+      "nameEn": "Rest and Recover",
       "element": "Normal",
       "category": "Status",
       "actionType": "Status",
@@ -499,13 +542,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "This Jini restores 30% Health.",
+      "rawText": "自己回复30%生命。",
+      "descriptionEn": "This Jini restores 30% Health.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/2"
+      "source": "https://roco.world/zh/jini/2"
     },
     {
       "id": "sk-7030180",
-      "skillName": "Cactus Jab",
+      "skillName": "仙人掌刺击",
+      "nameEn": "Cactus Jab",
       "element": "Grass",
       "category": "Physical",
       "actionType": "Attack",
@@ -521,13 +566,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/2"
+      "source": "https://roco.world/zh/jini/2"
     },
     {
       "id": "sk-7030200",
-      "skillName": "Vine Strangle",
+      "skillName": "藤绞",
+      "nameEn": "Vine Strangle",
       "element": "Grass",
       "category": "Physical",
       "actionType": "Attack",
@@ -543,13 +590,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. This Jini restores 5 energy.",
+      "rawText": "造成物伤，自己回复5能量。",
+      "descriptionEn": "Deals physical damage. This Jini restores 5 energy.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/2"
+      "source": "https://roco.world/zh/jini/2"
     },
     {
       "id": "sk-7030210",
-      "skillName": "Solar Focus",
+      "skillName": "光能聚集",
+      "nameEn": "Solar Focus",
       "element": "Grass",
       "category": "Magic",
       "actionType": "Attack",
@@ -565,13 +614,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage. Each time this Jini uses another Grass-type skill, this skill permanently gains +60 power.",
+      "rawText": "造成魔伤，每次使用其他草系技能后，本技能威力永久+60。",
+      "descriptionEn": "Deals magic damage. Each time this Jini uses another Grass-type skill, this skill permanently gains +60 power.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/2"
+      "source": "https://roco.world/zh/jini/2"
     },
     {
       "id": "sk-7030220",
-      "skillName": "Overgrowth",
+      "skillName": "徒长",
+      "nameEn": "Overgrowth",
       "element": "Grass",
       "category": "Status",
       "actionType": "Status",
@@ -587,13 +638,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "This Jini restores 10 energy.",
+      "rawText": "自己回复10能量。",
+      "descriptionEn": "This Jini restores 10 energy.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/2"
+      "source": "https://roco.world/zh/jini/2"
     },
     {
       "id": "sk-7030230",
-      "skillName": "Bloom",
+      "skillName": "盛开",
+      "nameEn": "Bloom",
       "element": "Grass",
       "category": "Status",
       "actionType": "Status",
@@ -609,13 +662,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "This Jini's skills gain +30 power. <desc_id=1017></>: they gain +60 power instead.",
+      "rawText": "自己获得全技能威力+30，<desc_id=1017>应对防御</>：改为威力+60。",
+      "descriptionEn": "This Jini's skills gain +30 power. <desc_id=1017></>: they gain +60 power instead.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/2"
+      "source": "https://roco.world/zh/jini/2"
     },
     {
       "id": "sk-7030260",
-      "skillName": "Spore",
+      "skillName": "孢子",
+      "nameEn": "Spore",
       "element": "Grass",
       "category": "Status",
       "actionType": "Status",
@@ -631,13 +686,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "The enemy gains 3 stacks of <desc_id=1008></>.",
+      "rawText": "敌方获得3层<desc_id=1008>寄生</>。",
+      "descriptionEn": "The enemy gains 3 stacks of <desc_id=1008></>.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/2"
+      "source": "https://roco.world/zh/jini/2"
     },
     {
       "id": "sk-7030280",
-      "skillName": "Bounty",
+      "skillName": "丰饶",
+      "nameEn": "Bounty",
       "element": "Grass",
       "category": "Status",
       "actionType": "Status",
@@ -653,13 +710,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "This Jini's Physical ATK and Magic ATK increase by 140%.",
+      "rawText": "自己获得物攻和魔攻+140%。",
+      "descriptionEn": "This Jini's Physical ATK and Magic ATK increase by 140%.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/2"
+      "source": "https://roco.world/zh/jini/2"
     },
     {
       "id": "sk-7030300",
-      "skillName": "Photosynthesis",
+      "skillName": "光合作用",
+      "nameEn": "Photosynthesis",
       "element": "Grass",
       "category": "Status",
       "actionType": "Status",
@@ -675,13 +734,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "This Jini gains 1 stack of <desc_id=1021></>.",
+      "rawText": "自己获得1层<desc_id=1021>光合印记</>。",
+      "descriptionEn": "This Jini gains 1 stack of <desc_id=1021></>.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/2"
+      "source": "https://roco.world/zh/jini/2"
     },
     {
       "id": "sk-7030320",
-      "skillName": "Enzyme Tuning",
+      "skillName": "酶浓度调整",
+      "nameEn": "Enzyme Tuning",
       "element": "Grass",
       "category": "Defense",
       "actionType": "Defense",
@@ -697,13 +758,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Reduces damage taken by 80%. <desc_id=1016></>: this Jini restores 20% Health.",
+      "rawText": "减伤80%，<desc_id=1016>应对攻击</>：自己回复20%生命。",
+      "descriptionEn": "Reduces damage taken by 80%. <desc_id=1016></>: this Jini restores 20% Health.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/2"
+      "source": "https://roco.world/zh/jini/2"
     },
     {
       "id": "sk-7030460",
-      "skillName": "Chlorophyll Beam",
+      "skillName": "叶绿光束",
+      "nameEn": "Chlorophyll Beam",
       "element": "Grass",
       "category": "Magic",
       "actionType": "Attack",
@@ -719,13 +782,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成魔法伤害。",
+      "descriptionEn": "Deals magic damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/2"
+      "source": "https://roco.world/zh/jini/2"
     },
     {
       "id": "sk-7030480",
-      "skillName": "Phloem Surge",
+      "skillName": "筛管奔流",
+      "nameEn": "Phloem Surge",
       "element": "Grass",
       "category": "Physical",
       "actionType": "Attack",
@@ -741,13 +806,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. If this Jini has more than 80% Health, this skill gains +75 power for this use.",
+      "rawText": "造成物伤，自己生命大于80%时，本次技能威力+75。",
+      "descriptionEn": "Deals physical damage. If this Jini has more than 80% Health, this skill gains +75 power for this use.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/2"
+      "source": "https://roco.world/zh/jini/2"
     },
     {
       "id": "sk-7021100",
-      "skillName": "Sunbathe",
+      "skillName": "晒太阳",
+      "nameEn": "Sunbathe",
       "element": "Normal",
       "category": "Status",
       "actionType": "Status",
@@ -763,13 +830,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Dispels all <desc_id=1012></> from the enemy.",
+      "rawText": "驱散敌方所有<desc_id=1012>增益</>。",
+      "descriptionEn": "Dispels all <desc_id=1012></> from the enemy.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/5"
+      "source": "https://roco.world/zh/jini/5"
     },
     {
       "id": "sk-7040170",
-      "skillName": "Ember",
+      "skillName": "火苗",
+      "nameEn": "Ember",
       "element": "Fire",
       "category": "Physical",
       "actionType": "Attack",
@@ -785,13 +854,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. This Jini restores 1 energy.",
+      "rawText": "造成物伤，自己回复1能量。",
+      "descriptionEn": "Deals physical damage. This Jini restores 1 energy.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/5"
+      "source": "https://roco.world/zh/jini/5"
     },
     {
       "id": "sk-7040180",
-      "skillName": "Flashburn",
+      "skillName": "闪燃",
+      "nameEn": "Flashburn",
       "element": "Fire",
       "category": "Physical",
       "actionType": "Attack",
@@ -807,13 +878,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. <desc_id=1015></>: For this use, this skill has 4× power.",
+      "rawText": "造成物伤，<desc_id=1015>应对状态</>：本次技能威力变为4倍。",
+      "descriptionEn": "Deals physical damage. <desc_id=1015></>: For this use, this skill has 4× power.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/5"
+      "source": "https://roco.world/zh/jini/5"
     },
     {
       "id": "sk-7040200",
-      "skillName": "Fire Breath",
+      "skillName": "吹火",
+      "nameEn": "Fire Breath",
       "element": "Fire",
       "category": "Physical",
       "actionType": "Attack",
@@ -829,13 +902,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. After each use, this skill permanently gains 20 power.",
+      "rawText": "造成物伤，每次使用后，本技能威力永久+20。",
+      "descriptionEn": "Deals physical damage. After each use, this skill permanently gains 20 power.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/5"
+      "source": "https://roco.world/zh/jini/5"
     },
     {
       "id": "sk-7040220",
-      "skillName": "Sustained Heat",
+      "skillName": "持续高温",
+      "nameEn": "Sustained Heat",
       "element": "Fire",
       "category": "Magic",
       "actionType": "Attack",
@@ -851,13 +926,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage. <desc_id=1015></>: This Jini's next attack skill has 2× power.",
+      "rawText": "造成魔伤，<desc_id=1015>应对状态</>：下次攻击技能威力翻倍。",
+      "descriptionEn": "Deals magic damage. <desc_id=1015></>: This Jini's next attack skill has 2× power.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/5"
+      "source": "https://roco.world/zh/jini/5"
     },
     {
       "id": "sk-7040250",
-      "skillName": "Wildfire",
+      "skillName": "山火",
+      "nameEn": "Wildfire",
       "element": "Fire",
       "category": "Physical",
       "actionType": "Attack",
@@ -873,13 +950,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. Each time this Jini uses another Fire-type skill, this skill's power is permanently doubled.",
+      "rawText": "造成物伤，每使用1次其他火系技能，本技能威力永久翻倍。",
+      "descriptionEn": "Deals physical damage. Each time this Jini uses another Fire-type skill, this skill's power is permanently doubled.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/5"
+      "source": "https://roco.world/zh/jini/5"
     },
     {
       "id": "sk-7040270",
-      "skillName": "Warm-Up",
+      "skillName": "热身",
+      "nameEn": "Warm-Up",
       "element": "Fire",
       "category": "Status",
       "actionType": "Status",
@@ -895,13 +974,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "The next time this Jini attacks, its skill has 2× power. <desc_id=1017></>: Its power becomes 4× instead.",
+      "rawText": "下一次攻击时，技能威力翻倍，<desc_id=1017>应对防御</>：改为威力变为4倍。",
+      "descriptionEn": "The next time this Jini attacks, its skill has 2× power. <desc_id=1017></>: Its power becomes 4× instead.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/5"
+      "source": "https://roco.world/zh/jini/5"
     },
     {
       "id": "sk-7040320",
-      "skillName": "Firecloud Chariot",
+      "skillName": "火云车",
+      "nameEn": "Firecloud Chariot",
       "element": "Fire",
       "category": "Physical",
       "actionType": "Attack",
@@ -917,13 +998,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/5"
+      "source": "https://roco.world/zh/jini/5"
     },
     {
       "id": "sk-7040390",
-      "skillName": "Flame Cutter",
+      "skillName": "火焰切割",
+      "nameEn": "Flame Cutter",
       "element": "Fire",
       "category": "Physical",
       "actionType": "Attack",
@@ -939,13 +1022,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/5"
+      "source": "https://roco.world/zh/jini/5"
     },
     {
       "id": "sk-7040440",
-      "skillName": "Furyfire",
+      "skillName": "怒火",
+      "nameEn": "Furyfire",
       "element": "Fire",
       "category": "Status",
       "actionType": "Status",
@@ -969,13 +1054,15 @@
           "value": 120
         }
       ],
-      "rawText": "This Jini gains +120% to both attacks and loses 40% to both defenses.",
+      "rawText": "自己获得双攻+120%和双防-40%。",
+      "descriptionEn": "This Jini gains +120% to both attacks and loses 40% to both defenses.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/5"
+      "source": "https://roco.world/zh/jini/5"
     },
     {
       "id": "sk-7020880",
-      "skillName": "Slap",
+      "skillName": "拍击",
+      "nameEn": "Slap",
       "element": "Normal",
       "category": "Magic",
       "actionType": "Attack",
@@ -991,13 +1078,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成魔法伤害。",
+      "descriptionEn": "Deals magic damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/8"
+      "source": "https://roco.world/zh/jini/8"
     },
     {
       "id": "sk-7050160",
-      "skillName": "Water Flick",
+      "skillName": "甩水",
+      "nameEn": "Water Flick",
       "element": "Water",
       "category": "Magic",
       "actionType": "Attack",
@@ -1013,13 +1102,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage. This Jini restores 1 energy.",
+      "rawText": "造成魔伤，自己回复1能量。",
+      "descriptionEn": "Deals magic damage. This Jini restores 1 energy.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/8"
+      "source": "https://roco.world/zh/jini/8"
     },
     {
       "id": "sk-7050180",
-      "skillName": "Bubble",
+      "skillName": "气泡",
+      "nameEn": "Bubble",
       "element": "Water",
       "category": "Magic",
       "actionType": "Attack",
@@ -1035,13 +1126,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成魔法伤害。",
+      "descriptionEn": "Deals magic damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/8"
+      "source": "https://roco.world/zh/jini/8"
     },
     {
       "id": "sk-7050190",
-      "skillName": "Water Cannon",
+      "skillName": "水炮",
+      "nameEn": "Water Cannon",
       "element": "Water",
       "category": "Magic",
       "actionType": "Attack",
@@ -1057,13 +1150,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage. After each use, this skill permanently costs 1 less energy.",
+      "rawText": "造成魔伤，每次使用后，本技能能耗永久-1。",
+      "descriptionEn": "Deals magic damage. After each use, this skill permanently costs 1 less energy.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/8"
+      "source": "https://roco.world/zh/jini/8"
     },
     {
       "id": "sk-7050210",
-      "skillName": "Sky Flood",
+      "skillName": "天洪",
+      "nameEn": "Sky Flood",
       "element": "Water",
       "category": "Magic",
       "actionType": "Attack",
@@ -1079,13 +1174,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage. <desc_id=1015></>: This skill permanently costs 6 less energy.",
+      "rawText": "造成魔伤，<desc_id=1015>应对状态</>：本技能能耗永久-6。",
+      "descriptionEn": "Deals magic damage. <desc_id=1015></>: This skill permanently costs 6 less energy.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/8"
+      "source": "https://roco.world/zh/jini/8"
     },
     {
       "id": "sk-7050250",
-      "skillName": "Rainfall",
+      "skillName": "落雨",
+      "nameEn": "Rainfall",
       "element": "Water",
       "category": "Status",
       "actionType": "Status",
@@ -1101,13 +1198,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Changes the weather to <desc_id=3008></> for 8 turns.",
+      "rawText": "将天气改为<desc_id=3008>雨天</>，持续8回合。",
+      "descriptionEn": "Changes the weather to <desc_id=3008></> for 8 turns.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/8"
+      "source": "https://roco.world/zh/jini/8"
     },
     {
       "id": "sk-7050260",
-      "skillName": "Bubble Mirage",
+      "skillName": "泡沫幻影",
+      "nameEn": "Bubble Mirage",
       "element": "Water",
       "category": "Defense",
       "actionType": "Defense",
@@ -1123,13 +1222,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Reduces damage taken by 80%. <desc_id=1016></>: This Jini <desc_id=1003></>.",
+      "rawText": "减伤80%，<desc_id=1016>应对攻击</>：自己<desc_id=1003>脱离</>。",
+      "descriptionEn": "Reduces damage taken by 80%. <desc_id=1016></>: This Jini <desc_id=1003></>.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/8"
+      "source": "https://roco.world/zh/jini/8"
     },
     {
       "id": "sk-7050270",
-      "skillName": "Bubble Shield",
+      "skillName": "水泡盾",
+      "nameEn": "Bubble Shield",
       "element": "Water",
       "category": "Defense",
       "actionType": "Defense",
@@ -1145,13 +1246,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Reduces damage taken by 80%. <desc_id=1016></>: This Jini's Magic ATK increases by 70%.",
+      "rawText": "减伤80%，<desc_id=1016>应对攻击</>：自己获得魔攻+70%。",
+      "descriptionEn": "Reduces damage taken by 80%. <desc_id=1016></>: This Jini's Magic ATK increases by 70%.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/8"
+      "source": "https://roco.world/zh/jini/8"
     },
     {
       "id": "sk-7050390",
-      "skillName": "Gushing Spring",
+      "skillName": "涌泉",
+      "nameEn": "Gushing Spring",
       "element": "Water",
       "category": "Magic",
       "actionType": "Attack",
@@ -1167,13 +1270,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage. This skill gains 10 power for each energy its cost is reduced by.",
+      "rawText": "造成魔伤，本技能能耗每-1，威力+10。",
+      "descriptionEn": "Deals magic damage. This skill gains 10 power for each energy its cost is reduced by.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/8"
+      "source": "https://roco.world/zh/jini/8"
     },
     {
       "id": "sk-7050400",
-      "skillName": "Cleansing Rite",
+      "skillName": "洗礼",
+      "nameEn": "Cleansing Rite",
       "element": "Water",
       "category": "Status",
       "actionType": "Status",
@@ -1189,13 +1294,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Dispels this Jini's <desc_id=1013></> and makes all its skills cost 1 less energy.",
+      "rawText": "驱散自己的<desc_id=1013>减益</>，并获得全技能能耗-1。",
+      "descriptionEn": "Dispels this Jini's <desc_id=1013></> and makes all its skills cost 1 less energy.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/8"
+      "source": "https://roco.world/zh/jini/8"
     },
     {
       "id": "sk-7050420",
-      "skillName": "Tide",
+      "skillName": "潮汐",
+      "nameEn": "Tide",
       "element": "Water",
       "category": "Defense",
       "actionType": "Defense",
@@ -1211,13 +1318,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Reduces damage taken by 60%. <desc_id=1016></>: This Jini gains 1 stack of <desc_id=1022></>.",
+      "rawText": "减伤60%，<desc_id=1016>应对攻击</>：自己获得1层<desc_id=1022>湿润印记</>。",
+      "descriptionEn": "Reduces damage taken by 60%. <desc_id=1016></>: This Jini gains 1 stack of <desc_id=1022></>.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/8"
+      "source": "https://roco.world/zh/jini/8"
     },
     {
       "id": "sk-7020430",
-      "skillName": "Counterplay",
+      "skillName": "见招拆招",
+      "nameEn": "Counterplay",
       "element": "Normal",
       "category": "Physical",
       "actionType": "Attack",
@@ -1233,13 +1342,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. If this Jini used a status skill last turn, this skill gains +55 power for this use.",
+      "rawText": "造成物伤，若上回合使用状态技能，本次技能威力+55。",
+      "descriptionEn": "Deals physical damage. If this Jini used a status skill last turn, this skill gains +55 power for this use.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/11"
+      "source": "https://roco.world/zh/jini/11"
     },
     {
       "id": "sk-7020480",
-      "skillName": "Spinning Assault",
+      "skillName": "旋转突击",
+      "nameEn": "Spinning Assault",
       "element": "Normal",
       "category": "Physical",
       "actionType": "Attack",
@@ -1260,13 +1371,15 @@
           "times": 3
         }
       ],
-      "rawText": "Deals physical damage with 3 combo hits.",
+      "rawText": "造成物伤，3连击。",
+      "descriptionEn": "Deals physical damage with 3 combo hits.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/11"
+      "source": "https://roco.world/zh/jini/11"
     },
     {
       "id": "sk-7020670",
-      "skillName": "Roar",
+      "skillName": "咆哮",
+      "nameEn": "Roar",
       "element": "Normal",
       "category": "Status",
       "actionType": "Status",
@@ -1282,13 +1395,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "The enemy loses 60% Physical ATK and 60 Speed.",
+      "rawText": "敌方获得物攻-60%和速度-60。",
+      "descriptionEn": "The enemy loses 60% Physical ATK and 60 Speed.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/11"
+      "source": "https://roco.world/zh/jini/11"
     },
     {
       "id": "sk-7020690",
-      "skillName": "Quick Move",
+      "skillName": "快速移动",
+      "nameEn": "Quick Move",
       "element": "Normal",
       "category": "Status",
       "actionType": "Status",
@@ -1312,13 +1427,15 @@
           "value": 80
         }
       ],
-      "rawText": "This Jini gains +80 Speed. <desc_id=1017></>: This changes to +160 Speed.",
+      "rawText": "自己获得速度+80，<desc_id=1017>应对防御</>：改为速度+160。",
+      "descriptionEn": "This Jini gains +80 Speed. <desc_id=1017></>: This changes to +160 Speed.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/11"
+      "source": "https://roco.world/zh/jini/11"
     },
     {
       "id": "sk-7020700",
-      "skillName": "Bide Your Time",
+      "skillName": "伺机而动",
+      "nameEn": "Bide Your Time",
       "element": "Normal",
       "category": "Status",
       "actionType": "Status",
@@ -1334,13 +1451,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "The next attack skill gains +70 power.",
+      "rawText": "下一次攻击时，技能威力+70。",
+      "descriptionEn": "The next attack skill gains +70 power.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/11"
+      "source": "https://roco.world/zh/jini/11"
     },
     {
       "id": "sk-7020990",
-      "skillName": "Weight Crush",
+      "skillName": "吨位压制",
+      "nameEn": "Weight Crush",
       "element": "Normal",
       "category": "Physical",
       "actionType": "Attack",
@@ -1356,13 +1475,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. The lower the enemy's weight, the more power this skill gains for this use.",
+      "rawText": "造成物伤，敌方体重越低，本次技能威力越高。",
+      "descriptionEn": "Deals physical damage. The lower the enemy's weight, the more power this skill gains for this use.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/11"
+      "source": "https://roco.world/zh/jini/11"
     },
     {
       "id": "sk-7021090",
-      "skillName": "Warm-Up",
+      "skillName": "热身运动",
+      "nameEn": "Warm-Up",
       "element": "Normal",
       "category": "Status",
       "actionType": "Status",
@@ -1378,13 +1499,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "This Jini gains <desc_id=3005></> +3.",
+      "rawText": "自己获得<desc_id=3005>连击数</>+3。",
+      "descriptionEn": "This Jini gains <desc_id=3005></> +3.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/11"
+      "source": "https://roco.world/zh/jini/11"
     },
     {
       "id": "sk-7021130",
-      "skillName": "Scare Off",
+      "skillName": "吓退",
+      "nameEn": "Scare Off",
       "element": "Normal",
       "category": "Defense",
       "actionType": "Defense",
@@ -1400,13 +1523,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Reduces damage by 60%. <desc_id=1016></>: the enemy <desc_id=1003></>.",
+      "rawText": "减伤60%，<desc_id=1016>应对攻击</>：敌方<desc_id=1003>脱离</>。",
+      "descriptionEn": "Reduces damage by 60%. <desc_id=1016></>: the enemy <desc_id=1003></>.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/11"
+      "source": "https://roco.world/zh/jini/11"
     },
     {
       "id": "sk-7021020",
-      "skillName": "Last Strike",
+      "skillName": "后发制人",
+      "nameEn": "Last Strike",
       "element": "Normal",
       "category": "Physical",
       "actionType": "Attack",
@@ -1422,13 +1547,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. <desc_id=1020></> -1.",
+      "rawText": "造成物理伤害，<desc_id=1020>先手</>-1。",
+      "descriptionEn": "Deals physical damage. <desc_id=1020></> -1.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/12"
+      "source": "https://roco.world/zh/jini/12"
     },
     {
       "id": "sk-7050280",
-      "skillName": "Water Ring",
+      "skillName": "水环",
+      "nameEn": "Water Ring",
       "element": "Water",
       "category": "Defense",
       "actionType": "Defense",
@@ -1444,13 +1571,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Reduces damage taken by 60%. <desc_id=1016></>: This Jini's skills cost 2 less energy.",
+      "rawText": "减伤60%，<desc_id=1016>应对攻击</>：自己获得全技能能耗-2。",
+      "descriptionEn": "Reduces damage taken by 60%. <desc_id=1016></>: This Jini's skills cost 2 less energy.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/12"
+      "source": "https://roco.world/zh/jini/12"
     },
     {
       "id": "sk-7050290",
-      "skillName": "Aqua Light Impact",
+      "skillName": "水光冲击",
+      "nameEn": "Aqua Light Impact",
       "element": "Water",
       "category": "Magic",
       "actionType": "Attack",
@@ -1466,13 +1595,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成魔法伤害。",
+      "descriptionEn": "Deals magic damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/12"
+      "source": "https://roco.world/zh/jini/12"
     },
     {
       "id": "sk-7050340",
-      "skillName": "Soap Bubble",
+      "skillName": "肥皂泡",
+      "nameEn": "Soap Bubble",
       "element": "Water",
       "category": "Magic",
       "actionType": "Attack",
@@ -1488,13 +1619,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成魔法伤害。",
+      "descriptionEn": "Deals magic damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/12"
+      "source": "https://roco.world/zh/jini/12"
     },
     {
       "id": "sk-7170120",
-      "skillName": "Graveyard Brawl",
+      "skillName": "坟场搏击",
+      "nameEn": "Graveyard Brawl",
       "element": "Ghost",
       "category": "Physical",
       "actionType": "Attack",
@@ -1510,13 +1643,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. For each energy the target has, this skill loses 10% power for this use.",
+      "rawText": "造成物伤，敌方每有1能量，本次技能威力-10%。",
+      "descriptionEn": "Deals physical damage. For each energy the target has, this skill loses 10% power for this use.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/15"
+      "source": "https://roco.world/zh/jini/15"
     },
     {
       "id": "sk-7170130",
-      "skillName": "Prank",
+      "skillName": "恶作剧",
+      "nameEn": "Prank",
       "element": "Ghost",
       "category": "Status",
       "actionType": "Status",
@@ -1532,13 +1667,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "The target loses 3 energy. <desc_id=1017></>: the target loses 6 energy instead.",
+      "rawText": "敌方失去3能量，<desc_id=1017>应对防御</>：改为敌方失去6能量。",
+      "descriptionEn": "The target loses 3 energy. <desc_id=1017></>: the target loses 6 energy instead.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/15"
+      "source": "https://roco.world/zh/jini/15"
     },
     {
       "id": "sk-7170140",
-      "skillName": "Jini Descent",
+      "skillName": "降灵",
+      "nameEn": "Jini Descent",
       "element": "Ghost",
       "category": "Status",
       "actionType": "Status",
@@ -1554,13 +1691,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "The target gains 1 stack of <desc_id=1028></>.",
+      "rawText": "敌方获得1层<desc_id=1028>降灵印记</>。",
+      "descriptionEn": "The target gains 1 stack of <desc_id=1028></>.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/15"
+      "source": "https://roco.world/zh/jini/15"
     },
     {
       "id": "sk-7170200",
-      "skillName": "Phantom Image",
+      "skillName": "幻象",
+      "nameEn": "Phantom Image",
       "element": "Ghost",
       "category": "Physical",
       "actionType": "Attack",
@@ -1576,13 +1715,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/15"
+      "source": "https://roco.world/zh/jini/15"
     },
     {
       "id": "sk-7170250",
-      "skillName": "Soul Snare",
+      "skillName": "勾魂",
+      "nameEn": "Soul Snare",
       "element": "Ghost",
       "category": "Status",
       "actionType": "Status",
@@ -1598,13 +1739,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Steals 3 energy from the target.",
+      "rawText": "偷取敌方3能量。",
+      "descriptionEn": "Steals 3 energy from the target.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/15"
+      "source": "https://roco.world/zh/jini/15"
     },
     {
       "id": "sk-7180080",
-      "skillName": "Dark Energy",
+      "skillName": "恶能量",
+      "nameEn": "Dark Energy",
       "element": "Dark",
       "category": "Physical",
       "actionType": "Attack",
@@ -1620,13 +1763,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/15"
+      "source": "https://roco.world/zh/jini/15"
     },
     {
       "id": "sk-7180110",
-      "skillName": "Bite",
+      "skillName": "撕咬",
+      "nameEn": "Bite",
       "element": "Dark",
       "category": "Physical",
       "actionType": "Attack",
@@ -1647,13 +1792,15 @@
           "times": 3
         }
       ],
-      "rawText": "Deals physical damage with 3 combo hits. If this Jini's Health is below 50%, this skill gains +2 combo hits for this use.",
+      "rawText": "造成物伤，3连击，若自己的生命低于50%，本次技能连击数+2。",
+      "descriptionEn": "Deals physical damage with 3 combo hits. If this Jini's Health is below 50%, this skill gains +2 combo hits for this use.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/15"
+      "source": "https://roco.world/zh/jini/15"
     },
     {
       "id": "sk-7180130",
-      "skillName": "Final Rend",
+      "skillName": "极限撕裂",
+      "nameEn": "Final Rend",
       "element": "Dark",
       "category": "Physical",
       "actionType": "Attack",
@@ -1669,13 +1816,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. If this Jini's Health is above 50%, both of its attacks decrease by 50% after use.",
+      "rawText": "造成物伤，若自己生命高于50%，使用后自己获得双攻-50%。",
+      "descriptionEn": "Deals physical damage. If this Jini's Health is above 50%, both of its attacks decrease by 50% after use.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/15"
+      "source": "https://roco.world/zh/jini/15"
     },
     {
       "id": "sk-7180170",
-      "skillName": "Devour Power",
+      "skillName": "力量吞噬",
+      "nameEn": "Devour Power",
       "element": "Dark",
       "category": "Status",
       "actionType": "Status",
@@ -1691,13 +1840,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "The enemy's skills lose 20 power, and all of this Jini's skills gain 20 power.",
+      "rawText": "敌方获得全技能威力-20，自己获得全技能威力+20。",
+      "descriptionEn": "The enemy's skills lose 20 power, and all of this Jini's skills gain 20 power.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/15"
+      "source": "https://roco.world/zh/jini/15"
     },
     {
       "id": "sk-7180190",
-      "skillName": "Malicious Escape",
+      "skillName": "恶意逃离",
+      "nameEn": "Malicious Escape",
       "element": "Dark",
       "category": "Status",
       "actionType": "Status",
@@ -1713,13 +1864,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "<desc_id=1003></>. <desc_id=1017></>: The enemy's attack skills also cost 4 more energy.",
+      "rawText": "<desc_id=1003>脱离</>，<desc_id=1017>应对防御</>：额外使敌方攻击技能能耗+4。",
+      "descriptionEn": "<desc_id=1003></>. <desc_id=1017></>: The enemy's attack skills also cost 4 more energy.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/15"
+      "source": "https://roco.world/zh/jini/15"
     },
     {
       "id": "sk-7180330",
-      "skillName": "False Bankruptcy",
+      "skillName": "虚假破产",
+      "nameEn": "False Bankruptcy",
       "element": "Dark",
       "category": "Defense",
       "actionType": "Defense",
@@ -1735,13 +1888,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Reduces damage taken by 80%. When this Jini lacks enough energy, it spends 5% Health instead of 1 energy. <desc_id=1016></>.",
+      "rawText": "减伤80%，能量不足时，消耗5%生命代替1能量，<desc_id=1016>应对攻击</>。",
+      "descriptionEn": "Reduces damage taken by 80%. When this Jini lacks enough energy, it spends 5% Health instead of 1 energy. <desc_id=1016></>.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/15"
+      "source": "https://roco.world/zh/jini/15"
     },
     {
       "id": "sk-7020970",
-      "skillName": "First Strike",
+      "skillName": "先发制人",
+      "nameEn": "First Strike",
       "element": "Normal",
       "category": "Physical",
       "actionType": "Attack",
@@ -1757,13 +1912,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. <desc_id=1020></> +1.",
+      "rawText": "造成物理伤害，<desc_id=1020>先手</>+1。",
+      "descriptionEn": "Deals physical damage. <desc_id=1020></> +1.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/18"
+      "source": "https://roco.world/zh/jini/18"
     },
     {
       "id": "sk-7150050",
-      "skillName": "Peck",
+      "skillName": "啄击",
+      "nameEn": "Peck",
       "element": "Wing",
       "category": "Physical",
       "actionType": "Attack",
@@ -1784,13 +1941,15 @@
           "times": 2
         }
       ],
-      "rawText": "Deals physical damage with 2 combo hits.",
+      "rawText": "造成物伤，2连击。",
+      "descriptionEn": "Deals physical damage with 2 combo hits.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/18"
+      "source": "https://roco.world/zh/jini/18"
     },
     {
       "id": "sk-7150060",
-      "skillName": "Fanning Wind",
+      "skillName": "扇风",
+      "nameEn": "Fanning Wind",
       "element": "Wing",
       "category": "Physical",
       "actionType": "Attack",
@@ -1806,13 +1965,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. If this Jini attacks before the enemy, this skill gains +50% power for this use.",
+      "rawText": "造成物伤，若先于敌方攻击，本次技能威力+50%。",
+      "descriptionEn": "Deals physical damage. If this Jini attacks before the enemy, this skill gains +50% power for this use.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/18"
+      "source": "https://roco.world/zh/jini/18"
     },
     {
       "id": "sk-7150110",
-      "skillName": "Tornado",
+      "skillName": "龙卷风",
+      "nameEn": "Tornado",
       "element": "Wing",
       "category": "Physical",
       "actionType": "Attack",
@@ -1828,13 +1989,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. <desc_id=1005></>. <desc_id=1015></>: this skill has 1.5× power for this use.",
+      "rawText": "造成物伤，<desc_id=1005>迅捷</>，<desc_id=1015>应对状态</>：本次技能威力变为1.5倍。",
+      "descriptionEn": "Deals physical damage. <desc_id=1005></>. <desc_id=1015></>: this skill has 1.5× power for this use.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/18"
+      "source": "https://roco.world/zh/jini/18"
     },
     {
       "id": "sk-7150120",
-      "skillName": "Ride the Wind",
+      "skillName": "乘风",
+      "nameEn": "Ride the Wind",
       "element": "Wing",
       "category": "Status",
       "actionType": "Status",
@@ -1858,13 +2021,15 @@
           "value": 120
         }
       ],
-      "rawText": "This Jini gains +120 Speed.",
+      "rawText": "自己获得速度+120。",
+      "descriptionEn": "This Jini gains +120 Speed.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/18"
+      "source": "https://roco.world/zh/jini/18"
     },
     {
       "id": "sk-7150130",
-      "skillName": "Rising Wind",
+      "skillName": "风起",
+      "nameEn": "Rising Wind",
       "element": "Wing",
       "category": "Status",
       "actionType": "Status",
@@ -1880,13 +2045,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "This Jini gains 1 stack of <desc_id=1027></>.",
+      "rawText": "自己获得1层<desc_id=1027>风起印记</>。",
+      "descriptionEn": "This Jini gains 1 stack of <desc_id=1027></>.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/18"
+      "source": "https://roco.world/zh/jini/18"
     },
     {
       "id": "sk-7150200",
-      "skillName": "Feather Blade",
+      "skillName": "羽刃",
+      "nameEn": "Feather Blade",
       "element": "Wing",
       "category": "Physical",
       "actionType": "Attack",
@@ -1902,13 +2069,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. <desc_id=1015></>: at the end of the turn, the enemy triggers <desc_id=1026></>.",
+      "rawText": "造成物伤，<desc_id=1015>应对状态</>：回合结束使敌方<desc_id=1026>紧急脱离</>。",
+      "descriptionEn": "Deals physical damage. <desc_id=1015></>: at the end of the turn, the enemy triggers <desc_id=1026></>.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/18"
+      "source": "https://roco.world/zh/jini/18"
     },
     {
       "id": "sk-7150240",
-      "skillName": "Dive Slam",
+      "skillName": "俯冲猛击",
+      "nameEn": "Dive Slam",
       "element": "Wing",
       "category": "Physical",
       "actionType": "Attack",
@@ -1924,13 +2093,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/18"
+      "source": "https://roco.world/zh/jini/18"
     },
     {
       "id": "sk-7150250",
-      "skillName": "Flash Strike",
+      "skillName": "闪击",
+      "nameEn": "Flash Strike",
       "element": "Wing",
       "category": "Physical",
       "actionType": "Attack",
@@ -1946,13 +2117,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. The more this Jini's Speed exceeds the enemy's, the more power this skill has for this use.",
+      "rawText": "造成物伤，速度比敌方越高，本次技能威力越高。",
+      "descriptionEn": "Deals physical damage. The more this Jini's Speed exceeds the enemy's, the more power this skill has for this use.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/18"
+      "source": "https://roco.world/zh/jini/18"
     },
     {
       "id": "sk-7150300",
-      "skillName": "Feathered Acceleration",
+      "skillName": "羽化加速",
+      "nameEn": "Feathered Acceleration",
       "element": "Wing",
       "category": "Status",
       "actionType": "Status",
@@ -1968,13 +2141,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "All this Jini's skills gain +20 power. <desc_id=1005></>.",
+      "rawText": "自己获得全技能威力+20，<desc_id=1005>迅捷</>。",
+      "descriptionEn": "All this Jini's skills gain +20 power. <desc_id=1005></>.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/18"
+      "source": "https://roco.world/zh/jini/18"
     },
     {
       "id": "sk-7030160",
-      "skillName": "Seed Shot",
+      "skillName": "种子弹",
+      "nameEn": "Seed Shot",
       "element": "Grass",
       "category": "Physical",
       "actionType": "Attack",
@@ -1990,13 +2165,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. This Jini restores 1 energy.",
+      "rawText": "造成物伤，自己回复1能量。",
+      "descriptionEn": "Deals physical damage. This Jini restores 1 energy.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/21"
+      "source": "https://roco.world/zh/jini/21"
     },
     {
       "id": "sk-7030250",
-      "skillName": "Oxygen Flow",
+      "skillName": "氧输送",
+      "nameEn": "Oxygen Flow",
       "element": "Grass",
       "category": "Status",
       "actionType": "Status",
@@ -2012,13 +2189,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "This Jini restores 4 energy, and its Magic ATK increases by 70%.",
+      "rawText": "自己回复4能量，并获得魔攻+70%。",
+      "descriptionEn": "This Jini restores 4 energy, and its Magic ATK increases by 70%.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/21"
+      "source": "https://roco.world/zh/jini/21"
     },
     {
       "id": "sk-7030340",
-      "skillName": "Drain",
+      "skillName": "汲取",
+      "nameEn": "Drain",
       "element": "Grass",
       "category": "Magic",
       "actionType": "Attack",
@@ -2034,13 +2213,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage and has 100% <desc_id=1029></>.",
+      "rawText": "造成魔伤，并<desc_id=1029>吸血</>100%。",
+      "descriptionEn": "Deals magic damage and has 100% <desc_id=1029></>.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/21"
+      "source": "https://roco.world/zh/jini/21"
     },
     {
       "id": "sk-7030530",
-      "skillName": "Branch Out",
+      "skillName": "抽枝",
+      "nameEn": "Branch Out",
       "element": "Grass",
       "category": "Physical",
       "actionType": "Attack",
@@ -2056,13 +2237,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. <desc_id=1015></>: this Jini restores 50% Health and 5 energy.",
+      "rawText": "造成物伤，<desc_id=1015>应对状态</>：自己回复50%生命和5能量。",
+      "descriptionEn": "Deals physical damage. <desc_id=1015></>: this Jini restores 50% Health and 5 energy.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/21"
+      "source": "https://roco.world/zh/jini/21"
     },
     {
       "id": "sk-7170090",
-      "skillName": "Will-o'-Wisp",
+      "skillName": "鬼火",
+      "nameEn": "Will-o'-Wisp",
       "element": "Ghost",
       "category": "Magic",
       "actionType": "Attack",
@@ -2078,13 +2261,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage. This Jini restores 1 energy.",
+      "rawText": "造成魔伤，自己回复1能量。",
+      "descriptionEn": "Deals magic damage. This Jini restores 1 energy.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/21"
+      "source": "https://roco.world/zh/jini/21"
     },
     {
       "id": "sk-7170100",
-      "skillName": "Fright Box",
+      "skillName": "惊吓盒子",
+      "nameEn": "Fright Box",
       "element": "Ghost",
       "category": "Physical",
       "actionType": "Attack",
@@ -2100,13 +2285,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. <desc_id=1015></>: the target loses 6 energy.",
+      "rawText": "造成物伤，<desc_id=1015>应对状态</>：使敌方失去6能量。",
+      "descriptionEn": "Deals physical damage. <desc_id=1015></>: the target loses 6 energy.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/21"
+      "source": "https://roco.world/zh/jini/21"
     },
     {
       "id": "sk-7170150",
-      "skillName": "Retaliation",
+      "skillName": "报复",
+      "nameEn": "Retaliation",
       "element": "Ghost",
       "category": "Defense",
       "actionType": "Defense",
@@ -2122,13 +2309,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Reduces damage taken by 70%. <desc_id=1016></>: the target loses 3 energy.",
+      "rawText": "减伤70%，<desc_id=1016>应对攻击</>：敌方失去3能量。",
+      "descriptionEn": "Reduces damage taken by 70%. <desc_id=1016></>: the target loses 3 energy.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/21"
+      "source": "https://roco.world/zh/jini/21"
     },
     {
       "id": "sk-7170230",
-      "skillName": "Jini Flash",
+      "skillName": "灵光",
+      "nameEn": "Jini Flash",
       "element": "Ghost",
       "category": "Magic",
       "actionType": "Attack",
@@ -2149,13 +2338,15 @@
           "times": 3
         }
       ],
-      "rawText": "Deals magic damage with 3 combo hits. If the enemy switched Jinies this turn, this skill's combo count is doubled for this use.",
+      "rawText": "造成魔伤，3连击，若敌方本回合更换精灵，本次技能连击数翻倍。",
+      "descriptionEn": "Deals magic damage with 3 combo hits. If the enemy switched Jinies this turn, this skill's combo count is doubled for this use.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/21"
+      "source": "https://roco.world/zh/jini/21"
     },
     {
       "id": "sk-7170240",
-      "skillName": "Taunt",
+      "skillName": "嘲弄",
+      "nameEn": "Taunt",
       "element": "Ghost",
       "category": "Status",
       "actionType": "Status",
@@ -2186,13 +2377,15 @@
           "value": 70
         }
       ],
-      "rawText": "This Jini gains +90% Magic ATK. If the enemy switched Jinies this turn, this Jini gains +70 Speed.",
+      "rawText": "自己获得魔攻+90%，若敌方本回合更换精灵，自己获得速度+70。",
+      "descriptionEn": "This Jini gains +90% Magic ATK. If the enemy switched Jinies this turn, this Jini gains +70 Speed.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/21"
+      "source": "https://roco.world/zh/jini/21"
     },
     {
       "id": "sk-7020420",
-      "skillName": "Charge",
+      "skillName": "冲撞",
+      "nameEn": "Charge",
       "element": "Normal",
       "category": "Physical",
       "actionType": "Attack",
@@ -2208,13 +2401,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. At the end of the turn, this skill permanently costs 1 less energy.",
+      "rawText": "造成物伤，回合结束时，本技能能耗永久-1。",
+      "descriptionEn": "Deals physical damage. At the end of the turn, this skill permanently costs 1 less energy.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/24"
+      "source": "https://roco.world/zh/jini/24"
     },
     {
       "id": "sk-7020800",
-      "skillName": "Blood Rush",
+      "skillName": "血气",
+      "nameEn": "Blood Rush",
       "element": "Normal",
       "category": "Defense",
       "actionType": "Defense",
@@ -2230,13 +2425,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Reduces damage by 60%. <desc_id=1016></>: if this Jini would take fatal damage this turn, it keeps 1 Health.",
+      "rawText": "减伤60%，<desc_id=1016>应对攻击</>：本回合受到致命伤害时，保留1生命值。",
+      "descriptionEn": "Reduces damage by 60%. <desc_id=1016></>: if this Jini would take fatal damage this turn, it keeps 1 Health.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/24"
+      "source": "https://roco.world/zh/jini/24"
     },
     {
       "id": "sk-7020890",
-      "skillName": "Sonic Bomb",
+      "skillName": "音波弹",
+      "nameEn": "Sonic Bomb",
       "element": "Normal",
       "category": "Magic",
       "actionType": "Attack",
@@ -2257,13 +2454,15 @@
           "times": 1
         }
       ],
-      "rawText": "Deals magic damage with 1 combo hit.",
+      "rawText": "造成魔伤，1连击。",
+      "descriptionEn": "Deals magic damage with 1 combo hit.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/24"
+      "source": "https://roco.world/zh/jini/24"
     },
     {
       "id": "sk-7080140",
-      "skillName": "Rocky Critical",
+      "skillName": "岩土暴击",
+      "nameEn": "Rocky Critical",
       "element": "Earth",
       "category": "Physical",
       "actionType": "Attack",
@@ -2279,13 +2478,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. Each time this Jini is attacked, this skill costs 1 less energy permanently.",
+      "rawText": "造成物伤，每被攻击1次。本技能能耗永久-1。",
+      "descriptionEn": "Deals physical damage. Each time this Jini is attacked, this skill costs 1 less energy permanently.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/24"
+      "source": "https://roco.world/zh/jini/24"
     },
     {
       "id": "sk-7080150",
-      "skillName": "Stone Lock",
+      "skillName": "石锁",
+      "nameEn": "Stone Lock",
       "element": "Earth",
       "category": "Physical",
       "actionType": "Attack",
@@ -2301,13 +2502,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage and inflicts <desc_id=3023></> on the enemy for 3 turns.",
+      "rawText": "造成物伤，敌方获得3回合<desc_id=3023>禁足</>。",
+      "descriptionEn": "Deals physical damage and inflicts <desc_id=3023></> on the enemy for 3 turns.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/24"
+      "source": "https://roco.world/zh/jini/24"
     },
     {
       "id": "sk-7080220",
-      "skillName": "Spike Shield",
+      "skillName": "刺盾",
+      "nameEn": "Spike Shield",
       "element": "Earth",
       "category": "Defense",
       "actionType": "Defense",
@@ -2323,13 +2526,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Reduces damage by 70%. <desc_id=1016></>: the enemy's Physical ATK decreases by 70%.",
+      "rawText": "减伤70%，<desc_id=1016>应对攻击</>：敌方获得物攻-70%。",
+      "descriptionEn": "Reduces damage by 70%. <desc_id=1016></>: the enemy's Physical ATK decreases by 70%.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/24"
+      "source": "https://roco.world/zh/jini/24"
     },
     {
       "id": "sk-7080230",
-      "skillName": "Harden",
+      "skillName": "硬化",
+      "nameEn": "Harden",
       "element": "Earth",
       "category": "Defense",
       "actionType": "Defense",
@@ -2345,13 +2550,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Reduces damage by 90%. If this Jini used an attack skill last, this skill costs 2 less energy. <desc_id=1016></>.",
+      "rawText": "减伤90%，若上次使用攻击技则本技能能耗-2，<desc_id=1016>应对攻击</>。",
+      "descriptionEn": "Reduces damage by 90%. If this Jini used an attack skill last, this skill costs 2 less energy. <desc_id=1016></>.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/24"
+      "source": "https://roco.world/zh/jini/24"
     },
     {
       "id": "sk-7080250",
-      "skillName": "Burrow",
+      "skillName": "遁地",
+      "nameEn": "Burrow",
       "element": "Earth",
       "category": "Defense",
       "actionType": "Defense",
@@ -2367,13 +2574,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Reduces damage by 50% and <desc_id=1003></>. <desc_id=1016></>.",
+      "rawText": "减伤50%并<desc_id=1003>脱离</>，<desc_id=1016>应对攻击</>。",
+      "descriptionEn": "Reduces damage by 50% and <desc_id=1003></>. <desc_id=1016></>.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/24"
+      "source": "https://roco.world/zh/jini/24"
     },
     {
       "id": "sk-7080280",
-      "skillName": "Mud Jet",
+      "skillName": "泥巴喷射",
+      "nameEn": "Mud Jet",
       "element": "Earth",
       "category": "Magic",
       "actionType": "Attack",
@@ -2389,13 +2598,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成魔法伤害。",
+      "descriptionEn": "Deals magic damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/24"
+      "source": "https://roco.world/zh/jini/24"
     },
     {
       "id": "sk-7080290",
-      "skillName": "Falling Rocks",
+      "skillName": "落石",
+      "nameEn": "Falling Rocks",
       "element": "Earth",
       "category": "Physical",
       "actionType": "Attack",
@@ -2416,13 +2627,15 @@
           "times": 1
         }
       ],
-      "rawText": "Deals physical damage with 1 combo hit.",
+      "rawText": "造成物伤，1连击。",
+      "descriptionEn": "Deals physical damage with 1 combo hit.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/24"
+      "source": "https://roco.world/zh/jini/24"
     },
     {
       "id": "sk-7080310",
-      "skillName": "Meteorite",
+      "skillName": "陨石",
+      "nameEn": "Meteorite",
       "element": "Earth",
       "category": "Magic",
       "actionType": "Attack",
@@ -2438,13 +2651,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成魔法伤害。",
+      "descriptionEn": "Deals magic damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/24"
+      "source": "https://roco.world/zh/jini/24"
     },
     {
       "id": "sk-7080330",
-      "skillName": "Sinkhole",
+      "skillName": "地陷",
+      "nameEn": "Sinkhole",
       "element": "Earth",
       "category": "Physical",
       "actionType": "Attack",
@@ -2460,13 +2675,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage, and increases this Jini's Armor by 70%. <desc_id=1015></>: this skill's power is doubled for this use, and this Jini's Armor increases by an additional 70%.",
+      "rawText": "造成物伤，自己获得物防+70%，<desc_id=1015>应对状态</>：本次技能威力翻倍，且物防额外+70%。",
+      "descriptionEn": "Deals physical damage, and increases this Jini's Armor by 70%. <desc_id=1015></>: this skill's power is doubled for this use, and this Jini's Armor increases by an additional 70%.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/24"
+      "source": "https://roco.world/zh/jini/24"
     },
     {
       "id": "sk-7080360",
-      "skillName": "Stoneskin",
+      "skillName": "石肤术",
+      "nameEn": "Stoneskin",
       "element": "Earth",
       "category": "Status",
       "actionType": "Status",
@@ -2490,13 +2707,15 @@
           "value": 160
         }
       ],
-      "rawText": "This Jini gains +160% Armor and -60% Magic Resist.",
+      "rawText": "自己获得物防+160%和魔防-60%。",
+      "descriptionEn": "This Jini gains +160% Armor and -60% Magic Resist.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/24"
+      "source": "https://roco.world/zh/jini/24"
     },
     {
       "id": "sk-7080370",
-      "skillName": "Weighty Stance",
+      "skillName": "钧势",
+      "nameEn": "Weighty Stance",
       "element": "Earth",
       "category": "Status",
       "actionType": "Status",
@@ -2520,13 +2739,15 @@
           "value": 140
         }
       ],
-      "rawText": "This Jini gains +140% Armor and -30 Speed.",
+      "rawText": "自己获得物防+140%和速度-30。",
+      "descriptionEn": "This Jini gains +140% Armor and -30 Speed.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/24"
+      "source": "https://roco.world/zh/jini/24"
     },
     {
       "id": "sk-7080120",
-      "skillName": "Ground Stomp",
+      "skillName": "跺地",
+      "nameEn": "Ground Stomp",
       "element": "Earth",
       "category": "Physical",
       "actionType": "Attack",
@@ -2542,13 +2763,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/27"
+      "source": "https://roco.world/zh/jini/27"
     },
     {
       "id": "sk-7080130",
-      "skillName": "Earth Spike",
+      "skillName": "地刺",
+      "nameEn": "Earth Spike",
       "element": "Earth",
       "category": "Physical",
       "actionType": "Attack",
@@ -2564,13 +2787,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. <desc_id=1015></>: additionally <desc_id=1011></> the countered skill.",
+      "rawText": "造成物伤，<desc_id=1015>应对状态</>：额外<desc_id=1011>打断</>被应对技能。",
+      "descriptionEn": "Deals physical damage. <desc_id=1015></>: additionally <desc_id=1011></> the countered skill.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/27"
+      "source": "https://roco.world/zh/jini/27"
     },
     {
       "id": "sk-7080180",
-      "skillName": "Earthquake",
+      "skillName": "地震",
+      "nameEn": "Earthquake",
       "element": "Earth",
       "category": "Physical",
       "actionType": "Attack",
@@ -2586,13 +2811,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/27"
+      "source": "https://roco.world/zh/jini/27"
     },
     {
       "id": "sk-7080210",
-      "skillName": "Sand Surge",
+      "skillName": "沙涌",
+      "nameEn": "Sand Surge",
       "element": "Earth",
       "category": "Status",
       "actionType": "Status",
@@ -2608,13 +2835,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Changes the weather to <desc_id=3006></> for 8 turns.",
+      "rawText": "将天气改为<desc_id=3006>沙暴</>，持续8回合。",
+      "descriptionEn": "Changes the weather to <desc_id=3006></> for 8 turns.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/27"
+      "source": "https://roco.world/zh/jini/27"
     },
     {
       "id": "sk-7080240",
-      "skillName": "Bulwark",
+      "skillName": "壁垒",
+      "nameEn": "Bulwark",
       "element": "Earth",
       "category": "Defense",
       "actionType": "Defense",
@@ -2630,13 +2859,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Reduces damage by 90%. <desc_id=1016></>: defense skill cooldown -1.",
+      "rawText": "减伤90%，<desc_id=1016>应对攻击</>：防御技能冷却-1。",
+      "descriptionEn": "Reduces damage by 90%. <desc_id=1016></>: defense skill cooldown -1.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/27"
+      "source": "https://roco.world/zh/jini/27"
     },
     {
       "id": "sk-7080340",
-      "skillName": "Bedrock Collapse",
+      "skillName": "岩脉崩毁",
+      "nameEn": "Bedrock Collapse",
       "element": "Earth",
       "category": "Physical",
       "actionType": "Attack",
@@ -2652,13 +2883,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. This skill's energy cost is fixed at 4.",
+      "rawText": "造成物伤，本技能能耗固定为4。",
+      "descriptionEn": "Deals physical damage. This skill's energy cost is fixed at 4.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/27"
+      "source": "https://roco.world/zh/jini/27"
     },
     {
       "id": "sk-7080380",
-      "skillName": "Ready to Strike",
+      "skillName": "蓄势待发",
+      "nameEn": "Ready to Strike",
       "element": "Earth",
       "category": "Status",
       "actionType": "Status",
@@ -2674,13 +2907,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "This Jini gains 1 stack of <desc_id=1030></>.",
+      "rawText": "自己获得1层<desc_id=1030>蓄势印记</>。",
+      "descriptionEn": "This Jini gains 1 stack of <desc_id=1030></>.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/27"
+      "source": "https://roco.world/zh/jini/27"
     },
     {
       "id": "sk-7080410",
-      "skillName": "Mountain Stillness",
+      "skillName": "不动如山",
+      "nameEn": "Mountain Stillness",
       "element": "Earth",
       "category": "Defense",
       "actionType": "Defense",
@@ -2704,13 +2939,15 @@
           "value": 50
         }
       ],
-      "rawText": "Reduces damage by 90%. <desc_id=1016></>: this Jini gains +50% Physical ATK.",
+      "rawText": "减伤90%，<desc_id=1016>应对攻击</>：自己获得物攻+50%。",
+      "descriptionEn": "Reduces damage by 90%. <desc_id=1016></>: this Jini gains +50% Physical ATK.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/27"
+      "source": "https://roco.world/zh/jini/27"
     },
     {
       "id": "sk-7080470",
-      "skillName": "Sandstone Charge",
+      "skillName": "砂石冲撞",
+      "nameEn": "Sandstone Charge",
       "element": "Earth",
       "category": "Physical",
       "actionType": "Attack",
@@ -2734,13 +2971,15 @@
           "value": 100
         }
       ],
-      "rawText": "Deals physical damage. If the enemy switches Jinies this turn, this Jini gains +100% Armor.",
+      "rawText": "造成物伤，若敌方本回合更换精灵，自己获得物防+100%。",
+      "descriptionEn": "Deals physical damage. If the enemy switches Jinies this turn, this Jini gains +100% Armor.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/27"
+      "source": "https://roco.world/zh/jini/27"
     },
     {
       "id": "sk-7150090",
-      "skillName": "Gale Thrust",
+      "skillName": "疾风刺",
+      "nameEn": "Gale Thrust",
       "element": "Wing",
       "category": "Physical",
       "actionType": "Attack",
@@ -2761,13 +3000,15 @@
           "times": 1
         }
       ],
-      "rawText": "Deals physical damage with 1 combo hit. If this Jini attacks before the enemy, it becomes 3 combo hits.",
+      "rawText": "造成物伤，1连击，若先于敌方攻击，改为3连击。",
+      "descriptionEn": "Deals physical damage with 1 combo hit. If this Jini attacks before the enemy, it becomes 3 combo hits.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/30"
+      "source": "https://roco.world/zh/jini/30"
     },
     {
       "id": "sk-7150190",
-      "skillName": "Eagle Claw",
+      "skillName": "鹰爪",
+      "nameEn": "Eagle Claw",
       "element": "Wing",
       "category": "Physical",
       "actionType": "Attack",
@@ -2783,13 +3024,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/30"
+      "source": "https://roco.world/zh/jini/30"
     },
     {
       "id": "sk-7180070",
-      "skillName": "Demon Claw",
+      "skillName": "魔爪",
+      "nameEn": "Demon Claw",
       "element": "Dark",
       "category": "Physical",
       "actionType": "Attack",
@@ -2805,13 +3048,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. This Jini restores 1 energy.",
+      "rawText": "造成物伤，自己回复1能量。",
+      "descriptionEn": "Deals physical damage. This Jini restores 1 energy.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/30"
+      "source": "https://roco.world/zh/jini/30"
     },
     {
       "id": "sk-7180120",
-      "skillName": "Dark Ambush",
+      "skillName": "暗突袭",
+      "nameEn": "Dark Ambush",
       "element": "Dark",
       "category": "Physical",
       "actionType": "Attack",
@@ -2827,13 +3072,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage and gains <desc_id=1029></> 50%. <desc_id=1015></>: This skill has 2× power for this use.",
+      "rawText": "造成物伤，<desc_id=1029>吸血</>50%，<desc_id=1015>应对状态</>：本次技能威力翻倍。",
+      "descriptionEn": "Deals physical damage and gains <desc_id=1029></> 50%. <desc_id=1015></>: This skill has 2× power for this use.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/30"
+      "source": "https://roco.world/zh/jini/30"
     },
     {
       "id": "sk-7180160",
-      "skillName": "Greed",
+      "skillName": "贪婪",
+      "nameEn": "Greed",
       "element": "Dark",
       "category": "Status",
       "actionType": "Status",
@@ -2849,13 +3096,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "This Jini gains 100% <desc_id=1029></>.",
+      "rawText": "自己获得100%<desc_id=1029>吸血</>。",
+      "descriptionEn": "This Jini gains 100% <desc_id=1029></>.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/30"
+      "source": "https://roco.world/zh/jini/30"
     },
     {
       "id": "sk-7180320",
-      "skillName": "Backroom Deal",
+      "skillName": "暗箱操作",
+      "nameEn": "Backroom Deal",
       "element": "Dark",
       "category": "Status",
       "actionType": "Status",
@@ -2871,13 +3120,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Both of this Jini's attacks and both of its defenses decrease by 50%. <desc_id=1017></>: Instead, both of the enemy's attacks and both of its defenses decrease by 120%.",
+      "rawText": "自己获得双攻和双防-50%，<desc_id=1017>应对防御</>：改为敌方获得双攻和双防-120%。",
+      "descriptionEn": "Both of this Jini's attacks and both of its defenses decrease by 50%. <desc_id=1017></>: Instead, both of the enemy's attacks and both of its defenses decrease by 120%.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/30"
+      "source": "https://roco.world/zh/jini/30"
     },
     {
       "id": "sk-7180340",
-      "skillName": "Loot the Flames",
+      "skillName": "趁火打劫",
+      "nameEn": "Loot the Flames",
       "element": "Dark",
       "category": "Physical",
       "actionType": "Attack",
@@ -2898,13 +3149,15 @@
           "times": 2
         }
       ],
-      "rawText": "Deals physical damage with 2 combo hits. If this skill defeats the enemy, its combo count permanently increases by 2.",
+      "rawText": "造成物伤，2连击，若击败敌方，本技能连击数永久+2。",
+      "descriptionEn": "Deals physical damage with 2 combo hits. If this skill defeats the enemy, its combo count permanently increases by 2.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/30"
+      "source": "https://roco.world/zh/jini/30"
     },
     {
       "id": "sk-7020960",
-      "skillName": "Snore",
+      "skillName": "打鼾",
+      "nameEn": "Snore",
       "element": "Normal",
       "category": "Magic",
       "actionType": "Attack",
@@ -2920,13 +3173,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成魔法伤害。",
+      "descriptionEn": "Deals magic damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/32"
+      "source": "https://roco.world/zh/jini/32"
     },
     {
       "id": "sk-7130170",
-      "skillName": "Bind",
+      "skillName": "捆缚",
+      "nameEn": "Bind",
       "element": "Bug",
       "category": "Status",
       "actionType": "Status",
@@ -2942,13 +3197,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "The enemy gains 2 stacks of <desc_id=1001></>. Your team gains 1 <desc_id=1009></>: the enemy gains 2 stacks of <desc_id=1001></>.",
+      "rawText": "敌方获得2层<desc_id=1001>中毒</>，获得1次<desc_id=1009>奉献</>：敌方获得2层<desc_id=1001>中毒</>。",
+      "descriptionEn": "The enemy gains 2 stacks of <desc_id=1001></>. Your team gains 1 <desc_id=1009></>: the enemy gains 2 stacks of <desc_id=1001></>.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/32"
+      "source": "https://roco.world/zh/jini/32"
     },
     {
       "id": "sk-7130190",
-      "skillName": "Cocoon",
+      "skillName": "虫茧",
+      "nameEn": "Cocoon",
       "element": "Bug",
       "category": "Status",
       "actionType": "Status",
@@ -2964,13 +3221,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "This Jini restores 20% Health. Your team gains 1 <desc_id=1009></>: affected skills gain 10% <desc_id=1029></>.",
+      "rawText": "自己回复20%生命，己方队伍获得1次<desc_id=1009>奉献</>：获得10%<desc_id=1029>吸血</>。",
+      "descriptionEn": "This Jini restores 20% Health. Your team gains 1 <desc_id=1009></>: affected skills gain 10% <desc_id=1029></>.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/32"
+      "source": "https://roco.world/zh/jini/32"
     },
     {
       "id": "sk-7130220",
-      "skillName": "Cover",
+      "skillName": "掩护",
+      "nameEn": "Cover",
       "element": "Bug",
       "category": "Defense",
       "actionType": "Defense",
@@ -2986,13 +3245,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Reduces damage taken by 70%, then triggers <desc_id=1026></>. <desc_id=1016></>: the next Jini to enter the field gains damage reduction.",
+      "rawText": "减伤70%，<desc_id=1026>紧急脱离</>，<desc_id=1016>应对攻击</>：下个入场精灵获得减伤。",
+      "descriptionEn": "Reduces damage taken by 70%, then triggers <desc_id=1026></>. <desc_id=1016></>: the next Jini to enter the field gains damage reduction.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/32"
+      "source": "https://roco.world/zh/jini/32"
     },
     {
       "id": "sk-7130240",
-      "skillName": "Stinging Needle",
+      "skillName": "蛰针",
+      "nameEn": "Stinging Needle",
       "element": "Bug",
       "category": "Physical",
       "actionType": "Attack",
@@ -3008,13 +3269,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/32"
+      "source": "https://roco.world/zh/jini/32"
     },
     {
       "id": "sk-7130250",
-      "skillName": "Bug Sting",
+      "skillName": "虫刺",
+      "nameEn": "Bug Sting",
       "element": "Bug",
       "category": "Magic",
       "actionType": "Attack",
@@ -3035,13 +3298,15 @@
           "times": 3
         }
       ],
-      "rawText": "Deals magic damage with 3 combo hits.",
+      "rawText": "造成魔伤，3连击。",
+      "descriptionEn": "Deals magic damage with 3 combo hits.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/32"
+      "source": "https://roco.world/zh/jini/32"
     },
     {
       "id": "sk-7130260",
-      "skillName": "Heartpiercer",
+      "skillName": "噬心",
+      "nameEn": "Heartpiercer",
       "element": "Bug",
       "category": "Physical",
       "actionType": "Attack",
@@ -3057,13 +3322,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/32"
+      "source": "https://roco.world/zh/jini/32"
     },
     {
       "id": "sk-7130280",
-      "skillName": "Bug Hex",
+      "skillName": "虫蛊",
+      "nameEn": "Bug Hex",
       "element": "Bug",
       "category": "Magic",
       "actionType": "Attack",
@@ -3079,13 +3346,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成魔法伤害。",
+      "descriptionEn": "Deals magic damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/32"
+      "source": "https://roco.world/zh/jini/32"
     },
     {
       "id": "sk-7130310",
-      "skillName": "Carrion Feast",
+      "skillName": "食腐",
+      "nameEn": "Carrion Feast",
       "element": "Bug",
       "category": "Status",
       "actionType": "Status",
@@ -3101,13 +3370,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Dispels enemy <desc_id=3010></>. For each stack of <desc_id=3010></> dispelled, this Jini restores 10% Health.",
+      "rawText": "驱散敌方<desc_id=3010>印记</>，每层<desc_id=3010>印记</>回复自己10%生命。",
+      "descriptionEn": "Dispels enemy <desc_id=3010></>. For each stack of <desc_id=3010></> dispelled, this Jini restores 10% Health.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/32"
+      "source": "https://roco.world/zh/jini/32"
     },
     {
       "id": "sk-7160140",
-      "skillName": "Super Candy",
+      "skillName": "超级糖果",
+      "nameEn": "Super Candy",
       "element": "Cute",
       "category": "Physical",
       "actionType": "Attack",
@@ -3123,13 +3394,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage. This Jini gains <desc_id=1006></>: this skill gains +60 power for this use.",
+      "rawText": "造成物伤，自己获得<desc_id=1006>萌化</>：本次技能威力+60。",
+      "descriptionEn": "Deals physical damage. This Jini gains <desc_id=1006></>: this skill gains +60 power for this use.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/32"
+      "source": "https://roco.world/zh/jini/32"
     },
     {
       "id": "sk-7160160",
-      "skillName": "Birthday Cake",
+      "skillName": "生日蛋糕",
+      "nameEn": "Birthday Cake",
       "element": "Cute",
       "category": "Status",
       "actionType": "Status",
@@ -3145,13 +3418,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Dispels this Jini's <desc_id=1013></>. This Jini's <desc_id=1012></> are doubled.",
+      "rawText": "驱散自己的<desc_id=1013>减益</>，自己的<desc_id=1012>增益</>翻倍。",
+      "descriptionEn": "Dispels this Jini's <desc_id=1013></>. This Jini's <desc_id=1012></> are doubled.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/32"
+      "source": "https://roco.world/zh/jini/32"
     },
     {
       "id": "sk-7160200",
-      "skillName": "Sweetheart Sustain",
+      "skillName": "甜心续航",
+      "nameEn": "Sweetheart Sustain",
       "element": "Cute",
       "category": "Status",
       "actionType": "Status",
@@ -3167,13 +3442,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "This Jini and the enemy gain <desc_id=1006></>: restores 40% Health.",
+      "rawText": "自己和敌方获得<desc_id=1006>萌化</>：回复40%生命。",
+      "descriptionEn": "This Jini and the enemy gain <desc_id=1006></>: restores 40% Health.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/32"
+      "source": "https://roco.world/zh/jini/32"
     },
     {
       "id": "sk-7160230",
-      "skillName": "Charm",
+      "skillName": "魅惑",
+      "nameEn": "Charm",
       "element": "Cute",
       "category": "Magic",
       "actionType": "Attack",
@@ -3189,13 +3466,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成魔法伤害。",
+      "descriptionEn": "Deals magic damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/32"
+      "source": "https://roco.world/zh/jini/32"
     },
     {
       "id": "sk-7160260",
-      "skillName": "Popcorn Blast",
+      "skillName": "爆米花爆破",
+      "nameEn": "Popcorn Blast",
       "element": "Cute",
       "category": "Physical",
       "actionType": "Attack",
@@ -3211,13 +3490,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/32"
+      "source": "https://roco.world/zh/jini/32"
     },
     {
       "id": "sk-7021060",
-      "skillName": "Comet",
+      "skillName": "彗星",
+      "nameEn": "Comet",
       "element": "Normal",
       "category": "Magic",
       "actionType": "Attack",
@@ -3233,13 +3514,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage. For each 5% Health this Jini has lost, this skill loses 10 power for this use. After use, this Jini consumes all Health.",
+      "rawText": "造成魔伤，每失去5%生命，本次技能威力-10，使用后消耗全部生命。",
+      "descriptionEn": "Deals magic damage. For each 5% Health this Jini has lost, this skill loses 10 power for this use. After use, this Jini consumes all Health.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/35"
+      "source": "https://roco.world/zh/jini/35"
     },
     {
       "id": "sk-7030190",
-      "skillName": "Thorn Vine",
+      "skillName": "刺藤",
+      "nameEn": "Thorn Vine",
       "element": "Grass",
       "category": "Physical",
       "actionType": "Attack",
@@ -3260,13 +3543,15 @@
           "times": 2
         }
       ],
-      "rawText": "Deals physical damage with 2 combo hits.",
+      "rawText": "造成物伤，2连击。",
+      "descriptionEn": "Deals physical damage with 2 combo hits.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/35"
+      "source": "https://roco.world/zh/jini/35"
     },
     {
       "id": "sk-7030240",
-      "skillName": "Root Siphon",
+      "skillName": "根吸收",
+      "nameEn": "Root Siphon",
       "element": "Grass",
       "category": "Status",
       "actionType": "Status",
@@ -3282,13 +3567,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "This Jini restores 15% Health and 4 energy.",
+      "rawText": "自己回复15%生命和4能量。",
+      "descriptionEn": "This Jini restores 15% Health and 4 energy.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/35"
+      "source": "https://roco.world/zh/jini/35"
     },
     {
       "id": "sk-7030430",
-      "skillName": "Floral Scent",
+      "skillName": "花香",
+      "nameEn": "Floral Scent",
       "element": "Grass",
       "category": "Magic",
       "actionType": "Attack",
@@ -3304,13 +3591,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成魔法伤害。",
+      "descriptionEn": "Deals magic damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/35"
+      "source": "https://roco.world/zh/jini/35"
     },
     {
       "id": "sk-7030500",
-      "skillName": "Salt Accumulation",
+      "skillName": "聚盐",
+      "nameEn": "Salt Accumulation",
       "element": "Grass",
       "category": "Status",
       "actionType": "Status",
@@ -3326,13 +3615,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "2 combo hits. For each combo hit, this Jini restores 8% Health. After use, this skill permanently gains +1 combo count.",
+      "rawText": "2连击，每次连击自己回复8%生命，使用后本技能连击数永久+1。",
+      "descriptionEn": "2 combo hits. For each combo hit, this Jini restores 8% Health. After use, this skill permanently gains +1 combo count.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/35"
+      "source": "https://roco.world/zh/jini/35"
     },
     {
       "id": "sk-7170170",
-      "skillName": "Ghostly Burst",
+      "skillName": "幽灵爆发",
+      "nameEn": "Ghostly Burst",
       "element": "Ghost",
       "category": "Magic",
       "actionType": "Attack",
@@ -3348,13 +3639,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成魔法伤害。",
+      "descriptionEn": "Deals magic damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/35"
+      "source": "https://roco.world/zh/jini/35"
     },
     {
       "id": "sk-7170190",
-      "skillName": "Eerie Stab",
+      "skillName": "诡刺",
+      "nameEn": "Eerie Stab",
       "element": "Ghost",
       "category": "Physical",
       "actionType": "Attack",
@@ -3370,13 +3663,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/35"
+      "source": "https://roco.world/zh/jini/35"
     },
     {
       "id": "sk-7170260",
-      "skillName": "Etherealize",
+      "skillName": "虚化",
+      "nameEn": "Etherealize",
       "element": "Ghost",
       "category": "Defense",
       "actionType": "Defense",
@@ -3400,13 +3695,15 @@
           "value": 70
         }
       ],
-      "rawText": "Reduces damage taken by 80%. <desc_id=1016></>: this Jini gains +70% Magic Resist.",
+      "rawText": "减伤80%，<desc_id=1016>应对攻击</>：自己获得魔防+70%。",
+      "descriptionEn": "Reduces damage taken by 80%. <desc_id=1016></>: this Jini gains +70% Magic Resist.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/35"
+      "source": "https://roco.world/zh/jini/35"
     },
     {
       "id": "sk-7020460",
-      "skillName": "Raking Claws",
+      "skillName": "连续爪击",
+      "nameEn": "Raking Claws",
       "element": "Normal",
       "category": "Physical",
       "actionType": "Attack",
@@ -3427,13 +3724,15 @@
           "times": 2
         }
       ],
-      "rawText": "Deals physical damage with 2 combo hits. <desc_id=1015></>: This skill's combo count doubles for this use.",
+      "rawText": "造成物伤，2连击，<desc_id=1015>应对状态</>：本次技能连击数翻倍。",
+      "descriptionEn": "Deals physical damage with 2 combo hits. <desc_id=1015></>: This skill's combo count doubles for this use.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/36"
+      "source": "https://roco.world/zh/jini/36"
     },
     {
       "id": "sk-7020660",
-      "skillName": "Enrage",
+      "skillName": "激怒",
+      "nameEn": "Enrage",
       "element": "Normal",
       "category": "Status",
       "actionType": "Status",
@@ -3449,13 +3748,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "The enemy's skills other than the skill used this turn cost 3 more energy for 3 turns.",
+      "rawText": "敌方除本回合使用的技能，其他技能能耗+3，持续3回合。",
+      "descriptionEn": "The enemy's skills other than the skill used this turn cost 3 more energy for 3 turns.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/36"
+      "source": "https://roco.world/zh/jini/36"
     },
     {
       "id": "sk-7020870",
-      "skillName": "Falling Star",
+      "skillName": "落星",
+      "nameEn": "Falling Star",
       "element": "Normal",
       "category": "Physical",
       "actionType": "Attack",
@@ -3471,13 +3772,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/36"
+      "source": "https://roco.world/zh/jini/36"
     },
     {
       "id": "sk-7020940",
-      "skillName": "Trample",
+      "skillName": "践踏",
+      "nameEn": "Trample",
       "element": "Normal",
       "category": "Physical",
       "actionType": "Attack",
@@ -3493,13 +3796,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/36"
+      "source": "https://roco.world/zh/jini/36"
     },
     {
       "id": "sk-7021040",
-      "skillName": "Rally",
+      "skillName": "鼓劲",
+      "nameEn": "Rally",
       "element": "Normal",
       "category": "Status",
       "actionType": "Status",
@@ -3523,13 +3828,15 @@
           "value": 170
         }
       ],
-      "rawText": "This Jini gains +170% Magic Resist.",
+      "rawText": "自己获得魔防+170%。",
+      "descriptionEn": "This Jini gains +170% Magic Resist.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/36"
+      "source": "https://roco.world/zh/jini/36"
     },
     {
       "id": "sk-7021110",
-      "skillName": "Prevention",
+      "skillName": "有效预防",
+      "nameEn": "Prevention",
       "element": "Normal",
       "category": "Defense",
       "actionType": "Defense",
@@ -3545,13 +3852,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Reduces damage by 50%. <desc_id=1016></>: on this Jini's next turn, it gains <desc_id=1020></> +1.",
+      "rawText": "减伤50%，<desc_id=1016>应对攻击</>：下一次行动获得<desc_id=1020>先手</>+1。",
+      "descriptionEn": "Reduces damage by 50%. <desc_id=1016></>: on this Jini's next turn, it gains <desc_id=1020></> +1.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/36"
+      "source": "https://roco.world/zh/jini/36"
     },
     {
       "id": "sk-7050320",
-      "skillName": "Water Pellet",
+      "skillName": "水弹",
+      "nameEn": "Water Pellet",
       "element": "Water",
       "category": "Magic",
       "actionType": "Attack",
@@ -3567,13 +3876,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成魔法伤害。",
+      "descriptionEn": "Deals magic damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/36"
+      "source": "https://roco.world/zh/jini/36"
     },
     {
       "id": "sk-7050330",
-      "skillName": "Foam",
+      "skillName": "泡沫",
+      "nameEn": "Foam",
       "element": "Water",
       "category": "Physical",
       "actionType": "Attack",
@@ -3589,13 +3900,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/36"
+      "source": "https://roco.world/zh/jini/36"
     },
     {
       "id": "sk-7060150",
-      "skillName": "Mirror Reflection",
+      "skillName": "镜像反射",
+      "nameEn": "Mirror Reflection",
       "element": "Light",
       "category": "Defense",
       "actionType": "Defense",
@@ -3611,13 +3924,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Reduces damage by 70%. <desc_id=1016></>: this skill becomes the countered skill.",
+      "rawText": "减伤70%，<desc_id=1016>应对攻击</>：本技能变为被应对的技能。",
+      "descriptionEn": "Reduces damage by 70%. <desc_id=1016></>: this skill becomes the countered skill.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/39"
+      "source": "https://roco.world/zh/jini/39"
     },
     {
       "id": "sk-7060190",
-      "skillName": "Pulse Ray",
+      "skillName": "脉冲光线",
+      "nameEn": "Pulse Ray",
       "element": "Light",
       "category": "Magic",
       "actionType": "Attack",
@@ -3633,13 +3948,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成魔法伤害。",
+      "descriptionEn": "Deals magic damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/39"
+      "source": "https://roco.world/zh/jini/39"
     },
     {
       "id": "sk-7060230",
-      "skillName": "Transmission",
+      "skillName": "透射",
+      "nameEn": "Transmission",
       "element": "Light",
       "category": "Physical",
       "actionType": "Attack",
@@ -3655,13 +3972,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/39"
+      "source": "https://roco.world/zh/jini/39"
     },
     {
       "id": "sk-7080110",
-      "skillName": "Sand Spray",
+      "skillName": "扬沙",
+      "nameEn": "Sand Spray",
       "element": "Earth",
       "category": "Physical",
       "actionType": "Attack",
@@ -3677,13 +3996,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals physical damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成物理伤害。",
+      "descriptionEn": "Deals physical damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/39"
+      "source": "https://roco.world/zh/jini/39"
     },
     {
       "id": "sk-7080270",
-      "skillName": "Sludge",
+      "skillName": "泥浆",
+      "nameEn": "Sludge",
       "element": "Earth",
       "category": "Magic",
       "actionType": "Attack",
@@ -3699,13 +4020,15 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Deals magic damage to an enemy Jini.",
+      "rawText": "对敌方精灵造成魔法伤害。",
+      "descriptionEn": "Deals magic damage to an enemy Jini.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/39"
+      "source": "https://roco.world/zh/jini/39"
     },
     {
       "id": "sk-7080400",
-      "skillName": "Sludge Skin",
+      "skillName": "淤泥表皮",
+      "nameEn": "Sludge Skin",
       "element": "Earth",
       "category": "Defense",
       "actionType": "Defense",
@@ -3721,9 +4044,10 @@
       "debuffEnemy": {},
       "specialRules": [],
       "ops": [],
-      "rawText": "Reduces damage by 80%. <desc_id=1016></>: the enemy gains <desc_id=3005></> -3.",
+      "rawText": "减伤80%，<desc_id=1016>应对攻击</>：敌方获得<desc_id=3005>连击数</>-3。",
+      "descriptionEn": "Reduces damage by 80%. <desc_id=1016></>: the enemy gains <desc_id=3005></> -3.",
       "sourceType": "level",
-      "source": "https://roco.world/jini/39"
+      "source": "https://roco.world/zh/jini/39"
     }
   ]
 }

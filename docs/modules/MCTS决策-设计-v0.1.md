@@ -152,7 +152,7 @@ value = sigmoid(
 ## 11. 实施状态
 
 设计 ✅ v0.1 / 代码 ✅ / 验证 ✅ / 生产 ✅。
-- 实现：`engine/roco_engine/mcts/search.py`（UCB1 + 截断估值 + 对手采样），`opponent/bayes.py`（Dirichlet 后验）。
-- 测试：`tests/test_mcts.py` 验证同种子复现、动作降序、对手后验更新。
-- 实测：`sp-7 vs sp-10`、300 次模拟约 30ms（远低于 1.5s 预算）。
+- 实现：`apps/web/src/modules/engine/mcts/search.ts`（UCB1 + 截断估值 + 对手采样 + 养成后验采样），`opponent/bayes.ts`（Dirichlet 后验），`opponent/training.ts`（养成档位后验）。
+- 测试：`apps/web/src/modules/engine/__tests__/engine.test.ts` 验证同种子复现、动作降序、对手后验更新。
+- 实测：`sp-7 vs sp-10`、200 次模拟约 27ms（远低于 1.5s 预算）。
 - 待办：参数回归用例、`reasons` 模板化解释、进攻动作剪枝细化。

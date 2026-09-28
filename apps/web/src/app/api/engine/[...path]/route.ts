@@ -1,34 +1,54 @@
 import { NextResponse } from "next/server";
 
+import * as handlers from "@/modules/engine/api/handlers";
+import { getBundle, reloadBundle } from "@/modules/engine/server";
+import type { Dict } from "@/modules/engine/types";
+
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const ENGINE_URL = process.env.ROCO_ENGINE_URL ?? "http://127.0.0.1:26901";
+function json(data: unknown, status = 200) {
+  return NextResponse.json(data as Record<string, unknown>, { status });
+}
 
-async function forward(request: Request, ctx: { params: Promise<{ path: string[] }> }) {
-  const { path } = await ctx.params;
-  const url = new URL(request.url);
-  const target = `${ENGINE_URL}/${path.join("/")}${url.search}`;
-
-  const body = request.method === "GET" || request.method === "HEAD" ? undefined : await request.text();
+async function readJson(request: Request): Promise<Dict> {
   try {
-    const res = await fetch(target, {
-      method: request.method,
-      headers: { "content-type": request.headers.get("content-type") ?? "application/json" },
-      body,
-      cache: "no-store",
-    });
-    const text = await res.text();
-    return new NextResponse(text, {
-      status: res.status,
-      headers: { "content-type": res.headers.get("content-type") ?? "application/json" },
-    });
+    const body = await request.json();
+    return (body ?? {}) as Dict;
   } catch {
-    return NextResponse.json(
-      { error: "引擎未启动", hint: "请运行 scripts/dev.ps1（引擎监听 127.0.0.1:26901）" },
-      { status: 502 },
-    );
+    return {};
   }
 }
 
-export { forward as GET, forward as POST };
+async function handle(request: Request, ctx: { params: Promise<{ path: string[] }> }) {
+  const { path } = await ctx.params;
+  const route = (path ?? []).join("/");
+  const method = request.method;
+
+  try {
+    if (method === "GET" && route === "health") return json(handlers.health(getBundle()));
+    if (method === "GET" && route === "catalog") return json(handlers.catalog(getBundle()));
+    if (method === "GET" && route === "bundle") return json(handlers.bundlePayload(getBundle()));
+    if (method === "POST" && route === "admin/reload") return json(handlers.health(reloadBundle()));
+
+    const body = await readJson(request);
+    switch (route) {
+      case "recommend":
+        return json(handlers.recommend(getBundle(), body as unknown as handlers.RecommendBody));
+      case "simulate/turn":
+        return json(handlers.simulateTurn(getBundle(), body));
+      case "simulate/forced-switch":
+        return json(handlers.forcedSwitch(getBundle(), body));
+      case "simulate/leader":
+        return json(handlers.leader(getBundle(), body));
+      case "opponent/observe":
+        return json(handlers.observe(getBundle(), body));
+      default:
+        return json({ error: `未知路由: ${route}` }, 404);
+    }
+  } catch (err) {
+    return json({ error: (err as Error).message }, 500);
+  }
+}
+
+export { handle as GET, handle as POST };

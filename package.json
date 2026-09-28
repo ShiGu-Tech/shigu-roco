@@ -1,17 +1,16 @@
 {
   "name": "shigu-rock",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "洛克王国世界 PVP 决策辅助工具（离线 · 非外挂）",
+  "description": "洛克王国世界 PVP 决策辅助工具（离线 · 非外挂 · 纯 TS 引擎）",
   "scripts": {
     "dev": "pnpm -F web dev",
     "build": "pnpm -F web build",
+    "start": "pnpm -F web start",
     "lint": "pnpm -F web lint",
     "typecheck": "pnpm -F web typecheck",
-    "engine:test": "pnpm -F engine test",
-    "engine:serve": "pnpm -F engine serve",
-    "engine:ingest": "pnpm -F engine ingest",
-    "check": "pnpm lint && pnpm typecheck && pnpm engine:test"
+    "test": "pnpm -F web test",
+    "check": "pnpm lint && pnpm typecheck && pnpm test"
   },
   "packageManager": "pnpm@11.8.0"
 }

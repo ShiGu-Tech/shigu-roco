@@ -1,0 +1,371 @@
+{
+  "$schemaVersion": "0.1",
+  "version": "0.1.0",
+  "updatedAt": "2026-09-28",
+  "sprites": {
+    "sp-1": {
+      "image": "/images/spirits/sp-1.webp",
+      "head": "/images/spirits/heads/sp-1.webp",
+      "portrait": "/images/spirits/portraits/sp-1.webp"
+    },
+    "sp-10": {
+      "image": "/images/spirits/sp-10.webp",
+      "head": "/images/spirits/heads/sp-10.webp",
+      "portrait": "/images/spirits/portraits/sp-10.webp"
+    },
+    "sp-11": {
+      "image": "/images/spirits/sp-11.webp",
+      "head": "/images/spirits/heads/sp-11.webp",
+      "portrait": "/images/spirits/portraits/sp-11.webp"
+    },
+    "sp-12": {
+      "image": "/images/spirits/sp-12.webp",
+      "head": "/images/spirits/heads/sp-12.webp",
+      "portrait": "/images/spirits/portraits/sp-12.webp"
+    },
+    "sp-13": {
+      "image": "/images/spirits/sp-13.webp",
+      "head": "/images/spirits/heads/sp-13.webp",
+      "portrait": "/images/spirits/portraits/sp-13.webp"
+    },
+    "sp-14": {
+      "image": "/images/spirits/sp-14.webp",
+      "head": "/images/spirits/heads/sp-14.webp",
+      "portrait": "/images/spirits/portraits/sp-14.webp"
+    },
+    "sp-15": {
+      "image": "/images/spirits/sp-15.webp",
+      "head": "/images/spirits/heads/sp-15.webp",
+      "portrait": "/images/spirits/portraits/sp-15.webp"
+    },
+    "sp-16": {
+      "image": "/images/spirits/sp-16.webp",
+      "head": "/images/spirits/heads/sp-16.webp",
+      "portrait": "/images/spirits/portraits/sp-16.webp"
+    },
+    "sp-17": {
+      "image": "/images/spirits/sp-17.webp",
+      "head": "/images/spirits/heads/sp-17.webp",
+      "portrait": "/images/spirits/portraits/sp-17.webp"
+    },
+    "sp-18": {
+      "image": "/images/spirits/sp-18.webp",
+      "head": "/images/spirits/heads/sp-18.webp",
+      "portrait": "/images/spirits/portraits/sp-18.webp"
+    },
+    "sp-19": {
+      "image": "/images/spirits/sp-19.webp",
+      "head": "/images/spirits/heads/sp-19.webp",
+      "portrait": "/images/spirits/portraits/sp-19.webp"
+    },
+    "sp-2": {
+      "image": "/images/spirits/sp-2.webp",
+      "head": "/images/spirits/heads/sp-2.webp",
+      "portrait": "/images/spirits/portraits/sp-2.webp"
+    },
+    "sp-20": {
+      "image": "/images/spirits/sp-20.webp",
+      "head": "/images/spirits/heads/sp-20.webp",
+      "portrait": "/images/spirits/portraits/sp-20.webp"
+    },
+    "sp-21": {
+      "image": "/images/spirits/sp-21.webp",
+      "head": "/images/spirits/heads/sp-21.webp",
+      "portrait": "/images/spirits/portraits/sp-21.webp"
+    },
+    "sp-22": {
+      "image": "/images/spirits/sp-22.webp",
+      "head": "/images/spirits/heads/sp-22.webp",
+      "portrait": "/images/spirits/portraits/sp-22.webp"
+    },
+    "sp-23": {
+      "image": "/images/spirits/sp-23.webp",
+      "head": "/images/spirits/heads/sp-23.webp",
+      "portrait": "/images/spirits/portraits/sp-23.webp"
+    },
+    "sp-24": {
+      "image": "/images/spirits/sp-24.webp",
+      "head": "/images/spirits/heads/sp-24.webp",
+      "portrait": "/images/spirits/portraits/sp-24.webp"
+    },
+    "sp-25": {
+      "image": "/images/spirits/sp-25.webp",
+      "head": "/images/spirits/heads/sp-25.webp",
+      "portrait": "/images/spirits/portraits/sp-25.webp"
+    },
+    "sp-26": {
+      "image": "/images/spirits/sp-26.webp",
+      "head": "/images/spirits/heads/sp-26.webp",
+      "portrait": "/images/spirits/portraits/sp-26.webp"
+    },
+    "sp-27": {
+      "image": "/images/spirits/sp-27.webp",
+      "head": "/images/spirits/heads/sp-27.webp",
+      "portrait": "/images/spirits/portraits/sp-27.webp"
+    },
+    "sp-28": {
+      "image": "/images/spirits/sp-28.webp",
+      "head": "/images/spirits/heads/sp-28.webp",
+      "portrait": "/images/spirits/portraits/sp-28.webp"
+    },
+    "sp-29": {
+      "image": "/images/spirits/sp-29.webp",
+      "head": "/images/spirits/heads/sp-29.webp",
+      "portrait": "/images/spirits/portraits/sp-29.webp"
+    },
+    "sp-3": {
+      "image": "/images/spirits/sp-3.webp",
+      "head": "/images/spirits/heads/sp-3.webp",
+      "portrait": "/images/spirits/portraits/sp-3.webp"
+    },
+    "sp-30": {
+      "image": "/images/spirits/sp-30.webp",
+      "head": "/images/spirits/heads/sp-30.webp",
+      "portrait": "/images/spirits/portraits/sp-30.webp"
+    },
+    "sp-31": {
+      "image": "/images/spirits/sp-31.webp",
+      "head": "/images/spirits/heads/sp-31.webp",
+      "portrait": "/images/spirits/portraits/sp-31.webp"
+    },
+    "sp-32": {
+      "image": "/images/spirits/sp-32.webp",
+      "head": "/images/spirits/heads/sp-32.webp",
+      "portrait": "/images/spirits/portraits/sp-32.webp"
+    },
+    "sp-33": {
+      "image": "/images/spirits/sp-33.webp",
+      "head": "/images/spirits/heads/sp-33.webp",
+      "portrait": "/images/spirits/portraits/sp-33.webp"
+    },
+    "sp-34": {
+      "image": "/images/spirits/sp-34.webp",
+      "head": "/images/spirits/heads/sp-34.webp",
+      "portrait": "/images/spirits/portraits/sp-34.webp"
+    },
+    "sp-35": {
+      "image": "/images/spirits/sp-35.webp",
+      "head": "/images/spirits/heads/sp-35.webp",
+      "portrait": "/images/spirits/portraits/sp-35.webp"
+    },
+    "sp-36": {
+      "image": "/images/spirits/sp-36.webp",
+      "head": "/images/spirits/heads/sp-36.webp",
+      "portrait": "/images/spirits/portraits/sp-36.webp"
+    },
+    "sp-37": {
+      "image": "/images/spirits/sp-37.webp",
+      "head": "/images/spirits/heads/sp-37.webp",
+      "portrait": "/images/spirits/portraits/sp-37.webp"
+    },
+    "sp-38": {
+      "image": "/images/spirits/sp-38.webp",
+      "head": "/images/spirits/heads/sp-38.webp",
+      "portrait": "/images/spirits/portraits/sp-38.webp"
+    },
+    "sp-39": {
+      "image": "/images/spirits/sp-39.webp",
+      "head": "/images/spirits/heads/sp-39.webp",
+      "portrait": "/images/spirits/portraits/sp-39.webp"
+    },
+    "sp-4": {
+      "image": "/images/spirits/sp-4.webp",
+      "head": "/images/spirits/heads/sp-4.webp",
+      "portrait": "/images/spirits/portraits/sp-4.webp"
+    },
+    "sp-40": {
+      "image": "/images/spirits/sp-40.webp",
+      "head": "/images/spirits/heads/sp-40.webp",
+      "portrait": "/images/spirits/portraits/sp-40.webp"
+    },
+    "sp-5": {
+      "image": "/images/spirits/sp-5.webp",
+      "head": "/images/spirits/heads/sp-5.webp",
+      "portrait": "/images/spirits/portraits/sp-5.webp"
+    },
+    "sp-6": {
+      "image": "/images/spirits/sp-6.webp",
+      "head": "/images/spirits/heads/sp-6.webp",
+      "portrait": "/images/spirits/portraits/sp-6.webp"
+    },
+    "sp-7": {
+      "image": "/images/spirits/sp-7.webp",
+      "head": "/images/spirits/heads/sp-7.webp",
+      "portrait": "/images/spirits/portraits/sp-7.webp"
+    },
+    "sp-8": {
+      "image": "/images/spirits/sp-8.webp",
+      "head": "/images/spirits/heads/sp-8.webp",
+      "portrait": "/images/spirits/portraits/sp-8.webp"
+    },
+    "sp-9": {
+      "image": "/images/spirits/sp-9.webp",
+      "head": "/images/spirits/heads/sp-9.webp",
+      "portrait": "/images/spirits/portraits/sp-9.webp"
+    }
+  },
+  "skills": {
+    "sk-7020370": "/images/skills/sk-7020370.webp",
+    "sk-7060090": "/images/skills/sk-7060090.webp",
+    "sk-7020780": "/images/skills/sk-7020780.webp",
+    "sk-7020630": "/images/skills/sk-7020630.webp",
+    "sk-7060160": "/images/skills/sk-7060160.webp",
+    "sk-7040370": "/images/skills/sk-7040370.webp",
+    "sk-7020620": "/images/skills/sk-7020620.webp",
+    "sk-7030440": "/images/skills/sk-7030440.webp",
+    "sk-7050360": "/images/skills/sk-7050360.webp",
+    "sk-7110200": "/images/skills/sk-7110200.webp",
+    "sk-7060100": "/images/skills/sk-7060100.webp",
+    "sk-7060140": "/images/skills/sk-7060140.webp",
+    "sk-7090250": "/images/skills/sk-7090250.webp",
+    "sk-7080300": "/images/skills/sk-7080300.webp",
+    "sk-7190210": "/images/skills/sk-7190210.webp",
+    "sk-7060240": "/images/skills/sk-7060240.webp",
+    "sk-7060120": "/images/skills/sk-7060120.webp",
+    "sk-7060180": "/images/skills/sk-7060180.webp",
+    "sk-7060130": "/images/skills/sk-7060130.webp",
+    "sk-7020880": "/images/skills/sk-7020880.webp",
+    "sk-7050160": "/images/skills/sk-7050160.webp",
+    "sk-7050180": "/images/skills/sk-7050180.webp",
+    "sk-7050270": "/images/skills/sk-7050270.webp",
+    "sk-7050190": "/images/skills/sk-7050190.webp",
+    "sk-7050400": "/images/skills/sk-7050400.webp",
+    "sk-7050260": "/images/skills/sk-7050260.webp",
+    "sk-7050390": "/images/skills/sk-7050390.webp",
+    "sk-7050250": "/images/skills/sk-7050250.webp",
+    "sk-7050420": "/images/skills/sk-7050420.webp",
+    "sk-7050210": "/images/skills/sk-7050210.webp",
+    "sk-7020390": "/images/skills/sk-7020390.webp",
+    "sk-7020640": "/images/skills/sk-7020640.webp",
+    "sk-7020480": "/images/skills/sk-7020480.webp",
+    "sk-7020670": "/images/skills/sk-7020670.webp",
+    "sk-7021130": "/images/skills/sk-7021130.webp",
+    "sk-7020430": "/images/skills/sk-7020430.webp",
+    "sk-7020700": "/images/skills/sk-7020700.webp",
+    "sk-7021090": "/images/skills/sk-7021090.webp",
+    "sk-7020990": "/images/skills/sk-7020990.webp",
+    "sk-7020690": "/images/skills/sk-7020690.webp",
+    "sk-7050340": "/images/skills/sk-7050340.webp",
+    "sk-7021020": "/images/skills/sk-7021020.webp",
+    "sk-7050290": "/images/skills/sk-7050290.webp",
+    "sk-7050280": "/images/skills/sk-7050280.webp",
+    "sk-7180080": "/images/skills/sk-7180080.webp",
+    "sk-7170200": "/images/skills/sk-7170200.webp",
+    "sk-7170250": "/images/skills/sk-7170250.webp",
+    "sk-7180330": "/images/skills/sk-7180330.webp",
+    "sk-7170140": "/images/skills/sk-7170140.webp",
+    "sk-7180110": "/images/skills/sk-7180110.webp",
+    "sk-7180170": "/images/skills/sk-7180170.webp",
+    "sk-7170130": "/images/skills/sk-7170130.webp",
+    "sk-7180130": "/images/skills/sk-7180130.webp",
+    "sk-7180190": "/images/skills/sk-7180190.webp",
+    "sk-7170120": "/images/skills/sk-7170120.webp",
+    "sk-7150050": "/images/skills/sk-7150050.webp",
+    "sk-7020970": "/images/skills/sk-7020970.webp",
+    "sk-7150120": "/images/skills/sk-7150120.webp",
+    "sk-7150060": "/images/skills/sk-7150060.webp",
+    "sk-7150300": "/images/skills/sk-7150300.webp",
+    "sk-7150250": "/images/skills/sk-7150250.webp",
+    "sk-7150130": "/images/skills/sk-7150130.webp",
+    "sk-7150240": "/images/skills/sk-7150240.webp",
+    "sk-7150200": "/images/skills/sk-7150200.webp",
+    "sk-7150110": "/images/skills/sk-7150110.webp",
+    "sk-7020360": "/images/skills/sk-7020360.webp",
+    "sk-7030200": "/images/skills/sk-7030200.webp",
+    "sk-7030220": "/images/skills/sk-7030220.webp",
+    "sk-7030460": "/images/skills/sk-7030460.webp",
+    "sk-7030320": "/images/skills/sk-7030320.webp",
+    "sk-7030480": "/images/skills/sk-7030480.webp",
+    "sk-7030230": "/images/skills/sk-7030230.webp",
+    "sk-7030260": "/images/skills/sk-7030260.webp",
+    "sk-7030180": "/images/skills/sk-7030180.webp",
+    "sk-7030280": "/images/skills/sk-7030280.webp",
+    "sk-7030300": "/images/skills/sk-7030300.webp",
+    "sk-7030210": "/images/skills/sk-7030210.webp",
+    "sk-7170090": "/images/skills/sk-7170090.webp",
+    "sk-7030250": "/images/skills/sk-7030250.webp",
+    "sk-7030160": "/images/skills/sk-7030160.webp",
+    "sk-7030340": "/images/skills/sk-7030340.webp",
+    "sk-7170240": "/images/skills/sk-7170240.webp",
+    "sk-7170150": "/images/skills/sk-7170150.webp",
+    "sk-7170230": "/images/skills/sk-7170230.webp",
+    "sk-7170100": "/images/skills/sk-7170100.webp",
+    "sk-7030530": "/images/skills/sk-7030530.webp",
+    "sk-7080280": "/images/skills/sk-7080280.webp",
+    "sk-7080360": "/images/skills/sk-7080360.webp",
+    "sk-7020890": "/images/skills/sk-7020890.webp",
+    "sk-7080370": "/images/skills/sk-7080370.webp",
+    "sk-7080290": "/images/skills/sk-7080290.webp",
+    "sk-7080230": "/images/skills/sk-7080230.webp",
+    "sk-7080310": "/images/skills/sk-7080310.webp",
+    "sk-7080150": "/images/skills/sk-7080150.webp",
+    "sk-7080250": "/images/skills/sk-7080250.webp",
+    "sk-7020420": "/images/skills/sk-7020420.webp",
+    "sk-7080140": "/images/skills/sk-7080140.webp",
+    "sk-7020800": "/images/skills/sk-7020800.webp",
+    "sk-7080330": "/images/skills/sk-7080330.webp",
+    "sk-7080220": "/images/skills/sk-7080220.webp",
+    "sk-7080120": "/images/skills/sk-7080120.webp",
+    "sk-7080340": "/images/skills/sk-7080340.webp",
+    "sk-7080380": "/images/skills/sk-7080380.webp",
+    "sk-7080240": "/images/skills/sk-7080240.webp",
+    "sk-7080470": "/images/skills/sk-7080470.webp",
+    "sk-7080180": "/images/skills/sk-7080180.webp",
+    "sk-7080210": "/images/skills/sk-7080210.webp",
+    "sk-7080130": "/images/skills/sk-7080130.webp",
+    "sk-7080410": "/images/skills/sk-7080410.webp",
+    "sk-7180070": "/images/skills/sk-7180070.webp",
+    "sk-7180160": "/images/skills/sk-7180160.webp",
+    "sk-7150190": "/images/skills/sk-7150190.webp",
+    "sk-7180320": "/images/skills/sk-7180320.webp",
+    "sk-7150090": "/images/skills/sk-7150090.webp",
+    "sk-7180340": "/images/skills/sk-7180340.webp",
+    "sk-7180120": "/images/skills/sk-7180120.webp",
+    "sk-7130240": "/images/skills/sk-7130240.webp",
+    "sk-7130190": "/images/skills/sk-7130190.webp",
+    "sk-7130260": "/images/skills/sk-7130260.webp",
+    "sk-7130170": "/images/skills/sk-7130170.webp",
+    "sk-7130250": "/images/skills/sk-7130250.webp",
+    "sk-7160160": "/images/skills/sk-7160160.webp",
+    "sk-7130220": "/images/skills/sk-7130220.webp",
+    "sk-7160230": "/images/skills/sk-7160230.webp",
+    "sk-7130310": "/images/skills/sk-7130310.webp",
+    "sk-7160140": "/images/skills/sk-7160140.webp",
+    "sk-7160200": "/images/skills/sk-7160200.webp",
+    "sk-7130280": "/images/skills/sk-7130280.webp",
+    "sk-7160260": "/images/skills/sk-7160260.webp",
+    "sk-7020960": "/images/skills/sk-7020960.webp",
+    "sk-7170190": "/images/skills/sk-7170190.webp",
+    "sk-7030500": "/images/skills/sk-7030500.webp",
+    "sk-7030190": "/images/skills/sk-7030190.webp",
+    "sk-7030240": "/images/skills/sk-7030240.webp",
+    "sk-7170260": "/images/skills/sk-7170260.webp",
+    "sk-7030430": "/images/skills/sk-7030430.webp",
+    "sk-7170170": "/images/skills/sk-7170170.webp",
+    "sk-7021060": "/images/skills/sk-7021060.webp",
+    "sk-7020660": "/images/skills/sk-7020660.webp",
+    "sk-7020870": "/images/skills/sk-7020870.webp",
+    "sk-7050320": "/images/skills/sk-7050320.webp",
+    "sk-7050330": "/images/skills/sk-7050330.webp",
+    "sk-7021040": "/images/skills/sk-7021040.webp",
+    "sk-7020940": "/images/skills/sk-7020940.webp",
+    "sk-7021110": "/images/skills/sk-7021110.webp",
+    "sk-7020460": "/images/skills/sk-7020460.webp",
+    "sk-7060190": "/images/skills/sk-7060190.webp",
+    "sk-7080400": "/images/skills/sk-7080400.webp",
+    "sk-7080270": "/images/skills/sk-7080270.webp",
+    "sk-7060230": "/images/skills/sk-7060230.webp",
+    "sk-7080110": "/images/skills/sk-7080110.webp",
+    "sk-7060150": "/images/skills/sk-7060150.webp",
+    "sk-7040170": "/images/skills/sk-7040170.webp",
+    "sk-7040390": "/images/skills/sk-7040390.webp",
+    "sk-7040200": "/images/skills/sk-7040200.webp",
+    "sk-7021100": "/images/skills/sk-7021100.webp",
+    "sk-7040440": "/images/skills/sk-7040440.webp",
+    "sk-7040220": "/images/skills/sk-7040220.webp",
+    "sk-7040320": "/images/skills/sk-7040320.webp",
+    "sk-7040270": "/images/skills/sk-7040270.webp",
+    "sk-7040180": "/images/skills/sk-7040180.webp",
+    "sk-7040250": "/images/skills/sk-7040250.webp"
+  }
+}

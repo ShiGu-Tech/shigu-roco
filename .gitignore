@@ -1,23 +1,10 @@
-# --- Python ---
-__pycache__/
-*.py[cod]
-*.egg-info/
-.eggs/
-.pytest_cache/
-.venv/
-venv/
-engine/.venv/
-build/
-dist/
-.mypy_cache/
-.ruff_cache/
-
 # --- Node / Next ---
 node_modules/
 .next/
 out/
 *.tsbuildinfo
 .pnpm-store/
+coverage/
 
 # --- 运行产物 ---
 logs/
@@ -34,6 +21,3 @@ tmp/
 .idea/
 .DS_Store
 Thumbs.db
-
-# --- 抓取原始素材（可选保留） ---
-engine/ingest/raw/
