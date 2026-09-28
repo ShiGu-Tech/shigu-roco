@@ -1,6 +1,6 @@
 import type { Dict } from "../types";
 import { conditionsMatch } from "./conditions";
-import type { EffectCommand, MechanismContext, MechanismDefinition, TriggerName } from "./types";
+import type { EffectCommand, MechanismContext, MechanismDefinition } from "./types";
 
 export class MechanismRegistry {
   private readonly definitions: MechanismDefinition[];
