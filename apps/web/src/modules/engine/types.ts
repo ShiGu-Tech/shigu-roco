@@ -17,6 +17,8 @@ export interface StatProfile {
   nature?: string | null;
   /** 个体值（天分 × 星级系数），按 stat key（hp/atk/spatk/defense/spdef/speed），各 0~60。 */
   iv?: Record<string, number>;
+  /** 星级 0~5（>=1 时性格正向系数随之抬高：1.10 + 0.02×星级）。 */
+  stars?: number;
 }
 
 // ---------------------------------------------------------------- 运行时模型
@@ -127,6 +129,7 @@ export interface TrainingProfileDef {
 export interface StatsData {
   level?: { default?: number };
   panels?: { hp?: StatsPanelDef; default?: StatsPanelDef };
+  natureScaling?: { upBase?: number; upPerStar?: number; downFactor?: number; starMax?: number };
   starBonus?: { hp?: number; default?: number; starMax?: number };
   individual?: IndividualDef;
   natures?: NatureDef[];

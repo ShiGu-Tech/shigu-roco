@@ -4,6 +4,7 @@ export * from "./types";
 export * from "./state";
 export * from "./rng";
 export * from "./stats";
+export * from "./calc";
 export { buildBundle, typeMultiplier, bundleTypeMultiplier, DataError } from "./data";
 export { Simulator } from "./simulator/battle";
 export { settleMarks, clearMarksOnSwitch } from "./simulator/marks";
