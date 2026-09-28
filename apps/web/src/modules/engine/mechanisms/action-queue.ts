@@ -39,6 +39,13 @@ export class ActionQueue {
     return true;
   }
 
+  setStatus(id: string, status: QueuedAction["status"]): boolean {
+    const entry = this.actions.find((candidate) => candidate.id === id);
+    if (!entry) return false;
+    entry.status = status;
+    return true;
+  }
+
   forceFirst(id: string): boolean {
     const entry = this.actions.find((candidate) => candidate.id === id && candidate.status === "queued");
     if (!entry) return false;

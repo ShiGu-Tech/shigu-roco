@@ -54,7 +54,7 @@ export class Simulator {
       : (toArray<string>(spriteDef.loadout).length ? toArray<string>(spriteDef.loadout) : toArray<string>(spriteDef.skillList));
     for (const skillId of loadout) {
       const skill = getSkill(this.bundle, skillId);
-      if (toNum(skill.cost, 0) <= active.energy) {
+      if (toNum(skill.cost, 0) <= active.energy && toNum(active.cooldowns?.[skillId], 0) <= 0) {
         actions.push({ kind: "skill", skillId, label: toStr(skill.skillName, skillId) });
       }
     }
@@ -82,6 +82,9 @@ export class Simulator {
     const logs: string[] = [];
     const actions: Record<Side, Action> = { player: playerAction, enemy: enemyAction };
     const rules = this.bundle.rules;
+
+    const turnStartCommands = this.mechanisms.dispatch({ state: st, trigger: "turnStart", event: { turn: st.turn } });
+    events.push(...this.mechanisms.applyStateCommands(st, turnStartCommands).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
 
     // ① 洛克魔法阶段（愿力）
     for (const side of SIDES) {
@@ -135,6 +138,18 @@ export class Simulator {
       const side = entry.actorSide;
       const caster = this.sideState(st, side).active;
       if (caster.hp <= 0) return;
+      const beforeCommands = this.mechanisms.dispatch({
+        state: st,
+        trigger: "beforeAction",
+        actorSide: side,
+        targetSide: otherSide(side),
+        action: entry.action,
+        event: { action: entry.action, actionId: entry.id },
+      });
+      events.push(...this.mechanisms.applyActionCommands(queue, beforeCommands, { ...actionIds, [side]: entry.id }, () => `action-${st.turn}-extra-${queue.all().length}`).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+      events.push(...this.mechanisms.applyStateCommands(st, beforeCommands).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+      if (entry.status !== "queued") return;
+      entry.status = "executing";
       const opp = otherSide(side);
       const defenderAction = this.actionType(actions[opp]);
       if (entry.action.kind === "energy") {
@@ -145,9 +160,20 @@ export class Simulator {
         logs.push(`skill: ${side} -> ${entry.action.skillId ?? ""}`);
       }
       entry.status = "resolved";
+      const afterCommands = this.mechanisms.dispatch({
+        state: st,
+        trigger: "actionResolved",
+        actorSide: side,
+        targetSide: opp,
+        action: entry.action,
+        event: { action: entry.action, actionId: entry.id },
+      });
+      events.push(...this.mechanisms.applyStateCommands(st, afterCommands).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
     });
 
     // ④ 结算阶段
+    const turnEndCommands = this.mechanisms.dispatch({ state: st, trigger: "turnEnd", event: { turn: st.turn } });
+    events.push(...this.mechanisms.applyStateCommands(st, turnEndCommands).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
     events.push(...settleMarks(st, "turnEnd", this.bundle, rng));
     this.decay(st);
     events.push(...this.handleFaints(st));
@@ -232,6 +258,11 @@ export class Simulator {
     const skill = action.skillId ? getSkill(this.bundle, action.skillId) : {};
     const caster = this.sideState(st, side).active;
     caster.energy = Math.max(0, caster.energy - Math.floor(toNum(skill.cost, 0)));
+    const cooldown = Math.max(0, Math.floor(toNum(skill.cooldown, 0)));
+    if (action.skillId && cooldown > 0) {
+      caster.cooldowns ??= {};
+      caster.cooldowns[action.skillId] = cooldown;
+    }
     const opp = otherSide(side);
     const target = this.sideState(st, opp).active;
     const casterDef = getSprite(this.bundle, caster.spriteId);
@@ -252,6 +283,15 @@ export class Simulator {
     const power = toNum(skill.power, 0);
     if ((category === "Physical" || category === "Magic") && power > 0 && target.hp > 0) {
       const targetDef = getSprite(this.bundle, target.spriteId);
+      const beforeDamage = this.mechanisms.dispatch({
+        state: st,
+        trigger: "beforeDamage",
+        actorSide: side,
+        targetSide: opp,
+        action,
+        event: { action, skillId: action.skillId, damageType: category },
+      });
+      events.push(...this.mechanisms.applyStateCommands(st, beforeDamage).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
       const result = computeDamage(this.bundle, casterDef, targetDef, caster, target, skill, {
         weatherId: st.weather ? st.weather.id : null,
         extraMult: ctx.extraDamageMult,
@@ -264,6 +304,15 @@ export class Simulator {
         text: `${caster.spriteId} 对 ${target.spriteId} 造成 ${result.damage} 伤害${result.crit ? "（暴击）" : ""}`,
         data: { value: result.damage, crit: result.crit },
       });
+      const afterDamage = this.mechanisms.dispatch({
+        state: st,
+        trigger: "afterDamage",
+        actorSide: side,
+        targetSide: opp,
+        action,
+        event: { action, skillId: action.skillId, damageType: category, damage: result.damage },
+      });
+      events.push(...this.mechanisms.applyStateCommands(st, afterDamage).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
     }
     return events;
   }
@@ -277,6 +326,10 @@ export class Simulator {
       const s = this.sideState(st, side);
       if (s.wishCooldown > 0) s.wishCooldown -= 1;
       for (const sprite of [s.active, ...s.bench]) {
+        for (const skillId of Object.keys(sprite.cooldowns ?? {})) {
+          sprite.cooldowns![skillId] -= 1;
+          if (sprite.cooldowns![skillId] <= 0) delete sprite.cooldowns![skillId];
+        }
         for (const status of Object.keys({ ...sprite.statuses })) {
           sprite.statuses[status] -= 1;
           if (sprite.statuses[status] <= 0) delete sprite.statuses[status];

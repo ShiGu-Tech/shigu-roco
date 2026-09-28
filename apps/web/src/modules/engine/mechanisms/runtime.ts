@@ -55,6 +55,14 @@ export class MechanismRuntime {
           events.push({ type: "cooldown-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { skillId, before, after: active.cooldowns[skillId], delta: definition.delta } });
           break;
         }
+        case "modifyStat": {
+          const value = definition.mode === "percent" && Math.abs(definition.value) > 1 ? definition.value / 100 : definition.value;
+          const bucket = value >= 0 ? active.buffs : active.debuffs;
+          const before = bucket[definition.stat] ?? 0;
+          bucket[definition.stat] = before + value;
+          events.push({ type: "stat-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { stat: definition.stat, before, after: bucket[definition.stat], mode: definition.mode } });
+          break;
+        }
         default:
           break;
       }

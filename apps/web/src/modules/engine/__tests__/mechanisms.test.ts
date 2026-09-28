@@ -102,13 +102,21 @@ describe("mechanism state transaction", () => {
 
   it("lets an actionDeclared mechanism cancel the opponent action in Simulator", () => {
     const bundle = loadData();
-    const skillId = Object.keys(bundle.skills)[0];
+    const skillId = Object.entries(bundle.skills).find(([, skill]) =>
+      (skill.category === "Physical" || skill.category === "Magic") && Number(skill.power) > 0,
+    )?.[0] ?? Object.keys(bundle.skills)[0];
     bundle.mechanisms = [{
       id: "cancel-opponent",
       ownerType: "trait",
       ownerId: "trait-test",
       trigger: "actionDeclared",
       effects: [{ type: "cancelAction", target: "enemy" }],
+    }, {
+      id: "mark-after-damage",
+      ownerType: "trait",
+      ownerId: "trait-test",
+      trigger: "afterDamage",
+      effects: [{ type: "applyStatus", target: "self", statusId: "marked", duration: 2 }],
     }];
     const player = makeActive("sp-7", { hp: 300, maxHp: 300, energy: 10 });
     const enemy = makeActive("sp-10", { hp: 300, maxHp: 300, energy: 10 });
@@ -124,5 +132,6 @@ describe("mechanism state transaction", () => {
 
     expect(result.phaseLogs.filter((log) => log.startsWith("skill:")).length).toBe(1);
     expect(result.events.some((event) => event.type === "action-cancelled")).toBe(true);
+    expect(result.state.player.active.statuses.marked).toBe(1);
   });
 });
