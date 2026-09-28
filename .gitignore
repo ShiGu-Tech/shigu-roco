@@ -1,6 +1,7 @@
 # --- Node / Next ---
 node_modules/
 .next/
+apps/web/next-env.d.ts
 out/
 *.tsbuildinfo
 .pnpm-store/
