@@ -1,8 +1,10 @@
-/** 面板真实数值换算（洛克王国 60 级 PVP 口径）。
+/** 面板真实数值换算（洛克王国世界 · 实测等级公式）。
  *
- * 生命：round( round(种族×raceFactor + 个体×ivFactor + base) × 性格 ) + result
- * 其他：同上（default 面板）。
- * 系数与常数来自 data/stats.json.panels，全部可校准；等级 60 已折进系数。
+ * panel(L) = round( 性格 × round( base + 种族×raceBase + 个体×ivBase
+ *                                  + (levelBase + 种族×raceSlope + 个体×ivSlope)×L ) )
+ *   · 攻/防/速：10 + (种族 + 个体×0.5)×(L+50)/100 的等价展开（levelBase = 0）。
+ *   · 生命：10 + 0.5·种族 + 0.2·个体 + (1 + 0.02·种族 + 0.01·个体)·L。
+ * 系数见 data/stats.json.panels；性格 ×1.1 / ×0.9（六项统一）；括号先取整再乘性格；星级另算。
  * 只依赖 StatsData，前端（持有 catalog.stats）与引擎共用同一份换算。
  */
 
@@ -12,19 +14,28 @@ import { asDict, toNum } from "./types";
 export const STAT_KEYS = ["hp", "atk", "defense", "spatk", "spdef", "speed"] as const;
 export type StatKey = (typeof STAT_KEYS)[number];
 
-const DEFAULT_PANEL = { raceFactor: 1.1, ivFactor: 0.55, base: 10, result: 50 };
-const DEFAULT_HP_PANEL = { raceFactor: 1.7, ivFactor: 0.85, base: 70, result: 100 };
+const DEFAULT_PANEL = { base: 10, raceBase: 0.5, ivBase: 0.25, levelBase: 0, raceSlope: 0.01, ivSlope: 0.005 };
+const DEFAULT_HP_PANEL = { base: 10, raceBase: 0.5, ivBase: 0.2, levelBase: 1, raceSlope: 0.02, ivSlope: 0.01 };
 
 function panelDef(stats: StatsData, stat: string) {
   const panels = asDict((stats as Dict).panels);
   const fallback = stat === "hp" ? DEFAULT_HP_PANEL : DEFAULT_PANEL;
   const def = asDict(panels[stat === "hp" ? "hp" : "default"]);
   return {
-    raceFactor: toNum(def.raceFactor, fallback.raceFactor),
-    ivFactor: toNum(def.ivFactor, fallback.ivFactor),
     base: toNum(def.base, fallback.base),
-    result: toNum(def.result, fallback.result),
+    raceBase: toNum(def.raceBase, fallback.raceBase),
+    ivBase: toNum(def.ivBase, fallback.ivBase),
+    levelBase: toNum(def.levelBase, fallback.levelBase),
+    raceSlope: toNum(def.raceSlope, fallback.raceSlope),
+    ivSlope: toNum(def.ivSlope, fallback.ivSlope),
   };
+}
+
+/** 换算用等级：优先 profile.level，其次 stats.level.default（缺省 60）。 */
+function levelOf(stats: StatsData, profile: StatProfile | undefined): number {
+  const level = toNum(profile?.level, NaN);
+  if (Number.isFinite(level)) return level;
+  return toNum(asDict((stats as Dict).level).default, 60);
 }
 
 export function raceStat(spriteDef: Dict, stat: string): number {
@@ -44,19 +55,21 @@ export function findNature(stats: StatsData, natureId: string | null | undefined
 export function natureMultiplier(stats: StatsData, profile: StatProfile | undefined, stat: string): number {
   const nature = findNature(stats, profile?.nature);
   if (!nature) return 1;
-  const upFactor = toNum(nature.upFactor, 1.2);
-  const downFactor = toNum(nature.downFactor, 0.9);
-  if (nature.up === stat) return upFactor;
-  if (nature.down === stat) return downFactor;
+  if (nature.up === stat) return toNum(nature.upFactor, 1.1);
+  if (nature.down === stat) return toNum(nature.downFactor, 0.9);
   return 1;
 }
 
-/** 面板真实数值：性格只乘括号，末尾常数在舍入与性格之外。 */
+/** 面板真实数值：括号（种族 / 个体 / 等级项）先取整，再乘性格。 */
 export function statWithProfile(stats: StatsData, spriteDef: Dict, profile: StatProfile | undefined, stat: string): number {
   const p = panelDef(stats, stat);
-  const inner = raceStat(spriteDef, stat) * p.raceFactor + ivOf(profile, stat) * p.ivFactor + p.base;
+  const race = raceStat(spriteDef, stat);
+  const iv = ivOf(profile, stat);
+  const level = levelOf(stats, profile);
+  const inner =
+    p.base + race * p.raceBase + iv * p.ivBase + (p.levelBase + race * p.raceSlope + iv * p.ivSlope) * level;
   const nature = natureMultiplier(stats, profile, stat);
-  return Math.round(Math.round(inner) * nature) + p.result;
+  return Math.round(Math.round(inner) * nature);
 }
 
 export function computeStats(stats: StatsData, spriteDef: Dict, profile?: StatProfile): Record<StatKey, number> {

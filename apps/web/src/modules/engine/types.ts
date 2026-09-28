@@ -99,12 +99,14 @@ export interface NatureDef {
   downFactor?: number;
 }
 
-/** 面板换算系数：round( round(种族×raceFactor + 个体×ivFactor + base) × 性格 ) + result。 */
+/** 面板系数：panel(L) = round( 性格 × round( base + 种族×raceBase + 个体×ivBase + (levelBase + 种族×raceSlope + 个体×ivSlope)×L ) )。 */
 export interface StatsPanelDef {
-  raceFactor: number;
-  ivFactor: number;
   base: number;
-  result: number;
+  raceBase: number;
+  ivBase: number;
+  levelBase: number;
+  raceSlope: number;
+  ivSlope: number;
 }
 
 export interface IndividualDef {
@@ -125,6 +127,7 @@ export interface TrainingProfileDef {
 export interface StatsData {
   level?: { default?: number };
   panels?: { hp?: StatsPanelDef; default?: StatsPanelDef };
+  starBonus?: { hp?: number; default?: number; starMax?: number };
   individual?: IndividualDef;
   natures?: NatureDef[];
   trainingProfiles?: { options?: TrainingProfileDef[]; sigma?: number };
