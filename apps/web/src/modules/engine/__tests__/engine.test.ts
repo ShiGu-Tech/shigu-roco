@@ -2,10 +2,9 @@
 
 import { describe, expect, it } from "vitest";
 
-import { bundleTypeMultiplier, counts, getSprite } from "../data";
+import { bundleTypeMultiplier, counts, getSprite, typeMultiplier } from "../data";
 import { loadData } from "../data-node";
 import { computeDamage } from "../effects/damage";
-import { EffectContext, applyOps } from "../effects/interpreter";
 import { MCTS } from "../mcts/search";
 import { OpponentModel } from "../opponent/bayes";
 import { maxHpLikelihood, profileOptions, trainingProbabilities } from "../opponent/training";
@@ -58,11 +57,15 @@ describe("数据层", () => {
     expect(bundleTypeMultiplier(bundle, "Fire", ["Water"])).toBe(0.5);
     expect(bundleTypeMultiplier(bundle, "Fire", ["Normal"])).toBe(1.0);
     expect(bundleTypeMultiplier(bundle, "Fire", ["Grass", "Water"])).toBe(1.0);
+    expect(typeMultiplier({ values: {}, matrix: { Fire: { Grass: "counter3" } } }, "Fire", ["Grass"])).toBe(3.0);
+    expect(typeMultiplier({ values: {}, matrix: { Fire: { Grass: "resisted4" } } }, "Fire", ["Grass"])).toBe(0.25);
   });
 
-  it("技能 DSL 字段", () => {
+  it("技能扩展已注册", () => {
+    const mechanisms = (bundle.mechanisms ?? []) as { ownerType: string }[];
+    expect(mechanisms.filter((item) => item.ownerType === "skill")).toHaveLength(Object.keys(bundle.skills).length);
+    expect(mechanisms.filter((item) => item.ownerType === "trait")).toHaveLength(Object.values(bundle.sprites).filter((sprite) => sprite.trait).length);
     for (const sk of Object.values(bundle.skills)) {
-      expect(Array.isArray(sk.ops)).toBe(true);
       expect(["Attack", "Defense", "Status"]).toContain(sk.actionType);
       expect(["Physical", "Magic", "Status", "Defense"]).toContain(sk.category);
     }
@@ -81,11 +84,8 @@ describe("伤害公式", () => {
   const skill: Dict = { element: "Fire", category: "Physical", power: 100 };
   const active = () => makeActive("x", { hp: 300, maxHp: 300, energy: 10 });
 
-  const damage = (defEndElements: string[], forceCrit?: boolean, seed = 1) =>
-    computeDamage(bundle, attacker, { ...defender, elements: defEndElements }, active(), active(), skill, {
-      forceCrit,
-      rng: new Rng(seed),
-    });
+  const damage = (defEndElements: string[]) =>
+    computeDamage(bundle, attacker, { ...defender, elements: defEndElements }, active(), active(), skill, {});
 
   it("克制打得更痛", () => {
     expect(damage(["Grass"]).damage).toBeGreaterThan(damage(["Water"]).damage);
@@ -95,12 +95,12 @@ describe("伤害公式", () => {
     expect(damage(["Normal"]).stab).toBe(1.5);
   });
 
-  it("暴击更高", () => {
-    expect(damage(["Normal"], true).damage).toBeGreaterThan(damage(["Normal"], false).damage);
+  it("固定伤害且无暴击分支", () => {
+    expect(damage(["Normal"]).damage).toBe(damage(["Normal"]).damage);
   });
 
   it("零威力为零", () => {
-    const res = computeDamage(bundle, attacker, defender, active(), active(), { element: "Fire", category: "Status", power: 0 }, { rng: new Rng(1) });
+    const res = computeDamage(bundle, attacker, defender, active(), active(), { element: "Fire", category: "Status", power: 0 }, {});
     expect(res.damage).toBe(0);
   });
 });
@@ -110,7 +110,7 @@ describe("印记", () => {
     const st = state();
     st.player.active.marks = { burn: 5 };
     const before = st.player.active.hp;
-    const events = settleMarks(st, "turnEnd", bundle, new Rng(1));
+    const events = settleMarks(st, "turnEnd", bundle);
     expect(st.player.active.hp).toBeLessThan(before);
     expect(events.some((e) => e.type === "damage")).toBe(true);
   });
@@ -122,12 +122,6 @@ describe("印记", () => {
     expect(st.player.active.marks.burn).toBe(5);
   });
 
-  it("层数封顶", () => {
-    const st = state();
-    const ctx = new EffectContext({ state: st, bundle, rng: new Rng(1), casterSide: "player", targetSide: "enemy" });
-    applyOps([{ kind: "add_mark", target: "enemy", mark: "burn", stack: 999 }], ctx);
-    expect(st.enemy.active.marks.burn).toBe(Number(bundle.marks.burn.maxStack));
-  });
 });
 
 describe("回合结算", () => {

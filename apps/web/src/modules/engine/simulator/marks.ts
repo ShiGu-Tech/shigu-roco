@@ -1,29 +1,23 @@
 /** 印记结算。对应 Python simulator/marks.py。 */
 
 import { getMark } from "../data";
-import { EffectContext, applyOps } from "../effects/interpreter";
-import type { Rng } from "../rng";
+import { MechanismRegistry, MechanismRuntime, mechanismsFromData } from "../mechanisms";
 import type { BattleEvent, BattleState, DataBundle, Side } from "../types";
 import { toStr } from "../types";
 
-export function settleMarks(state: BattleState, timing: string, bundle: DataBundle, rng: Rng): BattleEvent[] {
+export function settleMarks(state: BattleState, timing: string, bundle: DataBundle): BattleEvent[] {
   const events: BattleEvent[] = [];
+  const runtime = new MechanismRuntime(new MechanismRegistry(mechanismsFromData(bundle.mechanisms)));
   for (const side of ["player", "enemy"] as Side[]) {
-    const active = (side === "player" ? state.player : state.enemy).active;
-    for (const [markId, stack] of Object.entries({ ...active.marks })) {
+    const sideState = side === "player" ? state.player : state.enemy;
+    const stores = [sideState.active.marks, sideState.teamMarks];
+    for (const store of stores) for (const [markId, stack] of Object.entries({ ...store })) {
       const mdef = getMark(bundle, markId);
       if (!mdef || toStr(mdef.trigger) !== timing) continue;
-      void stack;
       const opponent: Side = side === "player" ? "enemy" : "player";
-      const ctx = new EffectContext({
-        state,
-        bundle,
-        rng,
-        casterSide: side,
-        targetSide: opponent,
-        events,
-      });
-      applyOps(mdef.ops as never, ctx);
+      const commands = runtime.dispatch({ state, trigger: timing as never, actorSide: side, targetSide: opponent, event: { markId, stack } });
+      events.push(...runtime.applyStateCommands(state, commands, bundle).map((event) => ({ type: event.type, side: event.side ?? null, text: `机制 ${event.mechanismId ?? ""}：${event.type}`, data: event.data })));
+      events.push(...runtime.applyDamageCommands(state, bundle, commands).map((event) => ({ type: event.type, side: event.side ?? null, text: `机制 ${event.mechanismId ?? ""}：${event.type}`, data: event.data })));
     }
   }
   return events;

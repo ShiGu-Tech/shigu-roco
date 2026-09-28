@@ -38,10 +38,7 @@
     "powerScale": 1.0,
     "attackDefScale": 1.0,
     "stab": 1.5,
-    "critRate": 0.0625,
-    "critFactor": 1.5,
-    "randomRange": [0.85, 1.0],
-    "note": "通用伤害形态，全部系数可校准；与真机的公式差异待对拍修正。"
+    "note": "通用伤害形态；必中、无暴击、无闪避，其他系数待真机对拍修正。"
   },
   "mctsEval": {
     "wMagic": 0.4,

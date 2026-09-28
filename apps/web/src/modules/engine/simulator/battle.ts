@@ -1,14 +1,13 @@
 /** 战斗模拟器（MDP 环境）：按四阶段回合结算。对应 Python simulator/battle.py。 */
 
 import { getSkill, getSprite } from "../data";
-import { computeDamage, effectiveStat } from "../effects/damage";
-import { EffectContext, applyOps } from "../effects/interpreter";
+import { effectiveStat } from "../effects/damage";
 import type { Rng } from "../rng";
 import { cloneState } from "../state";
 import type { Action, BattleEvent, BattleState, DataBundle, Side, StepResult, Terminal } from "../types";
 import { asDict, toArray, toNum, toStr } from "../types";
 import { clearMarksOnSwitch, settleMarks } from "./marks";
-import { ActionQueue, MechanismRegistry, MechanismRuntime } from "../mechanisms";
+import { ActionQueue, MechanismRegistry, MechanismRuntime, mechanismsFromData } from "../mechanisms";
 
 const SIDES: Side[] = ["player", "enemy"];
 
@@ -22,10 +21,7 @@ export class Simulator {
 
   constructor(bundle: DataBundle) {
     this.bundle = bundle;
-    this.mechanisms = new MechanismRuntime(new MechanismRegistry());
-    for (const definition of bundle.mechanisms ?? []) {
-      this.mechanisms.registry.register(definition as never);
-    }
+    this.mechanisms = new MechanismRuntime(new MechanismRegistry(mechanismsFromData(bundle.mechanisms)));
   }
 
   private sideState(state: BattleState, who: Side) {
@@ -59,9 +55,11 @@ export class Simulator {
       }
     }
 
-    for (const bench of side.bench) {
-      if (bench.hp > 0 && bench.spriteId !== active.spriteId) {
-        actions.push({ kind: "switch", benchId: bench.spriteId, label: `换 ${bench.spriteId}` });
+    if (side.switchLock <= 0) {
+      for (const bench of side.bench) {
+        if (bench.hp > 0 && bench.spriteId !== active.spriteId) {
+          actions.push({ kind: "switch", benchId: bench.spriteId, label: `换 ${bench.spriteId}` });
+        }
       }
     }
 
@@ -84,7 +82,7 @@ export class Simulator {
     const rules = this.bundle.rules;
 
     const turnStartCommands = this.mechanisms.dispatch({ state: st, trigger: "turnStart", event: { turn: st.turn } });
-    events.push(...this.mechanisms.applyStateCommands(st, turnStartCommands).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+    events.push(...this.mechanisms.applyStateCommands(st, turnStartCommands, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
 
     // ① 洛克魔法阶段（愿力）
     for (const side of SIDES) {
@@ -107,7 +105,7 @@ export class Simulator {
     const switchSides = SIDES.filter((s) => actions[s].kind === "switch");
     switchSides.sort((a, b) => this.speedOf(st, b) - this.speedOf(st, a));
     for (const side of switchSides) {
-      events.push(...this.doSwitch(st, side, actions[side].benchId));
+      events.push(...this.doSwitch(st, side, actions[side].benchId, false));
       logs.push(`switch: ${side} -> ${actions[side].benchId ?? ""}`);
     }
 
@@ -130,10 +128,10 @@ export class Simulator {
       });
       const mechanismEvents = this.mechanisms.applyActionCommands(queue, commands, actionIds, () => `action-${st.turn}-extra-${queue.all().length}`);
       events.push(...mechanismEvents.map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
-      const stateEvents = this.mechanisms.applyStateCommands(st, commands);
+      const stateEvents = this.mechanisms.applyStateCommands(st, commands, this.bundle);
       events.push(...stateEvents.map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
     }
-    queue.ordered().forEach((entry, idx) => {
+    queue.ordered().forEach((entry) => {
       if (entry.status !== "queued") return;
       const side = entry.actorSide;
       const caster = this.sideState(st, side).active;
@@ -147,16 +145,15 @@ export class Simulator {
         event: { action: entry.action, actionId: entry.id },
       });
       events.push(...this.mechanisms.applyActionCommands(queue, beforeCommands, { ...actionIds, [side]: entry.id }, () => `action-${st.turn}-extra-${queue.all().length}`).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
-      events.push(...this.mechanisms.applyStateCommands(st, beforeCommands).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+      events.push(...this.mechanisms.applyStateCommands(st, beforeCommands, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
       if (entry.status !== "queued") return;
       entry.status = "executing";
       const opp = otherSide(side);
-      const defenderAction = this.actionType(actions[opp]);
       if (entry.action.kind === "energy") {
         events.push(...this.applyEnergy(st, side));
         logs.push(`energy: ${side}`);
       } else {
-        events.push(...this.executeSkill(st, side, entry.action, defenderAction, idx === 0, rng));
+        events.push(...this.executeSkill(st, side, entry.action, rng, beforeCommands));
         logs.push(`skill: ${side} -> ${entry.action.skillId ?? ""}`);
       }
       entry.status = "resolved";
@@ -168,13 +165,13 @@ export class Simulator {
         action: entry.action,
         event: { action: entry.action, actionId: entry.id },
       });
-      events.push(...this.mechanisms.applyStateCommands(st, afterCommands).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+      events.push(...this.mechanisms.applyStateCommands(st, afterCommands, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
     });
 
     // ④ 结算阶段
     const turnEndCommands = this.mechanisms.dispatch({ state: st, trigger: "turnEnd", event: { turn: st.turn } });
-    events.push(...this.mechanisms.applyStateCommands(st, turnEndCommands).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
-    events.push(...settleMarks(st, "turnEnd", this.bundle, rng));
+    events.push(...this.mechanisms.applyStateCommands(st, turnEndCommands, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+    events.push(...settleMarks(st, "turnEnd", this.bundle));
     this.decay(st);
     events.push(...this.handleFaints(st));
 
@@ -222,6 +219,19 @@ export class Simulator {
     };
   }
 
+  private triggerMarkMechanisms(st: BattleState, carrierSide: Side, targetSide: Side): BattleEvent[] {
+    const carrier = this.sideState(st, carrierSide);
+    const markIds = new Set([...Object.keys(carrier.active.marks), ...Object.keys(carrier.teamMarks)]);
+    const events: BattleEvent[] = [];
+    for (const markId of markIds) {
+      const stack = carrier.teamMarks[markId] ?? carrier.active.marks[markId] ?? 0;
+      const commands = this.mechanisms.dispatch({ state: st, trigger: "onHit", actorSide: carrierSide, targetSide, event: { markId, stack } });
+      events.push(...this.mechanisms.applyStateCommands(st, commands, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+      events.push(...this.mechanisms.applyDamageCommands(st, this.bundle, commands).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+    }
+    return events;
+  }
+
   private applyEnergy(st: BattleState, side: Side): BattleEvent[] {
     const active = this.sideState(st, side).active;
     const energy = asDict(this.bundle.rules.energy);
@@ -233,9 +243,10 @@ export class Simulator {
     return [{ type: "energy", side, text: `${active.spriteId} 聚能 +${gained}（${active.energy}/${cap}）`, data: { value: gained } }];
   }
 
-  doSwitch(st: BattleState, side: Side, benchId?: string): BattleEvent[] {
+  doSwitch(st: BattleState, side: Side, benchId?: string, forced = false): BattleEvent[] {
     const events: BattleEvent[] = [];
     const s = this.sideState(st, side);
+    if (!forced && s.switchLock > 0) return events;
     const target = s.bench.find((b) => b.spriteId === benchId && b.hp > 0);
     if (!target) return events;
     events.push(...clearMarksOnSwitch(st, side, this.bundle));
@@ -251,9 +262,8 @@ export class Simulator {
     st: BattleState,
     side: Side,
     action: Action,
-    defenderAction: string,
-    firstStrike: boolean,
     rng: Rng,
+    commands: import("../mechanisms").EffectCommand[],
   ): BattleEvent[] {
     const skill = action.skillId ? getSkill(this.bundle, action.skillId) : {};
     const caster = this.sideState(st, side).active;
@@ -265,24 +275,10 @@ export class Simulator {
     }
     const opp = otherSide(side);
     const target = this.sideState(st, opp).active;
-    const casterDef = getSprite(this.bundle, caster.spriteId);
-
-    const ctx = new EffectContext({
-      state: st,
-      bundle: this.bundle,
-      rng,
-      casterSide: side,
-      targetSide: opp,
-      defenderAction,
-      firstStrike,
-    });
-    applyOps(skill.ops as never, ctx);
-    const events = [...ctx.events];
-
-    const category = toStr(skill.category);
-    const power = toNum(skill.power, 0);
-    if ((category === "Physical" || category === "Magic") && power > 0 && target.hp > 0) {
-      const targetDef = getSprite(this.bundle, target.spriteId);
+    const events: BattleEvent[] = [];
+    const damageCommands = commands.filter((command) => command.definition.type === "dealDamage");
+    if (damageCommands.length && target.hp > 0) {
+      const category = toStr(skill.category);
       const beforeDamage = this.mechanisms.dispatch({
         state: st,
         trigger: "beforeDamage",
@@ -291,28 +287,18 @@ export class Simulator {
         action,
         event: { action, skillId: action.skillId, damageType: category },
       });
-      events.push(...this.mechanisms.applyStateCommands(st, beforeDamage).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
-      const result = computeDamage(this.bundle, casterDef, targetDef, caster, target, skill, {
-        weatherId: st.weather ? st.weather.id : null,
-        extraMult: ctx.extraDamageMult,
-        rng,
-      });
-      target.hp = Math.max(0, target.hp - result.damage);
-      events.push({
-        type: "damage",
-        side: opp,
-        text: `${caster.spriteId} 对 ${target.spriteId} 造成 ${result.damage} 伤害${result.crit ? "（暴击）" : ""}`,
-        data: { value: result.damage, crit: result.crit },
-      });
+      events.push(...this.mechanisms.applyStateCommands(st, beforeDamage, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+      events.push(...this.mechanisms.applyDamageCommands(st, this.bundle, damageCommands).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+      events.push(...this.triggerMarkMechanisms(st, opp, side));
       const afterDamage = this.mechanisms.dispatch({
         state: st,
         trigger: "afterDamage",
         actorSide: side,
         targetSide: opp,
         action,
-        event: { action, skillId: action.skillId, damageType: category, damage: result.damage },
+        event: { action, skillId: action.skillId, damageType: category },
       });
-      events.push(...this.mechanisms.applyStateCommands(st, afterDamage).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+      events.push(...this.mechanisms.applyStateCommands(st, afterDamage, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
     }
     return events;
   }
@@ -335,6 +321,7 @@ export class Simulator {
           if (sprite.statuses[status] <= 0) delete sprite.statuses[status];
         }
       }
+      if (s.switchLock > 0) s.switchLock -= 1;
     }
   }
 
@@ -344,7 +331,8 @@ export class Simulator {
     const perFaint = Math.floor(toNum(asDict(this.bundle.rules.magic).perFaint, 1));
     for (const side of SIDES) {
       const s = this.sideState(st, side);
-      if (s.active.hp > 0) continue;
+      if (s.active.hp > 0 || s.active.faintHandled) continue;
+      s.active.faintHandled = true;
       s.magic -= perFaint;
       events.push({ type: "faint", side, text: `${s.active.spriteId} 阵亡，魔力 -${perFaint}`, data: {} });
     }
@@ -352,7 +340,7 @@ export class Simulator {
   }
 
   forcedSwitch(st: BattleState, side: Side, benchId: string | null): BattleEvent[] {
-    return this.doSwitch(st, side, benchId ?? undefined);
+    return this.doSwitch(st, side, benchId ?? undefined, true);
   }
 
   // ------------------------------------------------------------------ 终止

@@ -1,16 +1,12 @@
-/** 伤害计算。所有系数来自 data/rules.json 的 damageFormula，便于真机校准。
- *  对应 Python effects/damage.py。
- */
+/** 固定伤害计算。所有系数来自 data/rules.json，便于真机校准。 */
 
 import { bundleTypeMultiplier, getWeatherDef } from "../data";
-import type { Rng } from "../rng";
 import { applyProfile, statWithProfile } from "../stats";
 import type { ActiveSprite, DataBundle, Dict } from "../types";
 import { asDict, toNum, toStr } from "../types";
 
 export interface DamageResult {
   damage: number;
-  crit: boolean;
   typeMult: number;
   stab: number;
   effective: number;
@@ -18,9 +14,7 @@ export interface DamageResult {
 
 export interface ComputeDamageOptions {
   weatherId?: string | null;
-  forceCrit?: boolean;
   extraMult?: number;
-  rng: Rng;
 }
 
 /** 基础值（含养成）× (1 + 增益 + 减益)。 */
@@ -40,18 +34,14 @@ export function computeDamage(
   options: ComputeDamageOptions,
 ): DamageResult {
   const power = toNum(skill.power, 0);
-  if (power <= 0) return { damage: 0, crit: false, typeMult: 1, stab: 1, effective: 0 };
+  if (power <= 0) return { damage: 0, typeMult: 1, stab: 1, effective: 0 };
 
-  const { rng } = options;
   const formula = asDict(bundle.rules.damageFormula);
   const level = toNum(formula.level, 50);
   const levelFactor = toNum(formula.levelFactor, 2);
   const powerScale = toNum(formula.powerScale, 1.0);
   const adScale = toNum(formula.attackDefScale, 1.0);
   const stabValue = toNum(formula.stab, 1.5);
-  const critRate = toNum(formula.critRate, 0.0625);
-  const critFactor = toNum(formula.critFactor, 1.5);
-  const randRange = Array.isArray(formula.randomRange) ? (formula.randomRange as number[]) : [0.85, 1.0];
 
   const category = toStr(skill.category);
   let atk: number;
@@ -79,13 +69,10 @@ export function computeDamage(
     weatherMult = toNum(damageMod[element], 1.0);
   }
 
-  const crit = options.forceCrit !== undefined ? options.forceCrit : rng.bool(critRate);
-  const critMult = crit ? critFactor : 1.0;
-  const randomMult = rng.uniform(toNum(randRange[0], 0.85), toNum(randRange[1], 1.0));
   const extraMult = options.extraMult ?? 1.0;
 
-  const damage = Math.max(0, Math.floor(base * stab * typeMult * weatherMult * critMult * randomMult * extraMult));
-  return { damage, crit, typeMult, stab, effective: damage };
+  const damage = Math.max(0, Math.floor(base * stab * typeMult * weatherMult * extraMult));
+  return { damage, typeMult, stab, effective: damage };
 }
 
 /** 便捷：按档案重算 active 的 maxHp（供外部构造实例时使用）。 */

@@ -35,8 +35,9 @@ export class MechanismRegistry {
 }
 
 export function mechanismsFromData(value: unknown): MechanismDefinition[] {
-  if (!Array.isArray(value)) return [];
-  return value.filter((item): item is MechanismDefinition => {
+  const entries = Array.isArray(value) ? value : (value && typeof value === "object" ? (value as Dict).mechanisms : undefined);
+  if (!Array.isArray(entries)) return [];
+  return entries.filter((item): item is MechanismDefinition => {
     const entry = item as Dict;
     return typeof entry.id === "string" && typeof entry.ownerType === "string" && typeof entry.ownerId === "string" && typeof entry.trigger === "string" && Array.isArray(entry.effects);
   });

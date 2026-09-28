@@ -32,8 +32,8 @@ export function emptyActive(): ActiveSpriteState {
 export function createInitialState(catalog: Catalog): BattleState {
   const first = catalog.sprites[0];
   const second = catalog.sprites[1] ?? catalog.sprites[0];
-  const rules = catalog.rules as { initialMagic?: number; wishCharges?: number };
-  const magic = Number(rules.initialMagic ?? 3);
+  const rules = catalog.rules as { initialMagic?: number; magic?: { initialPerSide?: number }; wishCharges?: number };
+  const magic = Number(rules.initialMagic ?? rules.magic?.initialPerSide ?? 4);
   const wish = Number(rules.wishCharges ?? 2);
   return {
     turn: 1,

@@ -45,9 +45,13 @@ engine/
 ├─ data-node.ts        # Node 侧 loader（读 data/*.json）
 ├─ stats.ts            # 养成资质换算（见《养成资质-设计》）
 ├─ effects/
-│  ├─ damage.ts        # computeDamage（对应 effects/damage.py）
-│  ├─ interpreter.ts   # ops / when DSL（对应 effects/interpreter.py）
+│  ├─ damage.ts        # 固定伤害计算与属性克制
 │  └─ index.ts
+├─ mechanisms/
+│  ├─ types.ts         # 触发器、条件、效果命令
+│  ├─ registry.ts      # 技能 / 特性 / 印记 / 天气注册表
+│  ├─ runtime.ts       # 状态事务、伤害事务、行动队列命令
+│  └─ action-queue.ts  # 行动排序、取消、抢先和替换
 ├─ simulator/
 │  ├─ battle.ts        # Simulator（对应 simulator/battle.py）
 │  └─ marks.ts         # 印记结算（对应 simulator/marks.py）
@@ -70,7 +74,7 @@ engine/
 | --- | --- | --- |
 | 引擎落点 | 并入 `apps/web/src/modules/engine/` | 单语言单进程，类型与前端共用，免 26901 与 CORS |
 | 数据加载 | `data.ts` 纯函数 + `data-node.ts` Node loader | 同构：Worker 端由 bundle 注入，不碰 `fs` |
-| 随机 | mulberry32 | 无依赖、可复现，替代 `random.Random` |
+| 随机 | mulberry32 | 只用于同速出手等明确随机机制；固定伤害不使用随机浮动 |
 | 校验 | 复用前端已有 TypeBox/AJV 声明接口；数据层沿用「引用完整性 + warning 不崩」 | 与旧 Pydantic/`load_data` 语义对齐 |
 | 测试 | Node 内置 `node --test` 跑 `.ts`，或 vitest | 先以 Node test runner 零依赖跑通；如需快照/覆盖再引入 vitest |
 | 热重载 | 保留 `POST /admin/reload`（清模块级缓存） | 契约不变 |

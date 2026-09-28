@@ -19,6 +19,7 @@ export type TriggerName =
   | "turnEnd"
   | "battleEnd"
   | "skillUsed"
+  | "onHit"
   | "statusApplied"
   | "markApplied"
   | "weatherChanged"
@@ -55,11 +56,18 @@ export interface Condition {
 }
 
 export type EffectDefinition =
+  | { type: "dealDamage"; target?: string; category: "Physical" | "Magic" | "Passive"; power: number; skillId?: string; basis?: "formula" | "flat" | "maxHp" | "currentHp" | "stack"; amount?: number; markId?: string }
+  | { type: "heal"; target?: string; amount: number; basis?: "flat" | "maxHp" | "currentHp" }
   | { type: "modifyStat"; target?: string; stat: string; mode: "flat" | "percent"; value: number }
   | { type: "modifyCooldown"; target?: string; skillId?: string; delta: number; minimum?: number }
   | { type: "applyStatus"; target?: string; statusId: string; layers?: number; duration?: number }
   | { type: "removeStatus"; target?: string; statusId: string }
   | { type: "modifyMagic"; target?: string; delta: number }
+  | { type: "modifyEnergy"; target?: string; delta: number }
+  | { type: "modifySwitchLock"; target?: string; delta: number }
+  | { type: "applyMark"; target?: string; markId: string; layers?: number; scope?: "sprite" | "team" }
+  | { type: "removeMark"; target?: string; markId: string; layers?: number; scope?: "sprite" | "team" }
+  | { type: "changeWeather"; weatherId: string; turns?: number }
   | { type: "setPriority"; target?: string; value: number }
   | { type: "forceFirst"; target?: string }
   | { type: "insertAction"; action: Action; targetSide?: Side }

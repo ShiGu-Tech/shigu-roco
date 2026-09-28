@@ -49,6 +49,8 @@ function parseActive(raw: Dict): ActiveSprite {
     debuffs: numDict(raw.debuffs),
     marks: intDict(raw.marks),
     statuses: intDict(raw.statuses),
+    cooldowns: intDict(raw.cooldowns),
+    faintHandled: Boolean(raw.faintHandled),
     profile: parseProfile(raw.profile),
   };
 }
@@ -58,6 +60,8 @@ function parseSide(raw: Dict) {
     magic: toNum(raw.magic, 0),
     active: parseActive(asDict(raw.active)),
     bench: toArray<Dict>(raw.bench).map(parseActive),
+    teamMarks: intDict(raw.teamMarks),
+    switchLock: Math.max(0, Math.floor(toNum(raw.switchLock, 0))),
     seenEnemy: toArray<string>(raw.seenEnemy),
     wishChargesLeft: toNum(raw.wishChargesLeft, 0),
     wishCooldown: toNum(raw.wishCooldown, 0),

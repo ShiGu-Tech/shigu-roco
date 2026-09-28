@@ -22,6 +22,8 @@ export function cloneActive(a: ActiveSprite): ActiveSprite {
     debuffs: { ...a.debuffs },
     marks: { ...a.marks },
     statuses: { ...a.statuses },
+    cooldowns: a.cooldowns ? { ...a.cooldowns } : undefined,
+    faintHandled: a.faintHandled,
     profile: cloneProfile(a.profile),
   };
 }
@@ -31,6 +33,8 @@ export function cloneSide(s: SideState): SideState {
     magic: s.magic,
     active: cloneActive(s.active),
     bench: s.bench.map(cloneActive),
+    teamMarks: { ...s.teamMarks },
+    switchLock: s.switchLock,
     seenEnemy: [...s.seenEnemy],
     wishChargesLeft: s.wishChargesLeft,
     wishCooldown: s.wishCooldown,
@@ -71,15 +75,18 @@ export function makeActive(
     debuffs: {},
     marks: {},
     statuses: {},
+    faintHandled: false,
     profile: opts.profile,
   };
 }
 
 export function makeSide(active: ActiveSprite, opts: Partial<Omit<SideState, "active">> = {}): SideState {
   return {
-    magic: opts.magic ?? 3,
+    magic: opts.magic ?? 4,
     active,
     bench: opts.bench ?? [],
+    teamMarks: opts.teamMarks ?? {},
+    switchLock: opts.switchLock ?? 0,
     seenEnemy: opts.seenEnemy ?? [],
     wishChargesLeft: opts.wishChargesLeft ?? 0,
     wishCooldown: opts.wishCooldown ?? 0,

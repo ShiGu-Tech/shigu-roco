@@ -1,0 +1,3948 @@
+{
+  "$schemaVersion": "0.1",
+  "version": "0.3.0",
+  "updatedAt": "2026-09-28",
+  "mechanisms": [
+    {
+      "id": "skill:sk-7020370",
+      "ownerType": "skill",
+      "ownerId": "sk-7020370",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020370"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 65,
+          "skillId": "sk-7020370"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7020620",
+      "ownerType": "skill",
+      "ownerId": "sk-7020620",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020620"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 100
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7020630",
+      "ownerType": "skill",
+      "ownerId": "sk-7020630",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020630"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 70
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7020780",
+      "ownerType": "skill",
+      "ownerId": "sk-7020780",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020780"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7030440",
+      "ownerType": "skill",
+      "ownerId": "sk-7030440",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030440"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 100,
+          "skillId": "sk-7030440"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7040370",
+      "ownerType": "skill",
+      "ownerId": "sk-7040370",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040370"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 80,
+          "skillId": "sk-7040370"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7050360",
+      "ownerType": "skill",
+      "ownerId": "sk-7050360",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7050360"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 80,
+          "skillId": "sk-7050360"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7060090",
+      "ownerType": "skill",
+      "ownerId": "sk-7060090",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7060090"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 60,
+          "skillId": "sk-7060090"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7060100",
+      "ownerType": "skill",
+      "ownerId": "sk-7060100",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7060100"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 100,
+          "skillId": "sk-7060100"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7060120",
+      "ownerType": "skill",
+      "ownerId": "sk-7060120",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7060120"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 60,
+          "skillId": "sk-7060120"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7060130",
+      "ownerType": "skill",
+      "ownerId": "sk-7060130",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7060130"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 50,
+          "skillId": "sk-7060130"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7060140",
+      "ownerType": "skill",
+      "ownerId": "sk-7060140",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7060140"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7060160",
+      "ownerType": "skill",
+      "ownerId": "sk-7060160",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7060160"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 80,
+          "skillId": "sk-7060160"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7060180",
+      "ownerType": "skill",
+      "ownerId": "sk-7060180",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7060180"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 120,
+          "skillId": "sk-7060180"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7060240",
+      "ownerType": "skill",
+      "ownerId": "sk-7060240",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7060240"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7080300",
+      "ownerType": "skill",
+      "ownerId": "sk-7080300",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080300"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 80,
+          "skillId": "sk-7080300"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7090250",
+      "ownerType": "skill",
+      "ownerId": "sk-7090250",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7090250"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 80,
+          "skillId": "sk-7090250"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7110200",
+      "ownerType": "skill",
+      "ownerId": "sk-7110200",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7110200"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 90,
+          "skillId": "sk-7110200"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7190210",
+      "ownerType": "skill",
+      "ownerId": "sk-7190210",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7190210"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 80,
+          "skillId": "sk-7190210"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7020360",
+      "ownerType": "skill",
+      "ownerId": "sk-7020360",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020360"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 35,
+          "skillId": "sk-7020360"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7020390",
+      "ownerType": "skill",
+      "ownerId": "sk-7020390",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020390"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 90,
+          "skillId": "sk-7020390"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7020640",
+      "ownerType": "skill",
+      "ownerId": "sk-7020640",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020640"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7030180",
+      "ownerType": "skill",
+      "ownerId": "sk-7030180",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030180"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 150,
+          "skillId": "sk-7030180"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7030200",
+      "ownerType": "skill",
+      "ownerId": "sk-7030200",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030200"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 80,
+          "skillId": "sk-7030200"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7030210",
+      "ownerType": "skill",
+      "ownerId": "sk-7030210",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030210"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 100,
+          "skillId": "sk-7030210"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7030220",
+      "ownerType": "skill",
+      "ownerId": "sk-7030220",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030220"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7030230",
+      "ownerType": "skill",
+      "ownerId": "sk-7030230",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030230"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7030260",
+      "ownerType": "skill",
+      "ownerId": "sk-7030260",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030260"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7030280",
+      "ownerType": "skill",
+      "ownerId": "sk-7030280",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030280"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7030300",
+      "ownerType": "skill",
+      "ownerId": "sk-7030300",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030300"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7030320",
+      "ownerType": "skill",
+      "ownerId": "sk-7030320",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030320"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7030460",
+      "ownerType": "skill",
+      "ownerId": "sk-7030460",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030460"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 120,
+          "skillId": "sk-7030460"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7030480",
+      "ownerType": "skill",
+      "ownerId": "sk-7030480",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030480"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 80,
+          "skillId": "sk-7030480"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7021100",
+      "ownerType": "skill",
+      "ownerId": "sk-7021100",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7021100"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7040170",
+      "ownerType": "skill",
+      "ownerId": "sk-7040170",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040170"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 30,
+          "skillId": "sk-7040170"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7040180",
+      "ownerType": "skill",
+      "ownerId": "sk-7040180",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040180"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 40,
+          "skillId": "sk-7040180"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7040200",
+      "ownerType": "skill",
+      "ownerId": "sk-7040200",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040200"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 50,
+          "skillId": "sk-7040200"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7040220",
+      "ownerType": "skill",
+      "ownerId": "sk-7040220",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040220"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 70,
+          "skillId": "sk-7040220"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7040250",
+      "ownerType": "skill",
+      "ownerId": "sk-7040250",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040250"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 10000,
+          "skillId": "sk-7040250"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7040270",
+      "ownerType": "skill",
+      "ownerId": "sk-7040270",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040270"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7040320",
+      "ownerType": "skill",
+      "ownerId": "sk-7040320",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040320"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 140,
+          "skillId": "sk-7040320"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7040390",
+      "ownerType": "skill",
+      "ownerId": "sk-7040390",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040390"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 100,
+          "skillId": "sk-7040390"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7040440",
+      "ownerType": "skill",
+      "ownerId": "sk-7040440",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040440"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 120
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7020880",
+      "ownerType": "skill",
+      "ownerId": "sk-7020880",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020880"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 65,
+          "skillId": "sk-7020880"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7050160",
+      "ownerType": "skill",
+      "ownerId": "sk-7050160",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7050160"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 30,
+          "skillId": "sk-7050160"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7050180",
+      "ownerType": "skill",
+      "ownerId": "sk-7050180",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7050180"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 100,
+          "skillId": "sk-7050180"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7050190",
+      "ownerType": "skill",
+      "ownerId": "sk-7050190",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7050190"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 110,
+          "skillId": "sk-7050190"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7050210",
+      "ownerType": "skill",
+      "ownerId": "sk-7050210",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7050210"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 150,
+          "skillId": "sk-7050210"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7050250",
+      "ownerType": "skill",
+      "ownerId": "sk-7050250",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7050250"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7050260",
+      "ownerType": "skill",
+      "ownerId": "sk-7050260",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7050260"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7050270",
+      "ownerType": "skill",
+      "ownerId": "sk-7050270",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7050270"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7050390",
+      "ownerType": "skill",
+      "ownerId": "sk-7050390",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7050390"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 90,
+          "skillId": "sk-7050390"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7050400",
+      "ownerType": "skill",
+      "ownerId": "sk-7050400",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7050400"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7050420",
+      "ownerType": "skill",
+      "ownerId": "sk-7050420",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7050420"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7020430",
+      "ownerType": "skill",
+      "ownerId": "sk-7020430",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020430"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 65,
+          "skillId": "sk-7020430"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7020480",
+      "ownerType": "skill",
+      "ownerId": "sk-7020480",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020480"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 35,
+          "skillId": "sk-7020480"
+        },
+        {
+          "type": "unsupported",
+          "effectType": "multi_hit",
+          "reason": "复杂旧效果需要按真实机制逐条确认"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7020670",
+      "ownerType": "skill",
+      "ownerId": "sk-7020670",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020670"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7020690",
+      "ownerType": "skill",
+      "ownerId": "sk-7020690",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020690"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "speed",
+          "mode": "flat",
+          "value": 80
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7020700",
+      "ownerType": "skill",
+      "ownerId": "sk-7020700",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020700"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7020990",
+      "ownerType": "skill",
+      "ownerId": "sk-7020990",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020990"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 160,
+          "skillId": "sk-7020990"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7021090",
+      "ownerType": "skill",
+      "ownerId": "sk-7021090",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7021090"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7021130",
+      "ownerType": "skill",
+      "ownerId": "sk-7021130",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7021130"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7021020",
+      "ownerType": "skill",
+      "ownerId": "sk-7021020",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7021020"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 155,
+          "skillId": "sk-7021020"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7050280",
+      "ownerType": "skill",
+      "ownerId": "sk-7050280",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7050280"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7050290",
+      "ownerType": "skill",
+      "ownerId": "sk-7050290",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7050290"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 140,
+          "skillId": "sk-7050290"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7050340",
+      "ownerType": "skill",
+      "ownerId": "sk-7050340",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7050340"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 60,
+          "skillId": "sk-7050340"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7170120",
+      "ownerType": "skill",
+      "ownerId": "sk-7170120",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7170120"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 180,
+          "skillId": "sk-7170120"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7170130",
+      "ownerType": "skill",
+      "ownerId": "sk-7170130",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7170130"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7170140",
+      "ownerType": "skill",
+      "ownerId": "sk-7170140",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7170140"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7170200",
+      "ownerType": "skill",
+      "ownerId": "sk-7170200",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7170200"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 60,
+          "skillId": "sk-7170200"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7170250",
+      "ownerType": "skill",
+      "ownerId": "sk-7170250",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7170250"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7180080",
+      "ownerType": "skill",
+      "ownerId": "sk-7180080",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7180080"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 60,
+          "skillId": "sk-7180080"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7180110",
+      "ownerType": "skill",
+      "ownerId": "sk-7180110",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7180110"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 20,
+          "skillId": "sk-7180110"
+        },
+        {
+          "type": "unsupported",
+          "effectType": "multi_hit",
+          "reason": "复杂旧效果需要按真实机制逐条确认"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7180130",
+      "ownerType": "skill",
+      "ownerId": "sk-7180130",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7180130"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 135,
+          "skillId": "sk-7180130"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7180170",
+      "ownerType": "skill",
+      "ownerId": "sk-7180170",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7180170"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7180190",
+      "ownerType": "skill",
+      "ownerId": "sk-7180190",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7180190"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7180330",
+      "ownerType": "skill",
+      "ownerId": "sk-7180330",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7180330"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7020970",
+      "ownerType": "skill",
+      "ownerId": "sk-7020970",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020970"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 55,
+          "skillId": "sk-7020970"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7150050",
+      "ownerType": "skill",
+      "ownerId": "sk-7150050",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7150050"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 15,
+          "skillId": "sk-7150050"
+        },
+        {
+          "type": "unsupported",
+          "effectType": "multi_hit",
+          "reason": "复杂旧效果需要按真实机制逐条确认"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7150060",
+      "ownerType": "skill",
+      "ownerId": "sk-7150060",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7150060"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 75,
+          "skillId": "sk-7150060"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7150110",
+      "ownerType": "skill",
+      "ownerId": "sk-7150110",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7150110"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 70,
+          "skillId": "sk-7150110"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7150120",
+      "ownerType": "skill",
+      "ownerId": "sk-7150120",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7150120"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "speed",
+          "mode": "flat",
+          "value": 120
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7150130",
+      "ownerType": "skill",
+      "ownerId": "sk-7150130",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7150130"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7150200",
+      "ownerType": "skill",
+      "ownerId": "sk-7150200",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7150200"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 75,
+          "skillId": "sk-7150200"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7150240",
+      "ownerType": "skill",
+      "ownerId": "sk-7150240",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7150240"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 140,
+          "skillId": "sk-7150240"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7150250",
+      "ownerType": "skill",
+      "ownerId": "sk-7150250",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7150250"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 140,
+          "skillId": "sk-7150250"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7150300",
+      "ownerType": "skill",
+      "ownerId": "sk-7150300",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7150300"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7030160",
+      "ownerType": "skill",
+      "ownerId": "sk-7030160",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030160"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 30,
+          "skillId": "sk-7030160"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7030250",
+      "ownerType": "skill",
+      "ownerId": "sk-7030250",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030250"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7030340",
+      "ownerType": "skill",
+      "ownerId": "sk-7030340",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030340"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 30,
+          "skillId": "sk-7030340"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7030530",
+      "ownerType": "skill",
+      "ownerId": "sk-7030530",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030530"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 90,
+          "skillId": "sk-7030530"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7170090",
+      "ownerType": "skill",
+      "ownerId": "sk-7170090",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7170090"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 30,
+          "skillId": "sk-7170090"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7170100",
+      "ownerType": "skill",
+      "ownerId": "sk-7170100",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7170100"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 80,
+          "skillId": "sk-7170100"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7170150",
+      "ownerType": "skill",
+      "ownerId": "sk-7170150",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7170150"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7170230",
+      "ownerType": "skill",
+      "ownerId": "sk-7170230",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7170230"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 25,
+          "skillId": "sk-7170230"
+        },
+        {
+          "type": "unsupported",
+          "effectType": "multi_hit",
+          "reason": "复杂旧效果需要按真实机制逐条确认"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7170240",
+      "ownerType": "skill",
+      "ownerId": "sk-7170240",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7170240"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 90
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "speed",
+          "mode": "flat",
+          "value": 70
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7020420",
+      "ownerType": "skill",
+      "ownerId": "sk-7020420",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020420"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 135,
+          "skillId": "sk-7020420"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7020800",
+      "ownerType": "skill",
+      "ownerId": "sk-7020800",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020800"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7020890",
+      "ownerType": "skill",
+      "ownerId": "sk-7020890",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020890"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 60,
+          "skillId": "sk-7020890"
+        },
+        {
+          "type": "unsupported",
+          "effectType": "multi_hit",
+          "reason": "复杂旧效果需要按真实机制逐条确认"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7080140",
+      "ownerType": "skill",
+      "ownerId": "sk-7080140",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080140"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 140,
+          "skillId": "sk-7080140"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7080150",
+      "ownerType": "skill",
+      "ownerId": "sk-7080150",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080150"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 50,
+          "skillId": "sk-7080150"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7080220",
+      "ownerType": "skill",
+      "ownerId": "sk-7080220",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080220"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7080230",
+      "ownerType": "skill",
+      "ownerId": "sk-7080230",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080230"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7080250",
+      "ownerType": "skill",
+      "ownerId": "sk-7080250",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080250"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7080280",
+      "ownerType": "skill",
+      "ownerId": "sk-7080280",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080280"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 60,
+          "skillId": "sk-7080280"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7080290",
+      "ownerType": "skill",
+      "ownerId": "sk-7080290",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080290"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 55,
+          "skillId": "sk-7080290"
+        },
+        {
+          "type": "unsupported",
+          "effectType": "multi_hit",
+          "reason": "复杂旧效果需要按真实机制逐条确认"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7080310",
+      "ownerType": "skill",
+      "ownerId": "sk-7080310",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080310"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 100,
+          "skillId": "sk-7080310"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7080330",
+      "ownerType": "skill",
+      "ownerId": "sk-7080330",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080330"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 80,
+          "skillId": "sk-7080330"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7080360",
+      "ownerType": "skill",
+      "ownerId": "sk-7080360",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080360"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 160
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7080370",
+      "ownerType": "skill",
+      "ownerId": "sk-7080370",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080370"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 140
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7080120",
+      "ownerType": "skill",
+      "ownerId": "sk-7080120",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080120"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 80,
+          "skillId": "sk-7080120"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7080130",
+      "ownerType": "skill",
+      "ownerId": "sk-7080130",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080130"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 90,
+          "skillId": "sk-7080130"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7080180",
+      "ownerType": "skill",
+      "ownerId": "sk-7080180",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080180"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 190,
+          "skillId": "sk-7080180"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7080210",
+      "ownerType": "skill",
+      "ownerId": "sk-7080210",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080210"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7080240",
+      "ownerType": "skill",
+      "ownerId": "sk-7080240",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080240"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7080340",
+      "ownerType": "skill",
+      "ownerId": "sk-7080340",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080340"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 120,
+          "skillId": "sk-7080340"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7080380",
+      "ownerType": "skill",
+      "ownerId": "sk-7080380",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080380"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7080410",
+      "ownerType": "skill",
+      "ownerId": "sk-7080410",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080410"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 50
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7080470",
+      "ownerType": "skill",
+      "ownerId": "sk-7080470",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080470"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 80,
+          "skillId": "sk-7080470"
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 100
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7150090",
+      "ownerType": "skill",
+      "ownerId": "sk-7150090",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7150090"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 25,
+          "skillId": "sk-7150090"
+        },
+        {
+          "type": "unsupported",
+          "effectType": "multi_hit",
+          "reason": "复杂旧效果需要按真实机制逐条确认"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7150190",
+      "ownerType": "skill",
+      "ownerId": "sk-7150190",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7150190"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 60,
+          "skillId": "sk-7150190"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7180070",
+      "ownerType": "skill",
+      "ownerId": "sk-7180070",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7180070"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 30,
+          "skillId": "sk-7180070"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7180120",
+      "ownerType": "skill",
+      "ownerId": "sk-7180120",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7180120"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 70,
+          "skillId": "sk-7180120"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7180160",
+      "ownerType": "skill",
+      "ownerId": "sk-7180160",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7180160"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7180320",
+      "ownerType": "skill",
+      "ownerId": "sk-7180320",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7180320"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7180340",
+      "ownerType": "skill",
+      "ownerId": "sk-7180340",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7180340"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 40,
+          "skillId": "sk-7180340"
+        },
+        {
+          "type": "unsupported",
+          "effectType": "multi_hit",
+          "reason": "复杂旧效果需要按真实机制逐条确认"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7020960",
+      "ownerType": "skill",
+      "ownerId": "sk-7020960",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020960"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 165,
+          "skillId": "sk-7020960"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7130170",
+      "ownerType": "skill",
+      "ownerId": "sk-7130170",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7130170"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7130190",
+      "ownerType": "skill",
+      "ownerId": "sk-7130190",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7130190"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7130220",
+      "ownerType": "skill",
+      "ownerId": "sk-7130220",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7130220"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7130240",
+      "ownerType": "skill",
+      "ownerId": "sk-7130240",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7130240"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 40,
+          "skillId": "sk-7130240"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7130250",
+      "ownerType": "skill",
+      "ownerId": "sk-7130250",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7130250"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 15,
+          "skillId": "sk-7130250"
+        },
+        {
+          "type": "unsupported",
+          "effectType": "multi_hit",
+          "reason": "复杂旧效果需要按真实机制逐条确认"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7130260",
+      "ownerType": "skill",
+      "ownerId": "sk-7130260",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7130260"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 60,
+          "skillId": "sk-7130260"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7130280",
+      "ownerType": "skill",
+      "ownerId": "sk-7130280",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7130280"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 100,
+          "skillId": "sk-7130280"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7130310",
+      "ownerType": "skill",
+      "ownerId": "sk-7130310",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7130310"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7160140",
+      "ownerType": "skill",
+      "ownerId": "sk-7160140",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7160140"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 100,
+          "skillId": "sk-7160140"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7160160",
+      "ownerType": "skill",
+      "ownerId": "sk-7160160",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7160160"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7160200",
+      "ownerType": "skill",
+      "ownerId": "sk-7160200",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7160200"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7160230",
+      "ownerType": "skill",
+      "ownerId": "sk-7160230",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7160230"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 60,
+          "skillId": "sk-7160230"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7160260",
+      "ownerType": "skill",
+      "ownerId": "sk-7160260",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7160260"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 140,
+          "skillId": "sk-7160260"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7021060",
+      "ownerType": "skill",
+      "ownerId": "sk-7021060",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7021060"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 500,
+          "skillId": "sk-7021060"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7030190",
+      "ownerType": "skill",
+      "ownerId": "sk-7030190",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030190"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 45,
+          "skillId": "sk-7030190"
+        },
+        {
+          "type": "unsupported",
+          "effectType": "multi_hit",
+          "reason": "复杂旧效果需要按真实机制逐条确认"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7030240",
+      "ownerType": "skill",
+      "ownerId": "sk-7030240",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030240"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7030430",
+      "ownerType": "skill",
+      "ownerId": "sk-7030430",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030430"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 60,
+          "skillId": "sk-7030430"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7030500",
+      "ownerType": "skill",
+      "ownerId": "sk-7030500",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030500"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7170170",
+      "ownerType": "skill",
+      "ownerId": "sk-7170170",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7170170"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 140,
+          "skillId": "sk-7170170"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7170190",
+      "ownerType": "skill",
+      "ownerId": "sk-7170190",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7170190"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 40,
+          "skillId": "sk-7170190"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7170260",
+      "ownerType": "skill",
+      "ownerId": "sk-7170260",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7170260"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 70
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7020460",
+      "ownerType": "skill",
+      "ownerId": "sk-7020460",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020460"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 30,
+          "skillId": "sk-7020460"
+        },
+        {
+          "type": "unsupported",
+          "effectType": "multi_hit",
+          "reason": "复杂旧效果需要按真实机制逐条确认"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7020660",
+      "ownerType": "skill",
+      "ownerId": "sk-7020660",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020660"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7020870",
+      "ownerType": "skill",
+      "ownerId": "sk-7020870",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020870"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 45,
+          "skillId": "sk-7020870"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7020940",
+      "ownerType": "skill",
+      "ownerId": "sk-7020940",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020940"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 130,
+          "skillId": "sk-7020940"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7021040",
+      "ownerType": "skill",
+      "ownerId": "sk-7021040",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7021040"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 170
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7021110",
+      "ownerType": "skill",
+      "ownerId": "sk-7021110",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7021110"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7050320",
+      "ownerType": "skill",
+      "ownerId": "sk-7050320",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7050320"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 40,
+          "skillId": "sk-7050320"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7050330",
+      "ownerType": "skill",
+      "ownerId": "sk-7050330",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7050330"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 60,
+          "skillId": "sk-7050330"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7060150",
+      "ownerType": "skill",
+      "ownerId": "sk-7060150",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7060150"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "skill:sk-7060190",
+      "ownerType": "skill",
+      "ownerId": "sk-7060190",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7060190"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 40,
+          "skillId": "sk-7060190"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7060230",
+      "ownerType": "skill",
+      "ownerId": "sk-7060230",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7060230"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 60,
+          "skillId": "sk-7060230"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7080110",
+      "ownerType": "skill",
+      "ownerId": "sk-7080110",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080110"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 60,
+          "skillId": "sk-7080110"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7080270",
+      "ownerType": "skill",
+      "ownerId": "sk-7080270",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080270"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 40,
+          "skillId": "sk-7080270"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7080400",
+      "ownerType": "skill",
+      "ownerId": "sk-7080400",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080400"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "mark:burn",
+      "ownerType": "mark",
+      "ownerId": "burn",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "event.markId",
+          "op": "eq",
+          "value": "burn"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "self",
+          "category": "Passive",
+          "power": 0,
+          "basis": "maxHp",
+          "amount": 0.02
+        }
+      ]
+    },
+    {
+      "id": "mark:poison",
+      "ownerType": "mark",
+      "ownerId": "poison",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "event.markId",
+          "op": "eq",
+          "value": "poison"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "self",
+          "category": "Passive",
+          "power": 0,
+          "basis": "maxHp",
+          "amount": 0.03
+        }
+      ]
+    },
+    {
+      "id": "mark:freeze",
+      "ownerType": "mark",
+      "ownerId": "freeze",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "event.markId",
+          "op": "eq",
+          "value": "freeze"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "self",
+          "category": "Passive",
+          "power": 0,
+          "basis": "maxHp",
+          "amount": 0.05
+        }
+      ]
+    },
+    {
+      "id": "mark:starfall",
+      "ownerType": "mark",
+      "ownerId": "starfall",
+      "trigger": "onHit",
+      "when": [
+        {
+          "path": "event.markId",
+          "op": "eq",
+          "value": "starfall"
+        }
+      ],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "conditional",
+          "reason": "复杂旧效果需要按真实机制逐条确认"
+        }
+      ]
+    },
+    {
+      "id": "mark:parasitism",
+      "ownerType": "mark",
+      "ownerId": "parasitism",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "event.markId",
+          "op": "eq",
+          "value": "parasitism"
+        }
+      ],
+      "effects": [
+        {
+          "type": "heal",
+          "target": "enemy",
+          "amount": 0.02,
+          "basis": "maxHp"
+        }
+      ]
+    },
+    {
+      "id": "mark:conductive-charge",
+      "ownerType": "mark",
+      "ownerId": "conductive-charge",
+      "trigger": "onHit",
+      "when": [
+        {
+          "path": "event.markId",
+          "op": "eq",
+          "value": "conductive-charge"
+        }
+      ],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "conditional",
+          "reason": "复杂旧效果需要按真实机制逐条确认"
+        }
+      ]
+    },
+    {
+      "id": "trait:sp-1",
+      "ownerType": "trait",
+      "ownerId": "sp-1",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-1"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-2",
+      "ownerType": "trait",
+      "ownerId": "sp-2",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-2"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-3",
+      "ownerType": "trait",
+      "ownerId": "sp-3",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-3"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-4",
+      "ownerType": "trait",
+      "ownerId": "sp-4",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-4"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-5",
+      "ownerType": "trait",
+      "ownerId": "sp-5",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-5"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-6",
+      "ownerType": "trait",
+      "ownerId": "sp-6",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-6"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-7",
+      "ownerType": "trait",
+      "ownerId": "sp-7",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-7"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-8",
+      "ownerType": "trait",
+      "ownerId": "sp-8",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-8"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-9",
+      "ownerType": "trait",
+      "ownerId": "sp-9",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-9"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-10",
+      "ownerType": "trait",
+      "ownerId": "sp-10",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-10"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-11",
+      "ownerType": "trait",
+      "ownerId": "sp-11",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-11"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-12",
+      "ownerType": "trait",
+      "ownerId": "sp-12",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-12"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-13",
+      "ownerType": "trait",
+      "ownerId": "sp-13",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-13"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-14",
+      "ownerType": "trait",
+      "ownerId": "sp-14",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-14"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-15",
+      "ownerType": "trait",
+      "ownerId": "sp-15",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-15"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-16",
+      "ownerType": "trait",
+      "ownerId": "sp-16",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-16"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-17",
+      "ownerType": "trait",
+      "ownerId": "sp-17",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-17"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-18",
+      "ownerType": "trait",
+      "ownerId": "sp-18",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-18"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-19",
+      "ownerType": "trait",
+      "ownerId": "sp-19",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-19"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-20",
+      "ownerType": "trait",
+      "ownerId": "sp-20",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-20"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-21",
+      "ownerType": "trait",
+      "ownerId": "sp-21",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-21"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-22",
+      "ownerType": "trait",
+      "ownerId": "sp-22",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-22"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-23",
+      "ownerType": "trait",
+      "ownerId": "sp-23",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-23"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-24",
+      "ownerType": "trait",
+      "ownerId": "sp-24",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-24"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-25",
+      "ownerType": "trait",
+      "ownerId": "sp-25",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-25"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-26",
+      "ownerType": "trait",
+      "ownerId": "sp-26",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-26"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-27",
+      "ownerType": "trait",
+      "ownerId": "sp-27",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-27"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-28",
+      "ownerType": "trait",
+      "ownerId": "sp-28",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-28"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-29",
+      "ownerType": "trait",
+      "ownerId": "sp-29",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-29"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-30",
+      "ownerType": "trait",
+      "ownerId": "sp-30",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-30"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-31",
+      "ownerType": "trait",
+      "ownerId": "sp-31",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-31"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-32",
+      "ownerType": "trait",
+      "ownerId": "sp-32",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-32"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-33",
+      "ownerType": "trait",
+      "ownerId": "sp-33",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-33"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-34",
+      "ownerType": "trait",
+      "ownerId": "sp-34",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-34"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-35",
+      "ownerType": "trait",
+      "ownerId": "sp-35",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-35"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-36",
+      "ownerType": "trait",
+      "ownerId": "sp-36",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-36"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-37",
+      "ownerType": "trait",
+      "ownerId": "sp-37",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-37"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-38",
+      "ownerType": "trait",
+      "ownerId": "sp-38",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-38"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-39",
+      "ownerType": "trait",
+      "ownerId": "sp-39",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-39"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "trait:sp-40",
+      "ownerType": "trait",
+      "ownerId": "sp-40",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "event.activeSpriteId",
+          "op": "eq",
+          "value": "sp-40"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "weather:sandstorm",
+      "ownerType": "weather",
+      "ownerId": "sandstorm",
+      "trigger": "weatherChanged",
+      "when": [
+        {
+          "path": "event.weatherId",
+          "op": "eq",
+          "value": "sandstorm"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "weather:blizzard",
+      "ownerType": "weather",
+      "ownerId": "blizzard",
+      "trigger": "weatherChanged",
+      "when": [
+        {
+          "path": "event.weatherId",
+          "op": "eq",
+          "value": "blizzard"
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "weather:sunny",
+      "ownerType": "weather",
+      "ownerId": "sunny",
+      "trigger": "weatherChanged",
+      "when": [
+        {
+          "path": "event.weatherId",
+          "op": "eq",
+          "value": "sunny"
+        }
+      ],
+      "effects": []
+    }
+  ]
+}

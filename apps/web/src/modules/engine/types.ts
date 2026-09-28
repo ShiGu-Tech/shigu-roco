@@ -33,6 +33,7 @@ export interface ActiveSprite {
   marks: Record<string, number>;
   statuses: Record<string, number>;
   cooldowns?: Record<string, number>;
+  faintHandled?: boolean;
   profile?: StatProfile;
 }
 
@@ -40,6 +41,8 @@ export interface SideState {
   magic: number;
   active: ActiveSprite;
   bench: ActiveSprite[];
+  teamMarks: Record<string, number>;
+  switchLock: number;
   seenEnemy: string[];
   wishChargesLeft: number;
   wishCooldown: number;
