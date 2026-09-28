@@ -13,3 +13,4 @@ export { OpponentModel } from "./opponent/bayes";
 export * from "./opponent/library";
 export * from "./opponent/training";
 export * as handlers from "./api/handlers";
+export * from "./mechanisms";
