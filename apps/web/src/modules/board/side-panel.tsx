@@ -3,18 +3,19 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
+import { SpriteImage } from "@/components/sprite-image";
+import { SkillSlotDialog } from "@/components/skill-slot-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
-import type { ActiveSpriteState, Catalog, CatalogSkill, RecommendResult, SideState } from "@/modules/battle/types";
+import type { ActiveSpriteState, Catalog, RecommendResult, SideState } from "@/modules/battle/types";
 import { ENEMY_COLOR, PLAYER_COLOR } from "@/lib/chart-theme";
 import {
   actionKey,
   elementZh,
   energyRule,
-  ownSkills,
   skillById,
   spriteOf,
   type ActionOption,
@@ -100,16 +101,8 @@ export function SpriteCard({
     <Card>
       <CardContent className="space-y-3 pt-4">
         <MagicHearts magic={side.magic} max={maxMagic} tone={tone} />
-        <div className="flex flex-wrap items-center gap-2 rounded-md bg-muted/45 p-2">
-          {sprite?.head ? (
-            <Image
-              src={sprite.head}
-              alt=""
-              width={40}
-              height={40}
-              className="h-10 w-10 rounded-md border border-border bg-background object-contain"
-            />
-          ) : null}
+        <div className="flex flex-wrap items-center gap-2 rounded-lg bg-muted/45 p-2">
+          {sprite ? <SpriteImage sprite={sprite} size="sm" className="h-10 w-10 rounded-lg" /> : null}
           <span className="text-sm font-medium" style={{ color: toneColor(tone) }}>
             {title}
           </span>
@@ -139,10 +132,6 @@ export function SpriteCard({
       </CardContent>
     </Card>
   );
-}
-
-function skillLabel(catalog: Catalog, sk: CatalogSkill): string {
-  return `${sk.name} · ${elementZh(catalog, sk.element)} · 能耗${sk.cost}${sk.power ? ` · 威力${sk.power}` : ""}`;
 }
 
 function SkillTile({
@@ -176,18 +165,38 @@ function SkillTile({
   const affordable = sk ? sk.cost <= energy : false;
   const usable = Boolean(sk) && affordable && !disabled;
   const color = sk ? catalog.elements.find((e) => e.name === sk.element)?.color : undefined;
-
-  const own = ownSkills(catalog, spriteId);
-  const ownIds = new Set(own.map((s) => s.id));
+  const [slotOpen, setSlotOpen] = useState(false);
 
   return (
     <div
       className={[
-        "relative min-w-0 rounded-md border bg-background/70 p-2 transition-all",
-        selected ? "border-primary bg-accent shadow-sm shadow-primary/10" : "border-border hover:border-primary/40 hover:bg-accent/40",
+        "relative min-w-0 rounded-lg border bg-card p-2 transition-all",
+        selected ? "border-primary bg-accent shadow-soft" : "border-border hover:border-primary/40 hover:bg-accent/40",
         !sk ? "border-dashed" : "",
       ].join(" ")}
     >
+      <Button
+        type="button"
+        size="sm"
+        variant="secondary"
+        disabled={disabled}
+        onClick={() => setSlotOpen(true)}
+        className="absolute right-1 top-1 z-10 h-6 px-2 text-[10px]"
+      >
+        换
+      </Button>
+
+      <SkillSlotDialog
+        open={slotOpen}
+        onOpenChange={setSlotOpen}
+        catalog={catalog}
+        spriteId={spriteId}
+        slotIndex={index}
+        value={skillId}
+        onSelect={(id) => onChangeSlot(index, id)}
+        onClear={() => onChangeSlot(index, "")}
+      />
+
       <button
         type="button"
         disabled={!usable}
@@ -196,7 +205,7 @@ function SkillTile({
       >
         {sk ? (
           <>
-            <div className="flex items-center gap-1 pr-8">
+            <div className="flex items-center gap-1 pr-9">
               {sk.icon ? (
                 <Image src={sk.icon} alt="" width={28} height={28} className="h-7 w-7 shrink-0 rounded object-contain" />
               ) : color ? (
@@ -220,42 +229,11 @@ function SkillTile({
             </div>
           </>
         ) : (
-          <div className="flex min-h-[64px] items-center justify-center text-xs text-muted-foreground">
+          <div className="flex min-h-[56px] items-center justify-center text-xs text-muted-foreground">
             空槽 · 点右上「换」选择技能
           </div>
         )}
       </button>
-
-      <div className="absolute right-1 top-1 h-6 w-8">
-        <span className="pointer-events-none flex h-full w-full items-center justify-center rounded border bg-secondary text-[10px] text-secondary-foreground">
-          换
-        </span>
-        <select
-          aria-label={`第 ${index + 1} 个技能槽`}
-          value={skillId}
-          disabled={disabled}
-          onChange={(e) => onChangeSlot(index, e.target.value)}
-          className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
-        >
-          <option value="">— 空 —</option>
-          <optgroup label="本精灵技能">
-            {own.map((s) => (
-              <option key={s.id} value={s.id}>
-                {skillLabel(catalog, s)}
-              </option>
-            ))}
-          </optgroup>
-          <optgroup label="全部技能">
-            {(catalog.allSkills ?? [])
-              .filter((s) => !ownIds.has(s.id))
-              .map((s) => (
-                <option key={s.id} value={s.id}>
-                  {skillLabel(catalog, s)}
-                </option>
-              ))}
-          </optgroup>
-        </select>
-      </div>
     </div>
   );
 }
@@ -287,7 +265,7 @@ export function SkillGrid({
   const loadout = side.active.loadout;
 
   return (
-    <div className="grid grid-cols-1 gap-2 min-[520px]:grid-cols-2">
+    <div className="grid grid-cols-2 gap-2">
       {[0, 1, 2, 3].map((i) => {
         const id = loadout[i] ?? "";
         const k = `skill:${id}`;

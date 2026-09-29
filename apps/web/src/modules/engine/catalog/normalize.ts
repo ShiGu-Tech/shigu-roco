@@ -32,6 +32,11 @@ export function normalizeSnapshot(snapshot: ExternalSnapshot, registrationId: st
     const key = `${spirit.id}:${spirit.formId}`;
     const learned = snapshot.spiritSkills[key] ?? [];
     const skillList = learned.filter((entry) => entry.src !== "passive").map((entry) => skillId(entry.id));
+    const skillSources: Dict = {};
+    for (const entry of learned) {
+      const src = entry.src;
+      if (typeof src === "string" && src !== "passive") skillSources[skillId(entry.id)] = src;
+    }
     for (const skillId of skillList) if (!skillIds.has(skillId)) warnings.push(`精灵 ${key} 引用了未知技能 ${skillId}`);
     return {
       id: `sp-${spirit.id}-${spirit.formId}`,
@@ -52,6 +57,8 @@ export function normalizeSnapshot(snapshot: ExternalSnapshot, registrationId: st
       },
       trait: spirit.passive ? { name: spirit.passive.name ?? "", desc: spirit.passive.descPlain ?? spirit.passive.desc ?? "", params: { unsupported: true } } : { name: "", desc: "", params: {} },
       skillList,
+      /** 每个技能的学习来源：level（升级）/ machine（技能石）/ blood（血脉）。 */
+      skillSources,
       leaderAllowed: true,
       image: spirit.portraitOnline ?? spirit.imageOnline ?? spirit.imgOnline ?? null,
       head: spirit.headOnline ?? spirit.head ?? null,

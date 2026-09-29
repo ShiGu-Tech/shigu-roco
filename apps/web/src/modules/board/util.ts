@@ -1,4 +1,5 @@
 import type {
+  ActiveSpriteState,
   BattleState,
   Catalog,
   CatalogSkill,
@@ -7,6 +8,20 @@ import type {
   SideState,
 } from "@/modules/battle/types";
 import { activeFromSprite, emptyActive } from "@/modules/battle/state";
+import { profileFromSetup, type TeamEntry } from "@/modules/battle/pet";
+
+export {
+  DEFAULT_LEVEL,
+  DEFAULT_STARS,
+  MAX_INVEST,
+  MAX_TALENT,
+  emptySetup,
+  neutralSetup,
+  profileFromSetup,
+  type PetSetup,
+  type TalentMap,
+  type TeamEntry,
+} from "@/modules/battle/pet";
 
 export interface ActionOption {
   action: EngineAction;
@@ -122,13 +137,21 @@ export function deriveActions(side: SideState, catalog: Catalog): ActionOption[]
   return out;
 }
 
-function sideFromTeam(catalog: Catalog, team: string[], magic: number, wish: number): SideState {
+function toEntry(entry: string | TeamEntry): TeamEntry {
+  return typeof entry === "string" ? { spriteId: entry } : entry;
+}
+
+function sideFromTeam(catalog: Catalog, raw: (string | TeamEntry)[], magic: number, wish: number): SideState {
   const rules = catalog.rules as { energy?: { initial?: number } };
   const initialEnergy = Number(rules.energy?.initial ?? 10);
-  const actives = team
-    .map((id) => spriteOf(catalog, id))
-    .filter((s): s is CatalogSprite => Boolean(s))
-    .map((s) => activeFromSprite(s, catalog.stats, initialEnergy));
+  const actives: ActiveSpriteState[] = [];
+  for (const entry of raw.map(toEntry)) {
+    const sprite = spriteOf(catalog, entry.spriteId);
+    if (!sprite) continue;
+    const active = activeFromSprite(sprite, catalog.stats, initialEnergy, profileFromSetup(entry.setup));
+    if (entry.setup) active.loadout = entry.setup.skills.filter(Boolean).slice(0, 4);
+    actives.push(active);
+  }
   return {
     magic,
     active: actives[0] ?? emptyActive(),
@@ -140,7 +163,11 @@ function sideFromTeam(catalog: Catalog, team: string[], magic: number, wish: num
   };
 }
 
-export function buildState(catalog: Catalog, playerTeam: string[], enemyTeam: string[]): BattleState {
+export function buildState(
+  catalog: Catalog,
+  playerTeam: (string | TeamEntry)[],
+  enemyTeam: (string | TeamEntry)[],
+): BattleState {
   const rules = catalog.rules as { initialMagic?: number; wishCharges?: number };
   const magic = Number(rules.initialMagic ?? 3);
   const wish = Number(rules.wishCharges ?? 2);

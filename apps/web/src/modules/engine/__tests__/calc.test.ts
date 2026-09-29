@@ -1,8 +1,21 @@
 import { describe, expect, it } from "vitest";
-import { balanceRange, damageOf, defenseRange, formatPanel, ivFromTalent, panelOf, perLevelGain, statOf } from "../calc";
+import {
+  balanceRange,
+  damageOf,
+  defenseRange,
+  formatPanel,
+  inferBuild,
+  inferDefense,
+  inferMaxHpRange,
+  ivFromTalent,
+  panelOf,
+  perLevelGain,
+  statOf,
+} from "../calc";
 
 const MILIYA = { hp: 118, atk: 82, spatk: 89, defense: 103, spdef: 147, speed: 105 };
 const MIGUOHAI = { hp: 102, atk: 43, spatk: 110, defense: 68, spdef: 85, speed: 88 };
+const HUZHUQUAN = { hp: 68, atk: 92, spatk: 31, defense: 81, spdef: 66, speed: 96 };
 
 describe("panel calculator", () => {
   it("里拉鳐 L45 0★ +魔攻-魔防 魔防+10 → 220/88/105/108/139/110", () => {
@@ -73,6 +86,29 @@ describe("实测校准（2026-09-29 · 官方公式 + 5★/0★ 逐格对拍）"
       { level: 45, stars: 0, natureUp: "spatk", natureDown: "hp", iv: { atk: 9, spatk: 9, spdef: 9 } },
     );
     expect(formatPanel(panel)).toBe("125 / 91 / 105 / 78 / 98 / 113");
+  });
+});
+
+describe("观测反解（命中 / HP% → 养成）", () => {
+  it("打掉 81、剩 64% → 最大生命 ≈ [221, 229]", () => {
+    expect(inferMaxHpRange(81, 64)).toEqual([221, 229]);
+  });
+
+  it("凡鹰先发制人（55×翼本系 1.25 = 68.75）打 81 → 护主犬物防 ≈ 119~120", () => {
+    const { defense, effectivePower } = inferDefense({ damage: 81, attackerAtk: 157, power: 55, typeMult: 1, stab: 1.25 });
+    expect(effectivePower).toBeCloseTo(68.75, 6);
+    expect(defense[0]).toBeGreaterThan(118);
+    expect(defense[0]).toBeLessThan(120);
+    expect(defense[1]).toBeGreaterThan(120);
+    expect(defense[1]).toBeLessThan(121);
+  });
+
+  it("护主犬 L39 0★：反解可还原给定面板", () => {
+    const panel = panelOf(HUZHUQUAN, { level: 39, iv: { hp: 10, defense: 6 } });
+    const builds = inferBuild(HUZHUQUAN, { hp: [panel.hp, panel.hp], defense: [panel.defense, panel.defense] }, { level: 39 });
+    expect(builds.length).toBeGreaterThan(0);
+    expect(builds.every((b) => b.stars === 0)).toBe(true);
+    expect(builds.some((b) => b.talent.hp === 10 && b.talent.defense === 6)).toBe(true);
   });
 });
 

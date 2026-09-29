@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { NativeSelect } from "@/components/ui/native-select";
 
 import { forcedSwitch, getCatalog, recommend, requestLeader, simulateTurn } from "@/modules/battle/client";
 import { loadOpponentLibrary } from "@/modules/battle/storage";
@@ -21,17 +20,23 @@ import type {
   Terminal,
 } from "@/modules/battle/types";
 import { OtherActions, SkillGrid, SpriteCard } from "./side-panel";
+import { TeamEditor } from "./pet-setup";
+import { StatRadar } from "@/components/stat-radar";
+import { SpriteImage } from "@/components/sprite-image";
 import { TrendChart, type TrendPoint } from "./trend-chart";
+import { computeStats } from "@/modules/engine/stats";
 import {
   actionKey,
   buildState,
   deriveActions,
   elementZh,
+  emptySetup,
   optionFromSkill,
   skillById,
   spriteOf,
   swapState,
   type ActionOption,
+  type TeamEntry,
 } from "./util";
 
 const PRESETS = {
@@ -85,7 +90,8 @@ function FaintPicker({
                 onClick={() => onPick(b.spriteId)}
                 className="flex w-full items-center justify-between gap-2 rounded-md border p-2 text-left hover:bg-accent disabled:opacity-60"
               >
-                <span className="flex flex-wrap items-center gap-2">
+                <span className="flex min-w-0 flex-wrap items-center gap-2">
+                  <SpriteImage sprite={sp} size="sm" className="h-11 w-11 rounded-lg" />
                   <span className="text-sm font-medium">{sp?.name ?? b.spriteId}</span>
                   {sp?.elements.map((el) => (
                     <Badge key={el} variant="outline">
@@ -110,72 +116,24 @@ function FaintPicker({
 const DEFAULT_PLAYER = ["sp-6", "sp-7", "sp-10", "sp-17"];
 const DEFAULT_ENEMY = ["sp-14", "sp-20", "sp-29", "sp-38"];
 
-function TeamEditor({
-  title,
-  team,
-  catalog,
-  onChange,
-}: {
-  title: string;
-  team: string[];
-  catalog: Catalog;
-  onChange: (team: string[]) => void;
-}) {
-  return (
-    <Card>
-      <CardHeader className="flex-col gap-3 space-y-0 pb-3 min-[520px]:flex-row min-[520px]:items-center min-[520px]:justify-between">
-        <CardTitle className="text-base">{title}</CardTitle>
-        <Button
-          type="button"
-          size="sm"
-          variant="secondary"
-          disabled={team.length >= 6}
-          onClick={() => onChange([...team, catalog.sprites[0]?.id ?? ""])}
-        >
-          加精灵
-        </Button>
-      </CardHeader>
-      <CardContent className="space-y-2">
-        {team.map((id, i) => (
-          <div key={`${i}-${id}`} className="flex items-center gap-2">
-            <span className="w-11 shrink-0 text-xs font-medium text-muted-foreground">
-              {i === 0 ? "首发" : `替补${i}`}
-            </span>
-            <NativeSelect
-              className="flex-1"
-              value={id}
-              onChange={(e) => onChange(team.map((v, j) => (j === i ? e.target.value : v)))}
-            >
-              <option value="">— 选择精灵 —</option>
-              {catalog.sprites.map((s) => (
-                <option key={s.id} value={s.id}>
-                  #{s.no} {s.name} [{s.elements.map((element) => elementZh(catalog, element)).join("/")}]
-                </option>
-              ))}
-            </NativeSelect>
-            <Button
-              type="button"
-              size="icon"
-              variant="ghost"
-              disabled={team.length <= 1}
-              onClick={() => onChange(team.filter((_, j) => j !== i))}
-              aria-label={`移除第 ${i + 1} 个精灵`}
-            >
-              <span aria-hidden="true">×</span>
-            </Button>
-          </div>
-        ))}
-      </CardContent>
-    </Card>
-  );
+/** 我方：资质 / 技能已知 → 带 setup；技能留空即默认本精灵 4 招。 */
+function playerEntries(): TeamEntry[] {
+  return DEFAULT_PLAYER.map((spriteId) => ({ spriteId, setup: emptySetup() }));
 }
+
+/** 对方：只知道精灵 → 无资质、技能未知。 */
+function enemyEntries(): TeamEntry[] {
+  return DEFAULT_ENEMY.map((spriteId) => ({ spriteId, skillsUnknown: true }));
+}
+
 
 export function BattleBoard() {
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [phase, setPhase] = useState<"setup" | "battle">("setup");
-  const [playerTeam, setPlayerTeam] = useState<string[]>(DEFAULT_PLAYER);
-  const [enemyTeam, setEnemyTeam] = useState<string[]>(DEFAULT_ENEMY);
+  const [mode, setMode] = useState<"sandbox" | "pvp">("pvp");
+  const [playerTeam, setPlayerTeam] = useState<TeamEntry[]>(playerEntries);
+  const [enemyTeam, setEnemyTeam] = useState<TeamEntry[]>(enemyEntries);
   const [preset, setPreset] = useState<PresetKey>("standard");
 
   const [state, setState] = useState<BattleState | null>(null);
@@ -221,7 +179,11 @@ export function BattleBoard() {
 
   async function start() {
     if (!catalog) return;
-    const st = buildState(catalog, playerTeam, enemyTeam);
+    const plain = (team: TeamEntry[]): TeamEntry[] => team.map((e) => ({ spriteId: e.spriteId }));
+    const st =
+      mode === "pvp"
+        ? buildState(catalog, playerTeam, enemyTeam)
+        : buildState(catalog, plain(playerTeam), plain(enemyTeam));
     setState(st);
     setHistory([]);
     setLog([]);
@@ -354,11 +316,57 @@ export function BattleBoard() {
     return (
       <div className="space-y-5">
         <div className="rounded-lg border border-dashed bg-card/70 p-4 text-sm text-muted-foreground">
-          <span className="font-medium text-foreground">先配置双方阵容</span>，首位精灵将作为首发。每队最多 6 只精灵。
+          <span className="font-medium text-foreground">先配置双方阵容</span>，首位精灵将作为首发、双方各上场一只。
+          每队最多 6 只。PvP 模式下我方录入资质 / 技能，对方只登记精灵。
         </div>
+        <Card>
+          <CardContent className="flex flex-col gap-3 py-3 text-sm min-[520px]:flex-row min-[520px]:items-center min-[520px]:justify-between">
+            <div className="space-y-1">
+              <div className="font-medium text-foreground">对战模式</div>
+              <p className="text-muted-foreground">
+                {mode === "pvp"
+                  ? "PvP：我方资质 / 技能已知；对方只知道精灵，资质 / 性格 / 技能未知（按中性 5★·60 级估算）。"
+                  : "沙盒：双方都按默认，纯推演。"}
+              </p>
+            </div>
+            <div className="flex shrink-0 gap-2">
+              <Button
+                type="button"
+                size="sm"
+                variant={mode === "pvp" ? "default" : "outline"}
+                onClick={() => setMode("pvp")}
+              >
+                PvP
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant={mode === "sandbox" ? "default" : "outline"}
+                onClick={() => setMode("sandbox")}
+              >
+                沙盒
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
         <div className="grid gap-4 min-[860px]:grid-cols-2">
-          <TeamEditor title="我方队伍" team={playerTeam} catalog={catalog} onChange={setPlayerTeam} />
-          <TeamEditor title="敌方队伍" team={enemyTeam} catalog={catalog} onChange={setEnemyTeam} />
+          <TeamEditor
+            title="我方队伍"
+            scope="player"
+            entries={playerTeam}
+            catalog={catalog}
+            editable={mode === "pvp"}
+            onChange={setPlayerTeam}
+          />
+          <TeamEditor
+            title="敌方队伍（对方）"
+            scope="enemy"
+            entries={enemyTeam}
+            catalog={catalog}
+            editable={false}
+            skillsUnknown
+            onChange={setEnemyTeam}
+          />
         </div>
         <div className="flex flex-col gap-3 min-[520px]:flex-row min-[520px]:items-center">
           <Button className="w-full min-[520px]:w-auto" type="button" onClick={start} disabled={busy}>
@@ -374,10 +382,16 @@ export function BattleBoard() {
   const anyFaint = playerFainted || enemyFainted;
   const playerRate = rateMap(rec);
   const enemyRate = rateMap(enemyRec);
+  const playerSprite = spriteOf(catalog, state.player.active.spriteId);
+  const playerPanel =
+    catalog.stats && playerSprite
+      ? computeStats(catalog.stats, { race: playerSprite.race }, state.player.active.profile)
+      : null;
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-3 rounded-lg border bg-card/75 p-3 shadow-sm min-[520px]:flex-row min-[520px]:items-center">
+      <div className="flex flex-col gap-3 rounded-xl border bg-card p-3 shadow-soft min-[520px]:flex-row min-[520px]:items-center">
+        <Badge variant={mode === "pvp" ? "default" : "outline"}>{mode === "pvp" ? "PvP" : "沙盒"}</Badge>
         <Badge variant="outline">第 {state?.turn ?? 1} 回合</Badge>
         <Badge variant="outline">
           {state?.weather ? `天气 ${state.weather.id}（${state.weather.turnsLeft}）` : "无天气"}
@@ -429,6 +443,16 @@ export function BattleBoard() {
       <div className="grid gap-4 min-[860px]:grid-cols-2">
         <div className="space-y-3 rounded-lg border-l-4 pl-3" style={{ borderLeftColor: PLAYER_COLOR }}>
           <SpriteCard title="我方场上" side={state.player} tone="player" catalog={catalog} />
+          {playerPanel && (
+            <Card>
+              <CardHeader className="pb-0">
+                <CardTitle className="text-sm">我方面板</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-1">
+                <StatRadar panel={playerPanel} className="h-[220px] w-full" />
+              </CardContent>
+            </Card>
+          )}
           {playerFainted ? (
             <FaintPicker
               catalog={catalog}
@@ -491,7 +515,13 @@ export function BattleBoard() {
         </div>
 
         <div className="space-y-3 rounded-lg border-l-4 pl-3" style={{ borderLeftColor: ENEMY_COLOR }}>
-          <SpriteCard title="敌方场上" side={state.enemy} tone="enemy" catalog={catalog} subtitle="推测 / 可观测" />
+          <SpriteCard
+            title="敌方场上"
+            side={state.enemy}
+            tone="enemy"
+            catalog={catalog}
+            subtitle={mode === "pvp" ? "资质未知 · 按中性 5★·60 级估算" : "推测 / 可观测"}
+          />
           {enemyFainted ? (
             <FaintPicker
               catalog={catalog}
@@ -514,7 +544,11 @@ export function BattleBoard() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">技能（2×2，点技能即使用；右上「换」改技能）</span>
+                <span className="text-xs text-muted-foreground">
+                  {mode === "pvp"
+                    ? "对方技能未知 → 用右上「换」记录它这回合实际用的技能"
+                    : "技能（2×2，点技能即使用；右上「换」改技能）"}
+                </span>
                 {spriteOf(catalog, state.enemy.active.spriteId)?.leaderAllowed && !state.enemy.leaderUsed ? (
                   <Button
                     type="button"

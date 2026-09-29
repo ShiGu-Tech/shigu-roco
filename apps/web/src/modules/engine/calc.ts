@@ -205,3 +205,134 @@ export function defenseRange(samples: DamageSample[], balance = DEFAULT_DAMAGE_B
   }
   return [lo, hi];
 }
+
+// ---------------------------------------------------------------- 观测反解（对局里常用）
+
+/** 一次命中的观测。`damage` 为单段原始伤害（已去掉连击 / 减伤）。 */
+export interface HitObservation extends DamageFactors {
+  /** 实测伤害（单段，未叠连击 / 减伤）。 */
+  damage: number;
+  /** 攻方面板（物理招用物攻、魔法招用魔攻）。 */
+  attackerAtk: number;
+  /** 招式威力。 */
+  power: number;
+  /** 伤害系数，默认 DEFAULT_DAMAGE_BALANCE。 */
+  balance?: number;
+}
+
+/** 由一次命中反推守方防御区间（含有效威力）。 */
+export function inferDefense(o: HitObservation): { defense: [number, number]; effectivePower: number } {
+  const effectivePower = effectivePowerOf(o.power, o);
+  return { defense: defenseRange([{ damage: o.damage, atk: o.attackerAtk, effectivePower }], o.balance), effectivePower };
+}
+
+/** 由「打掉 damage、剩余 remainPercent%」反推最大生命区间（HP% 默认按整数显示，故带 ±0.5% 带宽）。 */
+export function inferMaxHpRange(damage: number, remainPercent: number, percentStep = 1): [number, number] {
+  const half = percentStep / 2;
+  const shareHi = 1 - (remainPercent - half) / 100;
+  const shareLo = 1 - (remainPercent + half) / 100;
+  if (shareHi <= 0) return [damage, Number.POSITIVE_INFINITY];
+  return [Math.floor(damage / shareHi), Math.ceil(damage / shareLo)];
+}
+
+export interface InferBuildTarget {
+  hp?: [number, number];
+  atk?: [number, number];
+  spatk?: [number, number];
+  defense?: [number, number];
+  spdef?: [number, number];
+  speed?: [number, number];
+}
+
+export interface InferredBuild {
+  stars: number;
+  nature: { up: StatKey | null; down: StatKey | null };
+  /** 天分（1~10），只列被目标约束的项。 */
+  talent: Partial<Record<StatKey, number>>;
+  /** 个体值 = 天分 ×(1+星)。 */
+  iv: Partial<Record<StatKey, number>>;
+  /** 该组合下的完整面板。 */
+  panel: Record<StatKey, number>;
+}
+
+export interface InferBuildOptions {
+  level?: number;
+  /** 候选星级，默认 [0]（野生 / 对手多为无星，训练过的己方宠才传星级）。 */
+  stars?: number[];
+  /** 候选性格，默认「所有 up/down 组合 + 中性」。 */
+  natures?: { up: StatKey | null; down: StatKey | null }[];
+  /** 天分上限，默认 10。 */
+  maxTalent?: number;
+  stats?: StatsData;
+}
+
+/** 全部性格组合（up/down 各取一项或无，去掉 up===down）。 */
+function allNatures(): { up: StatKey | null; down: StatKey | null }[] {
+  const opts: (StatKey | null)[] = [null, ...PANEL_ORDER];
+  const out: { up: StatKey | null; down: StatKey | null }[] = [];
+  for (const up of opts) for (const down of opts) if (up !== down) out.push({ up, down });
+  return out;
+}
+
+/**
+ * 反解养成档案：给定己方（或任意一方）的种族 + 目标面板区间，枚举「星级 × 性格 × 天分」组合。
+ * 只为「出现在 target 里的属性」求天分（不在 target 里的按 0 处理）。
+ */
+export function inferBuild(race: Race, target: InferBuildTarget, opts: InferBuildOptions = {}): InferredBuild[] {
+  const stats = opts.stats ?? {};
+  const starsList = opts.stars ?? [0];
+  const maxTalent = opts.maxTalent ?? 10;
+  const natureList = opts.natures ?? allNatures();
+  const keys = PANEL_ORDER.filter((k) => target[k]) as StatKey[];
+  const out: InferredBuild[] = [];
+  for (const stars of starsList) {
+    for (const nature of natureList) {
+      const cand: number[][] = [];
+      let ok = true;
+      for (const k of keys) {
+        const [lo, hi] = target[k]!;
+        const hits: number[] = [];
+        for (let t = 0; t <= maxTalent; t++) {
+          const ivv = ivFromTalent(t, stars, stats);
+          const v = statOf(race, k, { level: opts.level, stars, natureUp: nature.up ?? undefined, natureDown: nature.down ?? undefined, iv: { [k]: ivv } }, stats);
+          if (v >= lo && v <= hi) hits.push(t);
+        }
+        if (!hits.length) {
+          ok = false;
+          break;
+        }
+        cand.push(hits);
+      }
+      if (!ok) continue;
+      for (const combo of cartesian(cand)) {
+        const talent: Partial<Record<StatKey, number>> = {};
+        const iv: Partial<Record<StatKey, number>> = {};
+        const ivRec: Record<string, number> = {};
+        keys.forEach((k, i) => {
+          talent[k] = combo[i];
+          iv[k] = ivFromTalent(combo[i], stars, stats);
+          ivRec[k] = iv[k]!;
+        });
+        out.push({
+          stars,
+          nature,
+          talent,
+          iv,
+          panel: panelOf(race, { level: opts.level, stars, natureUp: nature.up ?? undefined, natureDown: nature.down ?? undefined, iv: ivRec }, stats),
+        });
+      }
+    }
+  }
+  return out;
+}
+
+/** 简易笛卡尔积（用于组合枚举）。 */
+function cartesian<T>(groups: T[][]): T[][] {
+  let out: T[][] = [[]];
+  for (const g of groups) {
+    const next: T[][] = [];
+    for (const prefix of out) for (const v of g) next.push([...prefix, v]);
+    out = next;
+  }
+  return out;
+}

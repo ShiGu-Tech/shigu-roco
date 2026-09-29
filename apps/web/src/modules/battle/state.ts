@@ -1,9 +1,14 @@
 import { maxHpFromRace } from "@/modules/engine/stats";
 import type { StatsData } from "@/modules/engine/types";
-import type { ActiveSpriteState, BattleState, Catalog, CatalogSprite } from "./types";
+import type { ActiveSpriteState, BattleState, Catalog, CatalogSprite, StatProfileState } from "./types";
 
-export function activeFromSprite(sprite: CatalogSprite, stats?: StatsData, energy = 10): ActiveSpriteState {
-  const maxHp = stats ? maxHpFromRace(stats, sprite.race) : Math.max(1, Number(sprite.race.hp ?? 1));
+export function activeFromSprite(
+  sprite: CatalogSprite,
+  stats?: StatsData,
+  energy = 10,
+  profile?: StatProfileState,
+): ActiveSpriteState {
+  const maxHp = stats ? maxHpFromRace(stats, sprite.race, profile) : Math.max(1, Number(sprite.race.hp ?? 1));
   return {
     spriteId: sprite.id,
     hp: maxHp,
@@ -14,6 +19,7 @@ export function activeFromSprite(sprite: CatalogSprite, stats?: StatsData, energ
     debuffs: {},
     marks: {},
     statuses: {},
+    profile,
   };
 }
 

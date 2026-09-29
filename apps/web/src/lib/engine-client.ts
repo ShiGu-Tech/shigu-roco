@@ -7,6 +7,7 @@ export async function engineFetch<T>(
   const { timeoutMs = 30000, ...rest } = init ?? {};
   const res = await fetch(`/api/engine${path}`, {
     ...rest,
+    cache: "no-store",
     signal: AbortSignal.timeout(timeoutMs),
     headers: { "content-type": "application/json", ...(rest.headers ?? {}) },
   });

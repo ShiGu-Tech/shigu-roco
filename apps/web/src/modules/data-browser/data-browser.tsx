@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { SpriteImage } from "@/components/sprite-image";
 import { getCatalog } from "@/modules/battle/client";
 import type { Catalog, CatalogSkill, CatalogSprite } from "@/modules/battle/types";
 
@@ -18,15 +19,18 @@ const tabs: Array<{ id: Tab; label: string }> = [
   { id: "effects", label: "印记 / 天气" },
 ];
 
-function SpriteRow({ sprite }: { sprite: CatalogSprite }) {
+function SpriteRow({ sprite, catalog }: { sprite: CatalogSprite; catalog: Catalog }) {
+  const zh = (key: string) => catalog.elements.find((element) => element.name === key)?.nameZh ?? key;
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-4">
-        <div className="flex items-start justify-between gap-3">
-          <div>
+        <div className="flex items-start gap-3">
+          <SpriteImage sprite={sprite} size="lg" className="h-16 w-16 min-[520px]:h-20 min-[520px]:w-20" />
+          <div className="min-w-0">
             <p className="text-base font-semibold">#{sprite.no} {sprite.name}</p>
             <div className="mt-1 flex flex-wrap gap-1.5">
-              {sprite.elements.map((element) => <Badge key={element} variant="outline">{element}</Badge>)}
+              {sprite.form ? <Badge variant="secondary">{sprite.form}</Badge> : null}
+              {sprite.elements.map((element) => <Badge key={element} variant="outline">{zh(element)}</Badge>)}
               <Badge variant="secondary">阶段 {sprite.stage}</Badge>
             </div>
           </div>
@@ -134,7 +138,7 @@ export function DataBrowser() {
             </div>
             <Input className="min-[520px]:ml-auto min-[520px]:max-w-xs" placeholder="搜索名称、ID、属性…" value={query} onChange={(event) => setQuery(event.target.value)} />
           </div>
-          {tab === "sprites" && <div className="grid gap-3 min-[860px]:grid-cols-2">{filteredSprites.map((sprite) => <SpriteRow key={sprite.id} sprite={sprite} />)}</div>}
+          {tab === "sprites" && <div className="grid gap-3 min-[860px]:grid-cols-2">{filteredSprites.map((sprite) => <SpriteRow key={sprite.id} sprite={sprite} catalog={catalog} />)}</div>}
           {tab === "skills" && <div className="grid gap-3 min-[860px]:grid-cols-2">{filteredSkills.map((skill) => <SkillRow key={skill.id} skill={skill} />)}</div>}
           {tab === "elements" && <div className="grid gap-3 min-[520px]:grid-cols-2 min-[860px]:grid-cols-3">{catalog.elements.map((element) => <Card key={element.name}><CardContent className="flex items-center gap-3 p-4">{element.icon ? <Image src={element.icon} alt="" width={36} height={36} className="h-9 w-9 object-contain" /> : null}<div><p className="font-semibold">{element.nameZh ?? element.name}</p><p className="mt-1 text-sm text-muted-foreground">{element.nameFullZh ?? `${element.nameZh ?? element.name}系`}</p></div></CardContent></Card>)}</div>}
           {tab === "effects" && <div className="grid gap-3 min-[520px]:grid-cols-2"><Card><CardHeader><CardTitle className="text-base">印记</CardTitle></CardHeader><CardContent className="space-y-3">{catalog.marks.map((mark) => <div key={mark.id} className="border-b pb-3 last:border-0 last:pb-0"><p className="font-medium">{mark.nameZh ?? mark.name}</p>{mark.description && <p className="mt-1 text-sm leading-6 text-muted-foreground">{mark.description}</p>}</div>)}</CardContent></Card><Card><CardHeader><CardTitle className="text-base">天气</CardTitle></CardHeader><CardContent className="space-y-3">{catalog.weather.map((weather) => <div key={weather.id} className="border-b pb-3 last:border-0 last:pb-0"><p className="font-medium">{weather.nameZh ?? weather.name}</p>{weather.description && <p className="mt-1 text-sm leading-6 text-muted-foreground">{weather.description}</p>}</div>)}</CardContent></Card></div>}

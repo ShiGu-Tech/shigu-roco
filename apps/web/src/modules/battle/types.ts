@@ -1,4 +1,4 @@
-import type { StatsData } from "@/modules/engine/types";
+import type { StatProfile, StatsData } from "@/modules/engine/types";
 
 export type ActionKind = "skill" | "defend" | "switch" | "wish" | "leader" | "energy";
 
@@ -9,12 +9,8 @@ export interface EngineAction {
   label?: string;
 }
 
-export interface StatProfileState {
-  level?: number;
-  nature?: string | null;
-  /** 个体值（天分 × 星级系数）：hp/atk/spatk/defense/spdef/speed，各 0~60。 */
-  iv?: Record<string, number>;
-}
+/** 养成档案：等级 / 性格 / 个体值（天分 × 星级系数）/ 星级，与引擎口径一致。 */
+export type StatProfileState = StatProfile;
 
 export interface ActiveSpriteState {
   spriteId: string;
@@ -78,10 +74,16 @@ export interface CatalogSprite {
   no: number;
   name: string;
   nameZh?: string;
+  /** 形态名（如「高山地的样子」），无形态为 null。 */
+  form?: string | null;
+  /** 形态序号；同一 no 下唯一。 */
+  formId?: number;
   stage: number;
   elements: string[];
   race: Record<string, number>;
   trait: { name?: string; desc?: string };
+  /** 技能 id → 学习来源：level（升级）/ machine（技能石）/ blood（血脉）。 */
+  skillSources?: Record<string, string>;
   leaderAllowed: boolean;
   image?: string | null;
   head?: string | null;

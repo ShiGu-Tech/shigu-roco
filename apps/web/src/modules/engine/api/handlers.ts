@@ -35,6 +35,7 @@ function parseProfile(raw: unknown): StatProfile | undefined {
     level: p.level === undefined ? undefined : toNum(p.level, 0),
     nature: p.nature === undefined || p.nature === null ? (p.nature as null | undefined) : toStr(p.nature),
     iv: p.iv ? intDict(p.iv) : undefined,
+    stars: p.stars === undefined ? undefined : toNum(p.stars, 0),
   };
 }
 
@@ -126,31 +127,55 @@ function skillBrief(bundle: DataBundle, sk: Dict, icons: Dict): Dict {
   };
 }
 
+function toSkillId(value: unknown): string {
+  const id = typeof value === "number" ? String(value) : toStr(value);
+  return id.startsWith("sk-") ? id : `sk-${id}`;
+}
+
+/** 技能学习来源：优先归一化字段，缺失则回退到 sourceData.skillIds（兼容旧版注册快照）。 */
+function skillSourcesOf(sprite: Dict): Dict {
+  const explicit = asDict(sprite.skillSources);
+  const out: Dict = {};
+  const sourceData = asDict(sprite.sourceData);
+  for (const entry of toArray<Dict>(sourceData.skillIds)) {
+    const src = toStr(entry.src);
+    if (src && src !== "passive") out[toSkillId(entry.id)] = src;
+  }
+  for (const [id, src] of Object.entries(explicit)) {
+    if (id !== "sk-" && src) out[id.startsWith("sk-") ? id : toSkillId(id)] = src;
+  }
+  return Object.keys(out).length ? out : explicit;
+}
+
 export function catalog(bundle: DataBundle): Dict {
-  const spriteAssets = asDict(asDict(bundle.assets).sprites);
   const skillIcons = asDict(asDict(bundle.assets).skills);
   const sprites = Object.entries(bundle.sprites).map(([sid, sp]) => {
     const skills = toArray<string>(sp.skillList)
       .map((skillId) => bundle.skills[skillId])
       .filter((sk): sk is Dict => Boolean(sk))
-      .map((sk) => skillBrief(bundle, sk, skillIcons));
-    const asset = asDict(spriteAssets[sid]);
+       .map((sk) => ({ ...skillBrief(bundle, sk, skillIcons), icon: `/images/catalog/skills/${toStr(sk.id)}.webp` }));
     return {
       id: sid,
       no: toNum(sp.no, 0),
       name: toStr(sp.name),
       nameZh: toStr(sp.nameZh),
+      form: toStr(sp.form) || null,
+      formId: toNum(sp.formId, 1),
       stage: toNum(sp.stage, 0),
       elements: toArray<string>(sp.elements),
       race: asDict(sp.race),
       trait: asDict(sp.trait),
+      skillSources: skillSourcesOf(sp),
       leaderAllowed: sp.leaderAllowed !== false,
-       image: asset.image ?? sp.image ?? null,
-       head: asset.head ?? sp.head ?? null,
+       image: `/images/catalog/sprites/${sid}.webp`,
+       head: `/images/catalog/heads/${sid}.webp`,
       skills,
     };
   });
-  const allSkills = Object.values(bundle.skills).map((sk) => skillBrief(bundle, sk, skillIcons));
+  const allSkills = Object.values(bundle.skills).map((sk) => {
+    const brief = skillBrief(bundle, sk, skillIcons);
+    return { ...brief, icon: `/images/catalog/skills/${toStr(sk.id)}.webp` };
+  });
   const rules = asDict(bundle.rules);
   const energy = asDict(rules.energy);
   const stats = bundle.stats ?? {};

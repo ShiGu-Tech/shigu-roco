@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.5",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "updatedAt": "2026-09-29",
   "source": "官方图卡「先搞懂：种族值&个体值」「①真实数值怎么算」(roco pet – RocoDiviner) + 实测校准（音速犬 / 银月狼王 / 冰钻布鲁斯 5★ L60、小星光 0★ L45 逐格对拍）",
   "level": {
@@ -48,22 +48,321 @@
     "note": "天分 1~10；每升一星加一倍，满星 5★ = ×6 → 个体值 0~60；只能加在 3 项上，每项 ≤ +60。"
   },
   "natures": [
-    { "id": "neutral", "name": "坦率", "nameZh": "坦率", "up": null, "down": null, "upFactor": 1.0, "downFactor": 1.0 },
-    { "id": "adamant", "name": "固执", "nameZh": "固执", "up": "atk", "down": "spatk", "upFactor": 1.1, "downFactor": 0.9 },
-    { "id": "modest", "name": "内敛", "nameZh": "内敛", "up": "spatk", "down": "atk", "upFactor": 1.1, "downFactor": 0.9 },
-    { "id": "bold", "name": "大胆", "nameZh": "大胆", "up": "defense", "down": "atk", "upFactor": 1.1, "downFactor": 0.9 },
-    { "id": "calm", "name": "温和", "nameZh": "温和", "up": "spdef", "down": "atk", "upFactor": 1.1, "downFactor": 0.9 },
-    { "id": "careful", "name": "慎重", "nameZh": "慎重", "up": "spdef", "down": "spatk", "upFactor": 1.1, "downFactor": 0.9 },
-    { "id": "timid", "name": "胆小", "nameZh": "胆小", "up": "speed", "down": "atk", "upFactor": 1.1, "downFactor": 0.9 },
-    { "id": "jolly", "name": "爽朗", "nameZh": "爽朗", "up": "speed", "down": "spatk", "upFactor": 1.1, "downFactor": 0.9 },
-    { "id": "impish", "name": "淘气", "nameZh": "淘气", "up": "defense", "down": "spatk", "upFactor": 1.1, "downFactor": 0.9 }
+    {
+      "id": "neutral",
+      "name": "坦率",
+      "nameZh": "坦率",
+      "up": null,
+      "down": null,
+      "upFactor": 1,
+      "downFactor": 1
+    },
+    {
+      "id": "hp_atk",
+      "name": "生命_物攻",
+      "nameZh": "↑生命 ↓物攻",
+      "up": "hp",
+      "down": "atk",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "hp_spatk",
+      "name": "生命_魔攻",
+      "nameZh": "↑生命 ↓魔攻",
+      "up": "hp",
+      "down": "spatk",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "hp_defense",
+      "name": "生命_物防",
+      "nameZh": "↑生命 ↓物防",
+      "up": "hp",
+      "down": "defense",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "hp_spdef",
+      "name": "生命_魔防",
+      "nameZh": "↑生命 ↓魔防",
+      "up": "hp",
+      "down": "spdef",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "hp_speed",
+      "name": "生命_速度",
+      "nameZh": "↑生命 ↓速度",
+      "up": "hp",
+      "down": "speed",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "atk_hp",
+      "name": "物攻_生命",
+      "nameZh": "↑物攻 ↓生命",
+      "up": "atk",
+      "down": "hp",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "adamant",
+      "name": "固执",
+      "nameZh": "固执",
+      "up": "atk",
+      "down": "spatk",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "atk_defense",
+      "name": "物攻_物防",
+      "nameZh": "↑物攻 ↓物防",
+      "up": "atk",
+      "down": "defense",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "atk_spdef",
+      "name": "物攻_魔防",
+      "nameZh": "↑物攻 ↓魔防",
+      "up": "atk",
+      "down": "spdef",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "atk_speed",
+      "name": "物攻_速度",
+      "nameZh": "↑物攻 ↓速度",
+      "up": "atk",
+      "down": "speed",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "spatk_hp",
+      "name": "魔攻_生命",
+      "nameZh": "↑魔攻 ↓生命",
+      "up": "spatk",
+      "down": "hp",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "modest",
+      "name": "内敛",
+      "nameZh": "内敛",
+      "up": "spatk",
+      "down": "atk",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "spatk_defense",
+      "name": "魔攻_物防",
+      "nameZh": "↑魔攻 ↓物防",
+      "up": "spatk",
+      "down": "defense",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "spatk_spdef",
+      "name": "魔攻_魔防",
+      "nameZh": "↑魔攻 ↓魔防",
+      "up": "spatk",
+      "down": "spdef",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "spatk_speed",
+      "name": "魔攻_速度",
+      "nameZh": "↑魔攻 ↓速度",
+      "up": "spatk",
+      "down": "speed",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "defense_hp",
+      "name": "物防_生命",
+      "nameZh": "↑物防 ↓生命",
+      "up": "defense",
+      "down": "hp",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "bold",
+      "name": "大胆",
+      "nameZh": "大胆",
+      "up": "defense",
+      "down": "atk",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "impish",
+      "name": "淘气",
+      "nameZh": "淘气",
+      "up": "defense",
+      "down": "spatk",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "defense_spdef",
+      "name": "物防_魔防",
+      "nameZh": "↑物防 ↓魔防",
+      "up": "defense",
+      "down": "spdef",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "defense_speed",
+      "name": "物防_速度",
+      "nameZh": "↑物防 ↓速度",
+      "up": "defense",
+      "down": "speed",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "spdef_hp",
+      "name": "魔防_生命",
+      "nameZh": "↑魔防 ↓生命",
+      "up": "spdef",
+      "down": "hp",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "calm",
+      "name": "温和",
+      "nameZh": "温和",
+      "up": "spdef",
+      "down": "atk",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "careful",
+      "name": "慎重",
+      "nameZh": "慎重",
+      "up": "spdef",
+      "down": "spatk",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "spdef_defense",
+      "name": "魔防_物防",
+      "nameZh": "↑魔防 ↓物防",
+      "up": "spdef",
+      "down": "defense",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "spdef_speed",
+      "name": "魔防_速度",
+      "nameZh": "↑魔防 ↓速度",
+      "up": "spdef",
+      "down": "speed",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "speed_hp",
+      "name": "速度_生命",
+      "nameZh": "↑速度 ↓生命",
+      "up": "speed",
+      "down": "hp",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "timid",
+      "name": "胆小",
+      "nameZh": "胆小",
+      "up": "speed",
+      "down": "atk",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "jolly",
+      "name": "爽朗",
+      "nameZh": "爽朗",
+      "up": "speed",
+      "down": "spatk",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "speed_defense",
+      "name": "速度_物防",
+      "nameZh": "↑速度 ↓物防",
+      "up": "speed",
+      "down": "defense",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    },
+    {
+      "id": "speed_spdef",
+      "name": "速度_魔防",
+      "nameZh": "↑速度 ↓魔防",
+      "up": "speed",
+      "down": "spdef",
+      "upFactor": 1.1,
+      "downFactor": 0.9
+    }
   ],
-  "natureNote": "正向 = 1.10 + 0.02×星级（0★=1.10 … 5★=1.20；官方卡标「+20%」即满星口径）、负向固定 ×0.9、中性 ×1.0 —— 六项统一（生命不再单独 ×1.2）。性格乘在「括号」上、先取整括号再乘，其后才加星级常数。实测：小星光 45 级 0★ 魔攻 round(95×1.10)=105 ✓；音速犬 / 银月狼王 / 冰钻布鲁斯 5★（×1.20）六格全中。名称→属性映射待按游戏核实（roco.world/zh 无性格表；「调皮」未收录，暂按 +物攻 −魔防）。",
+  "natureNote": "正向 = 1.10 + 0.02×星级（0★=1.10 … 5★=1.20；官方卡标「+20%」即满星口径）、负向固定 ×0.9、中性 ×1.0 —— 六项统一（生命不再单独 ×1.2）。性格乘在「括号」上、先取整括号再乘，其后才加星级常数。实测：小星光 45 级 0★ 魔攻 round(95×1.10)=105 ✓；音速犬 / 银月狼王 / 冰钻布鲁斯 5★（×1.20）六格全中。已补齐 6 项两两组合（up≠down）共 30 条 + 中性；中文名仅 8 条（固执 / 内敛 / 大胆 / 温和 / 慎重 / 胆小 / 爽朗 / 淘气）按游戏常见口径对应，其余以「↑X ↓Y」占位，名称映射仍【待校准】。",
   "trainingProfiles": {
     "options": [
-      { "id": "none", "label": "无个体", "prior": 1, "nature": null, "iv": {} },
-      { "id": "half", "label": "半个体", "prior": 1, "nature": null, "iv": { "hp": 30, "atk": 30, "spatk": 30, "defense": 30, "spdef": 30, "speed": 30 } },
-      { "id": "full", "label": "满个体（攻/速）", "prior": 1, "nature": null, "iv": { "hp": 60, "atk": 60, "speed": 60 } }
+      {
+        "id": "none",
+        "label": "无个体",
+        "prior": 1,
+        "nature": null,
+        "iv": {}
+      },
+      {
+        "id": "half",
+        "label": "半个体",
+        "prior": 1,
+        "nature": null,
+        "iv": {
+          "hp": 30,
+          "atk": 30,
+          "spatk": 30,
+          "defense": 30,
+          "spdef": 30,
+          "speed": 30
+        }
+      },
+      {
+        "id": "full",
+        "label": "满个体（攻/速）",
+        "prior": 1,
+        "nature": null,
+        "iv": {
+          "hp": 60,
+          "atk": 60,
+          "speed": 60
+        }
+      }
     ],
     "sigma": 0.05,
     "note": "对手个体先验档位与似然带宽【待校准】。"
