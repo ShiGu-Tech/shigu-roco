@@ -38,13 +38,23 @@ function send<T>(type: string, payload: Dict): Promise<T> {
   });
 }
 
+/** 优先读入仓静态包 public/data/bundle.json；缺失时回退服务端 /api/engine/bundle。 */
+async function fetchRawBundle(): Promise<Dict> {
+  try {
+    const staticRes = await fetch("/data/bundle.json", { cache: "no-store" });
+    if (staticRes.ok) return (await staticRes.json()) as Dict;
+  } catch {
+    // 静态包不可用时回退服务端
+  }
+  const res = await fetch("/api/engine/bundle", { cache: "no-store" });
+  if (!res.ok) throw new Error(`加载数据失败（${res.status}）`);
+  return (await res.json()) as Dict;
+}
+
 export function initWorker(): Promise<void> {
   if (initPromise) return initPromise;
   initPromise = (async () => {
-    const res = await fetch("/api/engine/bundle", { cache: "no-store" });
-    if (!res.ok) throw new Error(`加载数据失败（${res.status}）`);
-    const raw = (await res.json()) as Dict;
-    await send("init", { raw });
+    await send("init", { raw: await fetchRawBundle() });
   })().catch((err) => {
     initPromise = null;
     throw err;

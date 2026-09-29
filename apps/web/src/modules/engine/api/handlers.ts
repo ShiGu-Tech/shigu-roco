@@ -99,7 +99,7 @@ function eventsToDict(events: BattleEvent[]): Dict[] {
 export function health(bundle: DataBundle): Dict {
   return {
     status: "ok",
-    engineVersion: "0.2.0",
+    engineVersion: "0.3.0",
     dataVersion: bundle.dataVersion,
     dataUpdatedAt: bundle.dataUpdatedAt,
     counts: counts(bundle),
@@ -289,20 +289,36 @@ export function observe(bundle: DataBundle, body: Dict): Dict {
   return out;
 }
 
-/** Worker 用：全量数据 + 数据版本。 */
+/** 剥离仅用于图鉴追溯的原始页面快照 sourceData，得到精简运行时条目。 */
+function stripSource(item: Dict): Dict {
+  if (!item || typeof item !== "object" || item.sourceData === undefined) return item;
+  const copy = { ...item };
+  delete copy.sourceData;
+  return copy;
+}
+
+/** 旧注册快照把技能来源藏在 sourceData 里；精简前固化为 skillSources 字段，供 catalog 使用。 */
+function leanSprite(sprite: Dict): Dict {
+  const sources = skillSourcesOf(sprite);
+  const enriched = Object.keys(sources).length ? { ...sprite, skillSources: sources } : sprite;
+  return stripSource(enriched);
+}
+
+/** Worker / 静态包用：全量数据 + 数据版本（不含 sourceData，含 mechanisms）。 */
 export function bundlePayload(bundle: DataBundle): Dict {
   return {
     dataVersion: bundle.dataVersion,
     dataUpdatedAt: bundle.dataUpdatedAt,
     warnings: bundle.warnings,
-    sprites: { sprites: Object.values(bundle.sprites), version: bundle.dataVersion, updatedAt: bundle.dataUpdatedAt },
-    skills: { skills: Object.values(bundle.skills) },
-    marks: { marks: Object.values(bundle.marks) },
-    weather: { weather: Object.values(bundle.weather) },
+    sprites: { sprites: Object.values(bundle.sprites).map(leanSprite), version: bundle.dataVersion, updatedAt: bundle.dataUpdatedAt },
+    skills: { skills: Object.values(bundle.skills).map(stripSource) },
+    marks: { marks: Object.values(bundle.marks).map(stripSource) },
+    weather: { weather: Object.values(bundle.weather).map(stripSource) },
     elements: bundle.elements,
     rules: bundle.rules,
     stats: bundle.stats,
     assets: bundle.assets,
+    mechanisms: bundle.mechanisms ?? [],
   };
 }
 

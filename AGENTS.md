@@ -21,9 +21,10 @@
 ```text
 apps/web/src/modules/engine/  TS 引擎（模拟器 + MCTS + 贝叶斯 + 养成 + API/Worker）
 apps/web/                     Next.js 16 前端
+apps/web/public/data/         入仓静态包 bundle.json（浏览器 Worker 直接读，服务端导出）
 data/                         引擎参数 JSON + 图鉴注册（registry/catalogs/）
 docs/                         设计稿（索引进 docs/README.md）
-scripts/                      setup / dev / 同步
+scripts/                      setup / dev / 同步 / 静态包导出
 ```
 
 - 前端：`@/*` → `apps/web/src/*`；业务按 `src/modules/<name>/` 组织，纯逻辑与展示分离。
@@ -40,11 +41,12 @@ scripts/                      setup / dev / 同步
 
 ## 数据维护流程
 
-1. 资源数据：`node scripts/sync-roco-world.mjs --register`（需 dev 在 26900 运行）从中文站同步并注册新版图鉴，注册即激活；这是精灵 / 技能 / 印记 / 天气 / 属性的唯一来源。
+1. 资源数据：`node scripts/sync-roco-world.mjs --register`（需 dev 在 26900 运行）从中文站同步并注册新版图鉴，注册即激活，并自动导出静态包；这是精灵 / 技能 / 印记 / 天气 / 属性的唯一来源。
 2. 引擎参数：改 `data/{rules,stats,assets,mechanisms}.json`，更新 `version` / `updatedAt`；不确定项在 `params.note` 标 `【待校准】`。
 3. 引擎 reload（`POST /api/engine/admin/reload` 或重启前端）→ `/api/engine/health` 确认 `dataVersion` 与 warnings。
-4. 跑 `pnpm check`。
-5. 模拟器与 MCTS 代码**不得**因数据更新而改动。
+4. 导出静态包：`pnpm static:export`（读 `GET /api/engine/bundle` 写 `apps/web/public/data/bundle.json`，**入仓**）；浏览器 Worker 优先读它。数据改动后必须重跑并提交。
+5. 跑 `pnpm check`。
+6. 模拟器与 MCTS 代码**不得**因数据更新而改动。
 
 ## 约定
 

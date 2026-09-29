@@ -3,8 +3,13 @@ import { workerRequest } from "@/modules/engine/worker/client";
 
 import type { BattleState, Catalog, EngineAction, RecommendResult, SimulateTurnResult } from "./types";
 
-export function getCatalog() {
-  return engineFetchWithRetry<Catalog>("/catalog");
+/** 图鉴与引擎共用同一份数据：Worker 优先，失败回退服务端。 */
+export async function getCatalog() {
+  try {
+    return await workerRequest<Catalog>("catalog");
+  } catch {
+    return engineFetchWithRetry<Catalog>("/catalog");
+  }
 }
 
 export function getHealth() {
@@ -49,16 +54,26 @@ export async function simulateTurn(
   }
 }
 
-export function forcedSwitch(state: BattleState, side: "player" | "enemy", benchId: string) {
-  return engineFetch<{ state: BattleState; log: SimulateTurnResult["log"] }>("/simulate/forced-switch", {
-    method: "POST",
-    body: JSON.stringify({ state, side, benchId }),
-  });
+type StepResult = { state: BattleState; log: SimulateTurnResult["log"] };
+
+export async function forcedSwitch(state: BattleState, side: "player" | "enemy", benchId: string) {
+  try {
+    return await workerRequest<StepResult>("simulate/forced-switch", { state, side, benchId });
+  } catch {
+    return engineFetch<StepResult>("/simulate/forced-switch", {
+      method: "POST",
+      body: JSON.stringify({ state, side, benchId }),
+    });
+  }
 }
 
-export function requestLeader(state: BattleState, side: "player" | "enemy") {
-  return engineFetch<{ state: BattleState; log: SimulateTurnResult["log"] }>("/simulate/leader", {
-    method: "POST",
-    body: JSON.stringify({ state, side }),
-  });
+export async function requestLeader(state: BattleState, side: "player" | "enemy") {
+  try {
+    return await workerRequest<StepResult>("simulate/leader", { state, side });
+  } catch {
+    return engineFetch<StepResult>("/simulate/leader", {
+      method: "POST",
+      body: JSON.stringify({ state, side }),
+    });
+  }
 }

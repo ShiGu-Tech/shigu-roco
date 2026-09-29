@@ -8,11 +8,13 @@
 
 ```text
 Next.js 前端 (127.0.0.1:26900)
-  ├─ /api/engine/*   → 内置 TS 引擎（Node Route Handler，参数 + 现查图鉴）
-  └─ Web Worker      → 浏览器内跑 MCTS，不阻塞主线程
+  └─ Web Worker      → 浏览器内跑 MCTS / 结算 / 图鉴，不阻塞主线程
         模拟器(MDP) + 机制扩展层 + MCTS + 贝叶斯对手 + 养成后验
                                │ 只读加载
-        data/*.json（引擎参数） + data/registry/catalogs（现查图鉴）
+        apps/web/public/data/bundle.json（入仓静态包，~1MB）
+        ↑ 由服务端 GET /api/engine/bundle 导出
+            data/*.json（引擎参数） + data/registry/catalogs（现查图鉴）
+  /api/engine/*      → Node 兜底与图鉴管理（同步 / 注册 / reload）
 ```
 
 ## 目录
@@ -55,7 +57,7 @@ pnpm -F web test    # 引擎回归测试
 
 ## 数据维护
 
-资源数据：`node scripts/sync-roco-world.mjs --register`（dev 在 26900）从 roco.world 同步并注册图鉴，注册即激活。引擎参数：改 `data/*.json` 并更新 `version` / `updatedAt`。重启前端或 `POST /api/engine/admin/reload`，模拟器与 MCTS 代码不改。详见 `docs/modules/数据层-设计-v0.1.md`。
+资源数据：`node scripts/sync-roco-world.mjs --register`（dev 在 26900）从 roco.world 同步并注册图鉴，注册即激活，并自动导出静态包。引擎参数：改 `data/*.json` 并更新 `version` / `updatedAt`，然后 `pnpm static:export` 重导 `apps/web/public/data/bundle.json`（入仓，浏览器 Worker 优先读它）。重启前端或 `POST /api/engine/admin/reload`，模拟器与 MCTS 代码不改。详见 `docs/architecture/静态数据与前台计算-设计-v0.1.md`。
 
 ## 文档
 

@@ -3,6 +3,8 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { exportStaticBundle } from "./export-static-data.mjs";
+
 const BASE = process.env.ROCO_SOURCE_URL ?? "https://roco.world/zh";
 const outputDir = process.env.ROCO_SYNC_DIR ?? path.resolve("tmp", "roco-world-snapshot");
 const registerUrl = process.env.ROCO_REGISTER_URL ?? "http://localhost:26900/api/engine/admin/catalog/register";
@@ -79,6 +81,8 @@ async function main() {
   if (!shouldRegister) { console.log(JSON.stringify({ source: "https://roco.world/zh/", registered: false, snapshot: { spirits: spirits.length, skills: skills.length, glossary: glossary.length }, file: path.join(outputDir, "snapshot.json") }, null, 2)); return; }
   const response = await fetch(registerUrl, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ snapshot, activate: true }) });
   if (!response.ok) throw new Error(`注册失败 ${response.status}: ${await response.text()}`);
-  console.log(JSON.stringify({ source: "https://roco.world/zh/", registered: await response.json(), snapshot: { spirits: spirits.length, skills: skills.length, glossary: glossary.length } }, null, 2));
+  const registered = await response.json();
+  const exported = await exportStaticBundle(new URL(registerUrl).origin);
+  console.log(JSON.stringify({ source: "https://roco.world/zh/", registered, exported, snapshot: { spirits: spirits.length, skills: skills.length, glossary: glossary.length } }, null, 2));
 }
 main().catch((error) => { console.error(error instanceof Error ? error.message : error); process.exitCode = 1; });
