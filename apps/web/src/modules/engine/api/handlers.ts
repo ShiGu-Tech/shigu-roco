@@ -39,6 +39,15 @@ function parseProfile(raw: unknown): StatProfile | undefined {
   };
 }
 
+function parseSkillOverrides(raw: unknown): ActiveSprite["skillOverrides"] {
+  const out: Record<string, { original: string; expires: number }> = {};
+  for (const [skillId, value] of Object.entries(asDict(raw))) {
+    const entry = asDict(value);
+    out[skillId] = { original: toStr(entry.original), expires: toNum(entry.expires, 0) };
+  }
+  return Object.keys(out).length ? out : undefined;
+}
+
 function parseActive(raw: Dict): ActiveSprite {
   return {
     spriteId: toStr(raw.spriteId),
@@ -53,6 +62,7 @@ function parseActive(raw: Dict): ActiveSprite {
     cooldowns: intDict(raw.cooldowns),
     faintHandled: Boolean(raw.faintHandled),
     profile: parseProfile(raw.profile),
+    skillOverrides: parseSkillOverrides(raw.skillOverrides),
   };
 }
 
@@ -99,7 +109,7 @@ function eventsToDict(events: BattleEvent[]): Dict[] {
 export function health(bundle: DataBundle): Dict {
   return {
     status: "ok",
-    engineVersion: "0.3.0",
+    engineVersion: "0.5.0",
     dataVersion: bundle.dataVersion,
     dataUpdatedAt: bundle.dataUpdatedAt,
     counts: counts(bundle),

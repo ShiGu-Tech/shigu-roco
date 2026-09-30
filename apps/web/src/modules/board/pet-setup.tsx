@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 
 import { PetConfigDialog } from "@/components/pet-config-dialog";
 import { PetSelector } from "@/components/pet-selector";
@@ -8,11 +9,14 @@ import { SpriteImage } from "@/components/sprite-image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogBody, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 import { PANEL_ORDER, STAT_LABEL } from "@/modules/engine/calc";
 import { computeStats, type StatKey } from "@/modules/engine/stats";
 import { MAX_INVEST, profileFromSetup } from "@/modules/battle/pet";
 import type { Catalog, CatalogSprite } from "@/modules/battle/types";
+import { instanceFromSetup, setupFromInstance, type PetInstance } from "@/modules/pets/instance";
+import { listPets, upsertPet } from "@/modules/pets/store";
 import { LineupBar } from "./lineup-bar";
 import type { LineupScope } from "./lineups";
 import { emptySetup, spriteOf, type PetSetup, type TeamEntry } from "./util";
@@ -49,9 +53,17 @@ function SetupSummary({
           三维 {invested}/{MAX_INVEST}
         </Badge>
         <Badge variant="outline">技能 {setup.skills.length || "默认"}</Badge>
-        <Button type="button" size="sm" variant="secondary" className="w-full min-[520px]:ml-auto min-[520px]:w-auto" onClick={() => setOpen(true)}>
-          配置参数
-        </Button>
+        <div className="flex w-full gap-1.5 min-[520px]:ml-auto min-[520px]:w-auto">
+          <Button type="button" size="sm" variant="outline" className="flex-1 min-[520px]:flex-none" onClick={() => {
+            upsertPet(instanceFromSetup(spriteId, setup));
+            toast.success("已存入精灵仓库");
+          }}>
+            存到仓库
+          </Button>
+          <Button type="button" size="sm" variant="secondary" className="flex-1 min-[520px]:flex-none" onClick={() => setOpen(true)}>
+            配置参数
+          </Button>
+        </div>
       </div>
 
       {panel && (
@@ -177,12 +189,26 @@ export function TeamEditor({
   skillsUnknown?: boolean;
   onChange: (entries: TeamEntry[]) => void;
 }) {
+  const [warehouseOpen, setWarehouseOpen] = useState(false);
+  const [pets, setPets] = useState<PetInstance[]>([]);
+
+  function openWarehouse() {
+    setPets(listPets());
+    setWarehouseOpen(true);
+  }
+
   function addEntry(): TeamEntry {
     return {
       spriteId: catalog.sprites[0]?.id ?? "",
       ...(editable ? { setup: emptySetup() } : {}),
       ...(skillsUnknown ? { skillsUnknown: true } : {}),
     };
+  }
+
+  function pickFromWarehouse(pet: PetInstance) {
+    if (entries.length >= 6) return;
+    onChange([...entries, { spriteId: pet.spriteId, setup: setupFromInstance(pet), instanceId: pet.id }]);
+    setWarehouseOpen(false);
   }
 
   return (
@@ -192,16 +218,30 @@ export function TeamEditor({
           {title}
           <Badge variant="outline">{editable ? "资质 / 技能已知" : "只知精灵"}</Badge>
         </CardTitle>
-        <Button
-          type="button"
-          size="sm"
-          variant="secondary"
-          className="w-full min-[520px]:w-auto"
-          disabled={entries.length >= 6}
-          onClick={() => onChange([...entries, addEntry()])}
-        >
-          加精灵
-        </Button>
+        <div className="flex w-full gap-2 min-[520px]:w-auto">
+          {editable && (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="flex-1 min-[520px]:flex-none"
+              disabled={entries.length >= 6}
+              onClick={openWarehouse}
+            >
+              从仓库选
+            </Button>
+          )}
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            className="flex-1 min-[520px]:flex-none"
+            disabled={entries.length >= 6}
+            onClick={() => onChange([...entries, addEntry()])}
+          >
+            加精灵
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-3">
         <LineupBar scope={scope} entries={entries} onApply={onChange} />
@@ -220,6 +260,44 @@ export function TeamEditor({
           />
         ))}
       </CardContent>
+
+      <Dialog open={warehouseOpen} onOpenChange={setWarehouseOpen}>
+        <DialogContent className="max-w-[640px]">
+          <DialogHeader>
+            <DialogTitle className="text-base">从精灵仓库选择精灵</DialogTitle>
+          </DialogHeader>
+          <DialogBody className="space-y-2">
+            {pets.length === 0 && (
+              <p className="text-sm text-muted-foreground">
+                仓库为空。可先「加精灵」现场配置，再点「存到仓库」；或在精灵仓库页登记精灵。
+              </p>
+            )}
+            {pets.map((pet) => {
+              const sprite = spriteOf(catalog, pet.spriteId);
+              return (
+                <button
+                  key={pet.id}
+                  type="button"
+                  onClick={() => pickFromWarehouse(pet)}
+                  className="flex w-full items-center gap-3 rounded-md border p-2 text-left hover:bg-accent"
+                >
+                  <SpriteImage sprite={sprite} size="sm" className="h-11 w-11 rounded-lg" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-medium">
+                      {sprite ? `#${sprite.no} ${sprite.name}` : pet.spriteId}
+                    </span>
+                    <span className="mt-0.5 flex flex-wrap gap-1.5">
+                      <Badge variant="outline">{pet.level} 级</Badge>
+                      <Badge variant="outline">{pet.stars}★</Badge>
+                      <Badge variant="outline">技能 {pet.skills.length || "默认"}</Badge>
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+          </DialogBody>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

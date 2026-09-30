@@ -1,7 +1,7 @@
 {
-  "$schemaVersion": "0.5",
-  "version": "0.6.0",
-  "updatedAt": "2026-09-29",
+  "$schemaVersion": "0.6",
+  "version": "0.7.0",
+  "updatedAt": "2026-09-30",
   "source": "官方图卡「先搞懂：种族值&个体值」「①真实数值怎么算」(roco pet – RocoDiviner) + 实测校准（音速犬 / 银月狼王 / 冰钻布鲁斯 5★ L60、小星光 0★ L45 逐格对拍）",
   "level": {
     "default": 60,
@@ -46,6 +46,12 @@
     "starMax": 5,
     "investCount": 3,
     "note": "天分 1~10；每升一星加一倍，满星 5★ = ×6 → 个体值 0~60；只能加在 3 项上，每项 ≤ +60。"
+  },
+  "talentRecommend": {
+    "speedThreshold": 115,
+    "hpThreshold": 100,
+    "attackThreshold": 105,
+    "note": "机械推荐加点（v1，先用参数固定，后续由 AI 结合精灵技能池替代）：速度种族 ≥speedThreshold 加速度；生命种族 ≥hpThreshold 加生命；物攻/魔攻较高者 ≥attackThreshold 加该攻击项；性格削弱项一律排除；其余按性格导向的角色模板与种族值记分取前 investCount 项、每项拉满。实现见 modules/pets/recommend.ts，设计见《精灵实例与仓库-设计-v0.1》。"
   },
   "natures": [
     {

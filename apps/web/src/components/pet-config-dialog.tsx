@@ -1,6 +1,8 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useState } from "react";
+import { cn } from "cn";
 
 import { NaturePicker } from "@/components/nature-picker";
 import { SkillSelector } from "@/components/skill-selector";
@@ -11,27 +13,60 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { NativeSelect } from "@/components/ui/native-select";
 import { Slider } from "@/components/ui/slider";
 import { PANEL_ORDER, STAT_LABEL } from "@/modules/engine/calc";
 import { computeStats, type StatKey } from "@/modules/engine/stats";
 import { MAX_INVEST, MAX_TALENT, profileFromSetup, type PetSetup } from "@/modules/battle/pet";
 import type { Catalog, CatalogSprite } from "@/modules/battle/types";
+import { recommendBuild } from "@/modules/pets/recommend";
 
 const STAT_ORDER: StatKey[] = [...PANEL_ORDER];
+const MAX_LEVEL = 60;
+const MAX_STARS = 5;
 
 function elementZh(catalog: Catalog, key: string): string {
   return catalog.elements.find((el) => el.name === key)?.nameZh ?? key;
+}
+
+/** 分区容器：边框 + 浅底，把弹窗内的各块分开。 */
+function Section({ children, className }: { children: ReactNode; className?: string }) {
+  return <section className={cn("rounded-lg border bg-background/50 p-3", className)}>{children}</section>;
+}
+
+/** 星级点击（好评式）：点第 n 颗 = n★；再点当前值 = 0★。 */
+function StarRating({ value, onChange }: { value: number; onChange: (value: number) => void }) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {Array.from({ length: MAX_STARS }, (_, i) => i + 1).map((s) => (
+        <button
+          key={s}
+          type="button"
+          aria-label={`${s} 星`}
+          aria-pressed={s <= value}
+          onClick={() => onChange(value === s ? 0 : s)}
+          className={cn(
+            "px-0.5 text-xl leading-none transition-colors",
+            s <= value ? "text-primary" : "text-muted-foreground/30 hover:text-primary/60",
+          )}
+        >
+          ★
+        </button>
+      ))}
+      <span className="ml-1.5 text-xs font-semibold tabular-nums text-muted-foreground">{value}★</span>
+    </div>
+  );
 }
 
 /** 三维及加点：最多 3 项，滑条 1~10。 */
 function InvestEditor({
   setup,
   panel,
+  race,
   onChange,
 }: {
   setup: PetSetup;
   panel: Record<StatKey, number> | null;
+  race: Record<string, number>;
   onChange: (setup: PetSetup) => void;
 }) {
   const invested = STAT_ORDER.filter((k) => setup.talent[k] != null);
@@ -51,9 +86,13 @@ function InvestEditor({
 
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs">
-        三维及加点（最多 {MAX_INVEST} 项，滑条 1~{MAX_TALENT} 档）
-      </Label>
+      <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground min-[520px]:gap-2">
+        <span className="w-11 shrink-0 text-center min-[520px]:w-14">加点</span>
+        <span className="w-7 shrink-0 text-right min-[520px]:w-9">种族</span>
+        <span className="min-w-0 flex-1 text-center">天分</span>
+        <span className="w-5 shrink-0 text-center min-[520px]:w-6">数值</span>
+        <span className="w-7 shrink-0 text-right font-medium min-[520px]:w-10">面板</span>
+      </div>
       {STAT_ORDER.map((key) => {
         const on = setup.talent[key] != null;
         const blocked = !on && invested.length >= MAX_INVEST;
@@ -68,9 +107,11 @@ function InvestEditor({
               disabled={blocked}
               onClick={() => toggle(key)}
             >
-              加点
+              {STAT_LABEL[key]}
             </Button>
-            <span className="w-7 shrink-0 text-[11px] min-[520px]:w-10 min-[520px]:text-xs">{STAT_LABEL[key]}</span>
+            <span className="w-7 shrink-0 text-right text-[11px] tabular-nums text-muted-foreground min-[520px]:w-9 min-[520px]:text-xs">
+              {race[key] ?? "—"}
+            </span>
             <Slider
               value={setup.talent[key] ?? MAX_TALENT}
               min={1}
@@ -101,12 +142,15 @@ export interface PetConfigDialogProps {
   setup: PetSetup;
   onSetupChange: (setup: PetSetup) => void;
   title?: string;
+  /** 实例名称（可选；传入 onNameChange 才显示名称输入）。 */
+  name?: string;
+  onNameChange?: (name: string) => void;
   /** 是否显示技能配置（默认显示）。 */
   showSkills?: boolean;
 }
 
 /**
- * 通用「精灵参数配置」弹窗：等级 / 星级 / 性格矩阵 / 三维加点（滑条）/ 面板雷达图 / 出战技能。
+ * 通用「精灵参数配置」弹窗：名称 / 等级 / 星级 / 性格矩阵 / 面板雷达图 / 三维加点 / 出战技能。
  * 编辑即时生效（由调用方持有 setup）。
  */
 export function PetConfigDialog({
@@ -117,6 +161,8 @@ export function PetConfigDialog({
   setup,
   onSetupChange,
   title,
+  name,
+  onNameChange,
   showSkills = true,
 }: PetConfigDialogProps) {
   const [skillOpen, setSkillOpen] = useState(false);
@@ -128,7 +174,6 @@ export function PetConfigDialog({
     sprite && catalog.stats
       ? computeStats(catalog.stats, { race: sprite.race }, profileFromSetup({ ...setup, nature: "neutral", talent: {} }))
       : null;
-  const invested = STAT_ORDER.filter((k) => setup.talent[k] != null).length;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -136,7 +181,7 @@ export function PetConfigDialog({
         <DialogHeader>
           <DialogTitle className="flex flex-wrap items-center gap-2 text-base">
             <SpriteImage sprite={sprite} size="md" className="h-11 w-11 min-[520px]:h-14 min-[520px]:w-14" />
-            <span>{title ?? "精灵参数"}</span>
+            <span>{name?.trim() || title || "精灵参数"}</span>
             {sprite ? <span className="text-muted-foreground">#{sprite.no} {sprite.name}</span> : null}
             {sprite?.elements.map((el) => (
               <Badge key={el} variant="outline">
@@ -146,69 +191,77 @@ export function PetConfigDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <DialogBody className="space-y-4">
+        <DialogBody className="space-y-3">
           {!sprite ? (
             <p className="text-sm text-muted-foreground">未选择精灵。</p>
           ) : (
             <>
-              <div className="grid gap-3 min-[520px]:grid-cols-3">
-                <div className="space-y-1">
-                  <Label className="text-xs">等级</Label>
-                  <Input
-                    type="number"
-                    min={1}
-                    max={100}
-                    className="tabular-nums"
-                    value={setup.level}
-                    onChange={(e) => onSetupChange({ ...setup, level: Number(e.target.value) || setup.level })}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs">星级</Label>
-                  <NativeSelect
-                    value={String(setup.stars)}
-                    onChange={(e) => onSetupChange({ ...setup, stars: Number(e.target.value) })}
-                  >
-                    {[0, 1, 2, 3, 4, 5].map((s) => (
-                      <option key={s} value={s}>
-                        {s}★
-                      </option>
-                    ))}
-                  </NativeSelect>
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs">三维 / 技能</Label>
-                  <p className="pt-2 text-xs text-muted-foreground">
-                    {invested}/{MAX_INVEST} 项 · {setup.skills.length} 招
-                  </p>
-                </div>
-              </div>
-              <NaturePicker
-                catalog={catalog}
-                value={setup.nature}
-                onChange={(nature) => onSetupChange({ ...setup, nature })}
-              />
+              {onNameChange && (
+                <Section>
+                  <div className="flex items-center gap-2">
+                    <Label className="w-10 shrink-0 text-xs">名称</Label>
+                    <Input
+                      value={name ?? ""}
+                      placeholder="给这只精灵取个名字"
+                      onChange={(e) => onNameChange(e.target.value)}
+                    />
+                  </div>
+                </Section>
+              )}
 
-                <div className="grid gap-3 min-[860px]:grid-cols-2 min-[860px]:gap-4">
-                <div className="rounded-md border bg-background/60 p-1">
-                  {panel ? (
-                    <StatRadar panel={panel} baseline={baseline} className="h-[260px] w-full" />
-                  ) : (
-                    <p className="p-3 text-xs text-muted-foreground">缺少面板数据。</p>
-                  )}
+              <Section>
+                <div className="grid gap-4 min-[520px]:grid-cols-2">
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <Label className="text-xs">等级</Label>
+                      <span className="text-xs font-semibold tabular-nums text-muted-foreground">{setup.level}</span>
+                    </div>
+                    <Slider
+                      value={setup.level}
+                      min={1}
+                      max={MAX_LEVEL}
+                      step={1}
+                      aria-label="等级"
+                      onValueChange={(v) => onSetupChange({ ...setup, level: v })}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">星级</Label>
+                    <StarRating value={setup.stars} onChange={(v) => onSetupChange({ ...setup, stars: v })} />
+                  </div>
                 </div>
-                <InvestEditor setup={setup} panel={panel} onChange={onSetupChange} />
-              </div>
+              </Section>
+
+              <Section>
+                <NaturePicker
+                  catalog={catalog}
+                  value={setup.nature}
+                  onChange={(nature) => onSetupChange({ ...setup, nature })}
+                />
+              </Section>
+
+              <Section>
+                <div className="grid gap-3 min-[860px]:grid-cols-2 min-[860px]:gap-4">
+                  <div className="rounded-md border bg-background/60 p-1">
+                    {panel ? (
+                      <StatRadar panel={panel} baseline={baseline} className="h-[260px] w-full" />
+                    ) : (
+                      <p className="p-3 text-xs text-muted-foreground">缺少面板数据。</p>
+                    )}
+                  </div>
+                  <InvestEditor setup={setup} panel={panel} race={sprite.race} onChange={onSetupChange} />
+                </div>
+              </Section>
 
               {showSkills && (
-                <div className="space-y-2">
+                <Section className="space-y-2">
                   <div className="flex items-center justify-between gap-2">
                     <Label className="text-xs">
-                      出战技能（4 槽；留空 = 用本精灵默认 4 招）
+                      出战技能
                       <span className="ml-2 text-muted-foreground">{setup.skills.length}/4</span>
                     </Label>
                     <Button type="button" size="sm" variant="outline" onClick={() => setSkillOpen((v) => !v)}>
-                      {skillOpen ? "收起技能表" : "选择技能"}
+                      {skillOpen ? "收起" : "选择技能"}
                     </Button>
                   </div>
 
@@ -228,11 +281,9 @@ export function PetConfigDialog({
                               setSkillOpen(true);
                             }}
                           >
-                            <span className="truncate">{skill ? skill.name : `槽 ${i + 1}（空）`}</span>
+                            <span className="truncate">{skill ? skill.name : `槽 ${i + 1}`}</span>
                             <span className="shrink-0 text-[10px] opacity-70">
-                              {skill
-                                ? `${elementZh(catalog, skill.element)} · 能耗${skill.cost}`
-                                : "选技能"}
+                              {skill ? `${elementZh(catalog, skill.element)} · 能耗${skill.cost}` : "选技能"}
                             </span>
                           </Button>
                           {skill && (
@@ -267,13 +318,27 @@ export function PetConfigDialog({
                       }}
                     />
                   )}
-                </div>
+                </Section>
               )}
             </>
           )}
         </DialogBody>
 
         <DialogFooter>
+          {sprite && (
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              className="mr-auto"
+              onClick={() => {
+                const rec = recommendBuild(catalog, { spriteId, stars: setup.stars, nature: setup.nature });
+                onSetupChange({ ...setup, nature: rec.nature, talent: rec.talent });
+              }}
+            >
+              一键推荐
+            </Button>
+          )}
           <Button type="button" size="sm" variant="outline" onClick={() => onSetupChange({ ...setup, talent: {} })}>
             清空加点
           </Button>

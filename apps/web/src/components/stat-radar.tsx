@@ -10,7 +10,7 @@ import type { EChartsOption } from "echarts";
 export interface StatRadarProps {
   /** 当前面板（六项）。 */
   panel: Record<StatKey, number>;
-  /** 对比基准（中性 / 无加点），可省。 */
+  /** 对比基准（无性格 / 无加点），可省。 */
   baseline?: Record<StatKey, number> | null;
   className?: string;
 }
@@ -33,7 +33,7 @@ export function StatRadar({ panel, baseline, className }: StatRadarProps) {
   const option: EChartsOption = {
     tooltip: {},
     legend: {
-      data: baseValues ? ["当前", "中性基准"] : ["当前"],
+      data: baseValues ? ["当前", "无性格基准"] : ["当前"],
       top: 0,
       textStyle: { color: axis },
     },
@@ -66,12 +66,12 @@ export function StatRadar({ panel, baseline, className }: StatRadarProps) {
         ? [
             {
               type: "radar" as const,
-              name: "中性基准",
+              name: "无性格基准",
               symbolSize: 3,
               data: [
                 {
                   value: baseValues,
-                  name: "中性基准",
+                  name: "无性格基准",
                   itemStyle: { color: axis },
                   lineStyle: { color: axis, type: "dashed" as const },
                   areaStyle: { color: axis, opacity: 0.06 },

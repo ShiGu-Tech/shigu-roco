@@ -22,7 +22,9 @@ export interface ActiveSpriteState {
   debuffs: Record<string, number>;
   marks: Record<string, number>;
   statuses: Record<string, number>;
+  cooldowns?: Record<string, number>;
   profile?: StatProfileState;
+  skillOverrides?: Record<string, { original: string; expires: number }>;
 }
 
 export interface SideState {

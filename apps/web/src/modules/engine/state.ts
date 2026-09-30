@@ -25,7 +25,38 @@ export function cloneActive(a: ActiveSprite): ActiveSprite {
     cooldowns: a.cooldowns ? { ...a.cooldowns } : undefined,
     faintHandled: a.faintHandled,
     profile: cloneProfile(a.profile),
+    skillOverrides: a.skillOverrides
+      ? Object.fromEntries(Object.entries(a.skillOverrides).map(([k, v]) => [k, { ...v }]))
+      : undefined,
   };
+}
+
+/** 记录一次临时技能改动，供到期 / 用后还原。expires：-1 永久、0 用后还原、>0 绝对回合。 */
+export function recordSkillOverride(active: ActiveSprite, tempSkillId: string, original: string, expires: number): void {
+  active.skillOverrides ??= {};
+  active.skillOverrides[tempSkillId] = { original, expires };
+}
+
+/** 把临时技能还原为原技能（original 为空则移除）。 */
+export function revertSkillOverride(active: ActiveSprite, tempSkillId: string): boolean {
+  const override = active.skillOverrides?.[tempSkillId];
+  if (!override) return false;
+  active.loadout = override.original
+    ? active.loadout.map((skillId) => (skillId === tempSkillId ? override.original : skillId))
+    : active.loadout.filter((skillId) => skillId !== tempSkillId);
+  delete active.skillOverrides![tempSkillId];
+  return true;
+}
+
+/** 回合结束：还原已到期的临时技能（expires > 0 且 <= turn）。 */
+export function expireSkillOverrides(active: ActiveSprite, turn: number): string[] {
+  if (!active.skillOverrides) return [];
+  const expired: string[] = [];
+  for (const [tempSkillId, override] of Object.entries(active.skillOverrides)) {
+    if (override.expires > 0 && override.expires <= turn) expired.push(tempSkillId);
+  }
+  for (const tempSkillId of expired) revertSkillOverride(active, tempSkillId);
+  return expired;
 }
 
 export function cloneSide(s: SideState): SideState {

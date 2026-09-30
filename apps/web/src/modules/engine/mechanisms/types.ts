@@ -76,8 +76,8 @@ export type EffectDefinition =
   | { type: "learnSkill"; target?: string; skillId: string; source?: string; duration?: number }
   | { type: "forgetSkill"; target?: string; skillId: string }
   | { type: "replaceSkill"; target?: string; fromSkillId: string; toSkillId: string; duration?: number }
-  | { type: "randomizeSkill"; target?: string; source: string[]; duration?: number }
-  | { type: "swapSkillSet"; from: string; to: string; duration?: number }
+  | { type: "randomizeSkill"; target?: string; skillId?: string; source: string[]; duration?: number }
+  | { type: "swapSkillSet"; target?: string; from: string; to: string; duration?: number }
   | { type: "unsupported"; effectType: string; reason?: string };
 
 export interface EffectCommand {

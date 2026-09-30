@@ -36,6 +36,9 @@ export interface ActiveSprite {
   cooldowns?: Record<string, number>;
   faintHandled?: boolean;
   profile?: StatProfile;
+  /** 技能池临时改动的还原记录（机制扩展）：临时技能 id → { original, expires }。
+   *  original 为空 = 临时新增（到期移除）；expires 为绝对回合（-1 永久、0 表示使用后即还原）。 */
+  skillOverrides?: Record<string, { original: string; expires: number }>;
 }
 
 export interface SideState {
@@ -134,6 +137,8 @@ export interface StatsData {
   individual?: IndividualDef;
   natures?: NatureDef[];
   trainingProfiles?: { options?: TrainingProfileDef[]; sigma?: number };
+  /** 加点自动推荐（机械 v1）阈值；缺省用代码内置默认。 */
+  talentRecommend?: { speedThreshold?: number; hpThreshold?: number; attackThreshold?: number };
 }
 
 // ---------------------------------------------------------------- 数据层

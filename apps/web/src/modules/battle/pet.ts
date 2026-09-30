@@ -24,6 +24,8 @@ export interface TeamEntry {
   spriteId: string;
   setup?: PetSetup;
   skillsUnknown?: boolean;
+  /** 关联的精灵仓库实例 id（套用仓库时写入；引擎不消费，仅 UI 记忆来源）。 */
+  instanceId?: string;
 }
 
 export const DEFAULT_LEVEL = 60;

@@ -1,5 +1,7 @@
 import { getSkill, getSprite } from "../data";
 import { computeDamage } from "../effects/damage";
+import { Rng } from "../rng";
+import { recordSkillOverride } from "../state";
 import type { BattleState, DataBundle, Side } from "../types";
 import { ActionQueue } from "./action-queue";
 import { MechanismRegistry } from "./registry";
@@ -11,6 +13,16 @@ function actionIdFor(target: string | undefined, actorSide: Side | undefined, ac
   return actorSide ? actionIds[actorSide] : undefined;
 }
 
+/** 由战斗种子 + 机制 id 派生的确定性随机源，保证同状态同种子可复现。 */
+function hashSeed(state: BattleState, salt: string): number {
+  let h = (2166136261 ^ (state.seed >>> 0)) >>> 0;
+  for (let i = 0; i < salt.length; i++) {
+    h ^= salt.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
 /** 机制扩展的运行时外壳：负责收集命令和安全地修改行动队列。 */
 export class MechanismRuntime {
   constructor(readonly registry: MechanismRegistry) {}
@@ -19,7 +31,7 @@ export class MechanismRuntime {
     return this.registry.collect(context);
   }
 
-  applyStateCommands(state: BattleState, commands: EffectCommand[], bundle?: DataBundle): MechanismEvent[] {
+  applyStateCommands(state: BattleState, commands: EffectCommand[], bundle?: DataBundle, depth = 0): MechanismEvent[] {
     const events: MechanismEvent[] = [];
     for (const command of commands) {
       const definition = command.definition;
@@ -120,8 +132,80 @@ export class MechanismRuntime {
           events.push({ type: "stat-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { stat: definition.stat, before, after: bucket[definition.stat], mode: definition.mode } });
           break;
         }
+        case "learnSkill": {
+          if (!active || !targetSide) break;
+          const { skillId } = definition;
+          if (!skillId || active.loadout.includes(skillId)) break;
+          active.loadout = [...active.loadout, skillId];
+          if (definition.duration) recordSkillOverride(active, skillId, "", definition.duration < 0 ? -1 : state.turn + definition.duration);
+          events.push({ type: "skill-learned", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { skillId, loadout: active.loadout } });
+          break;
+        }
+        case "forgetSkill": {
+          if (!active || !targetSide) break;
+          const before = active.loadout.length;
+          active.loadout = active.loadout.filter((id) => id !== definition.skillId);
+          if (active.loadout.length !== before) events.push({ type: "skill-forgotten", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { skillId: definition.skillId, loadout: active.loadout } });
+          break;
+        }
+        case "replaceSkill": {
+          if (!active || !targetSide) break;
+          const { fromSkillId, toSkillId } = definition;
+          if (!active.loadout.includes(fromSkillId)) break;
+          active.loadout = active.loadout.map((id) => (id === fromSkillId ? toSkillId : id));
+          if (definition.duration) recordSkillOverride(active, toSkillId, fromSkillId, definition.duration < 0 ? -1 : state.turn + definition.duration);
+          events.push({ type: "skill-replaced", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { fromSkillId, toSkillId, loadout: active.loadout } });
+          break;
+        }
+        case "randomizeSkill": {
+          if (!active || !targetSide) break;
+          const current = definition.skillId ?? active.loadout[active.loadout.length - 1];
+          const pool = definition.source.filter((id) => id && id !== current);
+          if (!current || !pool.length) break;
+          const rng = new Rng(hashSeed(state, `${command.mechanismId}:${state.turn}`));
+          const picked = pool[rng.int(pool.length)];
+          active.loadout = active.loadout.includes(current)
+            ? active.loadout.map((id) => (id === current ? picked : id))
+            : [...active.loadout, picked];
+          recordSkillOverride(active, picked, current, definition.duration ? state.turn + definition.duration : 0);
+          events.push({ type: "skill-randomized", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { from: current, to: picked, loadout: active.loadout } });
+          break;
+        }
+        case "swapSkillSet": {
+          if (!active || !targetSide) break;
+          const { from, to } = definition;
+          const fromIndex = active.loadout.indexOf(from);
+          if (fromIndex < 0) break;
+          const toIndex = active.loadout.indexOf(to);
+          if (toIndex >= 0) {
+            active.loadout = [...active.loadout];
+            active.loadout[fromIndex] = to;
+            active.loadout[toIndex] = from;
+          } else {
+            active.loadout = active.loadout.map((id) => (id === from ? to : id));
+            if (definition.duration) recordSkillOverride(active, to, from, definition.duration < 0 ? -1 : state.turn + definition.duration);
+          }
+          events.push({ type: "skill-set-swapped", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { from, to, loadout: active.loadout } });
+          break;
+        }
         default:
           break;
+      }
+    }
+
+    if (depth < 4) {
+      for (const event of [...events]) {
+        const trigger = event.type === "status-applied" ? "statusApplied" : event.type === "mark-applied" ? "markApplied" : null;
+        if (!trigger) continue;
+        const cascaded = this.dispatch({
+          state,
+          trigger,
+          actorSide: event.side,
+          targetSide: event.side === "player" ? "enemy" : event.side === "enemy" ? "player" : undefined,
+          event: event.data,
+        });
+        events.push(...this.applyStateCommands(state, cascaded, bundle, depth + 1));
+        if (bundle) events.push(...this.applyDamageCommands(state, bundle, cascaded));
       }
     }
     return events;

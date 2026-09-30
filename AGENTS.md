@@ -20,6 +20,7 @@
 
 ```text
 apps/web/src/modules/engine/  TS 引擎（模拟器 + MCTS + 贝叶斯 + 养成 + API/Worker）
+apps/web/src/modules/pets/    精灵实例与仓库（PetInstance 外键绑定图鉴模板，面板现算；/warehouse）
 apps/web/                     Next.js 16 前端
 apps/web/public/data/         入仓静态包 bundle.json（浏览器 Worker 直接读，服务端导出）
 data/                         引擎参数 JSON + 图鉴注册（registry/catalogs/）

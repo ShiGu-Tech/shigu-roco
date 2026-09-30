@@ -13,6 +13,7 @@ export default function Home() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3 self-start min-[520px]:self-auto">
+          <Link href="/warehouse" className="text-sm text-primary underline-offset-4 hover:underline">精灵仓库</Link>
           <Link href="/data" className="text-sm text-primary underline-offset-4 hover:underline">基础数据</Link>
           <div className="flex items-center gap-2 rounded-full border bg-card px-3 py-1.5 text-xs text-muted-foreground shadow-soft">
             <span className="h-2 w-2 rounded-full bg-success shadow-glow" />

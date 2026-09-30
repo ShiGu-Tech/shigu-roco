@@ -38,27 +38,33 @@ export function NaturePicker({ catalog, value, onChange }: NaturePickerProps) {
     <div className="space-y-1">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Label className="text-xs">
-          性格（行 ↑提升 · 列 ↓下降）
+          性格
           <span className="ml-2 text-muted-foreground">
-            {current ? `${current.nameZh ?? current.name ?? current.id}` : "未选"}
+            {current && (up || down) ? `${current.nameZh ?? current.name ?? current.id}` : "未选"}
             {up ? ` · ${STAT_LABEL[up]}↑` : ""}
             {down ? ` · ${STAT_LABEL[down]}↓` : ""}
           </span>
         </Label>
-        <Button type="button" size="sm" variant={!up && !down ? "default" : "outline"} onClick={() => pick(null, null)}>
-          中性
+        <Button
+          type="button"
+          size="sm"
+          variant={!up && !down ? "default" : "outline"}
+          className="h-7 px-2 text-xs"
+          onClick={() => pick(null, null)}
+        >
+          取消性格
         </Button>
       </div>
       <div className="overflow-x-auto">
-        <div className="grid min-w-[268px] grid-cols-[40px_repeat(6,minmax(38px,1fr))] gap-1 min-[520px]:min-w-[360px] min-[520px]:grid-cols-[46px_repeat(6,minmax(40px,1fr))]">
+        <div className="grid min-w-[280px] grid-cols-[50px_repeat(6,minmax(40px,1fr))] gap-1 min-[520px]:min-w-[360px] min-[520px]:grid-cols-[56px_repeat(6,minmax(44px,1fr))]">
           <span />
           {STAT_ORDER.map((k) => (
-            <span key={`h-${k}`} className="text-center text-[10px] text-muted-foreground">
+            <span key={`h-${k}`} className="text-center text-xs font-semibold text-destructive">
               {STAT_LABEL[k]}↓
             </span>
           ))}
           {STAT_ORDER.map((upKey) => [
-            <span key={`l-${upKey}`} className="flex items-center text-[10px] text-muted-foreground">
+            <span key={`l-${upKey}`} className="flex items-center text-xs font-semibold text-success">
               {STAT_LABEL[upKey]}↑
             </span>,
             ...STAT_ORDER.map((downKey) => {
@@ -73,7 +79,7 @@ export function NaturePicker({ catalog, value, onChange }: NaturePickerProps) {
                   title={same ? undefined : (target?.nameZh ?? target?.name ?? `${STAT_LABEL[upKey]}↑ ${STAT_LABEL[downKey]}↓`)}
                   onClick={() => pick(upKey, downKey)}
                   className={[
-                    "h-6 rounded border text-[11px] transition-colors min-[520px]:h-7",
+                    "h-7 rounded border text-xs transition-colors min-[520px]:h-8",
                     same
                       ? "cursor-not-allowed border-border/60 bg-muted/60 text-muted-foreground/50"
                       : active
@@ -88,9 +94,6 @@ export function NaturePicker({ catalog, value, onChange }: NaturePickerProps) {
           ])}
         </div>
       </div>
-      <p className="text-[11px] text-muted-foreground">
-        <span className="font-medium">行 = 提升项、列 = 下降项</span>，点一格即选；标 «—» 的斜线格是同一项，不能同时又升又降。
-      </p>
     </div>
   );
 }

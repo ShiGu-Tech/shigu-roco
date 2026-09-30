@@ -3,7 +3,7 @@
 import { getSkill, getSprite } from "../data";
 import { effectiveStat } from "../effects/damage";
 import type { Rng } from "../rng";
-import { cloneState } from "../state";
+import { cloneState, expireSkillOverrides, revertSkillOverride } from "../state";
 import type { Action, BattleEvent, BattleState, DataBundle, Side, StepResult, Terminal } from "../types";
 import { asDict, toArray, toNum, toStr } from "../types";
 import { clearMarksOnSwitch, settleMarks } from "./marks";
@@ -81,6 +81,10 @@ export class Simulator {
     const actions: Record<Side, Action> = { player: playerAction, enemy: enemyAction };
     const rules = this.bundle.rules;
 
+    if (st.turn === 1) {
+      events.push(...this.triggerState(st, "battleStart", { event: { turn: st.turn } }));
+    }
+
     const turnStartCommands = this.mechanisms.dispatch({ state: st, trigger: "turnStart", event: { turn: st.turn } });
     events.push(...this.mechanisms.applyStateCommands(st, turnStartCommands, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
 
@@ -157,6 +161,14 @@ export class Simulator {
         logs.push(`skill: ${side} -> ${entry.action.skillId ?? ""}`);
       }
       entry.status = "resolved";
+      if (entry.action.kind === "skill") {
+        events.push(...this.triggerState(st, "skillUsed", { actorSide: side, targetSide: opp, action: entry.action, event: { skillId: entry.action.skillId, actionId: entry.id } }));
+        const skillId = entry.action.skillId;
+        if (skillId && caster.skillOverrides?.[skillId]?.expires === 0) {
+          revertSkillOverride(caster, skillId);
+          events.push({ type: "skill-reverted", side, text: `${caster.spriteId} 使用后还原技能 ${skillId}`, data: { skillId } });
+        }
+      }
       const afterCommands = this.mechanisms.dispatch({
         state: st,
         trigger: "actionResolved",
@@ -219,6 +231,30 @@ export class Simulator {
     };
   }
 
+  /** 发布一个生命周期事件并应用扩展命令（状态 + 伤害），供 battleStart/换人/技能/死亡等触发点复用。 */
+  private triggerState(
+    st: BattleState,
+    trigger: import("../mechanisms").TriggerName,
+    options: { actorSide?: Side; targetSide?: Side; action?: Action; event?: Record<string, unknown> } = {},
+  ): BattleEvent[] {
+    const commands = this.mechanisms.dispatch({
+      state: st,
+      trigger,
+      actorSide: options.actorSide,
+      targetSide: options.targetSide,
+      action: options.action,
+      event: options.event ?? {},
+    });
+    const events: BattleEvent[] = [];
+    for (const event of this.mechanisms.applyStateCommands(st, commands, this.bundle)) {
+      events.push(this.asBattleEvent(event.type, event.side ?? null, event));
+    }
+    for (const event of this.mechanisms.applyDamageCommands(st, this.bundle, commands)) {
+      events.push(this.asBattleEvent(event.type, event.side ?? null, event));
+    }
+    return events;
+  }
+
   private triggerMarkMechanisms(st: BattleState, carrierSide: Side, targetSide: Side): BattleEvent[] {
     const carrier = this.sideState(st, carrierSide);
     const markIds = new Set([...Object.keys(carrier.active.marks), ...Object.keys(carrier.teamMarks)]);
@@ -249,12 +285,14 @@ export class Simulator {
     if (!forced && s.switchLock > 0) return events;
     const target = s.bench.find((b) => b.spriteId === benchId && b.hp > 0);
     if (!target) return events;
-    events.push(...clearMarksOnSwitch(st, side, this.bundle));
     const old = s.active;
+    events.push(...this.triggerState(st, "beforeSwitch", { actorSide: side, targetSide: otherSide(side), action: { kind: "switch", benchId }, event: { from: old.spriteId, to: target.spriteId, forced } }));
+    events.push(...clearMarksOnSwitch(st, side, this.bundle));
     s.bench = s.bench.filter((b) => b !== target);
     s.bench.push(old);
     s.active = target;
     events.push({ type: "switch", side, text: `${side} 换上 ${target.spriteId}`, data: {} });
+    events.push(...this.triggerState(st, "afterSwitch", { actorSide: side, targetSide: otherSide(side), action: { kind: "switch", benchId }, event: { from: old.spriteId, to: target.spriteId, forced } }));
     return events;
   }
 
@@ -320,6 +358,7 @@ export class Simulator {
           sprite.statuses[status] -= 1;
           if (sprite.statuses[status] <= 0) delete sprite.statuses[status];
         }
+        expireSkillOverrides(sprite, st.turn);
       }
       if (s.switchLock > 0) s.switchLock -= 1;
     }
@@ -332,9 +371,12 @@ export class Simulator {
     for (const side of SIDES) {
       const s = this.sideState(st, side);
       if (s.active.hp > 0 || s.active.faintHandled) continue;
+      const opp = otherSide(side);
+      events.push(...this.triggerState(st, "beforeDeath", { actorSide: side, targetSide: opp, event: { spriteId: s.active.spriteId } }));
       s.active.faintHandled = true;
       s.magic -= perFaint;
       events.push({ type: "faint", side, text: `${s.active.spriteId} 阵亡，魔力 -${perFaint}`, data: {} });
+      events.push(...this.triggerState(st, "afterDeath", { actorSide: side, targetSide: opp, event: { spriteId: s.active.spriteId } }));
     }
     return events;
   }
