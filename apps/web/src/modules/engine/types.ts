@@ -43,6 +43,8 @@ export interface ActiveSprite {
   counters?: Record<string, number>;
   /** 记忆域 · 技能永久修正：skillId → 威力 / 能耗 / 连击 / 先手的持久 delta。 */
   skillMods?: Record<string, { power?: number; cost?: number; hits?: number; priority?: number }>;
+  /** 入场域 · 本局是否已入场过（供「首次入场」类机制判断 `event.first`）。 */
+  entered?: boolean;
 }
 
 /** 记忆域 · 上回合记忆（供「若上回合…」类条件）。 */

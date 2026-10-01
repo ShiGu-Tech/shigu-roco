@@ -35,5 +35,10 @@
  *          + 命令级 `event` 绑定（暴露 `event.consumed`）；`onHit` / `afterDamage` 事件暴露 `element`；
  *          `dealDamage` 非技能伤害支持 `element`。据此**移除引擎内星陨特化**（`applyStarfall`）与
  *          **应对的站点标签解析**（改读数据层归一化的通用字段 `skill.reaction`）。
+ * - 0.10.0 入场域：新增 `onEntry` 触发器——开局在场与每次换入都派发，事件带
+ *          `enteredSpriteId` / `from` / `forced` / `first`；`ActiveSprite.entered` 记录是否首次入场，
+ *          供「首次入场」类特性（条件 `event.first`）。不再依赖 `battleStart` 的精灵字段。
+ * - 0.11.0 场地/伤害查询面：`modifySkillCost.elements`（按技能元素筛选，表达「地系技能耗减半」等天气/特性）；
+ *          `beforeDamage` 事件补 `element`（供按元素筛选伤害修饰，如「雨天水系威力 +75%」）。
  */
-export const ENGINE_VERSION = "0.9.0";
+export const ENGINE_VERSION = "0.11.0";

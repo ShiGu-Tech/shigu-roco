@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { ActionQueue, MechanismRegistry, MechanismRuntime } from "../mechanisms";
 import type { EffectCommand, MechanismDefinition } from "../mechanisms";
 import { Rng } from "../rng";
+import { getBundle } from "../server";
 import { Simulator } from "../simulator/battle";
 import { makeActive, makeSide, makeState, revertSkillOverride } from "../state";
 import type { BattleState, DataBundle } from "../types";
@@ -826,5 +827,154 @@ describe("simulator trigger dispatch", () => {
     expect(result.state.enemy.magic).toBe(3);
     sim.forcedSwitch(result.state, "player", "sp-b");
     expect(result.state.player.active.energy).toBe(5);
+  });
+});
+
+describe("onEntry trigger (first entry)", () => {
+  const bundle: DataBundle = {
+    ...miniBundle,
+    mechanisms: [
+      {
+        id: "bell",
+        ownerType: "trait",
+        ownerId: "sp-a",
+        trigger: "onEntry",
+        when: [
+          { path: "event.enteredSpriteId", op: "eq", value: "sp-a" },
+          { path: "event.first", op: "eq", value: true },
+        ],
+        effects: [{ type: "dealDamage", target: "self", category: "Passive", power: 0, basis: "currentHp", amount: 0.5 }],
+      },
+    ],
+  };
+
+  function build(): BattleState {
+    const b = makeState(
+      makeSide(makeActive("sp-a", { hp: 200, maxHp: 200, energy: 5 }), { bench: [makeActive("sp-b", { hp: 200, maxHp: 200 })] }),
+      makeSide(makeActive("sp-b", { hp: 200, maxHp: 200 })),
+      { turn: 1, seed: 7 },
+    );
+    b.player.active.loadout = ["sk-1"];
+    b.enemy.active.loadout = ["sk-1"];
+    return b;
+  }
+
+  it("loses half current HP on first entry at battle start", () => {
+    const sim = new Simulator(bundle);
+    const result = sim.step(build(), { kind: "energy" }, { kind: "energy" }, new Rng(1));
+    expect(result.state.player.active.hp).toBe(100);
+    expect(result.state.player.active.entered).toBe(true);
+    expect(result.events.some((e) => e.type === "damage" && e.data.value === 100)).toBe(true);
+  });
+
+  it("does not fire again on later entries", () => {
+    const sim = new Simulator(bundle);
+    const r1 = sim.step(build(), { kind: "energy" }, { kind: "energy" }, new Rng(1));
+    const r2 = sim.step(r1.state, { kind: "switch", benchId: "sp-b" }, { kind: "energy" }, new Rng(1));
+    expect(r2.state.player.active.spriteId).toBe("sp-b");
+    const r3 = sim.step(r2.state, { kind: "switch", benchId: "sp-a" }, { kind: "energy" }, new Rng(1));
+    expect(r3.state.player.active.spriteId).toBe("sp-a");
+    expect(r3.state.player.active.hp).toBe(100);
+  });
+
+  it("ships the real 铃兰晚钟 trait for sp-201-1 / sp-202-1", () => {
+    const real = getBundle();
+    const all = (real.mechanisms ?? []) as MechanismDefinition[];
+    const mechs = all.filter((m) => m.id === "trait:sp-201-1" || m.id === "trait:sp-202-1");
+    expect(mechs).toHaveLength(2);
+    for (const m of mechs) {
+      expect(m.trigger).toBe("onEntry");
+      expect(JSON.stringify(m.effects)).toContain("currentHp");
+    }
+  });
+});
+
+describe("weather domain (element-filtered cost / damage / turn-end status)", () => {
+  const bundle: DataBundle = {
+    ...miniBundle,
+    skills: {
+      ...miniBundle.skills,
+      "sk-e": { id: "sk-e", skillName: "岩击", element: "Earth", category: "Physical", actionType: "Attack", power: 40, cost: 4 },
+      "sk-n": { id: "sk-n", skillName: "拍击", element: "Normal", category: "Physical", actionType: "Attack", power: 40, cost: 4 },
+      "sk-w": { id: "sk-w", skillName: "水枪", element: "Water", category: "Magic", actionType: "Attack", power: 40, cost: 0 },
+    },
+    statuses: { freeze: { id: "freeze", name: "冻结", maxStack: 10 } },
+    weather: { rain: { id: "rain" }, sandstorm: { id: "sandstorm" }, blizzard: { id: "blizzard" }, thunder: { id: "thunder" } },
+    mechanisms: [
+      ...(miniBundle.mechanisms ?? []),
+      { id: "skill:sk-w", ownerType: "skill", ownerId: "sk-w", trigger: "beforeAction", when: [{ path: "event.action.skillId", op: "eq", value: "sk-w" }], effects: [{ type: "dealDamage", target: "target", category: "Magic", power: 40, skillId: "sk-w" }] },
+      {
+        id: "weather:sandstorm",
+        ownerType: "weather",
+        ownerId: "sandstorm",
+        trigger: "beforeAction",
+        when: [{ path: "state.weather.id", op: "eq", value: "sandstorm" }],
+        effects: [{ type: "modifySkillCost", target: "self", scope: "all", elements: ["Earth"], multiply: 0.5, mode: "set" }],
+      },
+      {
+        id: "weather:rain",
+        ownerType: "weather",
+        ownerId: "rain",
+        trigger: "beforeDamage",
+        when: [
+          { path: "state.weather.id", op: "eq", value: "rain" },
+          { path: "event.element", op: "eq", value: "Water" },
+        ],
+        effects: [{ type: "modifyDamage", mode: "multiply", value: 1.75, scope: "outgoing" }],
+      },
+      {
+        id: "weather:blizzard",
+        ownerType: "weather",
+        ownerId: "blizzard",
+        trigger: "turnEnd",
+        when: [{ path: "state.weather.id", op: "eq", value: "blizzard" }],
+        effects: [{ type: "applyStatus", target: "self", statusId: "freeze", layers: 2, immuneElements: ["Ice"] }],
+      },
+    ],
+  };
+
+  it("filters cost mods by skill element", () => {
+    const st = makeState(
+      makeSide(makeActive("sp-a", { hp: 100, maxHp: 100 })),
+      makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })),
+    );
+    st.player.active.loadout = ["sk-e", "sk-n"];
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    runtime.applyStateCommands(
+      st,
+      [command({ type: "modifySkillCost", target: "self", scope: "all", elements: ["Earth"], multiply: 0.5, mode: "set" })],
+      bundle,
+    );
+    expect(st.player.active.skillMods?.["sk-e"]?.cost).toBe(-2);
+    expect(st.player.active.skillMods?.["sk-n"]).toBeUndefined();
+  });
+
+  it("boosts water damage by ~75% in rain", () => {
+    const sim = new Simulator(bundle);
+    const run = (weather: BattleState["weather"]) => {
+      const st = makeState(
+        makeSide(makeActive("sp-a", { hp: 200, maxHp: 200, energy: 5 })),
+        makeSide(makeActive("sp-b", { hp: 400, maxHp: 400, energy: 5 })),
+        { turn: 1, seed: 3, weather },
+      );
+      st.player.active.loadout = ["sk-w"];
+      return 400 - sim.step(st, { kind: "skill", skillId: "sk-w" }, { kind: "energy" }, new Rng(3)).state.enemy.active.hp;
+    };
+    const base = run(null);
+    const rain = run({ id: "rain", turnsLeft: 3 });
+    expect(rain).toBeGreaterThan(base);
+    expect(rain).toBeGreaterThanOrEqual(Math.floor(base * 1.7));
+  });
+
+  it("applies 2 freeze to both sides at turn end under blizzard", () => {
+    const sim = new Simulator(bundle);
+    const st = makeState(
+      makeSide(makeActive("sp-a", { hp: 200, maxHp: 200, energy: 5 })),
+      makeSide(makeActive("sp-b", { hp: 200, maxHp: 200, energy: 5 })),
+      { turn: 1, seed: 3, weather: { id: "blizzard", turnsLeft: 3 } },
+    );
+    const r = sim.step(st, { kind: "energy" }, { kind: "energy" }, new Rng(3));
+    expect(r.state.player.active.statuses.freeze).toBe(2);
+    expect(r.state.enemy.active.statuses.freeze).toBe(2);
   });
 });

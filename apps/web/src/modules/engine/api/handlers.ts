@@ -49,7 +49,22 @@ function parseSkillOverrides(raw: unknown): ActiveSprite["skillOverrides"] {
   return Object.keys(out).length ? out : undefined;
 }
 
+function parseSkillMods(raw: unknown): ActiveSprite["skillMods"] {
+  const out: NonNullable<ActiveSprite["skillMods"]> = {};
+  for (const [skillId, value] of Object.entries(asDict(raw))) {
+    const m = asDict(value);
+    const mod: { power?: number; cost?: number; hits?: number; priority?: number } = {};
+    if (m.power !== undefined) mod.power = toNum(m.power, 0);
+    if (m.cost !== undefined) mod.cost = toNum(m.cost, 0);
+    if (m.hits !== undefined) mod.hits = toNum(m.hits, 0);
+    if (m.priority !== undefined) mod.priority = toNum(m.priority, 0);
+    out[skillId] = mod;
+  }
+  return Object.keys(out).length ? out : undefined;
+}
+
 function parseActive(raw: Dict): ActiveSprite {
+  const counters = numDict(raw.counters);
   return {
     spriteId: toStr(raw.spriteId),
     hp: toNum(raw.hp, 0),
@@ -64,6 +79,9 @@ function parseActive(raw: Dict): ActiveSprite {
     faintHandled: Boolean(raw.faintHandled),
     profile: parseProfile(raw.profile),
     skillOverrides: parseSkillOverrides(raw.skillOverrides),
+    counters: Object.keys(counters).length ? counters : undefined,
+    skillMods: parseSkillMods(raw.skillMods),
+    entered: raw.entered === undefined ? undefined : Boolean(raw.entered),
   };
 }
 

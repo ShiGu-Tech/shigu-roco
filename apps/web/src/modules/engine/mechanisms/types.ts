@@ -14,6 +14,7 @@ export type TriggerName =
   | "afterEffect"
   | "beforeSwitch"
   | "afterSwitch"
+  | "onEntry"
   | "beforeDeath"
   | "afterDeath"
   | "turnEnd"
@@ -104,8 +105,8 @@ export type EffectSpec =
   | { type: "transformMark"; target?: string; toMarkId: string; scope?: "sprite" | "team" }
   /** 强化域 · 驱散 / 偷取增益减益：按 `stat`（省略 = 全部）与 `polarity` 移除 `layers` 层（"all" 或省略 = 清空）；`limit` 限制作用的属性种类数。 */
   | { type: "clearStat"; target?: string; stat?: string; layers?: number | "all"; polarity?: "buff" | "debuff" | "all"; limit?: number }
-  /** 能耗域 · 技能能耗修正：对某技能 / 全体 / 攻击技 / 防御技叠加 `delta` 或按 `multiply` 缩放。 */
-  | { type: "modifySkillCost"; target?: string; skillId?: string; scope?: "skill" | "all" | "attack" | "defense"; delta?: number; deltaFrom?: DynamicValue; multiply?: number; mode?: "add" | "set" }
+  /** 能耗域 · 技能能耗修正：对某技能 / 全体 / 攻击技 / 防御技叠加 `delta` 或按 `multiply` 缩放；`elements` 可再按技能元素筛选（如「地系技能能耗减半」）。 */
+  | { type: "modifySkillCost"; target?: string; skillId?: string; scope?: "skill" | "all" | "attack" | "defense"; elements?: string[]; delta?: number; deltaFrom?: DynamicValue; multiply?: number; mode?: "add" | "set" }
   /** 行动域 · 强制换人（引擎只标记 `forcedSwitch`，由前端补一次换人）。 */
   | { type: "forceSwitch"; target?: string }
   /** 行动域 · 脱离（强制换人 + 解除离场锁）。 */

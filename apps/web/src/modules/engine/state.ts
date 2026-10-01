@@ -30,6 +30,7 @@ export function cloneActive(a: ActiveSprite): ActiveSprite {
       : undefined,
     counters: a.counters ? { ...a.counters } : undefined,
     skillMods: a.skillMods ? Object.fromEntries(Object.entries(a.skillMods).map(([k, v]) => [k, { ...v }])) : undefined,
+    entered: a.entered,
   };
 }
 
@@ -116,6 +117,7 @@ export function makeActive(
     statuses: {},
     faintHandled: false,
     profile: opts.profile,
+    entered: false,
   };
 }
 

@@ -3,7 +3,7 @@ import { computeDamage } from "../effects/damage";
 import { Rng } from "../rng";
 import { recordSkillOverride } from "../state";
 import type { BattleState, DataBundle, Side } from "../types";
-import { asDict, toArray, toNum } from "../types";
+import { asDict, toArray, toNum, toStr } from "../types";
 import { ActionQueue } from "./action-queue";
 import { resolveContextPath } from "./conditions";
 import { MechanismRegistry } from "./registry";
@@ -216,6 +216,11 @@ export class MechanismRuntime {
           else if (definition.scope === "defense") skillIds = active.loadout.filter((id) => this.isDefenseSkill(bundle, id));
           else if (definition.scope === "attack") skillIds = bundle ? active.loadout.filter((id) => { const sk = getSkill(bundle, id); return sk.category === "Physical" || sk.category === "Magic"; }) : [];
           else skillIds = definition.skillId ? [definition.skillId] : [];
+          // 可选按技能元素筛选（如「地系技能能耗减半」）。
+          if (definition.elements?.length && bundle) {
+            const allow = new Set(definition.elements);
+            skillIds = skillIds.filter((id) => allow.has(toStr(getSkill(bundle, id).element)));
+          }
           if (!skillIds.length) break;
           active.skillMods ??= {};
           for (const skillId of skillIds) {
@@ -598,7 +603,7 @@ export class MechanismRuntime {
         const amount = definition.amount ?? definition.power;
         damage = definition.basis === "maxHp" ? Math.floor(target.maxHp * amount) : definition.basis === "currentHp" ? Math.floor(target.hp * amount) : definition.basis === "stack" ? Math.floor(target.maxHp * amount * (target.marks[definition.markId ?? ""] ?? 0)) : Math.floor(amount);
       } else {
-        modifiers = this.damageModifiers(state, attackerSide, targetSide, definition);
+        modifiers = this.damageModifiers(state, attackerSide, targetSide, definition, toStr(skill.element));
         const result = computeDamage(bundle, attackerDef, targetDef, attacker, target, effectiveSkill, {
           weatherId: state.weather?.id ?? null,
           attackerTraitMult: modifiers.attackerMult,
@@ -618,7 +623,7 @@ export class MechanismRuntime {
   }
 
   /** 结算一次 dealDamage 前，按 `beforeDamage` 收集攻/防伤害修饰（攻方倍率 / 防方倍率 / 减伤 / 连击）。 */
-  private damageModifiers(state: BattleState, attackerSide: Side, targetSide: Side, definition: EffectDefinition): DamageModifiers {
+  private damageModifiers(state: BattleState, attackerSide: Side, targetSide: Side, definition: EffectDefinition, element?: string): DamageModifiers {
     const commands = this.dispatch({
       state,
       trigger: "beforeDamage",
@@ -628,6 +633,7 @@ export class MechanismRuntime {
         skillId: definition.type === "dealDamage" ? definition.skillId : undefined,
         category: definition.type === "dealDamage" ? definition.category : undefined,
         power: definition.type === "dealDamage" ? definition.power : undefined,
+        element,
       },
     });
     const attacker = attackerSide === "player" ? state.player.active : state.enemy.active;

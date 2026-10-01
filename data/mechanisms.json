@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.20.0",
+  "version": "0.22.0",
   "updatedAt": "2026-10-01",
   "mechanisms": [
     {
@@ -3974,43 +3974,52 @@
       "id": "weather:sandstorm",
       "ownerType": "weather",
       "ownerId": "sandstorm",
-      "trigger": "weatherChanged",
+      "trigger": "beforeAction",
       "when": [
         {
-          "path": "event.weatherId",
+          "path": "state.weather.id",
           "op": "eq",
           "value": "sandstorm"
         }
       ],
-      "effects": []
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "elements": [
+            "Earth"
+          ],
+          "multiply": 0.5,
+          "mode": "set"
+        }
+      ],
+      "note": "沙暴：地系技能能耗减半（每回合按当前天气重算）"
     },
     {
       "id": "weather:blizzard",
       "ownerType": "weather",
       "ownerId": "blizzard",
-      "trigger": "weatherChanged",
+      "trigger": "turnEnd",
       "when": [
         {
-          "path": "event.weatherId",
+          "path": "state.weather.id",
           "op": "eq",
           "value": "blizzard"
         }
       ],
-      "effects": []
-    },
-    {
-      "id": "weather:sunny",
-      "ownerType": "weather",
-      "ownerId": "sunny",
-      "trigger": "weatherChanged",
-      "when": [
+      "effects": [
         {
-          "path": "event.weatherId",
-          "op": "eq",
-          "value": "sunny"
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "freeze",
+          "layers": 2,
+          "immuneElements": [
+            "Ice"
+          ]
         }
       ],
-      "effects": []
+      "note": "暴风雪：每回合结束双方获得 2 层冻结（冰系免疫）"
     },
     {
       "id": "skill:sk-7040300",
@@ -8723,6 +8732,142 @@
         }
       ],
       "note": "星陨印记引爆：非幻系攻击技命中时消耗全部层数，追加幻系伤害（威力 = N²+24N−24）"
+    },
+    {
+      "id": "trait:sp-201-1",
+      "ownerType": "trait",
+      "ownerId": "sp-201-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "eq",
+          "value": "sp-201-1"
+        },
+        {
+          "path": "event.first",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "self",
+          "category": "Passive",
+          "power": 0,
+          "basis": "currentHp",
+          "amount": 0.5
+        }
+      ],
+      "note": "铃兰晚钟：首次入场时失去自己一半当前生命"
+    },
+    {
+      "id": "trait:sp-202-1",
+      "ownerType": "trait",
+      "ownerId": "sp-202-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "eq",
+          "value": "sp-202-1"
+        },
+        {
+          "path": "event.first",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "self",
+          "category": "Passive",
+          "power": 0,
+          "basis": "currentHp",
+          "amount": 0.5
+        }
+      ],
+      "note": "铃兰晚钟：首次入场时失去自己一半当前生命"
+    },
+    {
+      "id": "weather:sandstorm-clear",
+      "ownerType": "weather",
+      "ownerId": "sandstorm",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "state.weather.id",
+          "op": "neq",
+          "value": "sandstorm"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "elements": [
+            "Earth"
+          ],
+          "delta": 0,
+          "mode": "set"
+        }
+      ],
+      "note": "无沙暴时把地系技能能耗修正归零"
+    },
+    {
+      "id": "weather:rain",
+      "ownerType": "weather",
+      "ownerId": "rain",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "state.weather.id",
+          "op": "eq",
+          "value": "rain"
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Water"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyDamage",
+          "mode": "multiply",
+          "value": 1.75,
+          "scope": "outgoing"
+        }
+      ],
+      "note": "雨天：水系技能威力 +75%"
+    },
+    {
+      "id": "weather:thunder",
+      "ownerType": "weather",
+      "ownerId": "thunder",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "state.weather.id",
+          "op": "eq",
+          "value": "thunder"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "conductive-charge",
+          "layers": 1,
+          "immuneElements": [
+            "Electric"
+          ]
+        }
+      ],
+      "note": "雷鸣：每回合结束双方获得 1 层引电（电系免疫）"
     }
   ]
 }

@@ -87,6 +87,8 @@ export class Simulator {
     for (const side of SIDES) this.sideState(st, side).switchedThisTurn = false;
 
     if (st.turn === 1) {
+      // 入场域：开局在场精灵各自「入场」一次（供「首次入场」类特性）。
+      for (const side of SIDES) events.push(...this.enterField(st, side, { from: null, forced: false }));
       events.push(...this.triggerState(st, "battleStart", { event: { turn: st.turn } }));
     }
 
@@ -291,6 +293,18 @@ export class Simulator {
     };
   }
 
+  /** 入场域 · 精灵上场：派发 `onEntry`（开局在场与每次换入都发），并更新「是否首次入场」。 */
+  private enterField(st: BattleState, side: Side, info: { from: string | null; forced: boolean }): BattleEvent[] {
+    const active = this.sideState(st, side).active;
+    const first = !active.entered;
+    active.entered = true;
+    return this.triggerState(st, "onEntry", {
+      actorSide: side,
+      targetSide: otherSide(side),
+      event: { enteredSpriteId: active.spriteId, from: info.from, forced: info.forced, first },
+    });
+  }
+
   /** 发布一个生命周期事件并应用扩展命令（状态 + 伤害），供 battleStart/换人/技能/死亡等触发点复用。 */
   private triggerState(
     st: BattleState,
@@ -354,6 +368,8 @@ export class Simulator {
     s.active = target;
     s.forcedSwitch = false;
     events.push({ type: "switch", side, text: `${side} 换上 ${target.spriteId}`, data: { forced } });
+    // 入场域：换入的精灵「入场」（供「首次入场」类特性）。
+    events.push(...this.enterField(st, side, { from: old.spriteId, forced }));
     // 行动域 · 入场继承：执行排队的「下个入场精灵」效果（inheritStat 由模拟器直接处理）。
     const pending = s.pendingEntry ?? [];
     s.pendingEntry = undefined;
