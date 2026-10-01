@@ -127,6 +127,11 @@ export function ActiveBoard({
   const color = toneColor(tone);
   const hpPct = side.active.maxHp > 0 ? Math.max(0, (side.active.hp / side.active.maxHp) * 100) : 0;
   const headSrc = sprite?.head || sprite?.image;
+  // 特性 / 状态触发的能耗修改（隐藏类除外）——头像角标 + hover 明细。
+  const traitCostMods = (side.active.costMods ?? []).filter((m) => (m.source === "trait" || m.source === "status") && !m.hidden);
+  const traitCostTitle = traitCostMods
+    .map((m) => `${m.sourceId ?? m.source}：能耗${m.delta ? (m.delta > 0 ? `+${m.delta}` : `${m.delta}`) : ""}${m.multiply ? `×${m.multiply}` : ""}${m.duration === "turns" ? `（剩 ${m.turnsLeft ?? 0} 回合）` : ""}`)
+    .join("\n");
 
   return (
     <section className="flex flex-col gap-2 rounded-md border bg-card p-2.5">
@@ -140,6 +145,14 @@ export function ActiveBoard({
               <img src={headSrc} alt="" className="h-full w-full object-contain" />
             ) : (
               <span className="text-2xl font-semibold text-muted-foreground">{sprite?.name?.slice(0, 1) ?? "?"}</span>
+            )}
+            {traitCostMods.length > 0 && (
+              <span
+                title={traitCostTitle}
+                className="absolute bottom-1 right-1 cursor-help rounded-sm bg-amber-500/90 px-1 text-[10px] font-semibold leading-4 text-white"
+              >
+                特性
+              </span>
             )}
           </div>
         </PetHoverCard>

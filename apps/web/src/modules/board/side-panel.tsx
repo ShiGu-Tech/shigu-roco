@@ -11,8 +11,9 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 
 import type { Catalog, RecommendResult, SideState } from "@/modules/battle/types";
+import type { CostMod } from "@/modules/engine/types";
 import { ENEMY_COLOR, PLAYER_COLOR } from "@/lib/chart-theme";
-import { actionKey, elementZh, skillById, type ActionOption } from "./util";
+import { actionKey, costModBreakdown, elementZh, previewSkillCost, skillById, type ActionOption } from "./util";
 
 export type Tone = "player" | "enemy";
 
@@ -26,6 +27,8 @@ function SkillTile({
   index,
   skillId,
   energy,
+  cost,
+  modifiers,
   tone,
   winRate,
   recommended,
@@ -39,6 +42,8 @@ function SkillTile({
   index: number;
   skillId: string;
   energy: number;
+  cost?: number;
+  modifiers?: CostMod[];
   tone: Tone;
   winRate?: number;
   recommended?: boolean;
@@ -48,7 +53,8 @@ function SkillTile({
   onChangeSlot: (index: number, skillId: string) => void;
 }) {
   const sk = skillId ? skillById(catalog, skillId) : undefined;
-  const affordable = sk ? sk.cost <= energy : false;
+  const effective = sk ? (cost ?? sk.cost) : 0;
+  const affordable = sk ? effective <= energy : false;
   const usable = Boolean(sk) && affordable && !disabled;
   const [slotOpen, setSlotOpen] = useState(false);
 
@@ -117,7 +123,17 @@ function SkillTile({
                     </span>
                   </div>
                   <div className="tnum flex flex-wrap items-center gap-x-1.5">
-                    <span>能耗 {sk.cost}</span>
+                    <span
+                      title={
+                        modifiers?.length
+                          ? `基础 ${sk.cost} · ${modifiers.map((m) => `${m.sourceId ?? m.source} ${m.delta ? (m.delta > 0 ? `+${m.delta}` : `${m.delta}`) : ""}${m.multiply ? `×${m.multiply}` : ""}${m.duration === "turns" ? `（${m.turnsLeft ?? 0}回合）` : ""}`).join("；")}`
+                          : undefined
+                      }
+                      className={modifiers?.length ? "cursor-help font-semibold text-amber-600 dark:text-amber-400" : undefined}
+                    >
+                      能耗 {effective}
+                      {modifiers?.length ? <span className="ml-1 text-[10px] opacity-70">(基础 {sk.cost})</span> : null}
+                    </span>
                     {sk.power ? <span>威力 {sk.power}</span> : null}
                     {sk.priority ? <span>先手 +{sk.priority}</span> : null}
                   </div>
@@ -170,6 +186,7 @@ export function SkillGrid({
       {[0, 1, 2, 3].map((i) => {
         const id = loadout[i] ?? "";
         const k = `skill:${id}`;
+        const sk = id ? skillById(catalog, id) : undefined;
         return (
           <SkillTile
             key={i}
@@ -178,6 +195,8 @@ export function SkillGrid({
             index={i}
             skillId={id}
             energy={side.active.energy}
+            cost={sk ? previewSkillCost(sk, side.active) : undefined}
+            modifiers={sk ? costModBreakdown(sk, side.active) : undefined}
             tone={tone}
             winRate={id ? rate.get(k) : undefined}
             recommended={id ? k === bestKey : false}

@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.23.0",
+  "version": "0.24.0",
   "updatedAt": "2026-10-01",
   "mechanisms": [
     {
@@ -8844,6 +8844,870 @@
         }
       ],
       "note": "雷鸣：每回合结束双方获得 1 层引电（电系免疫）"
+    },
+    {
+      "id": "skill:sk-7020650",
+      "ownerType": "skill",
+      "ownerId": "sk-7020650",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020650"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "opponent",
+          "scope": "attack",
+          "delta": 2,
+          "duration": "turns",
+          "turns": 3,
+          "key": "noise:7020650",
+          "dispellable": true,
+          "hidden": false
+        }
+      ],
+      "note": "聒噪：敌方全攻击技能能耗+2，持续3回合（可驱散）"
+    },
+    {
+      "id": "skill:sk-7050210:react",
+      "ownerType": "skill",
+      "ownerId": "sk-7050210",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7050210"
+            },
+            {
+              "path": "event.reacted",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "skill",
+          "delta": -6,
+          "duration": "permanent",
+          "key": "tianhong:7050210",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "天洪：应对状态成功后，本技能能耗永久-6（本次不享受，从下次起）"
+    },
+    {
+      "id": "trait:sp-8-1",
+      "ownerType": "trait",
+      "ownerId": "sp-8-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "self.active.spriteId",
+              "op": "eq",
+              "value": "sp-8-1"
+            },
+            {
+              "path": "event.element",
+              "op": "eq",
+              "value": "Water"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -1,
+          "duration": "permanent",
+          "key": "moist:sp-8-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "浸润：使用水系技能后，全技能能耗-1"
+    },
+    {
+      "id": "trait:sp-9-1",
+      "ownerType": "trait",
+      "ownerId": "sp-9-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "self.active.spriteId",
+              "op": "eq",
+              "value": "sp-9-1"
+            },
+            {
+              "path": "event.element",
+              "op": "eq",
+              "value": "Water"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -1,
+          "duration": "permanent",
+          "key": "moist:sp-9-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "浸润：使用水系技能后，全技能能耗-1"
+    },
+    {
+      "id": "trait:sp-10-1",
+      "ownerType": "trait",
+      "ownerId": "sp-10-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "self.active.spriteId",
+              "op": "eq",
+              "value": "sp-10-1"
+            },
+            {
+              "path": "event.element",
+              "op": "eq",
+              "value": "Water"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -1,
+          "duration": "permanent",
+          "key": "moist:sp-10-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "浸润：使用水系技能后，全技能能耗-1"
+    },
+    {
+      "id": "trait:sp-10-2",
+      "ownerType": "trait",
+      "ownerId": "sp-10-2",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "self.active.spriteId",
+              "op": "eq",
+              "value": "sp-10-2"
+            },
+            {
+              "path": "event.element",
+              "op": "eq",
+              "value": "Water"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -2,
+          "duration": "permanent",
+          "key": "wave:sp-10-2",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "浪潮：使用水系技能后，全技能能耗-2"
+    },
+    {
+      "id": "trait:sp-12-1",
+      "ownerType": "trait",
+      "ownerId": "sp-12-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "eq",
+          "value": "sp-12-1"
+        },
+        {
+          "path": "event.first",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "defense",
+          "delta": -2,
+          "mode": "set",
+          "duration": "permanent",
+          "key": "shell:sp-12-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "缩壳：携带的防御技能能耗-2"
+    },
+    {
+      "id": "trait:sp-12-2",
+      "ownerType": "trait",
+      "ownerId": "sp-12-2",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "eq",
+          "value": "sp-12-2"
+        },
+        {
+          "path": "event.first",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "defense",
+          "delta": -2,
+          "mode": "set",
+          "duration": "permanent",
+          "key": "shell:sp-12-2",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "缩壳：携带的防御技能能耗-2"
+    },
+    {
+      "id": "trait:sp-13-1",
+      "ownerType": "trait",
+      "ownerId": "sp-13-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "eq",
+          "value": "sp-13-1"
+        },
+        {
+          "path": "event.first",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "defense",
+          "delta": -2,
+          "mode": "set",
+          "duration": "permanent",
+          "key": "shell:sp-13-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "缩壳：携带的防御技能能耗-2"
+    },
+    {
+      "id": "trait:sp-13-2",
+      "ownerType": "trait",
+      "ownerId": "sp-13-2",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "eq",
+          "value": "sp-13-2"
+        },
+        {
+          "path": "event.first",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "defense",
+          "delta": -2,
+          "mode": "set",
+          "duration": "permanent",
+          "key": "shell:sp-13-2",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "缩壳：携带的防御技能能耗-2"
+    },
+    {
+      "id": "trait:sp-14-1",
+      "ownerType": "trait",
+      "ownerId": "sp-14-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "eq",
+          "value": "sp-14-1"
+        },
+        {
+          "path": "event.first",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "defense",
+          "delta": -2,
+          "mode": "set",
+          "duration": "permanent",
+          "key": "shell:sp-14-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "缩壳：携带的防御技能能耗-2"
+    },
+    {
+      "id": "trait:sp-14-2",
+      "ownerType": "trait",
+      "ownerId": "sp-14-2",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "eq",
+          "value": "sp-14-2"
+        },
+        {
+          "path": "event.first",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "defense",
+          "delta": -2,
+          "mode": "set",
+          "duration": "permanent",
+          "key": "shell:sp-14-2",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "缩壳：携带的防御技能能耗-2"
+    },
+    {
+      "id": "trait:sp-139-1",
+      "ownerType": "trait",
+      "ownerId": "sp-139-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "eq",
+          "value": "sp-139-1"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "opponent",
+          "scope": "all",
+          "delta": 1,
+          "mode": "set",
+          "duration": "aura",
+          "key": "freeze-aura:sp-139-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "冰封：在场时敌方全技能能耗+1（离场消失）"
+    },
+    {
+      "id": "trait:sp-140-1",
+      "ownerType": "trait",
+      "ownerId": "sp-140-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "eq",
+          "value": "sp-140-1"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "opponent",
+          "scope": "all",
+          "delta": 1,
+          "mode": "set",
+          "duration": "aura",
+          "key": "freeze-aura:sp-140-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "冰封：在场时敌方全技能能耗+1（离场消失）"
+    },
+    {
+      "id": "trait:sp-141-1",
+      "ownerType": "trait",
+      "ownerId": "sp-141-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "eq",
+          "value": "sp-141-1"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "opponent",
+          "scope": "all",
+          "delta": 1,
+          "mode": "set",
+          "duration": "aura",
+          "key": "freeze-aura:sp-141-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "冰封：在场时敌方全技能能耗+1（离场消失）"
+    },
+    {
+      "id": "trait:sp-373-1",
+      "ownerType": "trait",
+      "ownerId": "sp-373-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "eq",
+          "value": "sp-373-1"
+        },
+        {
+          "path": "event.first",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -2,
+          "mode": "set",
+          "excludeElements": [
+            "Psychic"
+          ],
+          "duration": "permanent",
+          "key": "blindfollow:sp-373-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "盲从：非幻系技能能耗-2"
+    },
+    {
+      "id": "trait:sp-374-1",
+      "ownerType": "trait",
+      "ownerId": "sp-374-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "eq",
+          "value": "sp-374-1"
+        },
+        {
+          "path": "event.first",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -2,
+          "mode": "set",
+          "excludeElements": [
+            "Psychic"
+          ],
+          "duration": "permanent",
+          "key": "blindfollow:sp-374-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "盲从：非幻系技能能耗-2"
+    },
+    {
+      "id": "trait:sp-375-1",
+      "ownerType": "trait",
+      "ownerId": "sp-375-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "eq",
+          "value": "sp-375-1"
+        },
+        {
+          "path": "event.first",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": 2,
+          "mode": "set",
+          "duration": "permanent",
+          "key": "exchange:sp-375-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "留学生：自己全技能能耗+2"
+    },
+    {
+      "id": "trait:sp-159-1",
+      "ownerType": "trait",
+      "ownerId": "sp-159-1",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "self.active.spriteId",
+              "op": "eq",
+              "value": "sp-159-1"
+            },
+            {
+              "path": "event.reacted",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -5,
+          "duration": "nextAction",
+          "key": "shield:sp-159-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "思维之盾：应对成功后，下次行动技能能耗-5"
+    },
+    {
+      "id": "trait:sp-160-1",
+      "ownerType": "trait",
+      "ownerId": "sp-160-1",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "self.active.spriteId",
+              "op": "eq",
+              "value": "sp-160-1"
+            },
+            {
+              "path": "event.reacted",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -5,
+          "duration": "nextAction",
+          "key": "shield:sp-160-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "思维之盾：应对成功后，下次行动技能能耗-5"
+    },
+    {
+      "id": "trait:sp-161-1",
+      "ownerType": "trait",
+      "ownerId": "sp-161-1",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "self.active.spriteId",
+              "op": "eq",
+              "value": "sp-161-1"
+            },
+            {
+              "path": "event.reacted",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -5,
+          "duration": "nextAction",
+          "key": "shield:sp-161-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "思维之盾：应对成功后，下次行动技能能耗-5"
+    },
+    {
+      "id": "trait:sp-142-1",
+      "ownerType": "trait",
+      "ownerId": "sp-142-1",
+      "trigger": "battleStart",
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "trait",
+          "reason": "捉迷藏：使敌方获得冻结时也使其全技能能耗+1（需「施加者」上下文，待接入）"
+        }
+      ],
+      "note": "捉迷藏：使敌方获得冻结时也使其全技能能耗+1（需「施加者」上下文，待接入）"
+    },
+    {
+      "id": "trait:sp-143-1",
+      "ownerType": "trait",
+      "ownerId": "sp-143-1",
+      "trigger": "battleStart",
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "trait",
+          "reason": "捉迷藏：使敌方获得冻结时也使其全技能能耗+1（需「施加者」上下文，待接入）"
+        }
+      ],
+      "note": "捉迷藏：使敌方获得冻结时也使其全技能能耗+1（需「施加者」上下文，待接入）"
+    },
+    {
+      "id": "trait:sp-144-1",
+      "ownerType": "trait",
+      "ownerId": "sp-144-1",
+      "trigger": "battleStart",
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "trait",
+          "reason": "捉迷藏：使敌方获得冻结时也使其全技能能耗+1（需「施加者」上下文，待接入）"
+        }
+      ],
+      "note": "捉迷藏：使敌方获得冻结时也使其全技能能耗+1（需「施加者」上下文，待接入）"
+    },
+    {
+      "id": "trait:sp-144-2",
+      "ownerType": "trait",
+      "ownerId": "sp-144-2",
+      "trigger": "battleStart",
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "trait",
+          "reason": "捉迷藏：使敌方获得冻结时也使其全技能能耗+1（需「施加者」上下文，待接入）"
+        }
+      ],
+      "note": "捉迷藏：使敌方获得冻结时也使其全技能能耗+1（需「施加者」上下文，待接入）"
+    },
+    {
+      "id": "trait:sp-427-1",
+      "ownerType": "trait",
+      "ownerId": "sp-427-1",
+      "trigger": "battleStart",
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "trait",
+          "reason": "王子的诺言：获增益/减益时全技能能耗∓1，每回合各1次（需「获得增益/减益」触发器，待接入）"
+        }
+      ],
+      "note": "王子的诺言：获增益/减益时全技能能耗∓1，每回合各1次（需「获得增益/减益」触发器，待接入）"
+    },
+    {
+      "id": "trait:sp-428-1",
+      "ownerType": "trait",
+      "ownerId": "sp-428-1",
+      "trigger": "battleStart",
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "trait",
+          "reason": "王子的诺言：获增益/减益时全技能能耗∓1，每回合各1次（需「获得增益/减益」触发器，待接入）"
+        }
+      ],
+      "note": "王子的诺言：获增益/减益时全技能能耗∓1，每回合各1次（需「获得增益/减益」触发器，待接入）"
+    },
+    {
+      "id": "trait:sp-429-1",
+      "ownerType": "trait",
+      "ownerId": "sp-429-1",
+      "trigger": "battleStart",
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "trait",
+          "reason": "王子的诺言：获增益/减益时全技能能耗∓1，每回合各1次（需「获得增益/减益」触发器，待接入）"
+        }
+      ],
+      "note": "王子的诺言：获增益/减益时全技能能耗∓1，每回合各1次（需「获得增益/减益」触发器，待接入）"
+    },
+    {
+      "id": "trait:sp-171-1",
+      "ownerType": "trait",
+      "ownerId": "sp-171-1",
+      "trigger": "battleStart",
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "trait",
+          "reason": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
+        }
+      ],
+      "note": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
+    },
+    {
+      "id": "trait:sp-171-2",
+      "ownerType": "trait",
+      "ownerId": "sp-171-2",
+      "trigger": "battleStart",
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "trait",
+          "reason": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
+        }
+      ],
+      "note": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
+    },
+    {
+      "id": "trait:sp-172-1",
+      "ownerType": "trait",
+      "ownerId": "sp-172-1",
+      "trigger": "battleStart",
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "trait",
+          "reason": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
+        }
+      ],
+      "note": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
+    },
+    {
+      "id": "trait:sp-172-2",
+      "ownerType": "trait",
+      "ownerId": "sp-172-2",
+      "trigger": "battleStart",
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "trait",
+          "reason": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
+        }
+      ],
+      "note": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
+    },
+    {
+      "id": "trait:sp-173-1",
+      "ownerType": "trait",
+      "ownerId": "sp-173-1",
+      "trigger": "battleStart",
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "trait",
+          "reason": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
+        }
+      ],
+      "note": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
+    },
+    {
+      "id": "trait:sp-173-2",
+      "ownerType": "trait",
+      "ownerId": "sp-173-2",
+      "trigger": "battleStart",
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "trait",
+          "reason": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
+        }
+      ],
+      "note": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
     }
   ]
 }

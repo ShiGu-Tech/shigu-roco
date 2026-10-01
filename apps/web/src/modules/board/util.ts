@@ -9,6 +9,7 @@ import type {
 } from "@/modules/battle/types";
 import { activeFromSprite, emptyActive } from "@/modules/battle/state";
 import { profileFromSetup, type TeamEntry } from "@/modules/battle/pet";
+import type { CostMod } from "@/modules/engine/types";
 
 export {
   DEFAULT_LEVEL,
@@ -71,6 +72,33 @@ export function ownSkills(catalog: Catalog, spriteId: string): CatalogSkill[] {
   return spriteOf(catalog, spriteId)?.skills ?? [];
 }
 
+/** 命中某技能的所有能耗修正条目（与引擎 `effectiveCost` 的筛选口径一致）。 */
+export function costModBreakdown(sk: CatalogSkill, active: ActiveSpriteState): CostMod[] {
+  const mods = active.costMods ?? [];
+  const element = sk.element ?? "";
+  const attack = sk.category === "Physical" || sk.category === "Magic";
+  return mods.filter((m) => {
+    if (m.scope === "skill" && m.skillId !== sk.id) return false;
+    if (m.scope === "attack" && !attack) return false;
+    if (m.scope === "defense" && sk.actionType !== "Defense") return false;
+    if (m.elements?.length && !m.elements.includes(element)) return false;
+    if (m.excludeElements?.length && m.excludeElements.includes(element)) return false;
+    return true;
+  });
+}
+
+/** 有效能耗（点技能前预览）：与引擎 `engine/cost.ts#effectiveCost` 同口径（floor + clamp ≥ 0）。 */
+export function previewSkillCost(sk: CatalogSkill, active: ActiveSpriteState): number {
+  let multiplied = sk.cost;
+  let added = 0;
+  for (const m of costModBreakdown(sk, active)) {
+    if (typeof m.multiply === "number") multiplied *= m.multiply;
+    added += m.delta ?? 0;
+  }
+  added += active.skillMods?.[sk.id]?.cost ?? 0;
+  return Math.max(0, Math.floor(multiplied + added));
+}
+
 export function optionFromSkill(catalog: Catalog, sk: CatalogSkill): ActionOption {
   return {
     action: { kind: "skill", skillId: sk.id, label: sk.name },
@@ -107,7 +135,7 @@ export function deriveActions(side: SideState, catalog: Catalog): ActionOption[]
   const ids = side.active.loadout.length ? side.active.loadout : sprite.skills.slice(0, 4).map((s) => s.id);
   for (const id of ids) {
     const sk = skillById(catalog, id);
-    if (!sk || sk.cost > side.active.energy) continue;
+    if (!sk || previewSkillCost(sk, side.active) > side.active.energy) continue;
     out.push(optionFromSkill(catalog, sk));
   }
 

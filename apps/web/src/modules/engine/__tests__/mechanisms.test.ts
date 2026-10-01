@@ -878,6 +878,21 @@ describe("onEntry trigger (first entry)", () => {
     expect(r3.state.player.active.hp).toBe(100);
   });
 
+  it("ships batch-16 energy cost registrations", () => {
+    const real = getBundle();
+    const all = (real.mechanisms ?? []) as MechanismDefinition[];
+    const find = (id: string) => all.find((m) => m.id === id);
+    const firstEffect = (id: string) => (find(id)?.effects?.[0] ?? {}) as { type?: string; target?: string; duration?: string; turns?: number; dispellable?: boolean; scope?: string };
+    expect(find("skill:sk-7020650")?.trigger).toBe("beforeAction");
+    const noise = firstEffect("skill:sk-7020650");
+    expect(noise).toMatchObject({ type: "modifySkillCost", target: "opponent", scope: "attack", duration: "turns", turns: 3, dispellable: true });
+    expect(firstEffect("skill:sk-7050210:react")).toMatchObject({ type: "modifySkillCost", target: "self", duration: "permanent" });
+    expect(find("trait:sp-8-1")?.trigger).toBe("skillUsed");
+    expect(firstEffect("trait:sp-139-1")).toMatchObject({ target: "opponent", duration: "aura" });
+    expect(firstEffect("trait:sp-159-1")).toMatchObject({ type: "modifySkillCost", duration: "nextAction" });
+    expect(firstEffect("trait:sp-12-1")).toMatchObject({ scope: "defense" });
+  });
+
   it("ships the real 铃兰晚钟 trait for sp-201-1 / sp-202-1", () => {
     const real = getBundle();
     const all = (real.mechanisms ?? []) as MechanismDefinition[];

@@ -1,4 +1,4 @@
-import type { StatProfile, StatsData } from "@/modules/engine/types";
+import type { CostMod, StatProfile, StatsData } from "@/modules/engine/types";
 
 export type ActionKind = "skill" | "defend" | "switch" | "wish" | "leader" | "energy";
 
@@ -25,6 +25,10 @@ export interface ActiveSpriteState {
   cooldowns?: Record<string, number>;
   profile?: StatProfileState;
   skillOverrides?: Record<string, { original: string; expires: number }>;
+  /** 记忆域 · 技能持久修正（威力 / 能耗 / 连击 / 先手）。 */
+  skillMods?: Record<string, { power?: number; cost?: number; hits?: number; priority?: number }>;
+  /** 能耗域 · 声明式能耗修正条目（与引擎 `costMods` 同构）。 */
+  costMods?: CostMod[];
 }
 
 export interface SideState {
