@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.18.0",
+  "version": "0.20.0",
   "updatedAt": "2026-10-01",
   "mechanisms": [
     {
@@ -4225,6 +4225,13 @@
           "markId": "starfall-mark",
           "layers": 1
         }
+      ],
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7190220"
+        }
       ]
     },
     {
@@ -4238,6 +4245,13 @@
           "target": "opponent",
           "markId": "starfall-mark",
           "layers": 4
+        }
+      ],
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7190280"
         }
       ]
     },
@@ -4253,6 +4267,13 @@
           "markId": "starfall-mark",
           "layers": 2
         }
+      ],
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7190290"
+        }
       ]
     },
     {
@@ -4267,6 +4288,13 @@
           "target": "opponent",
           "markId": "starfall-mark",
           "layers": 2
+        }
+      ],
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7190300"
         }
       ]
     },
@@ -4311,6 +4339,13 @@
           "category": "Magic",
           "power": 65,
           "skillId": "sk-7190270"
+        }
+      ],
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7190270"
         }
       ]
     },
@@ -4357,6 +4392,13 @@
           "markId": "starfall-mark",
           "layers": 3
         }
+      ],
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7190330"
+        }
       ]
     },
     {
@@ -4401,6 +4443,13 @@
           "target": "self",
           "statusId": "meditative-shield",
           "layers": 1
+        }
+      ],
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7190400"
         }
       ]
     },
@@ -4468,6 +4517,13 @@
           "statusId": "gravity-shield",
           "layers": 1
         }
+      ],
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7190520"
+        }
       ]
     },
     {
@@ -4533,6 +4589,13 @@
           "power": 75,
           "skillId": "sk-7190500"
         }
+      ],
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7190500"
+        }
       ]
     },
     {
@@ -4581,6 +4644,13 @@
           "power": 15,
           "skillId": "sk-7190260"
         }
+      ],
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7190260"
+        }
       ]
     },
     {
@@ -4616,6 +4686,13 @@
           "type": "unsupported",
           "effectType": "conditional",
           "reason": "观测者效应：换上精灵以月陨星状态登场（待接入）"
+        }
+      ],
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7190490"
         }
       ]
     },
@@ -8559,6 +8636,7 @@
         {
           "type": "consumeMark",
           "target": "target",
+          "markId": "starfall-mark",
           "effectsOnConsume": [
             {
               "type": "dealDamage",
@@ -8615,6 +8693,7 @@
         {
           "type": "consumeMark",
           "target": "target",
+          "markId": "starfall-mark",
           "effectsOnConsume": [
             {
               "type": "dealDamage",

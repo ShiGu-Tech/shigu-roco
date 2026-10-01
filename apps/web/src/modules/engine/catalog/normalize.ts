@@ -4,7 +4,10 @@ import type { ExternalSnapshot, RegisteredCatalog } from "./types";
 const CATEGORY: Record<string, string> = { 物理: "Physical", 魔法: "Magic", 状态: "Status", 防御: "Defense" };
 const ELEMENT: Record<string, string> = {
   普通系: "Normal", 草系: "Grass", 火系: "Fire", 水系: "Water", 光系: "Light", 地系: "Earth", 冰系: "Ice", 龙系: "Dragon",
-  电系: "Electric", 毒系: "Poison", 虫系: "Insect", 恶魔系: "Dark", 机械系: "Mechanic", 萌系: "Cute", 武系: "Fighting", 幽灵系: "Ghost", 石系: "Rock", 翼系: "Wing",
+  电系: "Electric", 毒系: "Poison", 虫系: "Insect", 机械系: "Mechanic", 萌系: "Cute", 武系: "Fighting", 翼系: "Wing",
+  // 站点对这三系保留了中文 `name`，需归一到引擎的英文 key。
+  幽系: "Ghost", 幽灵系: "Ghost", 恶系: "Dark", 恶魔系: "Dark", 幻系: "Psychic",
+  石系: "Rock",
 };
 const CATEGORY_ZH: Record<string, string> = { 物理: "物理", 魔法: "魔法", 状态: "状态", 防御: "防御" };
 
