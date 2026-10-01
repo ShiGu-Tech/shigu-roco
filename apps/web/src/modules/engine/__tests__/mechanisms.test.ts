@@ -561,6 +561,50 @@ describe("counter (actionDeclared + forceFirst)", () => {
   });
 });
 
+describe("react success (应对)", () => {
+  const bundle: DataBundle = {
+    ...miniBundle,
+    skills: {
+      ...miniBundle.skills,
+      "sk-react": {
+        id: "sk-react", skillName: "护盾", element: "Fire", category: "Defense", actionType: "Defense", power: 0, cost: 0,
+        sourceData: { description: "减伤50%，<desc_id=1016>应对攻击</>：敌方脱离。" },
+      },
+    },
+    mechanisms: [
+      ...(miniBundle.mechanisms ?? []),
+      { id: "react", ownerType: "skill", ownerId: "sk-react", trigger: "actionResolved", when: [{ path: "event.reacted", op: "eq", value: true }], effects: [{ type: "modifyMagic", target: "self", delta: -1 }] },
+    ],
+  };
+
+  it("records lastTurn.reacted and fires reacted-conditional effects", () => {
+    const sim = new Simulator(bundle);
+    const battle = makeState(
+      makeSide(makeActive("sp-a", { hp: 200, maxHp: 200, energy: 5 })),
+      makeSide(makeActive("sp-b", { hp: 200, maxHp: 200, energy: 5 })),
+      { turn: 1, seed: 7 },
+    );
+    battle.player.active.loadout = ["sk-react"];
+    battle.enemy.active.loadout = ["sk-1"];
+    const result = sim.step(battle, { kind: "skill", skillId: "sk-react" }, { kind: "skill", skillId: "sk-1" }, new Rng(7));
+    expect(result.state.player.lastTurn?.reacted).toBe(true);
+    expect(result.state.enemy.lastTurn?.reacted ?? false).toBe(false);
+    expect(result.state.player.magic).toBeLessThan(5);
+  });
+
+  it("does not react when the opponent uses a non-matching action", () => {
+    const sim = new Simulator(bundle);
+    const battle = makeState(
+      makeSide(makeActive("sp-a", { hp: 200, maxHp: 200, energy: 5 })),
+      makeSide(makeActive("sp-b", { hp: 200, maxHp: 200, energy: 5 })),
+      { turn: 1, seed: 8 },
+    );
+    battle.player.active.loadout = ["sk-react"];
+    const result = sim.step(battle, { kind: "skill", skillId: "sk-react" }, { kind: "energy" }, new Rng(8));
+    expect(result.state.player.lastTurn?.reacted ?? false).toBe(false);
+  });
+});
+
 describe("cooldown subsystem", () => {
   it("resolves dynamic skillIdFrom from the context", () => {
     const registry = new MechanismRegistry([

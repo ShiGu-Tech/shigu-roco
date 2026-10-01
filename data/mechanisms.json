@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "updatedAt": "2026-10-01",
   "mechanisms": [
     {
@@ -5578,46 +5578,6 @@
       "note": "飞羽：驱散敌方 1 种增益"
     },
     {
-      "id": "skill:sk-7130290",
-      "ownerType": "skill",
-      "ownerId": "sk-7130290",
-      "trigger": "beforeAction",
-      "when": [
-        {
-          "path": "event.action.skillId",
-          "op": "eq",
-          "value": "sk-7130290"
-        }
-      ],
-      "effects": [
-        {
-          "type": "removeMark",
-          "target": "opponent"
-        }
-      ],
-      "note": "翅刃：驱散敌方所有印记（应对状态→偷取的变体待建模）"
-    },
-    {
-      "id": "skill:sk-7130290:todo",
-      "ownerType": "skill",
-      "ownerId": "sk-7130290",
-      "trigger": "beforeAction",
-      "when": [
-        {
-          "path": "event.action.skillId",
-          "op": "eq",
-          "value": "sk-7130290"
-        }
-      ],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "react-variant",
-          "reason": "「应对状态：改为偷取印记」需要应对判定"
-        }
-      ]
-    },
-    {
       "id": "skill:sk-7110220",
       "ownerType": "skill",
       "ownerId": "sk-7110220",
@@ -5871,26 +5831,6 @@
       "note": "护盾回合末清除"
     },
     {
-      "id": "skill:sk-7021170:todo",
-      "ownerType": "skill",
-      "ownerId": "sk-7021170",
-      "trigger": "beforeAction",
-      "when": [
-        {
-          "path": "event.action.skillId",
-          "op": "eq",
-          "value": "sk-7021170"
-        }
-      ],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "conditional-dispel",
-          "reason": "「未被防御技能应对则驱散双方印记」需要应对判定"
-        }
-      ]
-    },
-    {
       "id": "skill:sk-7021150:todo",
       "ownerType": "skill",
       "ownerId": "sk-7021150",
@@ -5907,46 +5847,6 @@
           "type": "unsupported",
           "effectType": "dynamic-power",
           "reason": "「能耗每 +1 威力 +50」需要按当前能耗动态取值"
-        }
-      ]
-    },
-    {
-      "id": "skill:sk-7020570:todo",
-      "ownerType": "skill",
-      "ownerId": "sk-7020570",
-      "trigger": "beforeAction",
-      "when": [
-        {
-          "path": "event.action.skillId",
-          "op": "eq",
-          "value": "sk-7020570"
-        }
-      ],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "react-stack",
-          "reason": "「每应对成功 1 次威力永久 +90」需要应对成功事件"
-        }
-      ]
-    },
-    {
-      "id": "skill:sk-7020580:todo",
-      "ownerType": "skill",
-      "ownerId": "sk-7020580",
-      "trigger": "beforeAction",
-      "when": [
-        {
-          "path": "event.action.skillId",
-          "op": "eq",
-          "value": "sk-7020580"
-        }
-      ],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "last-react",
-          "reason": "「上回合应对成功威力 +180」需要应对成功记忆"
         }
       ]
     },
@@ -6009,6 +5909,168 @@
           "reason": "「下个入场精灵继承增益」需要入场继承"
         }
       ]
+    },
+    {
+      "id": "skill:sk-7020580",
+      "ownerType": "skill",
+      "ownerId": "sk-7020580",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020580"
+        },
+        {
+          "not": {
+            "path": "self.lastTurn.reacted",
+            "op": "eq",
+            "value": true
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 180,
+          "skillId": "sk-7020580"
+        }
+      ],
+      "note": "气势一击：基础（上回合未应对成功）"
+    },
+    {
+      "id": "skill:sk-7020580:boost",
+      "ownerType": "skill",
+      "ownerId": "sk-7020580",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020580"
+        },
+        {
+          "path": "self.lastTurn.reacted",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 360,
+          "skillId": "sk-7020580"
+        }
+      ],
+      "note": "气势一击：上回合应对成功 → 威力 +180"
+    },
+    {
+      "id": "skill:sk-7020570",
+      "ownerType": "skill",
+      "ownerId": "sk-7020570",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkill",
+          "target": "self",
+          "skillId": "sk-7020570",
+          "power": 90
+        }
+      ],
+      "note": "能量刃：每次应对成功 → 本技能威力永久 +90"
+    },
+    {
+      "id": "skill:sk-7021170",
+      "ownerType": "skill",
+      "ownerId": "sk-7021170",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7021170"
+        },
+        {
+          "path": "event.opponentAction.actionType",
+          "op": "neq",
+          "value": "Defense"
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeMark",
+          "target": "opponent"
+        },
+        {
+          "type": "removeMark",
+          "target": "self"
+        }
+      ],
+      "note": "倾泻：未被防御技能应对 → 驱散双方所有印记"
+    },
+    {
+      "id": "skill:sk-7130290",
+      "ownerType": "skill",
+      "ownerId": "sk-7130290",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7130290"
+        },
+        {
+          "not": {
+            "path": "event.reacted",
+            "op": "eq",
+            "value": true
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeMark",
+          "target": "opponent"
+        }
+      ],
+      "note": "翅刃：驱散敌方所有印记"
+    },
+    {
+      "id": "skill:sk-7130290:react",
+      "ownerType": "skill",
+      "ownerId": "sk-7130290",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7130290"
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "transferMark",
+          "from": "opponent",
+          "to": "self"
+        }
+      ],
+      "note": "翅刃：应对状态 → 改为偷取敌方印记"
     }
   ]
 }

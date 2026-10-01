@@ -121,8 +121,12 @@ export class Simulator {
     const queue = new ActionQueue();
     const actionIds: Record<Side, string> = { player: `action-${st.turn}-player`, enemy: `action-${st.turn}-enemy` };
     const actorSides = SIDES.filter((s) => actions[s].kind === "skill" || actions[s].kind === "energy");
+    // 应对成功：本技能有「应对 X」且敌方本回合使用 X 类行动 → 必定先手（优先级抬升）。
+    const reactedBySide: Partial<Record<Side, boolean>> = {};
+    for (const side of actorSides) reactedBySide[side] = this.reactSuccess(actions[side].skillId, actions[otherSide(side)]);
     actorSides.forEach((side, index) => {
-      const [priority, speed] = this.orderKey(st, side, actions[side]);
+      const [basePriority, speed] = this.orderKey(st, side, actions[side]);
+      const priority = reactedBySide[side] ? basePriority + 100 : basePriority;
       queue.enqueue({ id: actionIds[side], actorSide: side, action: actions[side], declaredAt: index, priority, speedSnapshot: speed, status: "queued" });
     });
     for (const side of actorSides) {
@@ -137,6 +141,8 @@ export class Simulator {
         event: {
           action: actions[side],
           actionId: actionIds[side],
+          reaction: this.reactionOf(actions[side].skillId),
+          reacted: reactedBySide[side] === true,
           opponentAction: { kind: opponentAction.kind, skillId: opponentAction.skillId, actionType: toStr(opponentSkill.actionType), category: toStr(opponentSkill.category) },
         },
       });
@@ -156,7 +162,7 @@ export class Simulator {
         actorSide: side,
         targetSide: otherSide(side),
         action: entry.action,
-        event: { action: entry.action, actionId: entry.id },
+        event: { action: entry.action, actionId: entry.id, reacted: reactedBySide[side] === true },
       });
       events.push(...this.mechanisms.applyActionCommands(queue, beforeCommands, { ...actionIds, [side]: entry.id }, () => `action-${st.turn}-extra-${queue.all().length}`).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
       events.push(...this.mechanisms.applyStateCommands(st, beforeCommands, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
@@ -174,7 +180,7 @@ export class Simulator {
       if (entry.action.kind === "skill") {
         if (entry.action.skillId) touched[side].add(entry.action.skillId);
         const usedSkill = entry.action.skillId ? getSkill(this.bundle, entry.action.skillId) : {};
-        events.push(...this.triggerState(st, "skillUsed", { actorSide: side, targetSide: opp, action: entry.action, event: { skillId: entry.action.skillId, actionId: entry.id, element: toStr(usedSkill.element), category: toStr(usedSkill.category), actionType: toStr(usedSkill.actionType) } }));
+        events.push(...this.triggerState(st, "skillUsed", { actorSide: side, targetSide: opp, action: entry.action, event: { skillId: entry.action.skillId, actionId: entry.id, element: toStr(usedSkill.element), category: toStr(usedSkill.category), actionType: toStr(usedSkill.actionType), reacted: reactedBySide[side] === true } }));
         const skillId = entry.action.skillId;
         if (skillId && caster.skillOverrides?.[skillId]?.expires === 0) {
           revertSkillOverride(caster, skillId);
@@ -187,7 +193,7 @@ export class Simulator {
         actorSide: side,
         targetSide: opp,
         action: entry.action,
-        event: { action: entry.action, actionId: entry.id },
+        event: { action: entry.action, actionId: entry.id, reacted: reactedBySide[side] === true },
       });
       events.push(...this.mechanisms.applyStateCommands(st, afterCommands, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
     });
@@ -211,7 +217,7 @@ export class Simulator {
       const s = this.sideState(st, side);
       if (action.kind === "skill" && action.skillId) {
         const used = getSkill(this.bundle, action.skillId);
-        s.lastTurn = { skillId: action.skillId, category: toStr(used.category), actionType: toStr(used.actionType), element: toStr(used.element) };
+        s.lastTurn = { skillId: action.skillId, category: toStr(used.category), actionType: toStr(used.actionType), element: toStr(used.element), reacted: reactedBySide[side] === true };
       } else if (action.kind === "energy") {
         s.lastTurn = { actionType: "Energy" };
       } else {
@@ -252,6 +258,28 @@ export class Simulator {
       priority = Math.floor(toNum(getSkill(this.bundle, action.skillId).priority, 0));
     }
     return [priority, this.speedOf(st, side)];
+  }
+
+  /** 技能的行动类型（用于「应对」判定）。 */
+  private actionTypeOf(action: Action): string {
+    if (action.kind === "skill" && action.skillId) return toStr(getSkill(this.bundle, action.skillId).actionType, "Attack");
+    if (action.kind === "energy") return "Energy";
+    if (action.kind === "switch") return "Switch";
+    return "Status";
+  }
+
+  /** 技能声明的「应对」类型：站点描述内联标签 1015 应对状态 / 1016 应对攻击 / 1017 应对防御。 */
+  private reactionOf(skillId: string | undefined): string | null {
+    if (!skillId) return null;
+    const raw = toStr(asDict(getSkill(this.bundle, skillId).sourceData).description);
+    const match = raw.match(/<desc_id=(1015|1016|1017)>/);
+    return match ? ({ "1015": "Status", "1016": "Attack", "1017": "Defense" } as Record<string, string>)[match[1]] : null;
+  }
+
+  /** 应对成功：本技能有「应对 X」且敌方本回合使用了 X 类行动。 */
+  private reactSuccess(skillId: string | undefined, opponentAction: Action): boolean {
+    const reaction = this.reactionOf(skillId);
+    return !!reaction && reaction === this.actionTypeOf(opponentAction);
   }
 
   private asBattleEvent(type: string, side: Side | null, event: { data: Record<string, unknown>; mechanismId?: string; effectType?: string }): BattleEvent {
