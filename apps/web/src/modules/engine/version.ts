@@ -31,5 +31,9 @@
  *          `inheritStat`（换人时把离场精灵的强化 / 减益复制给入场精灵）；`SideState.pendingEntry` 随换人清空。
  * - 0.8.0  条件运算符 `contains`（数组包含，用于 `self.active.loadout` 归属守卫），配合被动型机制
  *          （`turnEnd` / `afterSwitch` 的永久修正）只在携带该技能的精灵上触发。
+ * - 0.9.0  去特化 + 通用化：`DynamicValue.terms`（多项式，任何非线性按层取值）；`consumeMark.effectsOnConsume`
+ *          + 命令级 `event` 绑定（暴露 `event.consumed`）；`onHit` / `afterDamage` 事件暴露 `element`；
+ *          `dealDamage` 非技能伤害支持 `element`。据此**移除引擎内星陨特化**（`applyStarfall`）与
+ *          **应对的站点标签解析**（改读数据层归一化的通用字段 `skill.reaction`）。
  */
-export const ENGINE_VERSION = "0.8.0";
+export const ENGINE_VERSION = "0.9.0";

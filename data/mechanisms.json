@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.16.0",
+  "version": "0.18.0",
   "updatedAt": "2026-10-01",
   "mechanisms": [
     {
@@ -8025,6 +8025,625 @@
         }
       ],
       "note": "雪原狩猎：基础威力"
+    },
+    {
+      "id": "skill:sk-7100160:drain0.5",
+      "ownerType": "skill",
+      "ownerId": "sk-7100160",
+      "trigger": "afterDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7100160"
+        }
+      ],
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": 0,
+          "amountFrom": {
+            "path": "event.damage",
+            "scale": 0.5
+          }
+        }
+      ],
+      "note": "吸血 50%"
+    },
+    {
+      "id": "skill:sk-7180090:drain1",
+      "ownerType": "skill",
+      "ownerId": "sk-7180090",
+      "trigger": "afterDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7180090"
+        }
+      ],
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": 0,
+          "amountFrom": {
+            "path": "event.damage",
+            "scale": 1
+          }
+        }
+      ],
+      "note": "吸血 100%"
+    },
+    {
+      "id": "skill:sk-7180100:drain1",
+      "ownerType": "skill",
+      "ownerId": "sk-7180100",
+      "trigger": "afterDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7180100"
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": 0,
+          "amountFrom": {
+            "path": "event.damage",
+            "scale": 1
+          }
+        }
+      ],
+      "note": "吸血 100%"
+    },
+    {
+      "id": "skill:sk-7020590:kill",
+      "ownerType": "skill",
+      "ownerId": "sk-7020590",
+      "trigger": "afterDeath",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7020590"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "opponent",
+          "delta": 6
+        }
+      ],
+      "note": "吞噬：击败 → 回 6 能量"
+    },
+    {
+      "id": "skill:sk-7040210:kill",
+      "ownerType": "skill",
+      "ownerId": "sk-7040210",
+      "trigger": "afterDeath",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7040210"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkill",
+          "target": "opponent",
+          "skillId": "sk-7040210",
+          "power": 85
+        }
+      ],
+      "note": "流星火雨：击败 → 威力永久 +85"
+    },
+    {
+      "id": "skill:sk-7190230:kill",
+      "ownerType": "skill",
+      "ownerId": "sk-7190230",
+      "trigger": "afterDeath",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7190230"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "opponent",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 70
+        }
+      ],
+      "note": "坍缩：击败 → 自己魔攻 +70%"
+    },
+    {
+      "id": "skill:sk-7070280:resist",
+      "ownerType": "skill",
+      "ownerId": "sk-7070280",
+      "trigger": "afterDamage",
+      "when": [
+        {
+          "path": "event.resisted",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "path": "target.active.loadout",
+          "op": "contains",
+          "value": "sk-7070280"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkill",
+          "target": "target",
+          "skillId": "sk-7070280",
+          "power": 20
+        }
+      ],
+      "note": "微型斥候：受抵抗攻击 → 威力永久 +20"
+    },
+    {
+      "id": "skill:sk-7070300:resist",
+      "ownerType": "skill",
+      "ownerId": "sk-7070300",
+      "trigger": "afterDamage",
+      "when": [
+        {
+          "path": "event.resisted",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "path": "target.active.loadout",
+          "op": "contains",
+          "value": "sk-7070300"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "target",
+          "skillId": "sk-7070300",
+          "delta": -1
+        }
+      ],
+      "note": "绞轮：受抵抗攻击 → 能耗永久 -1"
+    },
+    {
+      "id": "skill:sk-7021010",
+      "ownerType": "skill",
+      "ownerId": "sk-7021010",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7021010"
+        },
+        {
+          "path": "opponent.switchedThisTurn",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 180,
+          "skillId": "sk-7021010"
+        }
+      ],
+      "note": "敌方换人 → 威力 +100"
+    },
+    {
+      "id": "skill:sk-7021010:base",
+      "ownerType": "skill",
+      "ownerId": "sk-7021010",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7021010"
+        },
+        {
+          "not": {
+            "path": "opponent.switchedThisTurn",
+            "op": "eq",
+            "value": true
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 80,
+          "skillId": "sk-7021010"
+        }
+      ],
+      "note": "基础威力"
+    },
+    {
+      "id": "skill:sk-7130350",
+      "ownerType": "skill",
+      "ownerId": "sk-7130350",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7130350"
+        },
+        {
+          "path": "opponent.switchedThisTurn",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 165,
+          "skillId": "sk-7130350"
+        }
+      ],
+      "note": "敌方换人 → 威力 +90"
+    },
+    {
+      "id": "skill:sk-7130350:base",
+      "ownerType": "skill",
+      "ownerId": "sk-7130350",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7130350"
+        },
+        {
+          "not": {
+            "path": "opponent.switchedThisTurn",
+            "op": "eq",
+            "value": true
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 75,
+          "skillId": "sk-7130350"
+        }
+      ],
+      "note": "基础威力"
+    },
+    {
+      "id": "skill:sk-7140360",
+      "ownerType": "skill",
+      "ownerId": "sk-7140360",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7140360"
+        },
+        {
+          "path": "opponent.switchedThisTurn",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 160,
+          "skillId": "sk-7140360"
+        }
+      ],
+      "note": "回旋踢：敌方换人 → 威力翻倍"
+    },
+    {
+      "id": "skill:sk-7140360:base",
+      "ownerType": "skill",
+      "ownerId": "sk-7140360",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7140360"
+        },
+        {
+          "not": {
+            "path": "opponent.switchedThisTurn",
+            "op": "eq",
+            "value": true
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 80,
+          "skillId": "sk-7140360"
+        }
+      ],
+      "note": "基础威力"
+    },
+    {
+      "id": "skill:sk-7021140:hits",
+      "ownerType": "skill",
+      "ownerId": "sk-7021140",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7021140"
+        },
+        {
+          "path": "opponent.switchedThisTurn",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 6
+        }
+      ],
+      "note": "埋伏：敌方换人 → 6 连击"
+    },
+    {
+      "id": "skill:sk-7021140:hits-base",
+      "ownerType": "skill",
+      "ownerId": "sk-7021140",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7021140"
+        },
+        {
+          "not": {
+            "path": "opponent.switchedThisTurn",
+            "op": "eq",
+            "value": true
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 3
+        }
+      ],
+      "note": "埋伏：3 连击"
+    },
+    {
+      "id": "skill:sk-7030610",
+      "ownerType": "skill",
+      "ownerId": "sk-7030610",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030610"
+        },
+        {
+          "path": "opponent.switchedThisTurn",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 7
+        }
+      ],
+      "note": "针刺射击：敌方换人 → 回 7 能量"
+    },
+    {
+      "id": "skill:sk-7160360",
+      "ownerType": "skill",
+      "ownerId": "sk-7160360",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7160360"
+        },
+        {
+          "path": "opponent.switchedThisTurn",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "moe",
+          "layers": 1
+        }
+      ],
+      "note": "转圈圈：敌方换人 → 敌方获得萌化"
+    },
+    {
+      "id": "skill:sk-7170340",
+      "ownerType": "skill",
+      "ownerId": "sk-7170340",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7170340"
+        },
+        {
+          "path": "opponent.switchedThisTurn",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "opponent",
+          "delta": -4
+        }
+      ],
+      "note": "回收：敌方换人 → 敌方 -4 能量"
+    },
+    {
+      "id": "mark:starfall-mark:physical",
+      "ownerType": "mark",
+      "ownerId": "starfall-mark",
+      "trigger": "onHit",
+      "when": [
+        {
+          "path": "target.active.marks.starfall-mark",
+          "op": "gte",
+          "value": 1
+        },
+        {
+          "path": "event.element",
+          "op": "neq",
+          "value": "Psychic"
+        },
+        {
+          "path": "event.damageType",
+          "op": "eq",
+          "value": "Physical"
+        }
+      ],
+      "effects": [
+        {
+          "type": "consumeMark",
+          "target": "target",
+          "effectsOnConsume": [
+            {
+              "type": "dealDamage",
+              "target": "target",
+              "category": "Physical",
+              "element": "Psychic",
+              "power": 0,
+              "powerFrom": {
+                "path": "event.consumed",
+                "terms": [
+                  {
+                    "coef": 1,
+                    "power": 2
+                  },
+                  {
+                    "coef": 24,
+                    "power": 1
+                  },
+                  {
+                    "coef": -24,
+                    "power": 0
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "note": "星陨印记引爆：非幻系攻击技命中时消耗全部层数，追加幻系伤害（威力 = N²+24N−24）"
+    },
+    {
+      "id": "mark:starfall-mark:magic",
+      "ownerType": "mark",
+      "ownerId": "starfall-mark",
+      "trigger": "onHit",
+      "when": [
+        {
+          "path": "target.active.marks.starfall-mark",
+          "op": "gte",
+          "value": 1
+        },
+        {
+          "path": "event.element",
+          "op": "neq",
+          "value": "Psychic"
+        },
+        {
+          "path": "event.damageType",
+          "op": "eq",
+          "value": "Magic"
+        }
+      ],
+      "effects": [
+        {
+          "type": "consumeMark",
+          "target": "target",
+          "effectsOnConsume": [
+            {
+              "type": "dealDamage",
+              "target": "target",
+              "category": "Magic",
+              "element": "Psychic",
+              "power": 0,
+              "powerFrom": {
+                "path": "event.consumed",
+                "terms": [
+                  {
+                    "coef": 1,
+                    "power": 2
+                  },
+                  {
+                    "coef": 24,
+                    "power": 1
+                  },
+                  {
+                    "coef": -24,
+                    "power": 0
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "note": "星陨印记引爆：非幻系攻击技命中时消耗全部层数，追加幻系伤害（威力 = N²+24N−24）"
     }
   ]
 }

@@ -1,8 +1,7 @@
 /** 战斗模拟器（MDP 环境）：按四阶段回合结算。对应 Python simulator/battle.py。 */
 
-import { bundleTypeMultiplier, getSkill, getSprite } from "../data";
+import { getSkill, getSprite } from "../data";
 import { effectiveStat } from "../effects/damage";
-import { statWithProfile } from "../stats";
 import type { Rng } from "../rng";
 import { cloneState, expireSkillOverrides, revertSkillOverride } from "../state";
 import type { Action, BattleEvent, BattleState, DataBundle, Side, StepResult, Terminal } from "../types";
@@ -84,6 +83,8 @@ export class Simulator {
     const rules = this.bundle.rules;
     /** 本回合被置/改/使用的技能，冷却结算时跳过（净 ±N，避免刚置就被 tick）。 */
     const touched: Record<Side, Set<string>> = { player: new Set(), enemy: new Set() };
+    // 回合开始清空「本回合是否换人」标记。
+    for (const side of SIDES) this.sideState(st, side).switchedThisTurn = false;
 
     if (st.turn === 1) {
       events.push(...this.triggerState(st, "battleStart", { event: { turn: st.turn } }));
@@ -114,6 +115,7 @@ export class Simulator {
     switchSides.sort((a, b) => this.speedOf(st, b) - this.speedOf(st, a));
     for (const side of switchSides) {
       events.push(...this.doSwitch(st, side, actions[side].benchId, false));
+      this.sideState(st, side).switchedThisTurn = true;
       logs.push(`switch: ${side} -> ${actions[side].benchId ?? ""}`);
     }
 
@@ -173,7 +175,7 @@ export class Simulator {
         events.push(...this.applyEnergy(st, side));
         logs.push(`energy: ${side}`);
       } else {
-        events.push(...this.executeSkill(st, side, entry.action, rng, beforeCommands));
+        events.push(...this.executeSkill(st, side, entry.action, rng, beforeCommands, reactedBySide[side] === true));
         logs.push(`skill: ${side} -> ${entry.action.skillId ?? ""}`);
       }
       entry.status = "resolved";
@@ -268,12 +270,10 @@ export class Simulator {
     return "Status";
   }
 
-  /** 技能声明的「应对」类型：站点描述内联标签 1015 应对状态 / 1016 应对攻击 / 1017 应对防御。 */
+  /** 技能声明的「应对」类型：读取数据层归一化出的通用字段 `skill.reaction`（引擎不认识来源格式）。 */
   private reactionOf(skillId: string | undefined): string | null {
     if (!skillId) return null;
-    const raw = toStr(asDict(getSkill(this.bundle, skillId).sourceData).description);
-    const match = raw.match(/<desc_id=(1015|1016|1017)>/);
-    return match ? ({ "1015": "Status", "1016": "Attack", "1017": "Defense" } as Record<string, string>)[match[1]] : null;
+    return toStr(getSkill(this.bundle, skillId).reaction) || null;
   }
 
   /** 应对成功：本技能有「应对 X」且敌方本回合使用了 X 类行动。 */
@@ -326,43 +326,6 @@ export class Simulator {
       events.push(...this.mechanisms.applyDamageCommands(st, this.bundle, commands).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
     }
     return events;
-  }
-
-  /** 星陨追加伤害（roco pet – RocoDiviner 图卡 4）：非幻系攻击技命中带「星陨印记」目标时引爆，消耗全部层数。
-   * 伤害 = floor( round(攻 × 星陨威力 × 幻系克制 × 特性 × 强化差值 × 37/41) ÷ 防 ) × 减伤；星陨威力 = N²+24N−24。
-   * 攻/防取触发技的物/魔类别；特性倍率与减伤暂按 1（特性表未校准）。 */
-  private applyStarfall(st: BattleState, attackerSide: Side, defenderSide: Side, skillId?: string): BattleEvent[] {
-    const cfg = asDict(this.bundle.rules.starfall);
-    const element = toStr(cfg.element) || "Psychic";
-    const skill = skillId ? getSkill(this.bundle, skillId) : {};
-    if (toStr(skill.element) === element) return [];
-    const category = toStr(skill.category);
-    if (category !== "Physical" && category !== "Magic") return [];
-
-    const defender = this.sideState(st, defenderSide).active;
-    const stacks = Math.floor(toNum(defender.marks?.["starfall-mark"], 0));
-    if (stacks <= 0 || defender.hp <= 0) return [];
-
-    const attacker = this.sideState(st, attackerSide).active;
-    const attackerDef = getSprite(this.bundle, attacker.spriteId);
-    const defenderDef = getSprite(this.bundle, defender.spriteId);
-
-    const power = asDict(cfg.power);
-    const starPower = toNum(power.quad, 1) * stacks * stacks + toNum(power.linear, 24) * stacks + toNum(power.constant, -24);
-
-    const magical = category === "Magic";
-    const atkStat = magical ? "spatk" : "atk";
-    const defStat = magical ? "spdef" : "defense";
-    const atk = statWithProfile(this.bundle.stats, attackerDef, attacker.profile, atkStat);
-    const dfn = Math.max(1, statWithProfile(this.bundle.stats, defenderDef, defender.profile, defStat));
-    const typeMult = bundleTypeMultiplier(this.bundle, element, (defenderDef.elements as string[] | undefined) ?? []);
-    const stageMult = 1 + toNum(attacker.buffs[atkStat], 0) + toNum(attacker.debuffs[atkStat], 0) - toNum(defender.buffs[defStat], 0) - toNum(defender.debuffs[defStat], 0);
-    const balance = toNum(asDict(this.bundle.rules.damageFormula).balance, 37 / 41);
-    const damage = Math.max(0, Math.floor(Math.round(atk * starPower * typeMult * stageMult * balance) / dfn));
-
-    delete defender.marks["starfall-mark"];
-    defender.hp = Math.max(0, defender.hp - damage);
-    return [{ type: "starfall", side: defenderSide, text: `${defender.spriteId} 星陨引爆 ${stacks} 层 → 追加 ${damage}`, data: { stacks, damage, starPower, typeMult } }];
   }
 
   private applyEnergy(st: BattleState, side: Side): BattleEvent[] {
@@ -419,6 +382,7 @@ export class Simulator {
     action: Action,
     rng: Rng,
     commands: import("../mechanisms").EffectCommand[],
+    reacted = false,
   ): BattleEvent[] {
     const skill = action.skillId ? getSkill(this.bundle, action.skillId) : {};
     const caster = this.sideState(st, side).active;
@@ -441,20 +405,22 @@ export class Simulator {
         actorSide: side,
         targetSide: opp,
         action,
-        event: { action, skillId: action.skillId, damageType: category },
+        event: { action, skillId: action.skillId, damageType: category, reacted },
       });
       events.push(...this.mechanisms.applyStateCommands(st, beforeDamage, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
-      events.push(...this.mechanisms.applyDamageCommands(st, this.bundle, damageCommands).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
-      events.push(...this.triggerState(st, "onHit", { actorSide: side, targetSide: opp, action, event: { skillId: action.skillId, damageType: category } }));
+      const damageEvents = this.mechanisms.applyDamageCommands(st, this.bundle, damageCommands);
+      events.push(...damageEvents.map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+      const dealt = damageEvents.reduce((sum, event) => sum + toNum(event.data.value, 0), 0);
+      const effectiveness = damageEvents.length ? toNum(damageEvents[damageEvents.length - 1].data.effectiveness, 1) : 1;
+      events.push(...this.triggerState(st, "onHit", { actorSide: side, targetSide: opp, action, event: { skillId: action.skillId, damageType: category, element: toStr(skill.element), damage: dealt, effectiveness, resisted: effectiveness < 1, reacted } }));
       events.push(...this.triggerMarkMechanisms(st, opp, side));
-      events.push(...this.applyStarfall(st, side, opp, action.skillId));
       const afterDamage = this.mechanisms.dispatch({
         state: st,
         trigger: "afterDamage",
         actorSide: side,
         targetSide: opp,
         action,
-        event: { action, skillId: action.skillId, damageType: category },
+        event: { action, skillId: action.skillId, damageType: category, damage: dealt, effectiveness, resisted: effectiveness < 1, reacted },
       });
       events.push(...this.mechanisms.applyStateCommands(st, afterDamage, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
     }
@@ -489,11 +455,12 @@ export class Simulator {
       const s = this.sideState(st, side);
       if (s.active.hp > 0 || s.active.faintHandled) continue;
       const opp = otherSide(side);
-      events.push(...this.triggerState(st, "beforeDeath", { actorSide: side, targetSide: opp, event: { spriteId: s.active.spriteId } }));
+      const deathEvent = { spriteId: s.active.spriteId, killerSide: s.lastHit?.side, skillId: s.lastHit?.skillId };
+      events.push(...this.triggerState(st, "beforeDeath", { actorSide: side, targetSide: opp, event: deathEvent }));
       s.active.faintHandled = true;
       s.magic -= perFaint;
       events.push({ type: "faint", side, text: `${s.active.spriteId} 阵亡，魔力 -${perFaint}`, data: {} });
-      events.push(...this.triggerState(st, "afterDeath", { actorSide: side, targetSide: opp, event: { spriteId: s.active.spriteId } }));
+      events.push(...this.triggerState(st, "afterDeath", { actorSide: side, targetSide: opp, event: deathEvent }));
     }
     return events;
   }

@@ -76,6 +76,8 @@ export function cloneSide(s: SideState): SideState {
     lastTurn: s.lastTurn ? { ...s.lastTurn } : undefined,
     forcedSwitch: s.forcedSwitch,
     pendingEntry: s.pendingEntry ? s.pendingEntry.map((effect) => ({ ...effect })) : undefined,
+    switchedThisTurn: s.switchedThisTurn,
+    lastHit: s.lastHit ? { ...s.lastHit } : undefined,
   };
 }
 

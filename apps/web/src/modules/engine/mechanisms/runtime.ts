@@ -88,14 +88,15 @@ export class MechanismRuntime {
     return [...new Set([...Object.keys(s.active.marks), ...Object.keys(s.teamMarks)])];
   }
 
-  /** 动态取值：字符串 = 点路径；对象 = 路径 + 系数 + 偏移（末尾 `*` 合计）。 */
+  /** 动态取值：字符串 = 点路径；对象 = 路径 + 系数 / 偏移 / 多项式（末尾 `*` 合计）。 */
   private dynamicValue(state: BattleState, command: EffectCommand, from: DynamicRef | undefined, fallback: number): number {
     if (from === undefined) return fallback;
     const spec = typeof from === "string" ? { path: from } : from;
-    const context = { state, trigger: command.trigger, actorSide: command.actorSide, targetSide: command.targetSide, event: {} };
+    const context = { state, trigger: command.trigger, actorSide: command.actorSide, targetSide: command.targetSide, event: command.event ?? {} };
     const raw = toNum(resolveContextPath(context, spec.path), fallback);
-    const scaled = raw * (spec.scale ?? 1) + (spec.offset ?? 0);
-    return spec.round === "ceil" ? Math.ceil(scaled) : spec.round === "round" ? Math.round(scaled) : Math.floor(scaled);
+    let value = spec.terms ? spec.terms.reduce((sum, term) => sum + term.coef * Math.pow(raw, term.power), 0) : raw * (spec.scale ?? 1) + (spec.offset ?? 0);
+    value += spec.terms ? (spec.offset ?? 0) : 0;
+    return spec.round === "ceil" ? Math.ceil(value) : spec.round === "round" ? Math.round(value) : Math.floor(value);
   }
 
   /** 印记有效上限：passive 覆盖 ?? 印记自身 ?? rules.marks.maxStack。 */
@@ -361,16 +362,18 @@ export class MechanismRuntime {
             total += layers;
             delete store[markId];
           }
-          // 嵌套效果沿用「施法者视角」：self = 施法方，target/opponent = 施法方的对手。
+          // 嵌套效果沿用「施法者视角」：self = 施法方，target/opponent = 施法方的对手；event 暴露 `consumed`。
           const opposite: Side | undefined = command.actorSide === "player" ? "enemy" : command.actorSide === "enemy" ? "player" : command.targetSide;
+          const nestedEvent = { ...(command.event ?? {}), consumed: total, markId: definition.markId ?? null };
+          const nested = (effect: EffectDefinition): EffectCommand => ({ type: effect.type, definition: effect, mechanismId: command.mechanismId, trigger: command.trigger, actorSide: command.actorSide, targetSide: opposite, event: nestedEvent });
           const perLayer: EffectCommand[] = [];
-          for (let i = 0; i < total; i++) {
-            for (const effect of definition.effectsPerLayer) {
-              perLayer.push({ type: effect.type, definition: effect, mechanismId: command.mechanismId, trigger: command.trigger, actorSide: command.actorSide, targetSide: opposite });
-            }
-          }
+          for (let i = 0; i < total; i++) for (const effect of definition.effectsPerLayer ?? []) perLayer.push(nested(effect as EffectDefinition));
+          for (const effect of definition.effectsOnConsume ?? []) perLayer.push(nested(effect as EffectDefinition));
           events.push({ type: "mark-consumed", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { markId: definition.markId ?? null, total } });
-          if (perLayer.length) events.push(...this.applyStateCommands(state, perLayer, bundle, depth + 1));
+          if (perLayer.length) {
+            events.push(...this.applyStateCommands(state, perLayer, bundle, depth + 1));
+            if (bundle) events.push(...this.applyDamageCommands(state, bundle, perLayer));
+          }
           break;
         }
         case "removeMark": {
@@ -581,7 +584,7 @@ export class MechanismRuntime {
       if (target.hp <= 0) continue;
       const attackerDef = getSprite(bundle, attacker.spriteId);
       const targetDef = getSprite(bundle, target.spriteId);
-      const skill = definition.skillId ? getSkill(bundle, definition.skillId) : { category: definition.category, power: definition.power };
+      const skill = definition.skillId ? getSkill(bundle, definition.skillId) : { category: definition.category, power: definition.power, element: definition.element };
       // 记忆域 · 技能永久修正：本技能的威力 delta 叠加到基础威力上。
       const powerDelta = toNum(attacker.skillMods?.[definition.skillId ?? ""]?.power, 0);
       let effectiveSkill = powerDelta ? { ...skill, power: toNum(skill.power, 0) + powerDelta } : skill;
@@ -589,6 +592,7 @@ export class MechanismRuntime {
       // 路径缺失按 0 计，基线由 offset 提供，避免把 fallback 也乘上 scale。
       if (definition.powerFrom) effectiveSkill = { ...effectiveSkill, power: this.dynamicValue(state, command, definition.powerFrom, 0) };
       let damage: number;
+      let effectiveness = 1;
       let modifiers: DamageModifiers | null = null;
       if (definition.basis && definition.basis !== "formula") {
         const amount = definition.amount ?? definition.power;
@@ -603,9 +607,12 @@ export class MechanismRuntime {
           hits: modifiers.hits,
         });
         damage = result.damage;
+        effectiveness = result.typeMult;
       }
       target.hp = Math.max(0, target.hp - damage);
-      events.push({ type: "damage", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { value: damage, attackerSide, skillId: definition.skillId, damageType: definition.category, modifiers } });
+      const targetState = targetSide === "player" ? state.player : state.enemy;
+      targetState.lastHit = { side: attackerSide, skillId: definition.skillId };
+      events.push({ type: "damage", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { value: damage, attackerSide, skillId: definition.skillId, damageType: definition.category, effectiveness, modifiers } });
     }
     return events;
   }

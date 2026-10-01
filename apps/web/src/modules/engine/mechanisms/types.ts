@@ -57,12 +57,14 @@ export type Condition =
   | { not: Condition }
   | { path: string; op: "eq" | "neq" | "gt" | "gte" | "lt" | "lte" | "in" | "has" | "contains"; value?: unknown; valueFrom?: string };
 
-/** 动态取值：点路径 + 系数 + 偏移（如「每层印记 ×2」= { path, scale: 2 }）。`path` 末尾 `*` 表示合计对象数值。 */
+/** 动态取值：点路径 + 系数 + 偏移（如「每层印记 ×2」= { path, scale: 2 }）。`path` 末尾 `*` 表示合计对象数值。
+ *  需要非线性时可给 `terms`（对取值做多项式，如 `N²+24N−24` → [{ coef:1, power:2 },{ coef:24, power:1 },{ coef:-24, power:0 }]）。 */
 export interface DynamicValue {
   path: string;
   scale?: number;
   offset?: number;
   round?: "floor" | "ceil" | "round";
+  terms?: { coef: number; power: number }[];
 }
 
 /** 动态引用：字符串等价于 `{ path }`。 */
@@ -118,8 +120,9 @@ export type EffectSpec =
   | { type: "modifyEnergy"; target?: string; delta: number; deltaFrom?: DynamicValue }
   | { type: "modifySwitchLock"; target?: string; delta: number }
   | { type: "applyMark"; target?: string; markId: string; layers?: number; layersFrom?: DynamicRef; scope?: "sprite" | "team"; immuneElements?: string[] }
-  /** 印记消耗：驱散目标指定（省略 = 全部）印记，并按每层执行 `effectsPerLayer`（自动累加，可表达「每层 +X%」）。 */
-  | { type: "consumeMark"; target?: string; markId?: string; scope?: "sprite" | "team"; effectsPerLayer: EffectSpec[] }
+  /** 印记消耗：驱散目标指定（省略 = 全部）印记。`effectsPerLayer` 每层执行一次（自动累加）；
+   *  `effectsOnConsume` 在消耗后执行一次，可用 `event.consumed` 读取本次消耗的总层数。 */
+  | { type: "consumeMark"; target?: string; markId?: string; scope?: "sprite" | "team"; effectsPerLayer?: EffectSpec[]; effectsOnConsume?: EffectSpec[] }
   | { type: "removeMark"; target?: string; markId?: string; layers?: number; scope?: "sprite" | "team" }
   | { type: "changeWeather"; weatherId: string; turns?: number }
   | { type: "setPriority"; target?: string; value: number }
@@ -154,6 +157,8 @@ export interface EffectCommand {
   trigger: TriggerName;
   actorSide?: Side;
   targetSide?: Side;
+  /** 命令级事件负载（供嵌套效果读取，如 consumeMark 暴露的 `consumed`）。 */
+  event?: Dict;
 }
 
 export interface MechanismEvent {

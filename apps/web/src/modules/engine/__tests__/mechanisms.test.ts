@@ -656,7 +656,7 @@ describe("react success (应对)", () => {
       ...miniBundle.skills,
       "sk-react": {
         id: "sk-react", skillName: "护盾", element: "Fire", category: "Defense", actionType: "Defense", power: 0, cost: 0,
-        sourceData: { description: "减伤50%，<desc_id=1016>应对攻击</>：敌方脱离。" },
+        reaction: "Attack",
       },
     },
     mechanisms: [
@@ -741,7 +741,28 @@ describe("cooldown subsystem", () => {
   });
 });
 
-describe("starfall burst", () => {
+describe("starfall burst (data-driven mark mechanism)", () => {
+  // 「星陨引爆」不再在引擎里：完全由一条 mark 机制描述（含多项式威力 N²+24N−24）。
+  const burst = (category: "Physical" | "Magic") => ({
+    id: `mark:starfall-mark:${category.toLowerCase()}`,
+    ownerType: "mark",
+    ownerId: "starfall-mark",
+    trigger: "onHit",
+    when: [
+      { path: "target.active.marks.starfall-mark", op: "gte", value: 1 },
+      { path: "event.element", op: "neq", value: "Psychic" },
+      { path: "event.damageType", op: "eq", value: category },
+    ],
+    effects: [
+      {
+        type: "consumeMark",
+        target: "target",
+        effectsOnConsume: [
+          { type: "dealDamage", target: "target", category, element: "Psychic", power: 0, powerFrom: { path: "event.consumed", terms: [{ coef: 1, power: 2 }, { coef: 24, power: 1 }, { coef: -24, power: 0 }] } },
+        ],
+      },
+    ],
+  });
   const bundle: DataBundle = {
     ...miniBundle,
     skills: {
@@ -749,11 +770,12 @@ describe("starfall burst", () => {
       "sk-hit": { id: "sk-hit", skillName: "普攻", element: "Normal", category: "Physical", actionType: "Attack", power: 40, cost: 0 },
       "sk-psy": { id: "sk-psy", skillName: "幻技", element: "Psychic", category: "Magic", actionType: "Attack", power: 40, cost: 0 },
     },
-    rules: { ...miniBundle.rules, starfall: { element: "Psychic", power: { quad: 1, linear: 24, constant: -24 } } },
     mechanisms: [
       ...(miniBundle.mechanisms ?? []),
       { id: "skill:sk-hit", ownerType: "skill", ownerId: "sk-hit", trigger: "beforeAction", when: [{ path: "event.action.skillId", op: "eq", value: "sk-hit" }], effects: [{ type: "dealDamage", target: "target", category: "Physical", power: 40, skillId: "sk-hit" }] },
       { id: "skill:sk-psy", ownerType: "skill", ownerId: "sk-psy", trigger: "beforeAction", when: [{ path: "event.action.skillId", op: "eq", value: "sk-psy" }], effects: [{ type: "dealDamage", target: "target", category: "Magic", power: 40, skillId: "sk-psy" }] },
+      burst("Physical"),
+      burst("Magic"),
     ],
   };
 
@@ -769,15 +791,14 @@ describe("starfall burst", () => {
     return sim.step(battle, { kind: "skill", skillId }, { kind: "energy" }, new Rng(1));
   }
 
-  it("a non-psychic hit detonates all stacks and consumes them", () => {
+  it("a non-psychic hit consumes all stacks via the mark mechanism", () => {
     const result = run("sk-hit", 5);
-    const event = result.events.find((e) => e.type === "starfall");
-    expect(event).toBeTruthy();
-    expect(event?.data.starPower).toBe(121); // 5² + 24·5 − 24
+    const consumed = result.events.find((e) => e.type === "mark-consumed");
+    expect(consumed?.data.total).toBe(5);
     expect(result.state.enemy.active.marks["starfall-mark"]).toBeUndefined();
   });
 
-  it("doubles as extra damage over the same hit without marks", () => {
+  it("adds extra damage over the same hit without marks", () => {
     const base = run("sk-hit", 0).state.enemy.active.hp;
     const burst = run("sk-hit", 5).state.enemy.active.hp;
     expect(burst).toBeLessThan(base);
@@ -785,7 +806,7 @@ describe("starfall burst", () => {
 
   it("a psychic skill does not trigger starfall", () => {
     const result = run("sk-psy", 5);
-    expect(result.events.some((e) => e.type === "starfall")).toBe(false);
+    expect(result.events.some((e) => e.type === "mark-consumed")).toBe(false);
     expect(result.state.enemy.active.marks["starfall-mark"]).toBe(5);
   });
 });

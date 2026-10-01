@@ -30,6 +30,14 @@ function plainText(value: unknown): string {
   return typeof value === "string" ? value.replace(/<[^>]*>/g, "") : "";
 }
 
+/** 从站点描述内联标签推导技能的通用「应对」属性（1015 应对状态 / 1016 应对攻击 / 1017 应对防御）。
+ *  这是数据摄取层的职责：引擎只读 `skill.reaction`，不认识站点标签格式。 */
+const REACTION_TAG: Record<string, string> = { "1015": "Status", "1016": "Attack", "1017": "Defense" };
+function skillReaction(value: unknown): string | null {
+  const match = typeof value === "string" ? value.match(/<desc_id=(1015|1016|1017)>/) : null;
+  return match ? REACTION_TAG[match[1]] : null;
+}
+
 export function normalizeSnapshot(snapshot: ExternalSnapshot, registrationId: string, registeredAt: string): RegisteredCatalog {
   const warnings: string[] = [];
   const skillIds = new Set(snapshot.skills.map((skill) => String(skill.id).startsWith("sk-") ? String(skill.id) : `sk-${skill.id}`));
@@ -90,6 +98,8 @@ export function normalizeSnapshot(snapshot: ExternalSnapshot, registrationId: st
     priority: 0,
     rawText: plainText(skill.description ?? skill.descPlain ?? skill.desc),
     description: plainText(skill.description ?? skill.descPlain ?? skill.desc),
+    /** 通用「应对」属性（数据层推导，引擎只读）。 */
+    reaction: skillReaction(skill.description ?? skill.descPlain ?? skill.desc),
     icon: skill.icon ?? skill.imgOnline ?? null,
     categoryIcon: skill.categoryIcon ?? null,
     source: skill.source ?? snapshot.meta.origin ?? "",
