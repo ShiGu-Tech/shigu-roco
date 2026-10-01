@@ -64,8 +64,8 @@ export type EffectSpec =
   | { type: "modifyStat"; target?: string; stat: string; mode: "flat" | "percent"; value: number; maxStages?: number }
   /** 伤害修饰：scope=outgoing 攻方输出倍率、incoming 防方承伤倍率；multiply 相乘 / add 相加（+value）。 */
   | { type: "modifyDamage"; target?: string; mode: "multiply" | "add"; value: number; scope?: "outgoing" | "incoming" }
-  /** 连击段数（覆盖默认 1）；给 markId 时按目标持有该印记层数动态计算 base + perStack×层数。 */
-  | { type: "setHits"; target?: string; hits?: number; markId?: string; base?: number; perStack?: number }
+  /** 连击段数（覆盖默认 1）；给 markId 时按目标持有该印记层数动态计算 base + perStack×层数；hitsFrom 为上下文点路径。 */
+  | { type: "setHits"; target?: string; hits?: number; markId?: string; base?: number; perStack?: number; hitsFrom?: string }
   /** 减伤百分比（累加后受 rules.combat.damageReductionCap 限制）。 */
   | { type: "setDamageReduction"; target?: string; percent: number }
   /** 冷却：scope=defense 作用于全部防御技能；skillIdFrom 从上下文取目标技能（如 event.opponentAction.skillId）。 */
@@ -101,6 +101,14 @@ export type EffectSpec =
   | { type: "replaceSkill"; target?: string; fromSkillId: string; toSkillId: string; duration?: number }
   | { type: "randomizeSkill"; target?: string; skillId?: string; source: string[]; duration?: number }
   | { type: "swapSkillSet"; target?: string; from: string; to: string; duration?: number }
+  /** 记忆域 · 计数器：`target.active.counters[key] += delta`。 */
+  | { type: "addCounter"; target?: string; key: string; delta: number }
+  /** 记忆域 · 计数器：设为指定值（`valueFrom` 为上下文点路径动态取值）。 */
+  | { type: "setCounter"; target?: string; key: string; value?: number; valueFrom?: string }
+  /** 记忆域 · 计数器：清除指定 key（省略 = 全部）。 */
+  | { type: "clearCounter"; target?: string; key?: string }
+  /** 记忆域 · 技能永久修正：对某技能叠加威力 / 能耗 / 连击 / 先手的持久 delta。 */
+  | { type: "modifySkill"; target?: string; skillId: string; power?: number; cost?: number; hits?: number; priority?: number }
   /** 规则覆盖通道：按 `passive` 触发器收集，覆盖 `rules.*` 默认值（如印记上限 / 异种互斥）。key 用点路径。 */
   | { type: "setRuleModifier"; target?: string; key: string; value: number | boolean }
   | { type: "unsupported"; effectType: string; reason?: string };

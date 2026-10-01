@@ -149,6 +149,42 @@ export class MechanismRuntime {
           events.push({ type: "switch-lock-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { before, after: side.switchLock, delta: definition.delta } });
           break;
         }
+        case "addCounter": {
+          if (!active || !targetSide) break;
+          active.counters ??= {};
+          const before = active.counters[definition.key] ?? 0;
+          active.counters[definition.key] = before + definition.delta;
+          events.push({ type: "counter-added", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { key: definition.key, before, after: active.counters[definition.key] } });
+          break;
+        }
+        case "setCounter": {
+          if (!active || !targetSide) break;
+          active.counters ??= {};
+          const before = active.counters[definition.key] ?? 0;
+          const value = Math.floor(this.dynamicValue(state, command, definition.valueFrom, definition.value ?? 0));
+          active.counters[definition.key] = value;
+          events.push({ type: "counter-set", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { key: definition.key, before, after: value } });
+          break;
+        }
+        case "clearCounter": {
+          if (!active || !targetSide) break;
+          if (!active.counters) break;
+          if (definition.key) delete active.counters[definition.key];
+          else active.counters = {};
+          events.push({ type: "counter-cleared", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { key: definition.key ?? null } });
+          break;
+        }
+        case "modifySkill": {
+          if (!active || !targetSide) break;
+          active.skillMods ??= {};
+          const mod = (active.skillMods[definition.skillId] ??= {});
+          for (const field of ["power", "cost", "hits", "priority"] as const) {
+            const delta = definition[field];
+            if (typeof delta === "number") mod[field] = (mod[field] ?? 0) + delta;
+          }
+          events.push({ type: "skill-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { skillId: definition.skillId, mod: { ...mod } } });
+          break;
+        }
         case "applyMark": {
           if (!active || !targetSide) break;
           if (this.isImmune(bundle, active.spriteId, definition.immuneElements)) {
@@ -417,6 +453,9 @@ export class MechanismRuntime {
       const attackerDef = getSprite(bundle, attacker.spriteId);
       const targetDef = getSprite(bundle, target.spriteId);
       const skill = definition.skillId ? getSkill(bundle, definition.skillId) : { category: definition.category, power: definition.power };
+      // 记忆域 · 技能永久修正：本技能的威力 delta 叠加到基础威力上。
+      const powerDelta = toNum(attacker.skillMods?.[definition.skillId ?? ""]?.power, 0);
+      const effectiveSkill = powerDelta ? { ...skill, power: toNum(skill.power, 0) + powerDelta } : skill;
       let damage: number;
       let modifiers: DamageModifiers | null = null;
       if (definition.basis && definition.basis !== "formula") {
@@ -424,7 +463,7 @@ export class MechanismRuntime {
         damage = definition.basis === "maxHp" ? Math.floor(target.maxHp * amount) : definition.basis === "currentHp" ? Math.floor(target.hp * amount) : definition.basis === "stack" ? Math.floor(target.maxHp * amount * (target.marks[definition.markId ?? ""] ?? 0)) : Math.floor(amount);
       } else {
         modifiers = this.damageModifiers(state, attackerSide, targetSide, definition);
-        const result = computeDamage(bundle, attackerDef, targetDef, attacker, target, skill, {
+        const result = computeDamage(bundle, attackerDef, targetDef, attacker, target, effectiveSkill, {
           weatherId: state.weather?.id ?? null,
           attackerTraitMult: modifiers.attackerMult,
           defenderTraitMult: modifiers.defenderMult,
@@ -452,10 +491,13 @@ export class MechanismRuntime {
         power: definition.type === "dealDamage" ? definition.power : undefined,
       },
     });
+    const attacker = attackerSide === "player" ? state.player.active : state.enemy.active;
+    const skillId = definition.type === "dealDamage" ? definition.skillId : undefined;
     let attackerMult = 1;
     let defenderMult = 1;
     let reduction = 0;
-    let hits = 1;
+    // 记忆域 · 技能永久修正：本技能的基础连击段数。
+    let hits = 1 + toNum(skillId ? attacker.skillMods?.[skillId]?.hits : 0, 0);
     for (const command of commands) {
       const d = command.definition;
       if (d.type === "modifyDamage") {
@@ -464,7 +506,10 @@ export class MechanismRuntime {
         if (outgoing) attackerMult *= factor;
         else defenderMult *= factor;
       } else if (d.type === "setHits") {
-        if (d.markId) {
+        if (d.hitsFrom) {
+          const context = { state, trigger: "beforeDamage" as const, actorSide: attackerSide, targetSide, event: { skillId } };
+          hits = Math.max(1, Math.floor(toNum(resolveContextPath(context, d.hitsFrom), 1)));
+        } else if (d.markId) {
           const holder = targetSide === "player" ? state.player.active : state.enemy.active;
           const stacks = toNum(holder.marks?.[d.markId], 0);
           hits = Math.max(1, Math.floor((d.base ?? 1) + (d.perStack ?? 1) * stacks));

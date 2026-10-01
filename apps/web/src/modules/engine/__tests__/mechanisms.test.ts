@@ -241,6 +241,30 @@ describe("mark stacking", () => {
   });
 });
 
+describe("memory domain (counters / skill mods)", () => {
+  function st() {
+    return makeState(makeSide(makeActive("sp-a", { hp: 100, maxHp: 100 })), makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })));
+  }
+
+  it("adds / sets / clears counters", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const battle = st();
+    runtime.applyStateCommands(battle, [command({ type: "addCounter", target: "self", key: "uses", delta: 2 })]);
+    expect(battle.player.active.counters?.uses).toBe(2);
+    runtime.applyStateCommands(battle, [command({ type: "setCounter", target: "self", key: "uses", valueFrom: "self.active.counters.uses" })]);
+    expect(battle.player.active.counters?.uses).toBe(2);
+    runtime.applyStateCommands(battle, [command({ type: "clearCounter", target: "self", key: "uses" })]);
+    expect(battle.player.active.counters?.uses).toBeUndefined();
+  });
+
+  it("modifySkill records a persistent delta", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const battle = st();
+    runtime.applyStateCommands(battle, [command({ type: "modifySkill", target: "self", skillId: "sk-1", power: 45, cost: -1 })]);
+    expect(battle.player.active.skillMods?.["sk-1"]).toEqual({ power: 45, cost: -1 });
+  });
+});
+
 describe("trigger cascade", () => {
   it("dispatches statusApplied and applies cascaded effects", () => {
     const registry = new MechanismRegistry([
@@ -324,6 +348,27 @@ describe("damage modifiers (beforeDamage)", () => {
     st.enemy.active.marks["starfall-mark"] = 4;
     const [event] = runtime.applyDamageCommands(st, miniBundle, [dealDamage]);
     expect((event.data.modifiers as Record<string, number>).hits).toBe(5);
+  });
+
+  it("modifySkill power delta raises the skill's damage", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const st = battle();
+    runtime.applyStateCommands(st, [command({ type: "modifySkill", target: "self", skillId: "sk-1", power: 60 })]);
+    const [base] = new MechanismRuntime(new MechanismRegistry()).applyDamageCommands(battle(), miniBundle, [dealDamage]);
+    const [buffed] = runtime.applyDamageCommands(st, miniBundle, [dealDamage]);
+    expect(buffed.data.value as number).toBeGreaterThan(base.data.value as number);
+  });
+
+  it("setHits can read a counter via a context path", () => {
+    const runtime = new MechanismRuntime(
+      new MechanismRegistry([
+        { id: "h", ownerType: "skill", ownerId: "sk-1", trigger: "beforeDamage", effects: [{ type: "setHits", target: "target", hitsFrom: "self.active.counters.extra" }] },
+      ]),
+    );
+    const st = battle();
+    st.player.active.counters = { extra: 3 };
+    const [event] = runtime.applyDamageCommands(st, miniBundle, [dealDamage]);
+    expect((event.data.modifiers as Record<string, number>).hits).toBe(3);
   });
 
   it("outgoing multiply scales per-hit damage", () => {

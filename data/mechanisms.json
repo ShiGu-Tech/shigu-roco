@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "updatedAt": "2026-10-01",
   "mechanisms": [
     {
@@ -4588,26 +4588,6 @@
     {
       "ownerType": "skill",
       "trigger": "beforeAction",
-      "id": "starfall:sk-7190510",
-      "ownerId": "sk-7190510",
-      "effects": [
-        {
-          "type": "dealDamage",
-          "target": "target",
-          "category": "Magic",
-          "power": 60,
-          "skillId": "sk-7190510"
-        },
-        {
-          "type": "unsupported",
-          "effectType": "conditional",
-          "reason": "奇点：上回合双方有精灵使用水系技能则 +4 层（需记录上回合技能系别）"
-        }
-      ]
-    },
-    {
-      "ownerType": "skill",
-      "trigger": "beforeAction",
       "id": "starfall:sk-7190490",
       "ownerId": "sk-7190490",
       "effects": [
@@ -5302,6 +5282,154 @@
           "type": "transformMark",
           "target": "opponent",
           "toMarkId": "starfall-mark"
+        }
+      ]
+    },
+    {
+      "id": "starfall:sk-7190510",
+      "ownerType": "skill",
+      "ownerId": "sk-7190510",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7190510"
+            },
+            {
+              "anyOf": [
+                {
+                  "path": "self.lastTurn.element",
+                  "op": "eq",
+                  "value": "Water"
+                },
+                {
+                  "path": "opponent.lastTurn.element",
+                  "op": "eq",
+                  "value": "Water"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "note": "奇点：上回合双方有精灵使用水系技能 → 敌方 +4 层星陨印记",
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 60,
+          "skillId": "sk-7190510"
+        },
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "starfall-mark",
+          "layers": 4
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7170350",
+      "ownerType": "skill",
+      "ownerId": "sk-7170350",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7170350"
+            },
+            {
+              "anyOf": [
+                {
+                  "path": "self.lastTurn.element",
+                  "op": "eq",
+                  "value": "Fire"
+                },
+                {
+                  "path": "opponent.lastTurn.element",
+                  "op": "eq",
+                  "value": "Fire"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "note": "掠影：上回合双方有精灵使用火系技能 → 偷取敌方 3 能量",
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 65,
+          "skillId": "sk-7170350"
+        },
+        {
+          "type": "modifyEnergy",
+          "target": "opponent",
+          "delta": -3
+        },
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 3
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7020510",
+      "ownerType": "skill",
+      "ownerId": "sk-7020510",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020510"
+        }
+      ],
+      "note": "乘胜追击：造成物伤，1 连击，每次使用后本技能连击数永久 +1",
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 40,
+          "skillId": "sk-7020510"
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "hits:sk-7020510",
+          "delta": 1
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7020510:hits",
+      "ownerType": "skill",
+      "ownerId": "sk-7020510",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7020510"
+        }
+      ],
+      "note": "乘胜追击：连击数 = 永久计数器",
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hitsFrom": "self.active.counters.hits:sk-7020510"
         }
       ]
     }

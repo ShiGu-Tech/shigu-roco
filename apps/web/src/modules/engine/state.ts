@@ -28,6 +28,8 @@ export function cloneActive(a: ActiveSprite): ActiveSprite {
     skillOverrides: a.skillOverrides
       ? Object.fromEntries(Object.entries(a.skillOverrides).map(([k, v]) => [k, { ...v }]))
       : undefined,
+    counters: a.counters ? { ...a.counters } : undefined,
+    skillMods: a.skillMods ? Object.fromEntries(Object.entries(a.skillMods).map(([k, v]) => [k, { ...v }])) : undefined,
   };
 }
 
@@ -70,6 +72,8 @@ export function cloneSide(s: SideState): SideState {
     wishChargesLeft: s.wishChargesLeft,
     wishCooldown: s.wishCooldown,
     leaderUsed: s.leaderUsed,
+    counters: s.counters ? { ...s.counters } : undefined,
+    lastTurn: s.lastTurn ? { ...s.lastTurn } : undefined,
   };
 }
 

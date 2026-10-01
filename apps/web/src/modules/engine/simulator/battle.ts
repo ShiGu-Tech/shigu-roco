@@ -204,6 +204,20 @@ export class Simulator {
     this.decay(st, touched);
     events.push(...this.handleFaints(st));
 
+    // 记忆域：记录本回合双方动作，供「若上回合…」类条件（下一个回合读取）。
+    for (const side of SIDES) {
+      const action = actions[side];
+      const s = this.sideState(st, side);
+      if (action.kind === "skill" && action.skillId) {
+        const used = getSkill(this.bundle, action.skillId);
+        s.lastTurn = { skillId: action.skillId, category: toStr(used.category), actionType: toStr(used.actionType), element: toStr(used.element) };
+      } else if (action.kind === "energy") {
+        s.lastTurn = { actionType: "Energy" };
+      } else {
+        s.lastTurn = { switched: true };
+      }
+    }
+
     st.turn += 1;
     return { state: st, events, phaseLogs: logs };
   }
@@ -360,7 +374,8 @@ export class Simulator {
   ): BattleEvent[] {
     const skill = action.skillId ? getSkill(this.bundle, action.skillId) : {};
     const caster = this.sideState(st, side).active;
-    caster.energy = Math.max(0, caster.energy - Math.floor(toNum(skill.cost, 0)));
+    const costDelta = toNum(action.skillId ? caster.skillMods?.[action.skillId]?.cost : 0, 0);
+    caster.energy = Math.max(0, caster.energy - Math.max(0, Math.floor(toNum(skill.cost, 0) + costDelta)));
     const cooldown = Math.max(0, Math.floor(toNum(skill.cooldown, 0)));
     if (action.skillId && cooldown > 0) {
       caster.cooldowns ??= {};
