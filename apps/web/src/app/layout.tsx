@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Toaster } from "sonner";
 
+import { AppShell } from "@/components/app-shell";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -12,8 +14,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh-CN">
       <body className="min-h-screen antialiased">
-        {children}
-        <Toaster position="top-center" richColors />
+        <AppShell>{children}</AppShell>
+        <Toaster position="top-right" richColors />
       </body>
     </html>
   );

@@ -21,7 +21,7 @@ function DialogContent({
       <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-overlay" />
       <DialogPrimitive.Content
         className={cn(
-          "fixed left-1/2 top-1/2 z-50 flex max-h-[90vh] w-[calc(100vw-1.5rem)] max-w-[960px] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-xl border bg-card shadow-lift focus:outline-none",
+          "fixed left-1/2 top-1/2 z-50 flex max-h-[90vh] w-[calc(100vw-1.5rem)] max-w-[960px] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-md border bg-card shadow-lift focus:outline-none",
           className,
         )}
         {...props}

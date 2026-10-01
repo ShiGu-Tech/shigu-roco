@@ -5,9 +5,9 @@ import Link from "next/link";
 import { toast } from "sonner";
 
 import { ElementBadge } from "@/components/element-icon";
+import { Panel } from "@/components/panel";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { forcedSwitch, getCatalog, recommend, requestLeader, simulateTurn } from "@/modules/battle/client";
 import { loadOpponentLibrary } from "@/modules/battle/storage";
@@ -72,11 +72,8 @@ function FaintPicker({
 }) {
   const color = tone === "player" ? PLAYER_COLOR : ENEMY_COLOR;
   return (
-    <Card className="border-destructive/60">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-base text-destructive">{title}阵亡 · 选择上场精灵</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-2">
+    <Panel title={<span className="text-destructive">{title}阵亡 · 选择上场精灵</span>} className="border-destructive/50">
+      <div className="space-y-2">
         {bench
           .filter((b) => b.hp > 0)
           .map((b) => {
@@ -88,26 +85,26 @@ function FaintPicker({
                 type="button"
                 disabled={busy}
                 onClick={() => onPick(b.spriteId)}
-                className="flex w-full items-center justify-between gap-2 rounded-md border p-2 text-left hover:bg-accent disabled:opacity-60"
+                className="flex w-full items-center justify-between gap-2 rounded-sm border p-2 text-left transition-colors hover:bg-accent disabled:opacity-60"
               >
                 <span className="flex min-w-0 flex-wrap items-center gap-2">
-                  <SpriteImage sprite={sp} size="sm" className="h-11 w-11 rounded-lg" />
-                  <span className="text-sm font-medium">{sp?.name ?? b.spriteId}</span>
+                  <SpriteImage sprite={sp} size="sm" className="h-9 w-9 rounded-sm" />
+                  <span className="text-[13px] font-medium">{sp?.name ?? b.spriteId}</span>
                   {sp?.elements.map((el) => (
                     <ElementBadge key={el} catalog={catalog} element={el} />
                   ))}
-                  <span className="text-xs text-muted-foreground">
+                  <span className="tnum text-[12px] text-muted-foreground">
                     HP {b.hp}/{b.maxHp} · 能量 {b.energy}
                   </span>
                 </span>
-                <span className="shrink-0 text-sm font-semibold tabular-nums" style={{ color }}>
+                <span className="tnum shrink-0 text-[13px] font-semibold" style={{ color }}>
                   {wr === undefined ? "—" : `${(wr * 100).toFixed(1)}%`}
                 </span>
               </button>
             );
           })}
-      </CardContent>
-    </Card>
+      </div>
+    </Panel>
   );
 }
 
@@ -292,35 +289,31 @@ export function BattleBoard() {
 
   if (error) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-destructive">引擎未就绪</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm">
+      <Panel title="引擎未就绪">
+        <div className="space-y-2 text-[13px]">
           <p>{error}</p>
           <p className="text-muted-foreground">
-            请启动前端：<code className="rounded bg-muted px-1">pwsh scripts/dev.ps1</code>（内置 TS 引擎，127.0.0.1:26900）。
+            请启动前端：<code className="rounded-sm bg-muted px-1 font-mono">pwsh scripts/dev.ps1</code>（内置 TS 引擎，127.0.0.1:26900）。
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </Panel>
     );
   }
 
   if (!catalog) {
-    return <p className="text-sm text-muted-foreground">正在加载引擎数据…</p>;
+    return <p className="text-[13px] text-muted-foreground">正在加载引擎数据…</p>;
   }
 
   if (phase === "setup" || !state) {
     return (
-      <div className="space-y-5">
-        <div className="rounded-lg border border-dashed bg-card/70 p-4 text-sm text-muted-foreground">
-          <span className="font-medium text-foreground">先配置双方阵容</span>，首位精灵将作为首发、双方各上场一只。
-          每队最多 6 只。PvP 模式下我方录入资质 / 技能，对方只登记精灵。
+      <div className="space-y-3">
+        <div className="rounded-md border border-dashed p-3 text-[13px] text-muted-foreground">
+          <span className="font-medium text-foreground">先配置双方阵容</span>，首位精灵作为首发、双方各上场一只；每队最多 6 只。PvP 模式下我方录入资质 / 技能，对方只登记精灵。
         </div>
-        <Card>
-          <CardContent className="flex flex-col gap-3 py-3 text-sm min-[520px]:flex-row min-[520px]:items-center min-[520px]:justify-between">
-            <div className="space-y-1">
-              <div className="font-medium text-foreground">对战模式</div>
+        <Panel>
+          <div className="flex flex-col gap-3 text-[13px] min-[520px]:flex-row min-[520px]:items-center min-[520px]:justify-between">
+            <div className="space-y-0.5">
+              <div className="font-medium">对战模式</div>
               <p className="text-muted-foreground">
                 {mode === "pvp"
                   ? "PvP：我方资质 / 技能已知；对方只知道精灵，资质 / 性格 / 技能未知（按中性 5★·60 级估算）。"
@@ -328,49 +321,22 @@ export function BattleBoard() {
               </p>
             </div>
             <div className="flex shrink-0 gap-2">
-              <Button
-                type="button"
-                size="sm"
-                variant={mode === "pvp" ? "default" : "outline"}
-                onClick={() => setMode("pvp")}
-              >
+              <Button type="button" size="sm" variant={mode === "pvp" ? "default" : "outline"} onClick={() => setMode("pvp")}>
                 PvP
               </Button>
-              <Button
-                type="button"
-                size="sm"
-                variant={mode === "sandbox" ? "default" : "outline"}
-                onClick={() => setMode("sandbox")}
-              >
+              <Button type="button" size="sm" variant={mode === "sandbox" ? "default" : "outline"} onClick={() => setMode("sandbox")}>
                 沙盒
               </Button>
             </div>
-          </CardContent>
-        </Card>
-        <div className="grid gap-4 min-[860px]:grid-cols-2">
-          <TeamEditor
-            title="我方队伍"
-            scope="player"
-            entries={playerTeam}
-            catalog={catalog}
-            editable={mode === "pvp"}
-            onChange={setPlayerTeam}
-          />
-          <TeamEditor
-            title="敌方队伍（对方）"
-            scope="enemy"
-            entries={enemyTeam}
-            catalog={catalog}
-            editable={false}
-            skillsUnknown
-            onChange={setEnemyTeam}
-          />
+          </div>
+        </Panel>
+        <div className="grid gap-3 min-[860px]:grid-cols-2">
+          <TeamEditor title="我方队伍" scope="player" entries={playerTeam} catalog={catalog} editable={mode === "pvp"} onChange={setPlayerTeam} />
+          <TeamEditor title="敌方队伍（对方）" scope="enemy" entries={enemyTeam} catalog={catalog} editable={false} skillsUnknown onChange={setEnemyTeam} />
         </div>
-        <div className="flex flex-col gap-3 min-[520px]:flex-row min-[520px]:items-center">
-          <Button className="w-full min-[520px]:w-auto" type="button" onClick={start} disabled={busy}>
-            {busy ? "准备中…" : "开始对战"}
-          </Button>
-        </div>
+        <Button type="button" onClick={start} disabled={busy}>
+          {busy ? "准备中…" : "开始对战"}
+        </Button>
       </div>
     );
   }
@@ -387,28 +353,18 @@ export function BattleBoard() {
       : null;
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col gap-3 rounded-xl border bg-card p-3 shadow-soft min-[520px]:flex-row min-[520px]:items-center">
-        <Badge variant={mode === "pvp" ? "default" : "outline"}>{mode === "pvp" ? "PvP" : "沙盒"}</Badge>
-        <Badge variant="outline">第 {state?.turn ?? 1} 回合</Badge>
-        <Badge variant="outline">
-          {state?.weather ? `天气 ${state.weather.id}（${state.weather.turnsLeft}）` : "无天气"}
-        </Badge>
-        {rec && (
-          <Badge variant="outline">
-            推演 {rec.meta.iterations} 次 / {rec.meta.elapsedMs}ms
-          </Badge>
-        )}
-        {busy && <Badge variant="secondary">重算中…</Badge>}
+    <div className="space-y-3">
+      <div className="flex flex-col gap-2 rounded-md border bg-card p-2 min-[520px]:flex-row min-[520px]:items-center">
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge variant={mode === "pvp" ? "default" : "outline"}>{mode === "pvp" ? "PvP" : "沙盒"}</Badge>
+          <Badge variant="outline" className="tnum">第 {state?.turn ?? 1} 回合</Badge>
+          <Badge variant="outline">{state?.weather ? `天气 ${state.weather.id}（${state.weather.turnsLeft}）` : "无天气"}</Badge>
+          {rec && <Badge variant="outline" className="tnum">推演 {rec.meta.iterations} 次 / {rec.meta.elapsedMs}ms</Badge>}
+          {busy && <Badge variant="secondary">重算中…</Badge>}
+        </div>
         <div className="flex flex-wrap items-center gap-2 min-[520px]:ml-auto">
           {(Object.keys(PRESETS) as PresetKey[]).map((k) => (
-            <Button
-              key={k}
-              type="button"
-              size="sm"
-              variant={preset === k ? "default" : "outline"}
-              onClick={() => setPreset(k)}
-            >
+            <Button key={k} type="button" size="sm" variant={preset === k ? "default" : "outline"} onClick={() => setPreset(k)}>
               {PRESETS[k].label}
             </Button>
           ))}
@@ -422,34 +378,22 @@ export function BattleBoard() {
       </div>
 
       {terminal?.ended && (
-        <Card className="border-primary">
-          <CardContent className="py-3 text-sm font-medium">
-            对局结束：{terminal.winner === "player" ? "我方" : "敌方"}胜 · {terminal.reason}
-          </CardContent>
-        </Card>
+        <div className="rounded-md border border-primary/50 bg-primary/5 px-3 py-2 text-[13px] font-medium">
+          对局结束：{terminal.winner === "player" ? "我方" : "敌方"}胜 · {terminal.reason}
+        </div>
       )}
 
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base">胜率走势</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <TrendChart history={history} />
-        </CardContent>
-      </Card>
+      <Panel title="胜率走势">
+        <TrendChart history={history} />
+      </Panel>
 
-      <div className="grid gap-4 min-[860px]:grid-cols-2">
-        <div className="space-y-3 rounded-lg border-l-4 pl-3" style={{ borderLeftColor: PLAYER_COLOR }}>
+      <div className="grid gap-3 min-[860px]:grid-cols-2">
+        <div className="space-y-3">
           <SpriteCard title="我方场上" side={state.player} tone="player" catalog={catalog} />
           {playerPanel && (
-            <Card>
-              <CardHeader className="pb-0">
-                <CardTitle className="text-sm">我方面板</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-1">
-                <StatRadar panel={playerPanel} className="h-[220px] w-full" />
-              </CardContent>
-            </Card>
+            <Panel title="我方面板">
+              <StatRadar panel={playerPanel} className="h-[220px] w-full" />
+            </Panel>
           )}
           {playerFainted ? (
             <FaintPicker
@@ -462,18 +406,13 @@ export function BattleBoard() {
               onPick={(id) => applyForcedSwitch("player", id)}
             />
           ) : (
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center justify-between text-base">
-                <span>我方动作</span>
-                <span className="text-xs font-normal text-muted-foreground">
-                  {pendingP ? `已选：${pendingP.label}` : "待选"}
-                </span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
+          <Panel
+            title="我方动作"
+            actions={<span className="text-[12px] font-normal text-muted-foreground">{pendingP ? `已选：${pendingP.label}` : "待选"}</span>}
+          >
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">技能（2×2，点技能即使用；右上「换」改技能）</span>
+                <span className="text-[12px] text-muted-foreground">技能（2×2，点技能即使用；右上「换」改技能）</span>
                 {spriteOf(catalog, state.player.active.spriteId)?.leaderAllowed && !state.player.leaderUsed ? (
                   <Button
                     type="button"
@@ -507,12 +446,12 @@ export function BattleBoard() {
                 disabled={busy || anyFaint || Boolean(terminal?.ended)}
                 onUse={choosePlayer}
               />
-            </CardContent>
-          </Card>
+            </div>
+          </Panel>
           )}
         </div>
 
-        <div className="space-y-3 rounded-lg border-l-4 pl-3" style={{ borderLeftColor: ENEMY_COLOR }}>
+        <div className="space-y-3">
           <SpriteCard
             title="敌方场上"
             side={state.enemy}
@@ -531,18 +470,13 @@ export function BattleBoard() {
               onPick={(id) => applyForcedSwitch("enemy", id)}
             />
           ) : (
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center justify-between text-base">
-                <span>敌方动作</span>
-                <span className="text-xs font-normal text-muted-foreground">
-                  {pendingE ? `已选：${pendingE.label}` : "待选"}
-                </span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
+          <Panel
+            title="敌方动作"
+            actions={<span className="text-[12px] font-normal text-muted-foreground">{pendingE ? `已选：${pendingE.label}` : "待选"}</span>}
+          >
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">
+                <span className="text-[12px] text-muted-foreground">
                   {mode === "pvp"
                     ? "对方技能未知 → 用右上「换」记录它这回合实际用的技能"
                     : "技能（2×2，点技能即使用；右上「换」改技能）"}
@@ -580,8 +514,8 @@ export function BattleBoard() {
                 disabled={busy || anyFaint || Boolean(terminal?.ended)}
                 onUse={chooseEnemy}
               />
-            </CardContent>
-          </Card>
+            </div>
+          </Panel>
           )}
         </div>
       </div>
@@ -603,20 +537,17 @@ export function BattleBoard() {
         <span className="text-xs text-muted-foreground">双方各选一个动作后自动结算并重算胜率。</span>
       </div>
 
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base">回合日志</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-1 text-xs">
-          {log.length === 0 && <p className="text-muted-foreground">暂无事件。</p>}
+      <Panel title="回合日志" bodyClassName="p-0">
+        <div className="max-h-[300px] overflow-y-auto">
+          {log.length === 0 && <p className="px-3 py-2 text-[12px] text-muted-foreground">暂无事件。</p>}
           {log.map((e, i) => (
-            <p key={i} className={e.side === "enemy" ? "text-muted-foreground" : ""}>
-              <span className="mr-1 font-mono text-[10px] text-muted-foreground">[{e.type}]</span>
-              {e.text}
-            </p>
+            <div key={i} className="flex gap-2 border-b px-3 py-1.5 text-[12px] last:border-0">
+              <span className="shrink-0 font-mono text-[10px] text-muted-foreground">{e.type}</span>
+              <span className={e.side === "enemy" ? "text-muted-foreground" : ""}>{e.text}</span>
+            </div>
           ))}
-        </CardContent>
-      </Card>
+        </div>
+      </Panel>
 
     </div>
   );

@@ -1,10 +1,8 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:is(.dark *));
-
 @theme inline {
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
-  --font-display: "Georgia", "Times New Roman", "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", serif;
+  --font-mono: ui-monospace, "SFMono-Regular", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
   --default-font-family: var(--font-sans);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -23,6 +21,8 @@
   --color-destructive: var(--destructive);
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
   --color-star: var(--star);
   --color-border: var(--border);
   --color-input: var(--input);
@@ -33,89 +33,50 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --shadow-soft: 0 1px 2px var(--shadow-tint-soft), 0 14px 34px -20px var(--shadow-tint);
-  --shadow-lift: 0 2px 6px var(--shadow-tint-soft), 0 24px 48px -24px var(--shadow-tint);
-  --shadow-glow: 0 0 0 4px var(--glow);
+  --radius-sm: calc(var(--radius) * 0.75);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) * 1.5);
+  --radius-xl: calc(var(--radius) * 2);
+  --shadow-soft: 0 1px 2px var(--shadow-tint-soft), 0 1px 3px var(--shadow-tint-soft);
+  --shadow-lift: 0 4px 12px -4px var(--shadow-tint);
+  --shadow-glow: 0 0 0 3px var(--glow);
 }
 
-/* 轻微童话风：暖奶油书页底 + 柔和紫粉主色 + 薄荷/蜂蜜点缀 */
+/* 浅蓝工具风：浅蓝底 + 白面 + 蓝色强调（仅浅色） */
 :root {
-  --background: oklch(0.982 0.014 88);
-  --foreground: oklch(0.33 0.042 300);
-  --card: oklch(0.997 0.006 92);
-  --card-foreground: oklch(0.33 0.042 300);
-  --popover: oklch(0.997 0.006 92);
-  --popover-foreground: oklch(0.33 0.042 300);
-  --primary: oklch(0.58 0.155 320);
-  --primary-foreground: oklch(0.99 0.012 320);
-  --secondary: oklch(0.955 0.035 178);
-  --secondary-foreground: oklch(0.36 0.055 190);
-  --muted: oklch(0.962 0.014 92);
-  --muted-foreground: oklch(0.54 0.036 300);
-  --accent: oklch(0.945 0.042 305);
-  --accent-foreground: oklch(0.35 0.062 305);
-  --destructive: oklch(0.6 0.185 22);
-  --border: oklch(0.918 0.024 315);
-  --input: oklch(0.918 0.024 315);
-  --ring: oklch(0.66 0.13 320);
-  --chart-1: oklch(0.62 0.16 320);
-  --chart-2: oklch(0.66 0.13 218);
-  --chart-3: oklch(0.72 0.13 168);
-  --chart-4: oklch(0.76 0.13 78);
-  --chart-5: oklch(0.66 0.17 22);
-  --radius: 0.9rem;
-  --success: oklch(0.58 0.13 168);
-  --success-soft: oklch(0.955 0.036 168);
-  --star: oklch(0.8 0.15 85);
-  --overlay: oklch(0.33 0.042 300 / 42%);
-  --shadow-tint: oklch(0.5 0.09 305 / 0.22);
-  --shadow-tint-soft: oklch(0.5 0.09 305 / 0.07);
-  --glow: oklch(0.86 0.09 320 / 0.4);
-  --ribbon: linear-gradient(100deg, var(--primary), var(--chart-2) 55%, var(--chart-3));
-  --aurora-1: oklch(0.9 0.06 330 / 0.55);
-  --aurora-2: oklch(0.91 0.06 220 / 0.5);
-  --aurora-3: oklch(0.93 0.06 160 / 0.45);
-}
-
-/* 梦夜童话：深靛蓝底 + 提亮的糖果色 */
-.dark {
-  --background: oklch(0.2 0.032 286);
-  --foreground: oklch(0.97 0.012 300);
-  --card: oklch(0.25 0.036 288);
-  --card-foreground: oklch(0.97 0.012 300);
-  --popover: oklch(0.25 0.036 288);
-  --popover-foreground: oklch(0.97 0.012 300);
-  --primary: oklch(0.76 0.13 320);
-  --primary-foreground: oklch(0.22 0.04 300);
-  --secondary: oklch(0.32 0.04 285);
-  --secondary-foreground: oklch(0.95 0.012 300);
-  --muted: oklch(0.29 0.032 286);
-  --muted-foreground: oklch(0.76 0.032 300);
-  --accent: oklch(0.34 0.05 305);
-  --accent-foreground: oklch(0.96 0.012 300);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.76 0.13 320);
-  --destructive: oklch(0.68 0.17 22);
-  --chart-1: oklch(0.76 0.13 320);
-  --chart-2: oklch(0.74 0.12 218);
-  --chart-3: oklch(0.78 0.12 168);
-  --chart-4: oklch(0.82 0.12 78);
-  --chart-5: oklch(0.74 0.15 22);
-  --success: oklch(0.76 0.12 168);
-  --success-soft: oklch(0.32 0.05 168);
-  --star: oklch(0.85 0.14 88);
-  --overlay: oklch(0.14 0.024 286 / 68%);
-  --shadow-tint: oklch(0.08 0.02 286 / 0.6);
-  --shadow-tint-soft: oklch(0.08 0.02 286 / 0.4);
-  --glow: oklch(0.76 0.13 320 / 0.25);
-  --aurora-1: oklch(0.45 0.1 330 / 0.4);
-  --aurora-2: oklch(0.45 0.1 220 / 0.35);
-  --aurora-3: oklch(0.45 0.09 160 / 0.3);
+  --background: oklch(0.972 0.012 240);
+  --foreground: oklch(0.30 0.035 250);
+  --card: oklch(0.995 0.004 240);
+  --card-foreground: oklch(0.30 0.035 250);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.30 0.035 250);
+  --primary: oklch(0.55 0.16 255);
+  --primary-foreground: oklch(0.99 0.008 255);
+  --secondary: oklch(0.94 0.025 240);
+  --secondary-foreground: oklch(0.34 0.05 255);
+  --muted: oklch(0.955 0.014 240);
+  --muted-foreground: oklch(0.52 0.03 250);
+  --accent: oklch(0.93 0.035 245);
+  --accent-foreground: oklch(0.34 0.06 255);
+  --destructive: oklch(0.58 0.19 25);
+  --success: oklch(0.60 0.13 165);
+  --success-soft: oklch(0.95 0.04 165);
+  --warning: oklch(0.70 0.14 75);
+  --info: oklch(0.60 0.13 240);
+  --star: oklch(0.80 0.14 85);
+  --border: oklch(0.902 0.02 245);
+  --input: oklch(0.902 0.02 245);
+  --ring: oklch(0.62 0.14 255);
+  --overlay: oklch(0.35 0.04 250 / 42%);
+  --chart-1: oklch(0.58 0.15 255);
+  --chart-2: oklch(0.62 0.13 220);
+  --chart-3: oklch(0.66 0.13 168);
+  --chart-4: oklch(0.74 0.13 78);
+  --chart-5: oklch(0.62 0.17 25);
+  --radius: 0.375rem;
+  --shadow-tint: oklch(0.4 0.05 250 / 0.14);
+  --shadow-tint-soft: oklch(0.4 0.05 250 / 0.06);
+  --glow: oklch(0.62 0.14 255 / 0.35);
 }
 
 @layer base {
@@ -126,7 +87,10 @@
     @apply bg-background text-foreground;
     min-width: 320px;
   }
-  button, select, a, [role="button"] {
+  button,
+  select,
+  a,
+  [role="button"] {
     -webkit-tap-highlight-color: transparent;
   }
   ::selection {
@@ -134,47 +98,9 @@
   }
 }
 
-/* 顶部柔和极光，替代原先的网格纹理 */
-.app-shell {
-  position: relative;
-}
-
-.app-shell::before {
-  position: absolute;
-  inset: 0 0 auto;
-  height: 280px;
-  z-index: -1;
-  content: "";
-  background: radial-gradient(60% 100% at 12% 0%, var(--aurora-1), transparent 70%),
-    radial-gradient(48% 88% at 52% 0%, var(--aurora-3), transparent 72%),
-    radial-gradient(58% 100% at 88% 0%, var(--aurora-2), transparent 68%);
-  mask-image: linear-gradient(180deg, #000 42%, transparent);
-  pointer-events: none;
-}
-
-.eyebrow {
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: var(--primary);
-}
-
-/* 书页标题：衬线字体 + 底部糖果色丝带 */
-.story-title {
-  font-family: var(--font-display);
-  letter-spacing: 0.01em;
-}
-
-.story-title::after {
-  display: block;
-  width: 5.5rem;
-  height: 0.35rem;
-  margin-top: 0.4rem;
-  border-radius: 9999px;
-  background-image: var(--ribbon);
-  opacity: 0.9;
-  content: "";
+/* 数值等宽对齐（面板 / 概率 / 层数 / 冷却） */
+.tnum {
+  font-variant-numeric: tabular-nums;
 }
 
 @keyframes hp-delta {

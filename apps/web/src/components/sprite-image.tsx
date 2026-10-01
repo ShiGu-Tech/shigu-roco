@@ -13,7 +13,7 @@ export function SpriteImage({
   const dimensions = size === "sm" ? "h-10 w-10" : size === "lg" ? "h-24 w-24" : "h-16 w-16";
 
   return (
-    <span className={`relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-xl border bg-muted/50 ${dimensions} ${className}`}>
+    <span className={`relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-md border bg-muted/50 ${dimensions} ${className}`}>
       {src ? (
         // The catalog can contain URLs from different registered snapshots; plain img keeps all of them renderable.
         // eslint-disable-next-line @next/next/no-img-element

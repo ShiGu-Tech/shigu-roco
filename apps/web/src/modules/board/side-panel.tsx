@@ -9,7 +9,6 @@ import { SpriteImage } from "@/components/sprite-image";
 import { SkillSlotDialog } from "@/components/skill-slot-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
 import type { ActiveSpriteState, Catalog, RecommendResult, SideState } from "@/modules/battle/types";
@@ -93,37 +92,37 @@ export function SpriteCard({
   const maxMagic = Number((catalog.rules as { magicMax?: number }).magicMax ?? 4);
 
   return (
-    <Card>
-      <CardContent className="space-y-3 pt-4">
+    <section className="rounded-md border bg-card p-3">
+      <div className="space-y-3">
         <MagicHearts magic={side.magic} max={maxMagic} tone={tone} />
-        <div className="flex flex-wrap items-center gap-2 rounded-lg bg-muted/45 p-2">
-          {sprite ? <SpriteImage sprite={sprite} size="sm" className="h-10 w-10 rounded-lg" /> : null}
-          <span className="text-sm font-medium" style={{ color: toneColor(tone) }}>
+        <div className="flex flex-wrap items-center gap-2 rounded-sm bg-muted/45 p-2">
+          {sprite ? <SpriteImage sprite={sprite} size="sm" className="h-10 w-10 rounded-sm" /> : null}
+          <span className="text-[13px] font-medium" style={{ color: toneColor(tone) }}>
             {title}
           </span>
-          <span className="text-sm font-medium">{sprite?.name ?? side.active.spriteId ?? "—"}</span>
+          <span className="text-[13px] font-medium">{sprite?.name ?? side.active.spriteId ?? "—"}</span>
           {sprite?.elements.map((el) => (
             <ElementBadge key={el} catalog={catalog} element={el} />
           ))}
-          {subtitle && <span className="text-xs text-muted-foreground">{subtitle}</span>}
+          {subtitle && <span className="text-[12px] text-muted-foreground">{subtitle}</span>}
         </div>
         <HpBar active={side.active} />
-        <div className="flex flex-wrap items-center gap-2 text-xs">
-          <Badge variant="outline">
+        <div className="flex flex-wrap items-center gap-1.5 text-[12px]">
+          <Badge variant="outline" className="tnum">
             能量 {side.active.energy}/{energyMax}
           </Badge>
-          {side.wishChargesLeft > 0 && <Badge variant="outline">愿力 {side.wishChargesLeft}</Badge>}
-          {side.wishCooldown > 0 && <Badge variant="secondary">愿力CD {side.wishCooldown}</Badge>}
+          {side.wishChargesLeft > 0 && <Badge variant="outline" className="tnum">愿力 {side.wishChargesLeft}</Badge>}
+          {side.wishCooldown > 0 && <Badge variant="secondary" className="tnum">愿力CD {side.wishCooldown}</Badge>}
           {Object.entries(side.active.marks)
             .filter(([, n]) => n > 0)
             .map(([id, n]) => (
-              <Badge key={id} variant="secondary">
-                {id} × {n}
+              <Badge key={id} variant="secondary" className="tnum">
+                {catalog.marks.find((m) => m.id === id)?.nameZh ?? id} × {n}
               </Badge>
             ))}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 
@@ -163,8 +162,8 @@ function SkillTile({
   return (
     <div
       className={[
-        "relative min-w-0 rounded-lg border bg-card p-2 transition-all",
-        selected ? "border-primary bg-accent shadow-soft" : "border-border hover:border-primary/40 hover:bg-accent/40",
+        "relative min-w-0 rounded-md border bg-card p-2 transition-colors",
+        selected ? "border-primary bg-accent" : "border-border hover:border-primary/40 hover:bg-accent/40",
         !sk ? "border-dashed" : "",
       ].join(" ")}
     >

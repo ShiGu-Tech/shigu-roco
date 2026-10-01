@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { PageHeader } from "@/components/page-header";
 import { PetConfigDialog } from "@/components/pet-config-dialog";
 import { PetSelector } from "@/components/pet-selector";
 import { SpriteImage } from "@/components/sprite-image";
@@ -225,23 +225,12 @@ export function Warehouse() {
   };
 
   return (
-    <div className="space-y-5">
-      <header className="flex flex-col gap-4 min-[520px]:flex-row min-[520px]:items-end min-[520px]:justify-between">
-        <div className="space-y-2">
-          <div className="eyebrow">Pet instances · bound to catalog</div>
-          <h1 className="text-2xl font-bold tracking-tight min-[520px]:text-3xl">精灵仓库</h1>
-          <p className="max-w-2xl text-sm text-muted-foreground">
-            手动登记的精灵：绑定图鉴模板（外键），面板与技能数值运行时现算，图鉴换版自动跟随。
-          </p>
-        </div>
-        <Link href="/" className="shrink-0 text-sm text-primary underline-offset-4 hover:underline">
-          返回对战台
-        </Link>
-      </header>
+    <div className="space-y-3">
+      <PageHeader title="精灵仓库" description="手动登记的精灵：绑定图鉴模板（外键），面板与技能数值运行时现算，图鉴换版自动跟随。" />
 
       <div className="flex flex-wrap items-center gap-2">
-        <Badge variant="outline">精灵 {pets.length}</Badge>
-        <Badge variant="outline">图鉴 {catalog.dataVersion}</Badge>
+        <Badge variant="outline" className="tnum">精灵 {pets.length}</Badge>
+        <Badge variant="outline" className="tnum">图鉴 {catalog.dataVersion}</Badge>
         <div className="flex flex-wrap gap-2 min-[520px]:ml-auto">
           <Button type="button" size="sm" onClick={() => setPickerOpen(true)}>
             新增精灵
