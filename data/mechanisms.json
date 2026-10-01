@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "updatedAt": "2026-10-01",
   "mechanisms": [
     {
@@ -4198,6 +4198,998 @@
         }
       ],
       "note": "入梦：自身冷却 +2（两回合不可用）"
+    },
+    {
+      "ownerType": "skill",
+      "trigger": "beforeAction",
+      "id": "starfall:sk-7190220",
+      "ownerId": "sk-7190220",
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 70,
+          "skillId": "sk-7190220"
+        },
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "starfall-mark",
+          "layers": 1
+        }
+      ]
+    },
+    {
+      "ownerType": "skill",
+      "trigger": "beforeAction",
+      "id": "starfall:sk-7190280",
+      "ownerId": "sk-7190280",
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "starfall-mark",
+          "layers": 4
+        }
+      ]
+    },
+    {
+      "ownerType": "skill",
+      "trigger": "beforeAction",
+      "id": "starfall:sk-7190290",
+      "ownerId": "sk-7190290",
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "starfall-mark",
+          "layers": 2
+        }
+      ]
+    },
+    {
+      "ownerType": "skill",
+      "trigger": "beforeAction",
+      "id": "starfall:sk-7190300",
+      "ownerId": "sk-7190300",
+      "note": "星链：2 连击，每次 +1 层 → 合计 +2（连击按层处理）",
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "starfall-mark",
+          "layers": 2
+        }
+      ]
+    },
+    {
+      "ownerType": "skill",
+      "trigger": "beforeAction",
+      "id": "starfall:sk-7190310",
+      "ownerId": "sk-7190310",
+      "note": "超新星馈赠：基础 +2 层；「每使用 1 次永久 +1」待校准",
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "starfall-mark",
+          "layers": 2
+        }
+      ]
+    },
+    {
+      "ownerType": "skill",
+      "trigger": "beforeAction",
+      "id": "starfall:sk-7190270",
+      "ownerId": "sk-7190270",
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 65,
+          "skillId": "sk-7190270"
+        }
+      ]
+    },
+    {
+      "ownerType": "skill",
+      "trigger": "actionDeclared",
+      "id": "starfall:sk-7190270:counter",
+      "ownerId": "sk-7190270",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7190270"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Status"
+            }
+          ]
+        }
+      ],
+      "note": "错乱：应对状态 → 敌方 +3 层星陨印记",
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "starfall-mark",
+          "layers": 3
+        }
+      ]
+    },
+    {
+      "ownerType": "skill",
+      "trigger": "beforeAction",
+      "id": "starfall:sk-7190330",
+      "ownerId": "sk-7190330",
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "starfall-mark",
+          "layers": 3
+        }
+      ]
+    },
+    {
+      "ownerType": "skill",
+      "trigger": "actionDeclared",
+      "id": "starfall:sk-7190330:counter",
+      "ownerId": "sk-7190330",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7190330"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Defense"
+            }
+          ]
+        }
+      ],
+      "note": "二律背反：应对防御 → 敌方星陨印记翻倍（≈再 +3）",
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "starfall-mark",
+          "layers": 3
+        }
+      ]
+    },
+    {
+      "ownerType": "skill",
+      "trigger": "beforeAction",
+      "id": "starfall:sk-7190400",
+      "ownerId": "sk-7190400",
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "meditative-shield",
+          "layers": 1
+        }
+      ]
+    },
+    {
+      "ownerType": "skill",
+      "trigger": "actionDeclared",
+      "id": "starfall:sk-7190400:counter",
+      "ownerId": "sk-7190400",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7190400"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "note": "冥想：应对攻击 → 敌方 +2 层星陨印记",
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "starfall-mark",
+          "layers": 2
+        }
+      ]
+    },
+    {
+      "ownerType": "skill",
+      "trigger": "beforeDamage",
+      "id": "starfall:sk-7190400:reduce",
+      "ownerId": "sk-7190400",
+      "when": [
+        {
+          "path": "target.active.statuses.meditative-shield",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "note": "冥想：本回合承伤 -80%",
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 80
+        }
+      ]
+    },
+    {
+      "ownerType": "skill",
+      "trigger": "beforeAction",
+      "id": "starfall:sk-7190520",
+      "ownerId": "sk-7190520",
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "gravity-shield",
+          "layers": 1
+        }
+      ]
+    },
+    {
+      "ownerType": "skill",
+      "trigger": "beforeDamage",
+      "id": "starfall:sk-7190520:reduce",
+      "ownerId": "sk-7190520",
+      "when": [
+        {
+          "path": "target.active.statuses.gravity-shield",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "note": "引力偏转：本回合承伤 -80%",
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 80
+        }
+      ]
+    },
+    {
+      "ownerType": "skill",
+      "trigger": "actionDeclared",
+      "id": "starfall:sk-7190520:counter",
+      "ownerId": "sk-7190520",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7190520"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "conditional",
+          "reason": "引力偏转：应对攻击时以魔法伤害触发星陨（待接入）"
+        }
+      ]
+    },
+    {
+      "ownerType": "skill",
+      "trigger": "beforeAction",
+      "id": "starfall:sk-7190500",
+      "ownerId": "sk-7190500",
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 75,
+          "skillId": "sk-7190500"
+        }
+      ]
+    },
+    {
+      "ownerType": "skill",
+      "trigger": "beforeAction",
+      "id": "starfall:sk-7190500:noMark",
+      "ownerId": "sk-7190500",
+      "note": "量子涨落：无星陨印记时 → 敌方 +3 层",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7190500"
+            },
+            {
+              "not": {
+                "path": "target.active.marks.starfall-mark",
+                "op": "gte",
+                "value": 1
+              }
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "starfall-mark",
+          "layers": 3
+        }
+      ]
+    },
+    {
+      "ownerType": "skill",
+      "trigger": "beforeAction",
+      "id": "starfall:sk-7190260",
+      "ownerId": "sk-7190260",
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 15,
+          "skillId": "sk-7190260"
+        }
+      ]
+    },
+    {
+      "ownerType": "skill",
+      "trigger": "beforeDamage",
+      "id": "starfall:sk-7190260:hits",
+      "ownerId": "sk-7190260",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7190260"
+        }
+      ],
+      "note": "多维击打：连击数 = 1 + 敌方星陨印记层数",
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "markId": "starfall-mark",
+          "base": 1,
+          "perStack": 1
+        }
+      ]
+    },
+    {
+      "ownerType": "skill",
+      "trigger": "beforeAction",
+      "id": "starfall:sk-7190320",
+      "ownerId": "sk-7190320",
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "conditional",
+          "reason": "心灵洞悉：获得层数 = 敌方当前印记层数（动态层数待接入）"
+        }
+      ]
+    },
+    {
+      "ownerType": "skill",
+      "trigger": "beforeAction",
+      "id": "starfall:sk-7190510",
+      "ownerId": "sk-7190510",
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 60,
+          "skillId": "sk-7190510"
+        },
+        {
+          "type": "unsupported",
+          "effectType": "conditional",
+          "reason": "奇点：上回合双方有精灵使用水系技能则 +4 层（需记录上回合技能系别）"
+        }
+      ]
+    },
+    {
+      "ownerType": "skill",
+      "trigger": "beforeAction",
+      "id": "starfall:sk-7190490",
+      "ownerId": "sk-7190490",
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "conditional",
+          "reason": "观测者效应：换上精灵以月陨星状态登场（待接入）"
+        }
+      ]
+    },
+    {
+      "id": "derived:skill:sk-7020770",
+      "ownerType": "skill",
+      "ownerId": "sk-7020770",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020770"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "moe",
+          "layers": 1
+        }
+      ]
+    },
+    {
+      "id": "derived:skill:sk-7030260",
+      "ownerType": "skill",
+      "ownerId": "sk-7030260",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030260"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "parasite",
+          "layers": 3
+        }
+      ]
+    },
+    {
+      "id": "derived:skill:sk-7040260",
+      "ownerType": "skill",
+      "ownerId": "sk-7040260",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040260"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "burn",
+          "layers": 10
+        }
+      ]
+    },
+    {
+      "id": "derived:skill:sk-7040290",
+      "ownerType": "skill",
+      "ownerId": "sk-7040290",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040290"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "burn",
+          "layers": 10
+        }
+      ]
+    },
+    {
+      "id": "derived:skill:sk-7040380",
+      "ownerType": "skill",
+      "ownerId": "sk-7040380",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040380"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 55,
+          "skillId": "sk-7040380"
+        },
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "burn",
+          "layers": 4
+        }
+      ]
+    },
+    {
+      "id": "derived:skill:sk-7040400",
+      "ownerType": "skill",
+      "ownerId": "sk-7040400",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040400"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 75,
+          "skillId": "sk-7040400"
+        },
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "burn",
+          "layers": 6
+        }
+      ]
+    },
+    {
+      "id": "derived:skill:sk-7040500",
+      "ownerType": "skill",
+      "ownerId": "sk-7040500",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040500"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "burn",
+          "layers": 5
+        }
+      ]
+    },
+    {
+      "id": "derived:skill:sk-7040630",
+      "ownerType": "skill",
+      "ownerId": "sk-7040630",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040630"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 70,
+          "skillId": "sk-7040630"
+        },
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "burn",
+          "layers": 4
+        }
+      ]
+    },
+    {
+      "id": "derived:skill:sk-7040700",
+      "ownerType": "skill",
+      "ownerId": "sk-7040700",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040700"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "burn",
+          "layers": 8
+        }
+      ]
+    },
+    {
+      "id": "derived:skill:sk-7090110",
+      "ownerType": "skill",
+      "ownerId": "sk-7090110",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7090110"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 85,
+          "skillId": "sk-7090110"
+        },
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "freeze",
+          "layers": 1
+        }
+      ]
+    },
+    {
+      "id": "derived:skill:sk-7090160",
+      "ownerType": "skill",
+      "ownerId": "sk-7090160",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7090160"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "freeze",
+          "layers": 4
+        }
+      ]
+    },
+    {
+      "id": "derived:skill:sk-7090190",
+      "ownerType": "skill",
+      "ownerId": "sk-7090190",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7090190"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "freeze",
+          "layers": 1
+        }
+      ]
+    },
+    {
+      "id": "derived:skill:sk-7090270",
+      "ownerType": "skill",
+      "ownerId": "sk-7090270",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7090270"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 55,
+          "skillId": "sk-7090270"
+        },
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "freeze",
+          "layers": 2
+        }
+      ]
+    },
+    {
+      "id": "derived:skill:sk-7090400",
+      "ownerType": "skill",
+      "ownerId": "sk-7090400",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7090400"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "freeze",
+          "layers": 5
+        }
+      ]
+    },
+    {
+      "id": "derived:skill:sk-7090440",
+      "ownerType": "skill",
+      "ownerId": "sk-7090440",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7090440"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 95,
+          "skillId": "sk-7090440"
+        },
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "freeze",
+          "layers": 1
+        }
+      ]
+    },
+    {
+      "id": "derived:skill:sk-7110450",
+      "ownerType": "skill",
+      "ownerId": "sk-7110450",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7110450"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 75,
+          "skillId": "sk-7110450"
+        },
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "conductive-charge",
+          "layers": 1
+        }
+      ]
+    },
+    {
+      "id": "derived:skill:sk-7120060",
+      "ownerType": "skill",
+      "ownerId": "sk-7120060",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7120060"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 20,
+          "skillId": "sk-7120060"
+        },
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "poison-mark",
+          "layers": 1
+        }
+      ]
+    },
+    {
+      "id": "derived:skill:sk-7120070",
+      "ownerType": "skill",
+      "ownerId": "sk-7120070",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7120070"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 35,
+          "skillId": "sk-7120070"
+        },
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "poison-mark",
+          "layers": 2
+        }
+      ]
+    },
+    {
+      "id": "derived:skill:sk-7120090",
+      "ownerType": "skill",
+      "ownerId": "sk-7120090",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7120090"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 25,
+          "skillId": "sk-7120090"
+        },
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "poison-mark",
+          "layers": 2
+        }
+      ]
+    },
+    {
+      "id": "derived:skill:sk-7120100",
+      "ownerType": "skill",
+      "ownerId": "sk-7120100",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7120100"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 120,
+          "skillId": "sk-7120100"
+        },
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "poison-mark",
+          "layers": 1
+        }
+      ]
+    },
+    {
+      "id": "derived:skill:sk-7120120",
+      "ownerType": "skill",
+      "ownerId": "sk-7120120",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7120120"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "poison-mark",
+          "layers": 5
+        }
+      ]
+    },
+    {
+      "id": "derived:skill:sk-7120140",
+      "ownerType": "skill",
+      "ownerId": "sk-7120140",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7120140"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "poison-mark",
+          "layers": 3
+        }
+      ]
+    },
+    {
+      "id": "derived:skill:sk-7130170",
+      "ownerType": "skill",
+      "ownerId": "sk-7130170",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7130170"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "poison-mark",
+          "layers": 2
+        }
+      ]
     }
   ]
 }

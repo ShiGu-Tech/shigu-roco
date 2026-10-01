@@ -164,6 +164,18 @@ describe("skill pool commands", () => {
   });
 });
 
+describe("mark stacking", () => {
+  it("accumulates mark layers up to the stack cap", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const st = makeState(makeSide(makeActive("sp-a", { hp: 100, maxHp: 100 })), makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })));
+    const bundle: DataBundle = { ...miniBundle, marks: { "starfall-mark": { id: "starfall-mark", name: "星陨印记", maxStack: 10 } } };
+    runtime.applyStateCommands(st, [command({ type: "applyMark", target: "opponent", markId: "starfall-mark", layers: 4 })], bundle);
+    runtime.applyStateCommands(st, [command({ type: "applyMark", target: "opponent", markId: "starfall-mark", layers: 4 })], bundle);
+    runtime.applyStateCommands(st, [command({ type: "applyMark", target: "opponent", markId: "starfall-mark", layers: 4 })], bundle);
+    expect(st.enemy.active.marks["starfall-mark"]).toBe(10);
+  });
+});
+
 describe("trigger cascade", () => {
   it("dispatches statusApplied and applies cascaded effects", () => {
     const registry = new MechanismRegistry([
@@ -235,6 +247,18 @@ describe("damage modifiers (beforeDamage)", () => {
     const base = run().data.value as number;
     const event = run([{ id: "combo", ownerType: "trait", ownerId: "t", trigger: "beforeDamage", effects: [{ type: "setHits", hits: 2 }] }]);
     expect(event.data.value).toBe(base * 2);
+  });
+
+  it("setHits scales with a target mark's stacks", () => {
+    const runtime = new MechanismRuntime(
+      new MechanismRegistry([
+        { id: "multi", ownerType: "skill", ownerId: "sk-1", trigger: "beforeDamage", effects: [{ type: "setHits", target: "target", markId: "starfall-mark", base: 1, perStack: 1 }] },
+      ]),
+    );
+    const st = battle();
+    st.enemy.active.marks["starfall-mark"] = 4;
+    const [event] = runtime.applyDamageCommands(st, miniBundle, [dealDamage]);
+    expect((event.data.modifiers as Record<string, number>).hits).toBe(5);
   });
 
   it("outgoing multiply scales per-hit damage", () => {

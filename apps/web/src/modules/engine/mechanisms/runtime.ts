@@ -350,7 +350,13 @@ export class MechanismRuntime {
         if (outgoing) attackerMult *= factor;
         else defenderMult *= factor;
       } else if (d.type === "setHits") {
-        hits = Math.max(1, Math.floor(d.hits));
+        if (d.markId) {
+          const holder = targetSide === "player" ? state.player.active : state.enemy.active;
+          const stacks = toNum(holder.marks?.[d.markId], 0);
+          hits = Math.max(1, Math.floor((d.base ?? 1) + (d.perStack ?? 1) * stacks));
+        } else {
+          hits = Math.max(1, Math.floor(d.hits ?? 1));
+        }
       } else if (d.type === "setDamageReduction") {
         reduction += d.percent;
       }

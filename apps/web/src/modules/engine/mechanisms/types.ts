@@ -63,8 +63,8 @@ export type EffectSpec =
   | { type: "modifyStat"; target?: string; stat: string; mode: "flat" | "percent"; value: number; maxStages?: number }
   /** 伤害修饰：scope=outgoing 攻方输出倍率、incoming 防方承伤倍率；multiply 相乘 / add 相加（+value）。 */
   | { type: "modifyDamage"; target?: string; mode: "multiply" | "add"; value: number; scope?: "outgoing" | "incoming" }
-  /** 连击段数（覆盖默认 1）。 */
-  | { type: "setHits"; target?: string; hits: number }
+  /** 连击段数（覆盖默认 1）；给 markId 时按目标持有该印记层数动态计算 base + perStack×层数。 */
+  | { type: "setHits"; target?: string; hits?: number; markId?: string; base?: number; perStack?: number }
   /** 减伤百分比（累加后受 rules.combat.damageReductionCap 限制）。 */
   | { type: "setDamageReduction"; target?: string; percent: number }
   /** 冷却：scope=defense 作用于全部防御技能；skillIdFrom 从上下文取目标技能（如 event.opponentAction.skillId）。 */
