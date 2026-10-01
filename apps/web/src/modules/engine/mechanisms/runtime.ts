@@ -5,6 +5,7 @@ import { recordSkillOverride } from "../state";
 import type { BattleState, DataBundle, Side } from "../types";
 import { asDict, toArray, toNum } from "../types";
 import { ActionQueue } from "./action-queue";
+import { resolveContextPath } from "./conditions";
 import { MechanismRegistry } from "./registry";
 import type { EffectCommand, EffectDefinition, MechanismContext, MechanismEvent } from "./types";
 
@@ -73,6 +74,34 @@ export class MechanismRuntime {
     return out;
   }
 
+  /** 某侧某印记的存储（sprite/team）与是否团队印记。 */
+  private markStore(state: BattleState, bundle: DataBundle | undefined, side: Side, markId: string, scope?: "sprite" | "team"): { store: Record<string, number>; isTeam: boolean } {
+    const markDef = bundle?.marks[markId];
+    const isTeam = scope === "team" || (!scope && (markDef?.carrier === "field" || markDef?.carrier === "team"));
+    const s = side === "player" ? state.player : state.enemy;
+    return { store: isTeam ? s.teamMarks : s.active.marks, isTeam };
+  }
+
+  /** 某侧持有的全部印记 id（含精灵与团队两处）。 */
+  private allMarkIds(state: BattleState, side: Side): string[] {
+    const s = side === "player" ? state.player : state.enemy;
+    return [...new Set([...Object.keys(s.active.marks), ...Object.keys(s.teamMarks)])];
+  }
+
+  /** 动态取值：`from` 为上下文点路径时按当前状态求值，否则返回 fallback。 */
+  private dynamicValue(state: BattleState, command: EffectCommand, from: string | undefined, fallback: number): number {
+    if (!from) return fallback;
+    const context = { state, trigger: command.trigger, actorSide: command.actorSide, targetSide: command.targetSide, event: {} };
+    return toNum(resolveContextPath(context, from), fallback);
+  }
+
+  /** 印记有效上限：passive 覆盖 ?? 印记自身 ?? rules.marks.maxStack。 */
+  private markCap(mods: Record<string, number | boolean>, bundle: DataBundle | undefined, markId: string): number {
+    const markPolicy = asDict(bundle?.rules.marks);
+    const value = mods["marks.maxStack"] ?? bundle?.marks[markId]?.maxStack ?? markPolicy.maxStack;
+    return typeof value === "number" ? value : Number.MAX_SAFE_INTEGER;
+  }
+
   /** 防御技能判定（供 modifyCooldown scope=defense）。 */
   private isDefenseSkill(bundle: DataBundle | undefined, skillId: string): boolean {
     if (!bundle || !bundle.skills[skillId]) return false;
@@ -126,20 +155,81 @@ export class MechanismRuntime {
             events.push({ type: "mark-immune", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { markId: definition.markId } });
             break;
           }
-          const side = targetSide === "player" ? state.player : state.enemy;
-          const markDef = bundle?.marks[definition.markId];
-          const isTeam = definition.scope === "team" || (!definition.scope && (markDef?.carrier === "field" || markDef?.carrier === "team"));
-          const store = isTeam ? side.teamMarks : active.marks;
-          const markPolicy = asDict(bundle?.rules.marks);
+          const { store, isTeam } = this.markStore(state, bundle, targetSide, definition.markId, definition.scope);
           // 有效规则 = passive 覆盖 ?? rules 默认。异种印记互斥 / 上限都可由特性（如吟游之弦）经 setRuleModifier 突破。
+          const markPolicy = asDict(bundle?.rules.marks);
           const mods = this.ruleModifiers(state, bundle, command.actorSide ?? null);
+          const delta = Math.floor(this.dynamicValue(state, command, definition.layersFrom, definition.layers ?? 1));
+          if (delta <= 0) break;
           if ((mods["marks.replaceDifferent"] ?? markPolicy.replaceDifferent) !== false) {
             for (const other of Object.keys(store)) if (other !== definition.markId) delete store[other];
           }
           const before = store[definition.markId] ?? 0;
-          const cap = mods["marks.maxStack"] ?? markDef?.maxStack ?? toNum(markPolicy.maxStack, Number.MAX_SAFE_INTEGER);
-          store[definition.markId] = Math.min(typeof cap === "number" ? cap : Number.MAX_SAFE_INTEGER, before + (definition.layers ?? 1));
+          store[definition.markId] = Math.min(this.markCap(mods, bundle, definition.markId), before + delta);
           events.push({ type: "mark-applied", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { markId: definition.markId, scope: isTeam ? "team" : "sprite", before, after: store[definition.markId] } });
+          break;
+        }
+        case "setMark": {
+          if (!active || !targetSide) break;
+          const { store, isTeam } = this.markStore(state, bundle, targetSide, definition.markId, definition.scope);
+          const mods = this.ruleModifiers(state, bundle, command.actorSide ?? null);
+          const before = store[definition.markId] ?? 0;
+          const wanted = Math.max(0, Math.floor(this.dynamicValue(state, command, definition.layersFrom, definition.layers ?? 0)));
+          const after = Math.min(this.markCap(mods, bundle, definition.markId), wanted);
+          if (after <= 0) delete store[definition.markId];
+          else store[definition.markId] = after;
+          events.push({ type: "mark-set", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { markId: definition.markId, scope: isTeam ? "team" : "sprite", before, after } });
+          break;
+        }
+        case "scaleMark": {
+          if (!active || !targetSide) break;
+          const mods = this.ruleModifiers(state, bundle, command.actorSide ?? null);
+          const ids = definition.markId ? [definition.markId] : this.allMarkIds(state, targetSide);
+          for (const markId of ids) {
+            const { store } = this.markStore(state, bundle, targetSide, markId, definition.scope);
+            const before = store[markId] ?? 0;
+            if (before <= 0) continue;
+            const after = Math.max(0, Math.min(this.markCap(mods, bundle, markId), Math.floor(before * (definition.factor ?? 1) + (definition.delta ?? 0))));
+            if (after <= 0) delete store[markId];
+            else store[markId] = after;
+            events.push({ type: "mark-scaled", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { markId, before, after } });
+          }
+          break;
+        }
+        case "transferMark": {
+          const actor = command.actorSide;
+          const target = command.targetSide;
+          const fromSide = definition.from === "self" ? actor : definition.from === "opponent" ? target : target;
+          const toSide = definition.to === "self" ? actor : definition.to === "opponent" ? target : actor;
+          if (!fromSide || !toSide) break;
+          const ids = definition.markId ? [definition.markId] : this.allMarkIds(state, fromSide);
+          let remaining = definition.amount === undefined || definition.amount === "all" ? Number.POSITIVE_INFINITY : Math.max(0, Math.floor(definition.amount));
+          for (const markId of ids) {
+            if (remaining <= 0) break;
+            const { store: fromStore } = this.markStore(state, bundle, fromSide, markId);
+            const before = fromStore[markId] ?? 0;
+            if (before <= 0) continue;
+            const moved = Math.min(before, remaining);
+            const { store: toStore } = this.markStore(state, bundle, toSide, markId);
+            toStore[markId] = (toStore[markId] ?? 0) + moved;
+            if (before - moved <= 0) delete fromStore[markId];
+            else fromStore[markId] = before - moved;
+            remaining -= moved;
+            events.push({ type: "mark-transferred", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, data: { markId, from: fromSide, to: toSide, moved } });
+          }
+          break;
+        }
+        case "transformMark": {
+          if (!active || !targetSide) break;
+          const ids = this.allMarkIds(state, targetSide);
+          let total = 0;
+          for (const markId of ids) total += this.markStore(state, bundle, targetSide, markId).store[markId] ?? 0;
+          for (const markId of ids) delete this.markStore(state, bundle, targetSide, markId).store[markId];
+          if (total > 0) {
+            const { store } = this.markStore(state, bundle, targetSide, definition.toMarkId, definition.scope);
+            store[definition.toMarkId] = total;
+          }
+          events.push({ type: "mark-transformed", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { markId: definition.toMarkId, before: total } });
           break;
         }
         case "removeMark": {

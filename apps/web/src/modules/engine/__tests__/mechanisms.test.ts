@@ -189,6 +189,34 @@ describe("mark stacking", () => {
     expect(st.enemy.active.marks["starfall-mark"]).toBeUndefined();
   });
 
+  it("setMark / scaleMark / transferMark / transformMark operate on mark layers", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const st = makeState(makeSide(makeActive("sp-a", { hp: 100, maxHp: 100 })), makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })));
+
+    runtime.applyStateCommands(st, [command({ type: "setMark", target: "opponent", markId: "starfall-mark", layers: 7 })], twoMarks);
+    expect(st.enemy.active.marks["starfall-mark"]).toBe(7);
+
+    runtime.applyStateCommands(st, [command({ type: "scaleMark", target: "opponent", markId: "starfall-mark", delta: 2 })], twoMarks);
+    expect(st.enemy.active.marks["starfall-mark"]).toBe(9);
+
+    runtime.applyStateCommands(st, [command({ type: "transferMark", markId: "starfall-mark", amount: 4, from: "opponent", to: "self" })], twoMarks);
+    expect(st.enemy.active.marks["starfall-mark"]).toBe(5);
+    expect(st.player.active.marks["starfall-mark"]).toBe(4);
+
+    runtime.applyStateCommands(st, [command({ type: "setMark", target: "player", markId: "attack-mark", layers: 3 })], twoMarks);
+    runtime.applyStateCommands(st, [command({ type: "transformMark", target: "player", toMarkId: "starfall-mark" })], twoMarks);
+    expect(st.player.active.marks["attack-mark"]).toBeUndefined();
+    expect(st.player.active.marks["starfall-mark"]).toBe(7);
+  });
+
+  it("applyMark can take its layer count dynamically (layersFrom)", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const st = makeState(makeSide(makeActive("sp-a", { hp: 100, maxHp: 100 })), makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })));
+    st.enemy.active.marks["starfall-mark"] = 4;
+    runtime.applyStateCommands(st, [command({ type: "applyMark", target: "opponent", markId: "starfall-mark", layersFrom: "target.active.marks.starfall-mark" })], twoMarks);
+    expect(st.enemy.active.marks["starfall-mark"]).toBe(8);
+  });
+
   it("a passive setRuleModifier overrides the rule so granted marks coexist (吟游之弦)", () => {
     const bundle: DataBundle = {
       ...twoMarks,

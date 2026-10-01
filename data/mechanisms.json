@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "updatedAt": "2026-10-01",
   "mechanisms": [
     {
@@ -4339,10 +4339,10 @@
       ]
     },
     {
-      "ownerType": "skill",
-      "trigger": "actionDeclared",
       "id": "starfall:sk-7190330:counter",
+      "ownerType": "skill",
       "ownerId": "sk-7190330",
+      "trigger": "actionDeclared",
       "when": [
         {
           "allOf": [
@@ -4359,13 +4359,13 @@
           ]
         }
       ],
-      "note": "二律背反：应对防御 → 敌方星陨印记翻倍（≈再 +3）",
+      "note": "二律背反：应对防御 → 敌方星陨印记层数翻倍",
       "effects": [
         {
-          "type": "applyMark",
+          "type": "scaleMark",
           "target": "opponent",
           "markId": "starfall-mark",
-          "layers": 3
+          "factor": 2
         }
       ]
     },
@@ -4582,19 +4582,6 @@
           "markId": "starfall-mark",
           "base": 1,
           "perStack": 1
-        }
-      ]
-    },
-    {
-      "ownerType": "skill",
-      "trigger": "beforeAction",
-      "id": "starfall:sk-7190320",
-      "ownerId": "sk-7190320",
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "conditional",
-          "reason": "心灵洞悉：获得层数 = 敌方当前印记层数（动态层数待接入）"
         }
       ]
     },
@@ -5212,6 +5199,111 @@
         }
       ],
       "note": "里拉鳐「吟游之弦」：赋予的印记不替换其他印记、可同时生效（规则覆盖通道）"
+    },
+    {
+      "id": "starfall:sk-7190320",
+      "ownerType": "skill",
+      "ownerId": "sk-7190320",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7190320"
+        }
+      ],
+      "note": "心灵洞悉：获得星陨印记，层数 = 敌方当前印记层数",
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "starfall-mark",
+          "layersFrom": "target.active.marks.starfall-mark"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7130340",
+      "ownerType": "skill",
+      "ownerId": "sk-7130340",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7130340"
+        }
+      ],
+      "note": "拟寄生：造成魔伤，偷取敌方 1 层印记",
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 80,
+          "skillId": "sk-7130340"
+        },
+        {
+          "type": "transferMark",
+          "amount": 1,
+          "from": "opponent",
+          "to": "self"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7190410",
+      "ownerType": "skill",
+      "ownerId": "sk-7190410",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7190410"
+        }
+      ],
+      "note": "许愿池：造成魔伤，双方已有的印记层数 +1",
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 55,
+          "skillId": "sk-7190410"
+        },
+        {
+          "type": "scaleMark",
+          "target": "opponent",
+          "delta": 1
+        },
+        {
+          "type": "scaleMark",
+          "target": "self",
+          "delta": 1
+        }
+      ]
+    },
+    {
+      "id": "trait:sp-409-1",
+      "ownerType": "trait",
+      "ownerId": "sp-409-1",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "eq",
+          "value": "sp-409-1"
+        }
+      ],
+      "note": "与星星同行：攻击时把敌方所有印记变为相同层数的星陨印记",
+      "effects": [
+        {
+          "type": "transformMark",
+          "target": "opponent",
+          "toMarkId": "starfall-mark"
+        }
+      ]
     }
   ]
 }

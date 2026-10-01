@@ -77,10 +77,18 @@ export type EffectSpec =
   | { type: "removeStatus"; target?: string; statusId: string }
   /** 印记层数结算：按策略衰减（half/clear）或减固定层数（delta），作用于该精灵持有的印记。 */
   | { type: "settleMark"; target?: string; markId: string; decayLayers?: "half" | "clear"; delta?: number }
+  /** 印记设为指定层数（0 = 移除）；`layersFrom` 为上下文点路径动态取值（如 target.active.marks.starfall-mark）。 */
+  | { type: "setMark"; target?: string; markId: string; layers?: number; layersFrom?: string; scope?: "sprite" | "team" }
+  /** 印记缩放：对指定印记（省略 = 全部）做 `factor` 乘 + `delta` 加。 */
+  | { type: "scaleMark"; target?: string; markId?: string; factor?: number; delta?: number; scope?: "sprite" | "team" }
+  /** 印记转移 / 偷取：把 from 侧（默认 opponent）的印记移到 to 侧（默认 self）；amount 为总层数（all = 全部）。 */
+  | { type: "transferMark"; markId?: string; amount?: number | "all"; from?: "self" | "opponent"; to?: "self" | "opponent" }
+  /** 印记收拢：把目标身上的印记合计层数收拢成 `toMarkId` 一种。 */
+  | { type: "transformMark"; target?: string; toMarkId: string; scope?: "sprite" | "team" }
   | { type: "modifyMagic"; target?: string; delta: number }
   | { type: "modifyEnergy"; target?: string; delta: number }
   | { type: "modifySwitchLock"; target?: string; delta: number }
-  | { type: "applyMark"; target?: string; markId: string; layers?: number; scope?: "sprite" | "team"; immuneElements?: string[] }
+  | { type: "applyMark"; target?: string; markId: string; layers?: number; layersFrom?: string; scope?: "sprite" | "team"; immuneElements?: string[] }
   | { type: "removeMark"; target?: string; markId: string; layers?: number; scope?: "sprite" | "team" }
   | { type: "changeWeather"; weatherId: string; turns?: number }
   | { type: "setPriority"; target?: string; value: number }
