@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.2",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "updatedAt": "2026-10-01",
   "status": {
     "clearOnSwitch": true,
@@ -52,6 +52,12 @@
     "power": { "quad": 1, "linear": 24, "constant": -24 },
     "maxStacks": 10,
     "note": "星陨威力 = N²+24N−24（N=星陨层数；1/5/10 层 = 1/121/316）；非幻系攻击技命中带「星陨印记」目标时引爆、消耗全部层数，追加幻系伤害 = floor( round(攻 × 星陨威力 × 幻系克制 × 特性 × 强化差值 × 37/41) ÷ 防 ) × 减伤（roco pet – RocoDiviner 图卡 4）。攻/防取触发技的物/魔类别；特性倍率与减伤暂按 1【待校准】。"
+  },
+  "marks": {
+    "replaceDifferent": true,
+    "maxStack": 10,
+    "coexistTraits": ["吟游之弦"],
+    "note": "印记规则：同种印记叠加层数；异种印记互斥——赋新印记会替换目标身上旧的其它印记（同种仍累加）。例外：里拉鳐「吟游之弦」特性使赋予的印记不替换、可同时生效（按赋予方精灵的 trait 名放行）。maxStack 为默认上限【待校准】（站点未提供每印记上限；星陨按图卡 10）。"
   },
   "mctsEval": {
     "wMagic": 0.4,

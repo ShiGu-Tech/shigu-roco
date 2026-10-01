@@ -174,6 +174,34 @@ describe("mark stacking", () => {
     runtime.applyStateCommands(st, [command({ type: "applyMark", target: "opponent", markId: "starfall-mark", layers: 4 })], bundle);
     expect(st.enemy.active.marks["starfall-mark"]).toBe(10);
   });
+
+  const twoMarks: DataBundle = {
+    ...miniBundle,
+    marks: { "starfall-mark": { id: "starfall-mark", name: "星陨印记", maxStack: 10 }, "attack-mark": { id: "attack-mark", name: "攻击印记", maxStack: 10 } },
+  };
+
+  it("a different mark replaces the existing ones (mutual exclusion)", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const st = makeState(makeSide(makeActive("sp-a", { hp: 100, maxHp: 100 })), makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })));
+    runtime.applyStateCommands(st, [command({ type: "applyMark", target: "opponent", markId: "starfall-mark", layers: 3 })], twoMarks);
+    runtime.applyStateCommands(st, [command({ type: "applyMark", target: "opponent", markId: "attack-mark", layers: 1 })], twoMarks);
+    expect(st.enemy.active.marks["attack-mark"]).toBe(1);
+    expect(st.enemy.active.marks["starfall-mark"]).toBeUndefined();
+  });
+
+  it("the 吟游之弦 trait lets granted marks coexist", () => {
+    const bundle: DataBundle = {
+      ...twoMarks,
+      sprites: { ...twoMarks.sprites, "sp-a": { ...twoMarks.sprites["sp-a"], trait: { name: "吟游之弦", desc: "" } } },
+      rules: { ...twoMarks.rules, marks: { replaceDifferent: true, coexistTraits: ["吟游之弦"] } },
+    };
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const st = makeState(makeSide(makeActive("sp-a", { hp: 100, maxHp: 100 })), makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })));
+    runtime.applyStateCommands(st, [command({ type: "applyMark", target: "opponent", markId: "starfall-mark", layers: 3 })], bundle);
+    runtime.applyStateCommands(st, [command({ type: "applyMark", target: "opponent", markId: "attack-mark", layers: 2 })], bundle);
+    expect(st.enemy.active.marks["starfall-mark"]).toBe(3);
+    expect(st.enemy.active.marks["attack-mark"]).toBe(2);
+  });
 });
 
 describe("trigger cascade", () => {

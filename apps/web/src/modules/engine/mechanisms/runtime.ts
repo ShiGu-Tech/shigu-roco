@@ -2,8 +2,8 @@ import { getSkill, getSprite } from "../data";
 import { computeDamage } from "../effects/damage";
 import { Rng } from "../rng";
 import { recordSkillOverride } from "../state";
-import type { BattleState, DataBundle, Side } from "../types";
-import { asDict, toArray, toNum } from "../types";
+import type { BattleState, DataBundle, Dict, Side } from "../types";
+import { asDict, toArray, toNum, toStr } from "../types";
 import { ActionQueue } from "./action-queue";
 import { MechanismRegistry } from "./registry";
 import type { EffectCommand, EffectDefinition, MechanismContext, MechanismEvent } from "./types";
@@ -53,6 +53,16 @@ export class MechanismRuntime {
     if (!bundle || !immuneElements?.length) return false;
     const elements = toArray<string>(getSprite(bundle, spriteId).elements);
     return elements.some((element) => immuneElements.includes(element));
+  }
+
+  /** 印记共存例外：赋予方精灵的特性名命中 `rules.marks.coexistTraits`（里拉鳐「吟游之弦」）。 */
+  private coexists(state: BattleState, bundle: DataBundle | undefined, actorSide: Side | undefined, markPolicy: Dict): boolean {
+    const traits = toArray<string>(markPolicy.coexistTraits);
+    if (!bundle || !traits.length || !actorSide) return false;
+    const actor = actorSide === "player" ? state.player.active : state.enemy.active;
+    const trait = asDict(getSprite(bundle, actor.spriteId).trait);
+    const name = toStr(trait.name);
+    return Boolean(name) && traits.includes(name);
   }
 
   /** 防御技能判定（供 modifyCooldown scope=defense）。 */
@@ -112,8 +122,13 @@ export class MechanismRuntime {
           const markDef = bundle?.marks[definition.markId];
           const isTeam = definition.scope === "team" || (!definition.scope && (markDef?.carrier === "field" || markDef?.carrier === "team"));
           const store = isTeam ? side.teamMarks : active.marks;
+          const markPolicy = asDict(bundle?.rules.marks);
+          // 异种印记互斥：赋新印记替换掉旧的其它印记；里拉鳐「吟游之弦」（按 trait 名放行）例外，可同时生效。
+          if (markPolicy.replaceDifferent !== false && !this.coexists(state, bundle, command.actorSide, markPolicy)) {
+            for (const other of Object.keys(store)) if (other !== definition.markId) delete store[other];
+          }
           const before = store[definition.markId] ?? 0;
-          const cap = bundle?.marks[definition.markId]?.maxStack;
+          const cap = markDef?.maxStack ?? toNum(markPolicy.maxStack, Number.MAX_SAFE_INTEGER);
           store[definition.markId] = Math.min(typeof cap === "number" ? cap : Number.MAX_SAFE_INTEGER, before + (definition.layers ?? 1));
           events.push({ type: "mark-applied", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { markId: definition.markId, scope: isTeam ? "team" : "sprite", before, after: store[definition.markId] } });
           break;
