@@ -56,8 +56,7 @@
   "marks": {
     "replaceDifferent": true,
     "maxStack": 10,
-    "coexistTraits": ["吟游之弦"],
-    "note": "印记规则：同种印记叠加层数；异种印记互斥——赋新印记会替换目标身上旧的其它印记（同种仍累加）。例外：里拉鳐「吟游之弦」特性使赋予的印记不替换、可同时生效（按赋予方精灵的 trait 名放行）。maxStack 为默认上限【待校准】（站点未提供每印记上限；星陨按图卡 10）。"
+    "note": "印记规则默认值：同种印记叠加层数；异种印记互斥——赋新印记会替换目标身上旧的其它印记（同种仍累加）；maxStack 为默认上限【待校准】（站点未提供每印记上限；星陨按图卡 10）。突破默认由「规则覆盖通道」实现——特性/效果经 `setRuleModifier`（`passive` 触发器）覆盖 `marks.replaceDifferent` / `marks.maxStack` 等，引擎读有效规则（如里拉鳐「吟游之弦」= marks.replaceDifferent:false）。"
   },
   "mctsEval": {
     "wMagic": 0.4,

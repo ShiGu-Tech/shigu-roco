@@ -19,6 +19,7 @@ export type TriggerName =
   | "turnEnd"
   | "battleEnd"
   | "skillUsed"
+  | "passive"
   | "onHit"
   | "statusApplied"
   | "markApplied"
@@ -92,6 +93,8 @@ export type EffectSpec =
   | { type: "replaceSkill"; target?: string; fromSkillId: string; toSkillId: string; duration?: number }
   | { type: "randomizeSkill"; target?: string; skillId?: string; source: string[]; duration?: number }
   | { type: "swapSkillSet"; target?: string; from: string; to: string; duration?: number }
+  /** 规则覆盖通道：按 `passive` 触发器收集，覆盖 `rules.*` 默认值（如印记上限 / 异种互斥）。key 用点路径。 */
+  | { type: "setRuleModifier"; target?: string; key: string; value: number | boolean }
   | { type: "unsupported"; effectType: string; reason?: string };
 
 /** 效果 = 实现体 + 可选概率（0~1，runtime 用确定性种子掷点）。 */

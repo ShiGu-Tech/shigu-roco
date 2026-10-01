@@ -2,8 +2,8 @@ import { getSkill, getSprite } from "../data";
 import { computeDamage } from "../effects/damage";
 import { Rng } from "../rng";
 import { recordSkillOverride } from "../state";
-import type { BattleState, DataBundle, Dict, Side } from "../types";
-import { asDict, toArray, toNum, toStr } from "../types";
+import type { BattleState, DataBundle, Side } from "../types";
+import { asDict, toArray, toNum } from "../types";
 import { ActionQueue } from "./action-queue";
 import { MechanismRegistry } from "./registry";
 import type { EffectCommand, EffectDefinition, MechanismContext, MechanismEvent } from "./types";
@@ -55,14 +55,22 @@ export class MechanismRuntime {
     return elements.some((element) => immuneElements.includes(element));
   }
 
-  /** 印记共存例外：赋予方精灵的特性名命中 `rules.marks.coexistTraits`（里拉鳐「吟游之弦」）。 */
-  private coexists(state: BattleState, bundle: DataBundle | undefined, actorSide: Side | undefined, markPolicy: Dict): boolean {
-    const traits = toArray<string>(markPolicy.coexistTraits);
-    if (!bundle || !traits.length || !actorSide) return false;
-    const actor = actorSide === "player" ? state.player.active : state.enemy.active;
-    const trait = asDict(getSprite(bundle, actor.spriteId).trait);
-    const name = toStr(trait.name);
-    return Boolean(name) && traits.includes(name);
+  /** 规则覆盖通道：收集 `passive` 触发器声明的 `setRuleModifier`（按传入 side 的在场精灵），供结算读「有效规则」。 */
+  ruleModifiers(state: BattleState, bundle: DataBundle | undefined, side: Side | null): Record<string, number | boolean> {
+    const out: Record<string, number | boolean> = {};
+    if (!bundle || !side) return out;
+    const commands = this.dispatch({
+      state,
+      trigger: "passive",
+      actorSide: side,
+      targetSide: side === "player" ? "enemy" : "player",
+      event: { spriteId: side === "player" ? state.player.active.spriteId : state.enemy.active.spriteId },
+    });
+    for (const command of commands) {
+      const definition = command.definition;
+      if (definition.type === "setRuleModifier") out[definition.key] = definition.value;
+    }
+    return out;
   }
 
   /** 防御技能判定（供 modifyCooldown scope=defense）。 */
@@ -123,12 +131,13 @@ export class MechanismRuntime {
           const isTeam = definition.scope === "team" || (!definition.scope && (markDef?.carrier === "field" || markDef?.carrier === "team"));
           const store = isTeam ? side.teamMarks : active.marks;
           const markPolicy = asDict(bundle?.rules.marks);
-          // 异种印记互斥：赋新印记替换掉旧的其它印记；里拉鳐「吟游之弦」（按 trait 名放行）例外，可同时生效。
-          if (markPolicy.replaceDifferent !== false && !this.coexists(state, bundle, command.actorSide, markPolicy)) {
+          // 有效规则 = passive 覆盖 ?? rules 默认。异种印记互斥 / 上限都可由特性（如吟游之弦）经 setRuleModifier 突破。
+          const mods = this.ruleModifiers(state, bundle, command.actorSide ?? null);
+          if ((mods["marks.replaceDifferent"] ?? markPolicy.replaceDifferent) !== false) {
             for (const other of Object.keys(store)) if (other !== definition.markId) delete store[other];
           }
           const before = store[definition.markId] ?? 0;
-          const cap = markDef?.maxStack ?? toNum(markPolicy.maxStack, Number.MAX_SAFE_INTEGER);
+          const cap = mods["marks.maxStack"] ?? markDef?.maxStack ?? toNum(markPolicy.maxStack, Number.MAX_SAFE_INTEGER);
           store[definition.markId] = Math.min(typeof cap === "number" ? cap : Number.MAX_SAFE_INTEGER, before + (definition.layers ?? 1));
           events.push({ type: "mark-applied", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { markId: definition.markId, scope: isTeam ? "team" : "sprite", before, after: store[definition.markId] } });
           break;
