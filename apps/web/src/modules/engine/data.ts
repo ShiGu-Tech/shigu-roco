@@ -36,6 +36,7 @@ export function buildBundle(raw: RawDataFiles): DataBundle {
   const warnings: string[] = [];
   const sprites = indexItems(toArray<Dict>(raw.sprites.sprites), "id");
   const skills = indexItems(toArray<Dict>(raw.skills.skills), "id");
+  const statuses = indexItems(toArray<Dict>(asDict(raw.statuses).statuses), "id");
   const marks = indexItems(toArray<Dict>(raw.marks.marks), "id");
   const weather = indexItems(toArray<Dict>(raw.weather.weather), "id");
 
@@ -50,6 +51,7 @@ export function buildBundle(raw: RawDataFiles): DataBundle {
   return {
     sprites,
     skills,
+    statuses,
     marks,
     weather,
     elements: raw.elements,
@@ -89,6 +91,7 @@ export function counts(bundle: DataBundle): Record<string, number> {
   return {
     sprites: Object.keys(bundle.sprites).length,
     skills: Object.keys(bundle.skills).length,
+    statuses: Object.keys(bundle.statuses).length,
     marks: Object.keys(bundle.marks).length,
     weather: Object.keys(bundle.weather).length,
   };

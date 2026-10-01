@@ -3281,24 +3281,15 @@
       "effects": []
     },
     {
-      "id": "mark:burn",
-      "ownerType": "mark",
+      "id": "status:burn",
+      "ownerType": "status",
       "ownerId": "burn",
       "trigger": "turnEnd",
       "when": [
         {
-          "anyOf": [
-            {
-              "path": "self.active.marks.burn",
-              "op": "gte",
-              "value": 1
-            },
-            {
-              "path": "self.teamMarks.burn",
-              "op": "gte",
-              "value": 1
-            }
-          ]
+          "path": "self.active.statuses.burn",
+          "op": "gte",
+          "value": 1
         }
       ],
       "effects": [
@@ -3312,33 +3303,24 @@
           "element": "Fire"
         },
         {
-          "type": "settleMark",
+          "type": "settleStatus",
           "target": "self",
-          "markId": "burn",
+          "statusId": "burn",
           "decayLayers": "half"
         }
       ],
-      "note": "灼烧：回合末 2% 最大生命火系伤害，层数减半（术语 1002）"
+      "note": "灼烧（状态/buff）：回合末 2% 最大生命火系伤害，层数减半（术语 1002）"
     },
     {
-      "id": "mark:poison",
-      "ownerType": "mark",
+      "id": "status:poison",
+      "ownerType": "status",
       "ownerId": "poison",
       "trigger": "turnEnd",
       "when": [
         {
-          "anyOf": [
-            {
-              "path": "self.active.marks.poison",
-              "op": "gte",
-              "value": 1
-            },
-            {
-              "path": "self.teamMarks.poison",
-              "op": "gte",
-              "value": 1
-            }
-          ]
+          "path": "self.active.statuses.poison",
+          "op": "gte",
+          "value": 1
         }
       ],
       "effects": [
@@ -3352,27 +3334,18 @@
           "element": "Poison"
         }
       ],
-      "note": "中毒：回合末 3% 最大生命毒系伤害（术语 1001）。衰减规则【待校准】"
+      "note": "中毒（状态/buff）：回合末 3% 最大生命毒系伤害（术语 1001）。衰减规则【待校准】"
     },
     {
-      "id": "mark:freeze",
-      "ownerType": "mark",
+      "id": "status:freeze",
+      "ownerType": "status",
       "ownerId": "freeze",
       "trigger": "turnEnd",
       "when": [
         {
-          "anyOf": [
-            {
-              "path": "self.active.marks.freeze",
-              "op": "gte",
-              "value": 1
-            },
-            {
-              "path": "self.teamMarks.freeze",
-              "op": "gte",
-              "value": 1
-            }
-          ]
+          "path": "self.active.statuses.freeze",
+          "op": "gte",
+          "value": 1
         }
       ],
       "effects": [
@@ -3386,47 +3359,18 @@
           "element": "Ice"
         }
       ],
-      "note": "冻结：回合末造成 5% 最大生命冰系伤害，低于该比例则力竭（术语 1004）。衰减【待校准】"
+      "note": "冻结（状态/buff，下场不消失）：回合末 5% 最大生命冰系伤害，低于该比例则力竭（术语 1004）"
     },
     {
-      "id": "mark:starfall",
-      "ownerType": "mark",
-      "ownerId": "starfall",
-      "trigger": "onHit",
-      "when": [
-        {
-          "path": "event.markId",
-          "op": "eq",
-          "value": "starfall"
-        }
-      ],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "conditional",
-          "reason": "复杂旧效果需要按真实机制逐条确认"
-        }
-      ]
-    },
-    {
-      "id": "mark:parasitism",
-      "ownerType": "mark",
-      "ownerId": "parasitism",
+      "id": "status:parasite",
+      "ownerType": "status",
+      "ownerId": "parasite",
       "trigger": "turnEnd",
       "when": [
         {
-          "anyOf": [
-            {
-              "path": "self.active.marks.parasitism",
-              "op": "gte",
-              "value": 1
-            },
-            {
-              "path": "self.teamMarks.parasitism",
-              "op": "gte",
-              "value": 1
-            }
-          ]
+          "path": "self.active.statuses.parasite",
+          "op": "gte",
+          "value": 1
         }
       ],
       "effects": [
@@ -3437,16 +3381,16 @@
           "basis": "maxHp"
         }
       ],
-      "note": "寄生：回合末从来源吸收 2% 最大生命（术语 1008）"
+      "note": "寄生（状态/buff）：回合末从来源吸收 2% 最大生命（术语 1008）"
     },
     {
-      "id": "mark:conductive-charge",
-      "ownerType": "mark",
+      "id": "status:conductive-charge",
+      "ownerType": "status",
       "ownerId": "conductive-charge",
       "trigger": "onHit",
       "when": [
         {
-          "path": "event.markId",
+          "path": "event.statusId",
           "op": "eq",
           "value": "conductive-charge"
         }
@@ -3455,7 +3399,27 @@
         {
           "type": "unsupported",
           "effectType": "conditional",
-          "reason": "复杂旧效果需要按真实机制逐条确认"
+          "reason": "引电（状态）满 2 层触发，待校准"
+        }
+      ]
+    },
+    {
+      "id": "mark:starfall",
+      "ownerType": "mark",
+      "ownerId": "starfall-mark",
+      "trigger": "onHit",
+      "when": [
+        {
+          "path": "event.markId",
+          "op": "eq",
+          "value": "starfall-mark"
+        }
+      ],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "conditional",
+          "reason": "星陨引爆待校准"
         }
       ]
     },
@@ -4094,9 +4058,9 @@
           "layers": 1
         },
         {
-          "type": "applyMark",
+          "type": "applyStatus",
           "target": "opponent",
-          "markId": "burn",
+          "statusId": "burn",
           "layers": 6,
           "immuneElements": [
             "Fire"

@@ -29,8 +29,9 @@ describe("catalog normalization", () => {
     expect(catalog.sprites[0].skillList).toEqual(["sk-10"]);
     expect(catalog.skills[0]).toMatchObject({ id: "sk-10", category: "Physical", element: "Grass", power: 50 });
     expect((catalog.elements.matrix as Record<string, Record<string, string>>).Grass.Normal).toBe("counter");
-    expect(catalog.marks[0]).toMatchObject({ name: "中毒", description: "回合结束造成伤害。" });
-    expect(catalog.weather[0]).toMatchObject({ name: "沙暴", description: "地系技能能耗减半。" });
+    expect(catalog.statuses[0]).toMatchObject({ id: "poison", name: "中毒", description: "回合结束造成伤害。" });
+    expect(catalog.marks).toEqual([]);
+    expect(catalog.weather[0]).toMatchObject({ id: "sandstorm", name: "沙暴", description: "地系技能能耗减半。" });
     expect(catalog.warnings).toEqual([]);
   });
 });

@@ -113,10 +113,17 @@ export function SpriteCard({
           </Badge>
           {side.wishChargesLeft > 0 && <Badge variant="outline" className="tnum">愿力 {side.wishChargesLeft}</Badge>}
           {side.wishCooldown > 0 && <Badge variant="secondary" className="tnum">愿力CD {side.wishCooldown}</Badge>}
+          {Object.entries(side.active.statuses)
+            .filter(([, n]) => n > 0)
+            .map(([id, n]) => (
+              <Badge key={`s-${id}`} variant="outline" className="tnum">
+                {catalog.statuses.find((s) => s.id === id)?.nameZh ?? id} × {n}
+              </Badge>
+            ))}
           {Object.entries(side.active.marks)
             .filter(([, n]) => n > 0)
             .map(([id, n]) => (
-              <Badge key={id} variant="secondary" className="tnum">
+              <Badge key={`m-${id}`} variant="secondary" className="tnum">
                 {catalog.marks.find((m) => m.id === id)?.nameZh ?? id} × {n}
               </Badge>
             ))}

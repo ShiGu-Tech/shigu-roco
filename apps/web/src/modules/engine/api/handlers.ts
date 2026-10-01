@@ -197,6 +197,7 @@ export function catalog(bundle: DataBundle): Dict {
     bloodlines: toArray(asDict(bundle.elements).bloodlines),
     sprites,
     allSkills,
+    statuses: Object.values(bundle.statuses).map((s) => ({ id: toStr(s.id), name: toStr(s.nameZh, toStr(s.name)), nameZh: toStr(s.nameZh, toStr(s.name)), description: toStr(s.description, toStr(s.rawText)), maxStack: toNum(s.maxStack, 0) })),
     marks: Object.values(bundle.marks).map((m) => ({ id: toStr(m.id), name: toStr(m.nameZh, toStr(m.name)), nameZh: toStr(m.nameZh, toStr(m.name)), description: toStr(m.description, toStr(m.rawText)), maxStack: toNum(m.maxStack, 0) })),
     weather: Object.values(bundle.weather).map((w) => ({ id: toStr(w.id), name: toStr(w.nameZh, toStr(w.name)), nameZh: toStr(w.nameZh, toStr(w.name)), description: toStr(w.description, toStr(w.rawText)) })),
     rules: {
@@ -327,6 +328,7 @@ export function bundlePayload(bundle: DataBundle): Dict {
     warnings: bundle.warnings,
     sprites: { sprites: Object.values(bundle.sprites).map(leanSprite), version: bundle.dataVersion, updatedAt: bundle.dataUpdatedAt },
     skills: { skills: Object.values(bundle.skills).map(stripSource) },
+    statuses: { statuses: Object.values(bundle.statuses).map(stripSource) },
     marks: { marks: Object.values(bundle.marks).map(stripSource) },
     weather: { weather: Object.values(bundle.weather).map(stripSource) },
     elements: bundle.elements,

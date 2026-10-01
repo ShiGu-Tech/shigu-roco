@@ -1,7 +1,12 @@
 {
   "$schemaVersion": "0.2",
-  "version": "0.2.0",
-  "updatedAt": "2026-09-28",
+  "version": "0.3.0",
+  "updatedAt": "2026-10-01",
+  "status": {
+    "clearOnSwitch": true,
+    "persistOnSwitch": ["freeze", "moe"],
+    "note": "普通 buff / 状态换人清除；冻结（freeze）与萌化（moe）下场不消失；永久增减益亦保留【待校准】。"
+  },
   "magic": {
     "initialPerSide": 4,
     "maxPerSide": 4,

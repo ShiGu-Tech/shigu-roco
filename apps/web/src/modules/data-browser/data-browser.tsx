@@ -20,7 +20,7 @@ const TABS: Array<{ id: Tab; label: string }> = [
   { id: "sprites", label: "精灵" },
   { id: "skills", label: "技能" },
   { id: "elements", label: "属性" },
-  { id: "effects", label: "印记 / 天气" },
+  { id: "effects", label: "状态 / 印记 / 天气" },
 ];
 
 const TH = "h-9 whitespace-nowrap px-3 text-left font-medium text-muted-foreground";
@@ -185,6 +185,7 @@ export function DataBrowser() {
             <Badge variant="outline" className="tnum">精灵 {catalog.sprites.length}</Badge>
             <Badge variant="outline" className="tnum">技能 {catalog.allSkills.length}</Badge>
             <Badge variant="outline" className="tnum">属性 {catalog.elements.length}</Badge>
+            <Badge variant="outline" className="tnum">状态 {catalog.statuses.length}</Badge>
             <Badge variant="outline" className="tnum">印记 {catalog.marks.length}</Badge>
             <Badge variant="outline" className="tnum">天气 {catalog.weather.length}</Badge>
           </div>
@@ -249,7 +250,16 @@ export function DataBrowser() {
                 </table>
               )}
               {tab === "effects" && (
-                <div className="grid gap-0 min-[860px]:grid-cols-2">
+                <div className="grid gap-0 min-[860px]:grid-cols-3">
+                  <div className="min-[860px]:border-r">
+                    <div className="border-b bg-muted/40 px-3 py-2 text-[12px] font-semibold text-muted-foreground">状态（buff）</div>
+                    {catalog.statuses.map((status) => (
+                      <div key={status.id} className="border-b px-3 py-2 last:border-0">
+                        <div className="font-medium">{status.nameZh ?? status.name}</div>
+                        {status.description ? <p className="mt-0.5 text-[12px] leading-5 text-muted-foreground">{status.description}</p> : null}
+                      </div>
+                    ))}
+                  </div>
                   <div className="min-[860px]:border-r">
                     <div className="border-b bg-muted/40 px-3 py-2 text-[12px] font-semibold text-muted-foreground">印记</div>
                     {catalog.marks.map((mark) => (

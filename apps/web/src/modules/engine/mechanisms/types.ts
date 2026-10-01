@@ -25,7 +25,7 @@ export type TriggerName =
   | "weatherChanged"
   | "skillCooldownReduced";
 
-export type MechanismOwnerType = "skill" | "trait" | "mark" | "weather" | "system";
+export type MechanismOwnerType = "skill" | "trait" | "status" | "mark" | "weather" | "system";
 
 export interface MechanismDefinition {
   id: string;

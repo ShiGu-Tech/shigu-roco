@@ -146,6 +146,8 @@ export interface StatsData {
 export interface DataBundle {
   sprites: Record<string, Dict>;
   skills: Record<string, Dict>;
+  /** Buff / 状态（中毒、灼烧…）。 */
+  statuses: Record<string, Dict>;
   marks: Record<string, Dict>;
   weather: Record<string, Dict>;
   elements: Dict;
@@ -162,6 +164,7 @@ export interface DataBundle {
 export interface RawDataFiles {
   sprites: Dict;
   skills: Dict;
+  statuses?: Dict;
   marks: Dict;
   weather: Dict;
   elements: Dict;

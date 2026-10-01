@@ -40,6 +40,7 @@ export function getBundle(force = false): DataBundle {
       ...base,
       sprites: Object.fromEntries(registered.sprites.map((sprite) => [String(sprite.id), sprite])),
       skills: Object.fromEntries(registered.skills.map((skill) => [String(skill.id), skill])),
+      statuses: Object.fromEntries(registered.statuses.map((item) => [String(item.id), item])),
       marks: Object.fromEntries(registered.marks.map((mark) => [String(mark.id), mark])),
       weather: Object.fromEntries(registered.weather.map((item) => [String(item.id), item])),
       elements: registered.elements,

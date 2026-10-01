@@ -16,7 +16,8 @@ const bundle: DataBundle = {
   skills: {
     "sk-1": { id: "sk-1", category: "Physical", power: 50, sourceData: { raw: RAW } },
   },
-  marks: { poison: { id: "poison", sourceData: { raw: RAW } } },
+  statuses: { poison: { id: "poison", sourceData: { raw: RAW } } },
+  marks: { "poison-mark": { id: "poison-mark", sourceData: { raw: RAW } } },
   weather: { sandstorm: { id: "sandstorm", sourceData: { raw: RAW } } },
   elements: { elements: [] },
   rules: {},

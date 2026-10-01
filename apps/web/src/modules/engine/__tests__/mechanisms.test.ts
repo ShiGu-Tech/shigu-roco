@@ -21,6 +21,7 @@ const miniBundle: DataBundle = {
     "sk-1": { id: "sk-1", skillName: "撞击", element: "Normal", category: "Physical", actionType: "Attack", power: 40, cost: 0 },
     "sk-2": { id: "sk-2", skillName: "换招", element: "Normal", category: "Physical", actionType: "Attack", power: 40, cost: 0 },
   },
+  statuses: {},
   marks: {},
   weather: {},
   elements: { elements: [], matrix: {}, values: {}, combine: {} },
@@ -291,35 +292,35 @@ describe("immunity", () => {
     ...miniBundle,
     sprites: { ...miniBundle.sprites, "sp-fire": { id: "sp-fire", elements: ["Fire"], race: {}, skillList: [] } },
   };
-  it("skips applying a mark when the target element is immune", () => {
+  it("skips applying a status when the target element is immune", () => {
     const runtime = new MechanismRuntime(new MechanismRegistry());
     const st = battle();
-    runtime.applyStateCommands(st, [command({ type: "applyMark", target: "target", markId: "burn", layers: 6, immuneElements: ["Fire"] })], bundle);
-    expect(st.enemy.active.marks.burn).toBeUndefined();
+    runtime.applyStateCommands(st, [command({ type: "applyStatus", target: "target", statusId: "burn", layers: 6, immuneElements: ["Fire"] })], bundle);
+    expect(st.enemy.active.statuses.burn).toBeUndefined();
   });
-  it("applies the mark to a non-immune target", () => {
+  it("applies the status to a non-immune target", () => {
     const runtime = new MechanismRuntime(new MechanismRegistry());
     const st = makeState(makeSide(makeActive("sp-a", { hp: 100, maxHp: 100 })), makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })));
-    runtime.applyStateCommands(st, [command({ type: "applyMark", target: "target", markId: "burn", layers: 6, immuneElements: ["Fire"] })], bundle);
-    expect(st.enemy.active.marks.burn).toBe(6);
+    runtime.applyStateCommands(st, [command({ type: "applyStatus", target: "target", statusId: "burn", layers: 6, immuneElements: ["Fire"] })], bundle);
+    expect(st.enemy.active.statuses.burn).toBe(6);
   });
 });
 
-describe("turnEnd mark settlement (per side)", () => {
+describe("turnEnd status settlement (per side)", () => {
   const bundle: DataBundle = {
     ...miniBundle,
-    marks: { burn: { id: "burn", name: "灼烧", maxStack: 10 } },
+    statuses: { burn: { id: "burn", name: "灼烧", maxStack: 10 } },
     mechanisms: [
       ...(miniBundle.mechanisms ?? []),
       {
-        id: "mark:burn",
-        ownerType: "mark",
+        id: "status:burn",
+        ownerType: "status",
         ownerId: "burn",
         trigger: "turnEnd",
-        when: [{ anyOf: [{ path: "self.active.marks.burn", op: "gte", value: 1 }, { path: "self.teamMarks.burn", op: "gte", value: 1 }] }],
+        when: [{ path: "self.active.statuses.burn", op: "gte", value: 1 }],
         effects: [
           { type: "dealDamage", target: "self", category: "Passive", power: 0, basis: "maxHp", amount: 0.02 },
-          { type: "settleMark", target: "self", markId: "burn", decayLayers: "half" },
+          { type: "settleStatus", target: "self", statusId: "burn", decayLayers: "half" },
         ],
       },
     ],
@@ -331,10 +332,10 @@ describe("turnEnd mark settlement (per side)", () => {
       makeSide(makeActive("sp-b", { hp: 200, maxHp: 200, energy: 5 })),
       { turn: 1, seed: 1 },
     );
-    battle.enemy.active.marks.burn = 4;
+    battle.enemy.active.statuses.burn = 4;
     const result = sim.step(battle, { kind: "energy" }, { kind: "energy" }, new Rng(1));
     expect(result.state.enemy.active.hp).toBe(200 - 4);
-    expect(result.state.enemy.active.marks.burn).toBe(2);
+    expect(result.state.enemy.active.statuses.burn).toBe(2);
   });
 });
 

@@ -7,6 +7,7 @@ import { cloneState, expireSkillOverrides, revertSkillOverride } from "../state"
 import type { Action, BattleEvent, BattleState, DataBundle, Side, StepResult, Terminal } from "../types";
 import { asDict, toArray, toNum, toStr } from "../types";
 import { clearMarksOnSwitch } from "./marks";
+import { clearStatusesOnSwitch } from "./status";
 import { ActionQueue, MechanismRegistry, MechanismRuntime, mechanismsFromData } from "../mechanisms";
 
 const SIDES: Side[] = ["player", "enemy"];
@@ -303,6 +304,7 @@ export class Simulator {
     const old = s.active;
     events.push(...this.triggerState(st, "beforeSwitch", { actorSide: side, targetSide: otherSide(side), action: { kind: "switch", benchId }, event: { from: old.spriteId, to: target.spriteId, forced } }));
     events.push(...clearMarksOnSwitch(st, side, this.bundle));
+    events.push(...clearStatusesOnSwitch(st, side, this.bundle));
     s.bench = s.bench.filter((b) => b !== target);
     s.bench.push(old);
     s.active = target;

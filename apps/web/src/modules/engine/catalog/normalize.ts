@@ -102,16 +102,29 @@ export function normalizeSnapshot(snapshot: ExternalSnapshot, registrationId: st
     matrix[attack][defend] = relation > 0 ? "counter" : relation < 0 ? "resisted" : "neutral";
   }
   const glossaryById = new Map((snapshot.glossary ?? []).map((entry) => [entry.id, entry]));
-  const marks: Dict[] = [1001, 1002, 1004, 1008].flatMap((id) => {
-    const entry = glossaryById.get(id);
-    if (!entry) return [];
-    return [{ id: ({ 1001: "poison", 1002: "burn", 1004: "freeze", 1008: "parasitism" } as Record<number, string>)[id], name: entry.name, nameZh: entry.name, description: entry.descPlain ?? entry.desc ?? "", maxStack: 10 }];
-  });
-  const weather: Dict[] = [3006, 3007].flatMap((id) => {
-    const entry = glossaryById.get(id);
-    if (!entry) return [];
-    return [{ id: id === 3006 ? "sandstorm" : "blizzard", name: entry.name, nameZh: entry.name, description: entry.descPlain ?? entry.desc ?? "" }];
-  });
+  // 三类互斥：状态（buff，换人默认清除）/ 印记（下场继承、正负各 1）/ 天气。key 取自站点 icon_key。
+  const STATUS_KEYS: Record<number, string> = {
+    1001: "poison", 1002: "burn", 1004: "freeze", 1006: "moe", 1008: "parasite",
+    3022: "conductive-charge", 3023: "rooted", 3024: "wooden-barrel-state", 3025: "moonfall-star-state",
+  };
+  const MARK_KEYS: Record<number, string> = {
+    1014: "poison-mark", 1018: "attack-mark", 1019: "thorn-mark", 1021: "photosynthesis-mark",
+    1022: "wet-mark", 1023: "electric-charge-mark", 1027: "wind-mark", 1028: "spirit-mark",
+    1030: "momentum-mark", 1031: "dragon-devour-mark", 1032: "slow-mark", 1035: "starfall-mark",
+    3012: "sprout-mark", 3020: "undertow-mark",
+  };
+  const WEATHER_KEYS: Record<number, string> = { 3006: "sandstorm", 3007: "blizzard", 3008: "rain", 3021: "thunder" };
+  const fromGlossary = (keys: Record<number, string>, maxStack?: number): Dict[] =>
+    Object.keys(keys)
+      .map(Number)
+      .flatMap((id) => {
+        const entry = glossaryById.get(id);
+        if (!entry) return [];
+        return [{ id: keys[id], name: entry.name, nameZh: entry.name, description: entry.descPlain ?? entry.desc ?? "", ...(maxStack ? { maxStack } : {}) }];
+      });
+  const statuses: Dict[] = fromGlossary(STATUS_KEYS, 10);
+  const marks: Dict[] = fromGlossary(MARK_KEYS);
+  const weather: Dict[] = fromGlossary(WEATHER_KEYS);
   return {
     registrationId,
     source: "roco-world",
@@ -125,6 +138,7 @@ export function normalizeSnapshot(snapshot: ExternalSnapshot, registrationId: st
     skills,
     skillLearners: snapshot.skillLearners as RegisteredCatalog["skillLearners"],
     glossary: snapshot.glossary ?? [],
+    statuses,
     marks,
     weather,
     elements: { $schemaVersion: "0.2", version: snapshot.meta.catalogVersion, updatedAt: snapshot.meta.generatedAt, elements: types, bloodlines: snapshot.meta.bloodlines ?? [], matrix, values: { counter: 2, counter3: 3, neutral: 1, resisted: 0.5, resisted4: 0.25 }, combine: { mode: "count", clampTo: [0.25, 3] } },

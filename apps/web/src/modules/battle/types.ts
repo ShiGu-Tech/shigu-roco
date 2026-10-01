@@ -122,6 +122,7 @@ export interface Catalog {
   bloodlines?: CatalogBloodline[];
   sprites: CatalogSprite[];
   allSkills: CatalogSkill[];
+  statuses: { id: string; name: string; nameZh?: string; description?: string; maxStack: number }[];
   marks: { id: string; name: string; nameZh?: string; description?: string; maxStack: number }[];
   weather: { id: string; name: string; nameZh?: string; description?: string }[];
   rules: Record<string, unknown>;

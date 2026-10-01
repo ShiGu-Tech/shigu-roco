@@ -117,7 +117,7 @@ export interface ExternalSnapshot {
   spiritSkills: Record<string, ExternalLearnedSkill[]>;
   skillLearners?: Record<string, unknown>;
   matchups?: unknown;
-  glossary?: Array<{ id: number; name: string; desc?: string; descPlain?: string; skills?: string[]; n?: number }>;
+  glossary?: Array<{ id: number; name: string; desc?: string; descPlain?: string; iconKey?: string; skills?: string[]; n?: number }>;
   teams?: unknown;
 }
 
@@ -133,8 +133,11 @@ export interface RegisteredCatalog {
   sprites: Dict[];
   skills: Dict[];
   skillLearners: Record<string, ExternalLearnedSkill[]>;
-  glossary: Array<{ id: number; name: string; desc?: string; descPlain?: string; skills?: string[]; n?: number }>;
+  glossary: Array<{ id: number; name: string; desc?: string; descPlain?: string; iconKey?: string; skills?: string[]; n?: number }>;
   weather: Dict[];
+  /** Buff / 状态（中毒、灼烧、冻结…）—— 挂在精灵身上，换人默认清除（冻结等除外）。 */
+  statuses: Dict[];
+  /** 印记 —— 下场不消失、新入场继承、正/负各 1。 */
   marks: Dict[];
   elements: Dict;
 }
