@@ -417,6 +417,55 @@ describe("cooldown subsystem", () => {
   });
 });
 
+describe("starfall burst", () => {
+  const bundle: DataBundle = {
+    ...miniBundle,
+    skills: {
+      ...miniBundle.skills,
+      "sk-hit": { id: "sk-hit", skillName: "普攻", element: "Normal", category: "Physical", actionType: "Attack", power: 40, cost: 0 },
+      "sk-psy": { id: "sk-psy", skillName: "幻技", element: "Psychic", category: "Magic", actionType: "Attack", power: 40, cost: 0 },
+    },
+    rules: { ...miniBundle.rules, starfall: { element: "Psychic", power: { quad: 1, linear: 24, constant: -24 } } },
+    mechanisms: [
+      ...(miniBundle.mechanisms ?? []),
+      { id: "skill:sk-hit", ownerType: "skill", ownerId: "sk-hit", trigger: "beforeAction", when: [{ path: "event.action.skillId", op: "eq", value: "sk-hit" }], effects: [{ type: "dealDamage", target: "target", category: "Physical", power: 40, skillId: "sk-hit" }] },
+      { id: "skill:sk-psy", ownerType: "skill", ownerId: "sk-psy", trigger: "beforeAction", when: [{ path: "event.action.skillId", op: "eq", value: "sk-psy" }], effects: [{ type: "dealDamage", target: "target", category: "Magic", power: 40, skillId: "sk-psy" }] },
+    ],
+  };
+
+  function run(skillId: string, stacks: number) {
+    const sim = new Simulator(bundle);
+    const battle = makeState(
+      makeSide(makeActive("sp-a", { hp: 400, maxHp: 400, energy: 5 })),
+      makeSide(makeActive("sp-b", { hp: 400, maxHp: 400, energy: 5 })),
+      { turn: 1, seed: 1 },
+    );
+    battle.player.active.loadout = [skillId];
+    battle.enemy.active.marks["starfall-mark"] = stacks;
+    return sim.step(battle, { kind: "skill", skillId }, { kind: "energy" }, new Rng(1));
+  }
+
+  it("a non-psychic hit detonates all stacks and consumes them", () => {
+    const result = run("sk-hit", 5);
+    const event = result.events.find((e) => e.type === "starfall");
+    expect(event).toBeTruthy();
+    expect(event?.data.starPower).toBe(121); // 5² + 24·5 − 24
+    expect(result.state.enemy.active.marks["starfall-mark"]).toBeUndefined();
+  });
+
+  it("doubles as extra damage over the same hit without marks", () => {
+    const base = run("sk-hit", 0).state.enemy.active.hp;
+    const burst = run("sk-hit", 5).state.enemy.active.hp;
+    expect(burst).toBeLessThan(base);
+  });
+
+  it("a psychic skill does not trigger starfall", () => {
+    const result = run("sk-psy", 5);
+    expect(result.events.some((e) => e.type === "starfall")).toBe(false);
+    expect(result.state.enemy.active.marks["starfall-mark"]).toBe(5);
+  });
+});
+
 describe("simulator trigger dispatch", () => {
   it("fires battleStart, skillUsed and afterSwitch", () => {
     const sim = new Simulator(miniBundle);

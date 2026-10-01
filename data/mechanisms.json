@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "updatedAt": "2026-10-01",
   "mechanisms": [
     {
@@ -3400,26 +3400,6 @@
           "type": "unsupported",
           "effectType": "conditional",
           "reason": "引电（状态）满 2 层触发，待校准"
-        }
-      ]
-    },
-    {
-      "id": "mark:starfall",
-      "ownerType": "mark",
-      "ownerId": "starfall-mark",
-      "trigger": "onHit",
-      "when": [
-        {
-          "path": "event.markId",
-          "op": "eq",
-          "value": "starfall-mark"
-        }
-      ],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "conditional",
-          "reason": "星陨引爆待校准"
         }
       ]
     },

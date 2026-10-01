@@ -1,7 +1,8 @@
 /** 战斗模拟器（MDP 环境）：按四阶段回合结算。对应 Python simulator/battle.py。 */
 
-import { getSkill, getSprite } from "../data";
+import { bundleTypeMultiplier, getSkill, getSprite } from "../data";
 import { effectiveStat } from "../effects/damage";
+import { statWithProfile } from "../stats";
 import type { Rng } from "../rng";
 import { cloneState, expireSkillOverrides, revertSkillOverride } from "../state";
 import type { Action, BattleEvent, BattleState, DataBundle, Side, StepResult, Terminal } from "../types";
@@ -284,6 +285,43 @@ export class Simulator {
     return events;
   }
 
+  /** 星陨追加伤害（roco pet – RocoDiviner 图卡 4）：非幻系攻击技命中带「星陨印记」目标时引爆，消耗全部层数。
+   * 伤害 = floor( round(攻 × 星陨威力 × 幻系克制 × 特性 × 强化差值 × 37/41) ÷ 防 ) × 减伤；星陨威力 = N²+24N−24。
+   * 攻/防取触发技的物/魔类别；特性倍率与减伤暂按 1（特性表未校准）。 */
+  private applyStarfall(st: BattleState, attackerSide: Side, defenderSide: Side, skillId?: string): BattleEvent[] {
+    const cfg = asDict(this.bundle.rules.starfall);
+    const element = toStr(cfg.element) || "Psychic";
+    const skill = skillId ? getSkill(this.bundle, skillId) : {};
+    if (toStr(skill.element) === element) return [];
+    const category = toStr(skill.category);
+    if (category !== "Physical" && category !== "Magic") return [];
+
+    const defender = this.sideState(st, defenderSide).active;
+    const stacks = Math.floor(toNum(defender.marks?.["starfall-mark"], 0));
+    if (stacks <= 0 || defender.hp <= 0) return [];
+
+    const attacker = this.sideState(st, attackerSide).active;
+    const attackerDef = getSprite(this.bundle, attacker.spriteId);
+    const defenderDef = getSprite(this.bundle, defender.spriteId);
+
+    const power = asDict(cfg.power);
+    const starPower = toNum(power.quad, 1) * stacks * stacks + toNum(power.linear, 24) * stacks + toNum(power.constant, -24);
+
+    const magical = category === "Magic";
+    const atkStat = magical ? "spatk" : "atk";
+    const defStat = magical ? "spdef" : "defense";
+    const atk = statWithProfile(this.bundle.stats, attackerDef, attacker.profile, atkStat);
+    const dfn = Math.max(1, statWithProfile(this.bundle.stats, defenderDef, defender.profile, defStat));
+    const typeMult = bundleTypeMultiplier(this.bundle, element, (defenderDef.elements as string[] | undefined) ?? []);
+    const stageMult = 1 + toNum(attacker.buffs[atkStat], 0) + toNum(attacker.debuffs[atkStat], 0) - toNum(defender.buffs[defStat], 0) - toNum(defender.debuffs[defStat], 0);
+    const balance = toNum(asDict(this.bundle.rules.damageFormula).balance, 37 / 41);
+    const damage = Math.max(0, Math.floor(Math.round(atk * starPower * typeMult * stageMult * balance) / dfn));
+
+    delete defender.marks["starfall-mark"];
+    defender.hp = Math.max(0, defender.hp - damage);
+    return [{ type: "starfall", side: defenderSide, text: `${defender.spriteId} 星陨引爆 ${stacks} 层 → 追加 ${damage}`, data: { stacks, damage, starPower, typeMult } }];
+  }
+
   private applyEnergy(st: BattleState, side: Side): BattleEvent[] {
     const active = this.sideState(st, side).active;
     const energy = asDict(this.bundle.rules.energy);
@@ -346,6 +384,7 @@ export class Simulator {
       events.push(...this.mechanisms.applyDamageCommands(st, this.bundle, damageCommands).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
       events.push(...this.triggerState(st, "onHit", { actorSide: side, targetSide: opp, action, event: { skillId: action.skillId, damageType: category } }));
       events.push(...this.triggerMarkMechanisms(st, opp, side));
+      events.push(...this.applyStarfall(st, side, opp, action.skillId));
       const afterDamage = this.mechanisms.dispatch({
         state: st,
         trigger: "afterDamage",
