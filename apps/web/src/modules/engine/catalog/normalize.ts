@@ -25,6 +25,11 @@ function skillId(value: string | number): string {
   return id.startsWith("sk-") ? id : `sk-${id}`;
 }
 
+/** 站点描述里的内联引用标签（如 `<desc_id=1015>应对状态</>`）只保留可见文本。 */
+function plainText(value: unknown): string {
+  return typeof value === "string" ? value.replace(/<[^>]*>/g, "") : "";
+}
+
 export function normalizeSnapshot(snapshot: ExternalSnapshot, registrationId: string, registeredAt: string): RegisteredCatalog {
   const warnings: string[] = [];
   const skillIds = new Set(snapshot.skills.map((skill) => String(skill.id).startsWith("sk-") ? String(skill.id) : `sk-${skill.id}`));
@@ -55,7 +60,7 @@ export function normalizeSnapshot(snapshot: ExternalSnapshot, registrationId: st
         spdef: spirit.stats.spdef ?? spirit.stats.sdef,
         speed: spirit.stats.speed ?? spirit.stats.spd,
       },
-      trait: spirit.passive ? { name: spirit.passive.name ?? "", desc: spirit.passive.descPlain ?? spirit.passive.desc ?? "", params: { unsupported: true } } : { name: "", desc: "", params: {} },
+      trait: spirit.passive ? { name: spirit.passive.name ?? "", desc: plainText(spirit.passive.descPlain ?? spirit.passive.desc), params: { unsupported: true } } : { name: "", desc: "", params: {} },
       skillList,
       /** 每个技能的学习来源：level（升级）/ machine（技能石）/ blood（血脉）。 */
       skillSources,
@@ -83,8 +88,8 @@ export function normalizeSnapshot(snapshot: ExternalSnapshot, registrationId: st
     cooldown: skill.cooldown ?? skill.cdMax ?? skill.cdMin ?? 0,
     hitRate: 100,
     priority: 0,
-    rawText: skill.description ?? skill.descPlain ?? skill.desc ?? "",
-    description: skill.description ?? skill.descPlain ?? skill.desc ?? "",
+    rawText: plainText(skill.description ?? skill.descPlain ?? skill.desc),
+    description: plainText(skill.description ?? skill.descPlain ?? skill.desc),
     icon: skill.icon ?? skill.imgOnline ?? null,
     categoryIcon: skill.categoryIcon ?? null,
     source: skill.source ?? snapshot.meta.origin ?? "",
@@ -120,7 +125,7 @@ export function normalizeSnapshot(snapshot: ExternalSnapshot, registrationId: st
       .flatMap((id) => {
         const entry = glossaryById.get(id);
         if (!entry) return [];
-        return [{ id: keys[id], name: entry.name, nameZh: entry.name, description: entry.descPlain ?? entry.desc ?? "", ...(maxStack ? { maxStack } : {}) }];
+        return [{ id: keys[id], name: entry.name, nameZh: entry.name, description: plainText(entry.descPlain ?? entry.desc), ...(maxStack ? { maxStack } : {}) }];
       });
   const statuses: Dict[] = fromGlossary(STATUS_KEYS, 10);
   const marks: Dict[] = fromGlossary(MARK_KEYS);
@@ -137,7 +142,12 @@ export function normalizeSnapshot(snapshot: ExternalSnapshot, registrationId: st
     sprites,
     skills,
     skillLearners: snapshot.skillLearners as RegisteredCatalog["skillLearners"],
-    glossary: snapshot.glossary ?? [],
+    glossary: (snapshot.glossary ?? []).map((entry) => ({
+      ...entry,
+      name: plainText(entry.name),
+      desc: plainText(entry.desc),
+      descPlain: plainText(entry.descPlain),
+    })),
     statuses,
     marks,
     weather,
