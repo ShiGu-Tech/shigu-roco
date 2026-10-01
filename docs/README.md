@@ -18,6 +18,7 @@
 - [引擎 TS 化-设计-v0.1](architecture/引擎TS化-设计-v0.1.md) —— 引擎并入 Next.js、Web Worker、同构模块布局、契约映射与 Python 下线。
 - [静态数据与前台计算-设计-v0.1](architecture/静态数据与前台计算-设计-v0.1.md) —— 引擎数据导出为入仓静态包 `public/data/bundle.json`，计算全在浏览器 Worker；`/api/engine/*` 仅兜底与管理。
 - [引擎与前端通道-设计-v0.1](architecture/引擎与前端通道-设计-v0.1.md) —— ⚠️ 已废弃（描述原 Python/FastAPI 常驻进程），保留供追溯；现行架构见上条。
+- [引擎版本与维护-设计-v0.1](architecture/引擎版本与维护-设计-v0.1.md) —— 引擎独立版本号与 bump 策略（能力面 vs 数据）、能力面清单、health/bundle/UI 暴露。
 
 ### 模块（一模块一稿）
 

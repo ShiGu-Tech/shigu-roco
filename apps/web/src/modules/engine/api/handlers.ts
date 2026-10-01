@@ -11,6 +11,7 @@ import {
 import { maxHpLikelihood, profileOptions, trainingProbabilities } from "../opponent/training";
 import { Rng } from "../rng";
 import { Simulator } from "../simulator/battle";
+import { ENGINE_VERSION } from "../version";
 import type { Action, ActiveSprite, BattleEvent, BattleState, DataBundle, Dict, Side, StatProfile } from "../types";
 import { asDict, toArray, toNum, toStr } from "../types";
 
@@ -109,7 +110,7 @@ function eventsToDict(events: BattleEvent[]): Dict[] {
 export function health(bundle: DataBundle): Dict {
   return {
     status: "ok",
-    engineVersion: "0.5.0",
+    engineVersion: ENGINE_VERSION,
     dataVersion: bundle.dataVersion,
     dataUpdatedAt: bundle.dataUpdatedAt,
     counts: counts(bundle),
@@ -323,6 +324,7 @@ function leanSprite(sprite: Dict): Dict {
 /** Worker / 静态包用：全量数据 + 数据版本（不含 sourceData，含 mechanisms）。 */
 export function bundlePayload(bundle: DataBundle): Dict {
   return {
+    engineVersion: ENGINE_VERSION,
     dataVersion: bundle.dataVersion,
     dataUpdatedAt: bundle.dataUpdatedAt,
     warnings: bundle.warnings,

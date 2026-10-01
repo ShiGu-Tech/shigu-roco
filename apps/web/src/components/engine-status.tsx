@@ -6,6 +6,7 @@ import { cn } from "cn";
 
 interface HealthInfo {
   ok: boolean;
+  engine?: string;
   version?: string;
   sprites?: number;
   skills?: number;
@@ -18,10 +19,11 @@ export function EngineStatus() {
     let alive = true;
     fetch("/api/engine/health", { cache: "no-store" })
       .then((response) => response.json())
-      .then((data: { status?: string; dataVersion?: string; counts?: { sprites?: number; skills?: number } }) => {
+      .then((data: { status?: string; engineVersion?: string; dataVersion?: string; counts?: { sprites?: number; skills?: number } }) => {
         if (!alive) return;
         setInfo({
           ok: data.status === "ok",
+          engine: data.engineVersion,
           version: data.dataVersion,
           sprites: data.counts?.sprites,
           skills: data.counts?.skills,
@@ -40,7 +42,7 @@ export function EngineStatus() {
       <span className={cn("h-1.5 w-1.5 rounded-full", info.ok ? "bg-success" : "bg-destructive")} />
       {info.ok ? (
         <span className="tnum">
-          引擎就绪 · <span className="font-mono">{info.version}</span>
+          引擎 <span className="font-mono">v{info.engine}</span> · 数据 <span className="font-mono">{info.version}</span>
           {info.sprites ? <span className="hidden min-[860px]:inline"> · 精灵 {info.sprites} / 技能 {info.skills}</span> : null}
         </span>
       ) : (

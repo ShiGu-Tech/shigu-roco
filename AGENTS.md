@@ -31,6 +31,7 @@ scripts/                      setup / dev / 同步 / 静态包导出
 - 前端：`@/*` → `apps/web/src/*`；业务按 `src/modules/<name>/` 组织，纯逻辑与展示分离。
 - 引擎：`modules/engine/` 包内按 `types / rng / data / stats / effects / simulator / mcts / opponent / api / worker` 分层。
 - 运行时资源只认激活图鉴（`data/registry/catalogs/`）；引擎参数只认 `data/*.json`；**无静态兜底**，缺激活图鉴直接报错。代码中不得出现精灵 / 技能 / 倍率等游戏数据魔法数字（算法常量除外）。
+- **引擎独立版本**：`apps/web/src/modules/engine/version.ts` 的 `ENGINE_VERSION` 单独编号，与业务 `package.json` 版本分开计。**新增技能 / 印记 / 状态 / 天气 / 特性 / 规则参数等数据不 bump**；只有新增机制能力（新触发器 / 新效果命令 / 新结算阶段）才 bump minor，修正结算语义 bump patch，契约破坏性变更 bump major。详见《引擎版本与维护-设计-v0.1》。
 
 ## 自验与命令
 
