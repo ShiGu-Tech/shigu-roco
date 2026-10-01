@@ -1060,3 +1060,131 @@ describe("cost mod model (floor / dispel / oncePerTurn / duration)", () => {
     expect(r.state.player.active.costMods?.some((m) => m.duration === "turns")).toBeFalsy();
   });
 });
+
+describe("batch-18 capabilities (loadout count / buff-debuff trigger / status source)", () => {
+  const bundle: DataBundle = {
+    ...miniBundle,
+    skills: {
+      ...miniBundle.skills,
+      "sk-w1": { id: "sk-w1", skillName: "水枪", element: "Water", category: "Magic", actionType: "Attack", power: 40, cost: 1 },
+      "sk-w2": { id: "sk-w2", skillName: "泡沫", element: "Water", category: "Magic", actionType: "Attack", power: 40, cost: 1 },
+      "sk-e": { id: "sk-e", skillName: "岩击", element: "Earth", category: "Physical", actionType: "Attack", power: 60, cost: 4 },
+      "sk-n": { id: "sk-n", skillName: "拍击", element: "Normal", category: "Physical", actionType: "Attack", power: 60, cost: 4 },
+      "sk-cost": { id: "sk-cost", skillName: "试探", element: "Normal", category: "Physical", actionType: "Attack", power: 40, cost: 4 },
+    },
+    statuses: { freeze: { id: "freeze", name: "冻结", maxStack: 10 } },
+  };
+
+  it("DynamicValue.count scales a cost mod by matching loadout skills", () => {
+    const b: DataBundle = {
+      ...bundle,
+      mechanisms: [
+        {
+          id: "waveblock",
+          ownerType: "trait",
+          ownerId: "sp-a",
+          trigger: "onEntry",
+          when: [
+            { path: "event.enteredSpriteId", op: "eq", value: "sp-a" },
+            { path: "event.first", op: "eq", value: true },
+          ],
+          effects: [
+            { type: "modifySkillCost", target: "self", scope: "all", elements: ["Earth"], deltaFrom: { path: "self.active.loadout", count: { element: "Water" }, scale: -1 } },
+          ],
+        },
+      ],
+    };
+    const sim = new Simulator(b);
+    const st = makeState(
+      makeSide(makeActive("sp-a", { hp: 100, maxHp: 100, energy: 5 })),
+      makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })),
+      { turn: 1, seed: 4 },
+    );
+    st.player.active.loadout = ["sk-w1", "sk-w2", "sk-e", "sk-n"];
+    const r = sim.step(st, { kind: "energy" }, { kind: "energy" }, new Rng(4));
+    // 2 个水系 → 地系 -2；普通系不受影响。
+    expect(effectiveCost(r.state, b, "player", "sk-e")).toBe(2);
+    expect(effectiveCost(r.state, b, "player", "sk-n")).toBe(4);
+  });
+
+  it("buffGained / debuffGained drive cost changes, gated oncePerTurn", () => {
+    const b: DataBundle = {
+      ...bundle,
+      mechanisms: [
+        {
+          id: "prince-buff",
+          ownerType: "trait",
+          ownerId: "sp-a",
+          trigger: "buffGained",
+          when: [{ path: "self.active.spriteId", op: "eq", value: "sp-a" }],
+          oncePerTurn: true,
+          effects: [{ type: "modifySkillCost", target: "self", scope: "all", delta: -1 }],
+        },
+        {
+          id: "prince-debuff",
+          ownerType: "trait",
+          ownerId: "sp-a",
+          trigger: "debuffGained",
+          when: [{ path: "self.active.spriteId", op: "eq", value: "sp-a" }],
+          oncePerTurn: true,
+          effects: [{ type: "modifySkillCost", target: "self", scope: "all", delta: 1 }],
+        },
+      ],
+    };
+    const runtime = new MechanismRuntime(new MechanismRegistry(b.mechanisms as MechanismDefinition[]));
+    const st = makeState(makeSide(makeActive("sp-a", { hp: 100, maxHp: 100 })), makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })));
+    st.onceFired = {};
+    st.player.active.loadout = ["sk-cost"];
+    // 获得增益 → 能耗 -1，且本回合第二次不再叠加。
+    runtime.applyStateCommands(st, [command({ type: "modifyStat", target: "self", stat: "atk", mode: "percent", value: 20 })], b);
+    runtime.applyStateCommands(st, [command({ type: "modifyStat", target: "self", stat: "atk", mode: "percent", value: 20 })], b);
+    expect(effectiveCost(st, b, "player", "sk-cost")).toBe(3);
+    // 获得减益 → 能耗 +1（另一机制，独立每回合 1 次）。
+    runtime.applyStateCommands(st, [command({ type: "modifyStat", target: "self", stat: "defense", mode: "percent", value: -20 })], b);
+    expect(effectiveCost(st, b, "player", "sk-cost")).toBe(4);
+  });
+
+  it("statusApplied carries the applier so on-status cost traits can match", () => {
+    const b: DataBundle = {
+      ...bundle,
+      mechanisms: [
+        {
+          id: "hide",
+          ownerType: "trait",
+          ownerId: "sp-a",
+          trigger: "statusApplied",
+          when: [
+            { path: "event.statusId", op: "eq", value: "freeze" },
+            { path: "event.sourceSpriteId", op: "eq", value: "sp-a" },
+          ],
+          effects: [{ type: "modifySkillCost", target: "self", scope: "all", delta: 1 }],
+        },
+      ],
+    };
+    const runtime = new MechanismRuntime(new MechanismRegistry(b.mechanisms as MechanismDefinition[]));
+    const applyFreeze = (caster: "sp-a" | "sp-b") => {
+      const st = makeState(makeSide(makeActive(caster, { hp: 100, maxHp: 100 })), makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })));
+      st.enemy.active.loadout = ["sk-cost"];
+      runtime.applyStateCommands(st, [command({ type: "applyStatus", target: "opponent", statusId: "freeze", layers: 1 })], b);
+      return st;
+    };
+    expect(effectiveCost(applyFreeze("sp-a"), b, "enemy", "sk-cost")).toBe(5);
+    expect(effectiveCost(applyFreeze("sp-b"), b, "enemy", "sk-cost")).toBe(4);
+  });
+
+  it("ships batch-18 trait registrations (消波块 / 王子的诺言 / 捉迷藏)", () => {
+    const real = getBundle();
+    const all = (real.mechanisms ?? []) as MechanismDefinition[];
+    const find = (id: string) => all.find((m) => m.id === id);
+    expect(find("trait:sp-171-1")?.trigger).toBe("onEntry");
+    const wave = (find("trait:sp-171-1")?.effects?.[0] ?? {}) as { type?: string; elements?: string[]; deltaFrom?: { count?: { element?: string }; scale?: number } };
+    expect(wave.type).toBe("modifySkillCost");
+    expect(wave.elements).toEqual(["Earth"]);
+    expect(wave.deltaFrom?.count?.element).toBe("Water");
+    expect(wave.deltaFrom?.scale).toBe(-1);
+    expect(find("trait:sp-427-1")?.trigger).toBe("buffGained");
+    expect(find("trait:sp-427-1")?.oncePerTurn).toBe(true);
+    expect(find("trait:sp-142-1")?.trigger).toBe("statusApplied");
+    expect((find("trait:sp-142-1")?.when ?? []).some((c) => "path" in c && c.path === "event.sourceSpriteId")).toBe(true);
+  });
+});

@@ -43,5 +43,8 @@
  * - 0.12.0 能耗域通用能力：声明式 `ActiveSprite.costMods` + `effectiveCost`（执行 / `legalActions` / 预览同源，floor + clamp≥0）；
  *          `modifySkillCost` 补 `duration`/`turns`/`oncePerTurn`/`hidden`/`dispellable`/`excludeElements`；新增 `clearCostMod`；
  *          `oncePerTurn` 通用限次；aura 来源离场回收（换人 / 阵亡）。
+ * - 0.13.0 增减益获得事件 + 图鉴计数：新增 `buffGained` / `debuffGained` 触发器（`modifyStat` 生效后派发，
+ *          带 `stat` / `value` / `sourceSide`）；`statusApplied` 事件补 `sourceSide` / `sourceSpriteId`（施加者上下文）；
+ *          `DynamicValue.count`（`path` 指向技能 id 数组时按图鉴 `element`/`category`/`actionType` 统计条目数）。
  */
-export const ENGINE_VERSION = "0.12.0";
+export const ENGINE_VERSION = "0.13.0";

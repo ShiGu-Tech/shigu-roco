@@ -7,7 +7,7 @@ import { asDict, toArray, toNum, toStr } from "../types";
 import { ActionQueue } from "./action-queue";
 import { resolveContextPath } from "./conditions";
 import { MechanismRegistry } from "./registry";
-import type { DynamicRef, EffectCommand, EffectDefinition, MechanismContext, MechanismEvent } from "./types";
+import type { DynamicRef, DynamicValue, EffectCommand, EffectDefinition, MechanismContext, MechanismEvent } from "./types";
 
 interface DamageModifiers {
   attackerMult: number;
@@ -88,15 +88,31 @@ export class MechanismRuntime {
     return [...new Set([...Object.keys(s.active.marks), ...Object.keys(s.teamMarks)])];
   }
 
-  /** 动态取值：字符串 = 点路径；对象 = 路径 + 系数 / 偏移 / 多项式（末尾 `*` 合计）。 */
-  private dynamicValue(state: BattleState, command: EffectCommand, from: DynamicRef | undefined, fallback: number): number {
+  /** 动态取值：字符串 = 点路径；对象 = 路径 + 系数 / 偏移 / 多项式（末尾 `*` 合计）；`count` 按图鉴属性统计数组条目。 */
+  private dynamicValue(state: BattleState, command: EffectCommand, from: DynamicRef | undefined, fallback: number, bundle?: DataBundle): number {
     if (from === undefined) return fallback;
     const spec = typeof from === "string" ? { path: from } : from;
     const context = { state, trigger: command.trigger, actorSide: command.actorSide, targetSide: command.targetSide, event: command.event ?? {} };
-    const raw = toNum(resolveContextPath(context, spec.path), fallback);
+    const resolved = resolveContextPath(context, spec.path);
+    const raw = spec.count ? this.countMatches(bundle, resolved, spec.count) : toNum(resolved, fallback);
     let value = spec.terms ? spec.terms.reduce((sum, term) => sum + term.coef * Math.pow(raw, term.power), 0) : raw * (spec.scale ?? 1) + (spec.offset ?? 0);
     value += spec.terms ? (spec.offset ?? 0) : 0;
     return spec.round === "ceil" ? Math.ceil(value) : spec.round === "round" ? Math.round(value) : Math.floor(value);
+  }
+
+  /** 统计技能 id 数组中符合图鉴属性的条目数（供 `DynamicValue.count`）。 */
+  private countMatches(bundle: DataBundle | undefined, resolved: unknown, filter: NonNullable<DynamicValue["count"]>): number {
+    if (!bundle || !Array.isArray(resolved)) return 0;
+    let count = 0;
+    for (const id of resolved) {
+      if (typeof id !== "string" || !bundle.skills[id]) continue;
+      const skill = getSkill(bundle, id);
+      if (filter.element && skill.element !== filter.element) continue;
+      if (filter.category && skill.category !== filter.category) continue;
+      if (filter.actionType && skill.actionType !== filter.actionType) continue;
+      count += 1;
+    }
+    return count;
   }
 
   /** 印记有效上限：passive 覆盖 ?? 印记自身 ?? rules.marks.maxStack。 */
@@ -127,7 +143,7 @@ export class MechanismRuntime {
         case "heal": {
           if (!active || !targetSide) break;
           const before = active.hp;
-          const base = definition.amountFrom ? this.dynamicValue(state, command, definition.amountFrom, definition.amount) : definition.amount;
+          const base = definition.amountFrom ? this.dynamicValue(state, command, definition.amountFrom, definition.amount, bundle) : definition.amount;
           const amount = definition.basis === "maxHp" ? active.maxHp * base : definition.basis === "currentHp" ? active.hp * base : base;
           active.hp = Math.min(active.maxHp, active.hp + Math.floor(amount));
           events.push({ type: "healed", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { before, after: active.hp, value: active.hp - before } });
@@ -143,7 +159,7 @@ export class MechanismRuntime {
         case "modifyEnergy": {
           if (!active || !targetSide) break;
           const before = active.energy;
-          const delta = definition.deltaFrom ? this.dynamicValue(state, command, definition.deltaFrom, definition.delta) : definition.delta;
+          const delta = definition.deltaFrom ? this.dynamicValue(state, command, definition.deltaFrom, definition.delta, bundle) : definition.delta;
           active.energy = Math.max(0, active.energy + delta);
           events.push({ type: "energy-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { before, after: active.energy, delta } });
           break;
@@ -214,7 +230,7 @@ export class MechanismRuntime {
           const scope = definition.scope ?? "skill";
           const key = definition.key ?? `${command.mechanismId}:${scope}:${definition.skillId ?? "*"}`;
           let delta = definition.delta ?? 0;
-          if (definition.deltaFrom) delta += this.dynamicValue(state, command, definition.deltaFrom, 0);
+          if (definition.deltaFrom) delta += this.dynamicValue(state, command, definition.deltaFrom, 0, bundle);
           const sourceActive = command.actorSide === "player" ? state.player.active : command.actorSide === "enemy" ? state.enemy.active : undefined;
           const source: CostMod["source"] =
             command.ownerType === "trait" ? "trait" : command.ownerType === "skill" ? "skill" : command.ownerType === "status" || command.ownerType === "mark" ? "status" : "system";
@@ -272,7 +288,7 @@ export class MechanismRuntime {
           if (!active || !targetSide) break;
           active.counters ??= {};
           const before = active.counters[definition.key] ?? 0;
-          const value = Math.floor(this.dynamicValue(state, command, definition.valueFrom, definition.value ?? 0));
+          const value = Math.floor(this.dynamicValue(state, command, definition.valueFrom, definition.value ?? 0, bundle));
           active.counters[definition.key] = value;
           events.push({ type: "counter-set", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { key: definition.key, before, after: value } });
           break;
@@ -308,7 +324,7 @@ export class MechanismRuntime {
           const mods = this.ruleModifiers(state, bundle, command.actorSide ?? null);
           // 层数 = 基础值 + layersFrom 动态值（layersFrom 存在时基础默认 0，纯动态）。
           const base = definition.layers ?? (definition.layersFrom ? 0 : 1);
-          const dynamic = definition.layersFrom ? this.dynamicValue(state, command, definition.layersFrom, 0) : 0;
+          const dynamic = definition.layersFrom ? this.dynamicValue(state, command, definition.layersFrom, 0, bundle) : 0;
           const delta = Math.floor(base + dynamic);
           if (delta <= 0) break;
           if ((mods["marks.replaceDifferent"] ?? markPolicy.replaceDifferent) !== false) {
@@ -324,7 +340,7 @@ export class MechanismRuntime {
           const { store, isTeam } = this.markStore(state, bundle, targetSide, definition.markId, definition.scope);
           const mods = this.ruleModifiers(state, bundle, command.actorSide ?? null);
           const before = store[definition.markId] ?? 0;
-          const wanted = Math.max(0, Math.floor(this.dynamicValue(state, command, definition.layersFrom, definition.layers ?? 0)));
+          const wanted = Math.max(0, Math.floor(this.dynamicValue(state, command, definition.layersFrom, definition.layers ?? 0, bundle)));
           const after = Math.min(this.markCap(mods, bundle, definition.markId), wanted);
           if (after <= 0) delete store[definition.markId];
           else store[definition.markId] = after;
@@ -450,13 +466,14 @@ export class MechanismRuntime {
           const before = active.statuses[definition.statusId] ?? 0;
           const delta = definition.layers ?? 1;
           active.statuses[definition.statusId] = before + delta;
-          events.push({ type: "status-applied", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { statusId: definition.statusId, before, after: active.statuses[definition.statusId], layers: delta } });
+          const sourceActive = command.actorSide === "player" ? state.player.active : command.actorSide === "enemy" ? state.enemy.active : undefined;
+          events.push({ type: "status-applied", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { statusId: definition.statusId, before, after: active.statuses[definition.statusId], layers: delta, sourceSide: command.actorSide ?? null, sourceSpriteId: sourceActive?.spriteId ?? null } });
           break;
         }
         case "setStatus": {
           if (!active || !targetSide) break;
           const before = active.statuses[definition.statusId] ?? 0;
-          const wanted = Math.max(0, Math.floor(this.dynamicValue(state, command, definition.layersFrom, definition.layers ?? 0)));
+          const wanted = Math.max(0, Math.floor(this.dynamicValue(state, command, definition.layersFrom, definition.layers ?? 0, bundle)));
           if (wanted <= 0) delete active.statuses[definition.statusId];
           else active.statuses[definition.statusId] = wanted;
           events.push({ type: "status-set", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { statusId: definition.statusId, before, after: wanted } });
@@ -512,13 +529,24 @@ export class MechanismRuntime {
         }
         case "modifyStat": {
           if (!active || !targetSide) break;
-          const raw = definition.valueFrom ? this.dynamicValue(state, command, definition.valueFrom, definition.value) : definition.value;
+          const raw = definition.valueFrom ? this.dynamicValue(state, command, definition.valueFrom, definition.value, bundle) : definition.value;
           const value = definition.mode === "percent" && Math.abs(raw) > 1 ? raw / 100 : raw;
           const bucket = value >= 0 ? active.buffs : active.debuffs;
           const cap = definition.maxStages ?? toNum(asDict(bundle?.rules.stage).cap, Number.POSITIVE_INFINITY);
           const before = bucket[definition.stat] ?? 0;
           bucket[definition.stat] = Math.max(-cap, Math.min(cap, before + value));
           events.push({ type: "stat-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { stat: definition.stat, before, after: bucket[definition.stat], mode: definition.mode } });
+          // 增益 / 减益获得：作为领域事件再次派发（供「获得增益/减益时」类特性）。
+          if (value !== 0) {
+            events.push({
+              type: value > 0 ? "buff-gained" : "debuff-gained",
+              trigger: command.trigger,
+              mechanismId: command.mechanismId,
+              effectType: definition.type,
+              side: targetSide,
+              data: { stat: definition.stat, value, before, after: bucket[definition.stat], mode: definition.mode, sourceSide: command.actorSide ?? null },
+            });
+          }
           break;
         }
         case "learnSkill": {
@@ -584,7 +612,12 @@ export class MechanismRuntime {
 
     if (depth < 4) {
       for (const event of [...events]) {
-        const trigger = event.type === "status-applied" ? "statusApplied" : event.type === "mark-applied" ? "markApplied" : null;
+        const trigger =
+          event.type === "status-applied" ? "statusApplied"
+          : event.type === "mark-applied" ? "markApplied"
+          : event.type === "buff-gained" ? "buffGained"
+          : event.type === "debuff-gained" ? "debuffGained"
+          : null;
         if (!trigger) continue;
         const cascaded = this.dispatch({
           state,
@@ -621,7 +654,7 @@ export class MechanismRuntime {
       let effectiveSkill = powerDelta ? { ...skill, power: toNum(skill.power, 0) + powerDelta } : skill;
       // 动态威力：`powerFrom` 按当前状态求值（如「能耗每 +1 威力 +50」= offset 450 + scale 50×能耗）。
       // 路径缺失按 0 计，基线由 offset 提供，避免把 fallback 也乘上 scale。
-      if (definition.powerFrom) effectiveSkill = { ...effectiveSkill, power: this.dynamicValue(state, command, definition.powerFrom, 0) };
+      if (definition.powerFrom) effectiveSkill = { ...effectiveSkill, power: this.dynamicValue(state, command, definition.powerFrom, 0, bundle) };
       let damage: number;
       let effectiveness = 1;
       let modifiers: DamageModifiers | null = null;

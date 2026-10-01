@@ -24,6 +24,8 @@ export type TriggerName =
   | "onHit"
   | "statusApplied"
   | "markApplied"
+  | "buffGained"
+  | "debuffGained"
   | "weatherChanged"
   | "skillCooldownReduced";
 
@@ -66,6 +68,8 @@ export interface DynamicValue {
   offset?: number;
   round?: "floor" | "ceil" | "round";
   terms?: { coef: number; power: number }[];
+  /** `path` 指向技能 id 数组时（如 `self.active.loadout`），按图鉴条目属性筛选计数（需 bundle）。 */
+  count?: { element?: string; category?: string; actionType?: string };
 }
 
 /** 动态引用：字符串等价于 `{ path }`。 */

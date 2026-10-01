@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.24.0",
+  "version": "0.25.0",
   "updatedAt": "2026-10-01",
   "mechanisms": [
     {
@@ -9528,186 +9528,530 @@
       "note": "思维之盾：应对成功后，下次行动技能能耗-5"
     },
     {
-      "id": "trait:sp-142-1",
-      "ownerType": "trait",
-      "ownerId": "sp-142-1",
-      "trigger": "battleStart",
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "trait",
-          "reason": "捉迷藏：使敌方获得冻结时也使其全技能能耗+1（需「施加者」上下文，待接入）"
-        }
-      ],
-      "note": "捉迷藏：使敌方获得冻结时也使其全技能能耗+1（需「施加者」上下文，待接入）"
-    },
-    {
-      "id": "trait:sp-143-1",
-      "ownerType": "trait",
-      "ownerId": "sp-143-1",
-      "trigger": "battleStart",
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "trait",
-          "reason": "捉迷藏：使敌方获得冻结时也使其全技能能耗+1（需「施加者」上下文，待接入）"
-        }
-      ],
-      "note": "捉迷藏：使敌方获得冻结时也使其全技能能耗+1（需「施加者」上下文，待接入）"
-    },
-    {
-      "id": "trait:sp-144-1",
-      "ownerType": "trait",
-      "ownerId": "sp-144-1",
-      "trigger": "battleStart",
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "trait",
-          "reason": "捉迷藏：使敌方获得冻结时也使其全技能能耗+1（需「施加者」上下文，待接入）"
-        }
-      ],
-      "note": "捉迷藏：使敌方获得冻结时也使其全技能能耗+1（需「施加者」上下文，待接入）"
-    },
-    {
-      "id": "trait:sp-144-2",
-      "ownerType": "trait",
-      "ownerId": "sp-144-2",
-      "trigger": "battleStart",
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "trait",
-          "reason": "捉迷藏：使敌方获得冻结时也使其全技能能耗+1（需「施加者」上下文，待接入）"
-        }
-      ],
-      "note": "捉迷藏：使敌方获得冻结时也使其全技能能耗+1（需「施加者」上下文，待接入）"
-    },
-    {
-      "id": "trait:sp-427-1",
-      "ownerType": "trait",
-      "ownerId": "sp-427-1",
-      "trigger": "battleStart",
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "trait",
-          "reason": "王子的诺言：获增益/减益时全技能能耗∓1，每回合各1次（需「获得增益/减益」触发器，待接入）"
-        }
-      ],
-      "note": "王子的诺言：获增益/减益时全技能能耗∓1，每回合各1次（需「获得增益/减益」触发器，待接入）"
-    },
-    {
-      "id": "trait:sp-428-1",
-      "ownerType": "trait",
-      "ownerId": "sp-428-1",
-      "trigger": "battleStart",
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "trait",
-          "reason": "王子的诺言：获增益/减益时全技能能耗∓1，每回合各1次（需「获得增益/减益」触发器，待接入）"
-        }
-      ],
-      "note": "王子的诺言：获增益/减益时全技能能耗∓1，每回合各1次（需「获得增益/减益」触发器，待接入）"
-    },
-    {
-      "id": "trait:sp-429-1",
-      "ownerType": "trait",
-      "ownerId": "sp-429-1",
-      "trigger": "battleStart",
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "trait",
-          "reason": "王子的诺言：获增益/减益时全技能能耗∓1，每回合各1次（需「获得增益/减益」触发器，待接入）"
-        }
-      ],
-      "note": "王子的诺言：获增益/减益时全技能能耗∓1，每回合各1次（需「获得增益/减益」触发器，待接入）"
-    },
-    {
       "id": "trait:sp-171-1",
       "ownerType": "trait",
       "ownerId": "sp-171-1",
-      "trigger": "battleStart",
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "trait",
-          "reason": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
+          "path": "event.enteredSpriteId",
+          "op": "eq",
+          "value": "sp-171-1"
+        },
+        {
+          "path": "event.first",
+          "op": "eq",
+          "value": true
         }
       ],
-      "note": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "elements": [
+            "Earth"
+          ],
+          "deltaFrom": {
+            "path": "self.active.loadout",
+            "count": {
+              "element": "Water"
+            },
+            "scale": -1
+          },
+          "duration": "permanent",
+          "key": "waveblock:sp-171-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "消波块：每携带 1 个水系技能，地系技能能耗 -1"
     },
     {
       "id": "trait:sp-171-2",
       "ownerType": "trait",
       "ownerId": "sp-171-2",
-      "trigger": "battleStart",
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "trait",
-          "reason": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
+          "path": "event.enteredSpriteId",
+          "op": "eq",
+          "value": "sp-171-2"
+        },
+        {
+          "path": "event.first",
+          "op": "eq",
+          "value": true
         }
       ],
-      "note": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "elements": [
+            "Earth"
+          ],
+          "deltaFrom": {
+            "path": "self.active.loadout",
+            "count": {
+              "element": "Water"
+            },
+            "scale": -1
+          },
+          "duration": "permanent",
+          "key": "waveblock:sp-171-2",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "消波块：每携带 1 个水系技能，地系技能能耗 -1"
     },
     {
       "id": "trait:sp-172-1",
       "ownerType": "trait",
       "ownerId": "sp-172-1",
-      "trigger": "battleStart",
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "trait",
-          "reason": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
+          "path": "event.enteredSpriteId",
+          "op": "eq",
+          "value": "sp-172-1"
+        },
+        {
+          "path": "event.first",
+          "op": "eq",
+          "value": true
         }
       ],
-      "note": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "elements": [
+            "Earth"
+          ],
+          "deltaFrom": {
+            "path": "self.active.loadout",
+            "count": {
+              "element": "Water"
+            },
+            "scale": -1
+          },
+          "duration": "permanent",
+          "key": "waveblock:sp-172-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "消波块：每携带 1 个水系技能，地系技能能耗 -1"
     },
     {
       "id": "trait:sp-172-2",
       "ownerType": "trait",
       "ownerId": "sp-172-2",
-      "trigger": "battleStart",
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "trait",
-          "reason": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
+          "path": "event.enteredSpriteId",
+          "op": "eq",
+          "value": "sp-172-2"
+        },
+        {
+          "path": "event.first",
+          "op": "eq",
+          "value": true
         }
       ],
-      "note": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "elements": [
+            "Earth"
+          ],
+          "deltaFrom": {
+            "path": "self.active.loadout",
+            "count": {
+              "element": "Water"
+            },
+            "scale": -1
+          },
+          "duration": "permanent",
+          "key": "waveblock:sp-172-2",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "消波块：每携带 1 个水系技能，地系技能能耗 -1"
     },
     {
       "id": "trait:sp-173-1",
       "ownerType": "trait",
       "ownerId": "sp-173-1",
-      "trigger": "battleStart",
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "trait",
-          "reason": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
+          "path": "event.enteredSpriteId",
+          "op": "eq",
+          "value": "sp-173-1"
+        },
+        {
+          "path": "event.first",
+          "op": "eq",
+          "value": true
         }
       ],
-      "note": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "elements": [
+            "Earth"
+          ],
+          "deltaFrom": {
+            "path": "self.active.loadout",
+            "count": {
+              "element": "Water"
+            },
+            "scale": -1
+          },
+          "duration": "permanent",
+          "key": "waveblock:sp-173-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "消波块：每携带 1 个水系技能，地系技能能耗 -1"
     },
     {
       "id": "trait:sp-173-2",
       "ownerType": "trait",
       "ownerId": "sp-173-2",
-      "trigger": "battleStart",
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "trait",
-          "reason": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
+          "path": "event.enteredSpriteId",
+          "op": "eq",
+          "value": "sp-173-2"
+        },
+        {
+          "path": "event.first",
+          "op": "eq",
+          "value": true
         }
       ],
-      "note": "消波块：每携带1个水系技能，地系技能能耗-1（需按元素统计 loadout，待接入）"
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "elements": [
+            "Earth"
+          ],
+          "deltaFrom": {
+            "path": "self.active.loadout",
+            "count": {
+              "element": "Water"
+            },
+            "scale": -1
+          },
+          "duration": "permanent",
+          "key": "waveblock:sp-173-2",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "消波块：每携带 1 个水系技能，地系技能能耗 -1"
+    },
+    {
+      "id": "trait:sp-427-1",
+      "ownerType": "trait",
+      "ownerId": "sp-427-1",
+      "trigger": "buffGained",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "eq",
+          "value": "sp-427-1"
+        }
+      ],
+      "oncePerTurn": true,
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -1,
+          "duration": "permanent",
+          "key": "prince-buff:sp-427-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "王子的诺言：获得增益 → 全技能能耗 -1（每回合 1 次）"
+    },
+    {
+      "id": "trait:sp-427-1",
+      "ownerType": "trait",
+      "ownerId": "sp-427-1",
+      "trigger": "debuffGained",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "eq",
+          "value": "sp-427-1"
+        }
+      ],
+      "oncePerTurn": true,
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": 1,
+          "duration": "permanent",
+          "key": "prince-debuff:sp-427-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "王子的诺言：获得减益 → 全技能能耗 +1（每回合 1 次）"
+    },
+    {
+      "id": "trait:sp-428-1",
+      "ownerType": "trait",
+      "ownerId": "sp-428-1",
+      "trigger": "buffGained",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "eq",
+          "value": "sp-428-1"
+        }
+      ],
+      "oncePerTurn": true,
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -1,
+          "duration": "permanent",
+          "key": "prince-buff:sp-428-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "王子的诺言：获得增益 → 全技能能耗 -1（每回合 1 次）"
+    },
+    {
+      "id": "trait:sp-428-1",
+      "ownerType": "trait",
+      "ownerId": "sp-428-1",
+      "trigger": "debuffGained",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "eq",
+          "value": "sp-428-1"
+        }
+      ],
+      "oncePerTurn": true,
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": 1,
+          "duration": "permanent",
+          "key": "prince-debuff:sp-428-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "王子的诺言：获得减益 → 全技能能耗 +1（每回合 1 次）"
+    },
+    {
+      "id": "trait:sp-429-1",
+      "ownerType": "trait",
+      "ownerId": "sp-429-1",
+      "trigger": "buffGained",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "eq",
+          "value": "sp-429-1"
+        }
+      ],
+      "oncePerTurn": true,
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -1,
+          "duration": "permanent",
+          "key": "prince-buff:sp-429-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "王子的诺言：获得增益 → 全技能能耗 -1（每回合 1 次）"
+    },
+    {
+      "id": "trait:sp-429-1",
+      "ownerType": "trait",
+      "ownerId": "sp-429-1",
+      "trigger": "debuffGained",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "eq",
+          "value": "sp-429-1"
+        }
+      ],
+      "oncePerTurn": true,
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": 1,
+          "duration": "permanent",
+          "key": "prince-debuff:sp-429-1",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "王子的诺言：获得减益 → 全技能能耗 +1（每回合 1 次）"
+    },
+    {
+      "id": "trait:sp-142-1",
+      "ownerType": "trait",
+      "ownerId": "sp-142-1",
+      "trigger": "statusApplied",
+      "when": [
+        {
+          "path": "event.statusId",
+          "op": "eq",
+          "value": "freeze"
+        },
+        {
+          "path": "event.sourceSpriteId",
+          "op": "eq",
+          "value": "sp-142-1"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": 1,
+          "duration": "permanent",
+          "key": "hide:sp-142-1",
+          "dispellable": true,
+          "hidden": false
+        }
+      ],
+      "note": "捉迷藏：使敌方获得冻结时，敌方全技能能耗 +1（时长待校准）"
+    },
+    {
+      "id": "trait:sp-143-1",
+      "ownerType": "trait",
+      "ownerId": "sp-143-1",
+      "trigger": "statusApplied",
+      "when": [
+        {
+          "path": "event.statusId",
+          "op": "eq",
+          "value": "freeze"
+        },
+        {
+          "path": "event.sourceSpriteId",
+          "op": "eq",
+          "value": "sp-143-1"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": 1,
+          "duration": "permanent",
+          "key": "hide:sp-143-1",
+          "dispellable": true,
+          "hidden": false
+        }
+      ],
+      "note": "捉迷藏：使敌方获得冻结时，敌方全技能能耗 +1（时长待校准）"
+    },
+    {
+      "id": "trait:sp-144-1",
+      "ownerType": "trait",
+      "ownerId": "sp-144-1",
+      "trigger": "statusApplied",
+      "when": [
+        {
+          "path": "event.statusId",
+          "op": "eq",
+          "value": "freeze"
+        },
+        {
+          "path": "event.sourceSpriteId",
+          "op": "eq",
+          "value": "sp-144-1"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": 1,
+          "duration": "permanent",
+          "key": "hide:sp-144-1",
+          "dispellable": true,
+          "hidden": false
+        }
+      ],
+      "note": "捉迷藏：使敌方获得冻结时，敌方全技能能耗 +1（时长待校准）"
+    },
+    {
+      "id": "trait:sp-144-2",
+      "ownerType": "trait",
+      "ownerId": "sp-144-2",
+      "trigger": "statusApplied",
+      "when": [
+        {
+          "path": "event.statusId",
+          "op": "eq",
+          "value": "freeze"
+        },
+        {
+          "path": "event.sourceSpriteId",
+          "op": "eq",
+          "value": "sp-144-2"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": 1,
+          "duration": "permanent",
+          "key": "hide:sp-144-2",
+          "dispellable": true,
+          "hidden": false
+        }
+      ],
+      "note": "捉迷藏：使敌方获得冻结时，敌方全技能能耗 +1（时长待校准）"
     }
   ]
 }
