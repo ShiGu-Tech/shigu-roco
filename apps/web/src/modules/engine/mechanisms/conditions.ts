@@ -1,3 +1,4 @@
+import type { Side } from "../types";
 import type { Condition, MechanismContext } from "./types";
 
 function readPath(root: unknown, path: string): unknown {
@@ -7,33 +8,61 @@ function readPath(root: unknown, path: string): unknown {
   }, root);
 }
 
-function matches(actual: unknown, condition: Condition): boolean {
+function sideState(context: MechanismContext, side: Side | undefined): unknown {
+  if (!side) return undefined;
+  return side === "player" ? context.state.player : context.state.enemy;
+}
+
+/** 条件作用域：self/actor 指触发方，target/opponent 指目标方，event 为事件负载。 */
+function scope(context: MechanismContext): unknown {
+  return {
+    ...context,
+    event: context.event,
+    self: sideState(context, context.actorSide),
+    actor: sideState(context, context.actorSide),
+    target: sideState(context, context.targetSide),
+    opponent: sideState(context, context.targetSide),
+  };
+}
+
+/** 从上下文取值（供 effect 的动态引用，如 skillIdFrom）。 */
+export function resolveContextPath(context: MechanismContext, path: string): unknown {
+  return readPath(scope(context), path);
+}
+
+function matches(context: MechanismContext, condition: Condition): boolean {
+  if ("allOf" in condition) return condition.allOf.every((item) => matches(context, item));
+  if ("anyOf" in condition) return condition.anyOf.some((item) => matches(context, item));
+  if ("not" in condition) return !matches(context, condition.not);
+
+  const actual = readPath(scope(context), condition.path);
+  const expected = condition.valueFrom ? readPath(scope(context), condition.valueFrom) : condition.value;
   switch (condition.op) {
     case "eq":
-      return actual === condition.value;
+      return actual === expected;
     case "neq":
-      return actual !== condition.value;
+      return actual !== expected;
     case "gt":
-      return Number(actual) > Number(condition.value);
+      return Number(actual) > Number(expected);
     case "gte":
-      return Number(actual) >= Number(condition.value);
+      return Number(actual) >= Number(expected);
     case "lt":
-      return Number(actual) < Number(condition.value);
+      return Number(actual) < Number(expected);
     case "lte":
-      return Number(actual) <= Number(condition.value);
+      return Number(actual) <= Number(expected);
     case "in":
-      return Array.isArray(condition.value) && condition.value.includes(actual);
+      return Array.isArray(expected) && expected.includes(actual);
     case "has":
       return Boolean(
         actual &&
           typeof actual === "object" &&
-          (typeof condition.value === "string" || typeof condition.value === "number" || typeof condition.value === "symbol") &&
-          condition.value in actual,
+          (typeof expected === "string" || typeof expected === "number" || typeof expected === "symbol") &&
+          expected in actual,
       );
   }
 }
 
 export function conditionsMatch(context: MechanismContext, conditions: Condition[] | undefined): boolean {
   if (!conditions?.length) return true;
-  return conditions.every((condition) => matches(readPath({ ...context, event: context.event }, condition.path), condition));
+  return conditions.every((condition) => matches(context, condition));
 }

@@ -26,6 +26,8 @@ export interface PetInstance {
   stars: number;
   /** 性格 id（↔ `StatsData.natures[].id`）；null = 中性。 */
   nature: string | null;
+  /** 血脉槽 id：`leader` / `polluted` / `strange` / 系别名（图鉴 elements.name）；缺省 = 精灵本体第一属性。 */
+  bloodline?: string;
   talent: TalentMap;
   /** 出战技能 id（外键 → 模板技能池），≤ 4；空 = 用模板默认 4 招。 */
   skills: string[];
@@ -71,6 +73,7 @@ export interface PetSetupLike {
   level: number;
   stars: number;
   nature: string | null;
+  bloodline?: string;
   talent: TalentMap;
   skills: string[];
 }
@@ -82,6 +85,7 @@ export function instanceFromSetup(spriteId: string, setup: PetSetupLike, now = D
     level: setup.level,
     stars: setup.stars,
     nature: setup.nature,
+    bloodline: setup.bloodline,
     talent: { ...setup.talent },
     skills: [...setup.skills],
   };
@@ -93,9 +97,68 @@ export function setupFromInstance(instance: PetInstance): PetSetupLike {
     level: instance.level,
     stars: instance.stars,
     nature: instance.nature,
+    bloodline: instance.bloodline,
     talent: { ...instance.talent },
     skills: [...instance.skills],
   };
+}
+
+// ---------------------------------------------------------------- 血脉
+
+export type BloodlineKind = "leader" | "element";
+
+export interface BloodlineOption {
+  id: string;
+  label: string;
+  kind: BloodlineKind;
+  /** kind === "element" 时的系别键（图鉴 elements.name）。 */
+  element?: string;
+  icon?: string | null;
+}
+
+/**
+ * 血脉选项：直接由图鉴 `bloodlines` 生成（18 系别 + 首领血脉 `LEADER`，各带图标）。
+ * 系别血脉 id 用 element name（便于按系筛选血脉技能）；首领血脉 id = "leader"（无血脉技能）。
+ */
+export function bloodlineOptions(catalog: Catalog): BloodlineOption[] {
+  const defs = catalog.bloodlines ?? [];
+  const typeName = new Map(catalog.elements.map((el) => [el.id, el.name]));
+  if (defs.length) {
+    return defs.map<BloodlineOption>((b) => {
+      const element = b.battleTypeId != null ? typeName.get(b.battleTypeId) : undefined;
+      const isLeader = b.key === "LEADER" || element == null;
+      return {
+        id: isLeader ? "leader" : element,
+        label: b.name,
+        kind: isLeader ? "leader" : "element",
+        element,
+        icon: b.icon ?? null,
+      };
+    });
+  }
+  // 回退：图鉴无 bloodlines 时按属性生成 18 系别血脉（用属性图标代替）。
+  return catalog.elements.map<BloodlineOption>((el) => ({
+    id: el.name,
+    label: `${el.nameZh ?? el.name}血脉`,
+    kind: "element",
+    element: el.name,
+    icon: el.icon ?? null,
+  }));
+}
+
+export function bloodlineOptionOf(catalog: Catalog, id: string | undefined | null): BloodlineOption | undefined {
+  if (!id) return undefined;
+  return bloodlineOptions(catalog).find((o) => o.id === id);
+}
+
+/** 血脉过滤语义：leader = 无血脉技能；element = 只留该系血脉技能；未选 = 不筛选。 */
+export function bloodlineKind(catalog: Catalog, id: string | undefined | null): BloodlineKind | "none" {
+  return bloodlineOptionOf(catalog, id)?.kind ?? "none";
+}
+
+/** 实例默认血脉 = 精灵本体第一属性系别（缺省为空）。 */
+export function defaultBloodline(catalog: Catalog, spriteId: string): string {
+  return catalog.sprites.find((s) => s.id === spriteId)?.elements?.[0] ?? "";
 }
 
 /** 实例 → 引擎档案：个体值 = 天分 ×(1 + 星级)，与《数值与伤害模型》口径一致。 */

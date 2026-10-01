@@ -2,13 +2,15 @@
 
 import type { ReactNode } from "react";
 import { useState } from "react";
+import Image from "next/image";
 import { cn } from "cn";
 
+import { ElementBadge, ElementIcon } from "@/components/element-icon";
 import { NaturePicker } from "@/components/nature-picker";
+import { SkillCategoryIcon } from "@/components/skill-category-icon";
 import { SkillSelector } from "@/components/skill-selector";
 import { SpriteImage } from "@/components/sprite-image";
 import { StatRadar } from "@/components/stat-radar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -18,19 +20,54 @@ import { PANEL_ORDER, STAT_LABEL } from "@/modules/engine/calc";
 import { computeStats, type StatKey } from "@/modules/engine/stats";
 import { MAX_INVEST, MAX_TALENT, profileFromSetup, type PetSetup } from "@/modules/battle/pet";
 import type { Catalog, CatalogSprite } from "@/modules/battle/types";
+import { bloodlineOptions, defaultBloodline, type BloodlineOption } from "@/modules/pets/instance";
 import { recommendBuild } from "@/modules/pets/recommend";
 
 const STAT_ORDER: StatKey[] = [...PANEL_ORDER];
 const MAX_LEVEL = 60;
 const MAX_STARS = 5;
 
-function elementZh(catalog: Catalog, key: string): string {
-  return catalog.elements.find((el) => el.name === key)?.nameZh ?? key;
-}
-
 /** 分区容器：边框 + 浅底，把弹窗内的各块分开。 */
 function Section({ children, className }: { children: ReactNode; className?: string }) {
   return <section className={cn("rounded-lg border bg-background/50 p-3", className)}>{children}</section>;
+}
+
+/** 血脉选择：系别项用图标（title 提示名），固定项用文字；选中高亮。 */
+function BloodlinePicker({
+  options,
+  value,
+  onChange,
+}: {
+  options: BloodlineOption[];
+  value: string;
+  onChange: (id: string) => void;
+}) {
+  return (
+    <div className="flex max-h-[104px] flex-wrap gap-1 overflow-y-auto rounded-md border bg-background/60 p-1">
+      {options.map((o) => {
+        const active = o.id === value;
+        return (
+          <button
+            key={o.id}
+            type="button"
+            title={o.label}
+            aria-pressed={active}
+            onClick={() => onChange(o.id)}
+            className={cn(
+              "inline-flex h-7 items-center gap-1 rounded px-1 text-[11px] transition-colors",
+              active ? "bg-primary text-primary-foreground" : "hover:bg-accent",
+            )}
+          >
+            {o.icon ? (
+              <Image src={o.icon} alt="" width={20} height={20} className="h-5 w-5 object-contain" />
+            ) : (
+              <span className="max-w-[72px] truncate">{o.label}</span>
+            )}
+          </button>
+        );
+      })}
+    </div>
+  );
 }
 
 /** 星级点击（好评式）：点第 n 颗 = n★；再点当前值 = 0★。 */
@@ -46,7 +83,7 @@ function StarRating({ value, onChange }: { value: number; onChange: (value: numb
           onClick={() => onChange(value === s ? 0 : s)}
           className={cn(
             "px-0.5 text-xl leading-none transition-colors",
-            s <= value ? "text-primary" : "text-muted-foreground/30 hover:text-primary/60",
+            s <= value ? "text-star" : "text-muted-foreground/30 hover:text-star/60",
           )}
         >
           ★
@@ -174,6 +211,8 @@ export function PetConfigDialog({
     sprite && catalog.stats
       ? computeStats(catalog.stats, { race: sprite.race }, profileFromSetup({ ...setup, nature: "neutral", talent: {} }))
       : null;
+  const bloodlines = bloodlineOptions(catalog);
+  const effectiveBloodline = setup.bloodline || defaultBloodline(catalog, spriteId);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -184,9 +223,7 @@ export function PetConfigDialog({
             <span>{name?.trim() || title || "精灵参数"}</span>
             {sprite ? <span className="text-muted-foreground">#{sprite.no} {sprite.name}</span> : null}
             {sprite?.elements.map((el) => (
-              <Badge key={el} variant="outline">
-                {elementZh(catalog, el)}
-              </Badge>
+              <ElementBadge key={el} catalog={catalog} element={el} />
             ))}
           </DialogTitle>
         </DialogHeader>
@@ -210,7 +247,7 @@ export function PetConfigDialog({
               )}
 
               <Section>
-                <div className="grid gap-4 min-[520px]:grid-cols-2">
+                <div className="grid grid-cols-2 gap-3 min-[860px]:grid-cols-4">
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between gap-2">
                       <Label className="text-xs">等级</Label>
@@ -228,6 +265,33 @@ export function PetConfigDialog({
                   <div className="space-y-1.5">
                     <Label className="text-xs">星级</Label>
                     <StarRating value={setup.stars} onChange={(v) => onSetupChange({ ...setup, stars: v })} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">属性</Label>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {sprite.elements.map((el) => {
+                        const def = catalog.elements.find((e) => e.name === el);
+                        return (
+                          <span key={el} className="inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs">
+                            {def?.icon ? <Image src={def.icon} alt="" width={20} height={20} className="h-5 w-5 object-contain" /> : null}
+                            {def?.nameZh ?? el}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">
+                      血脉
+                      <span className="ml-1 text-muted-foreground">
+                        {bloodlines.find((b) => b.id === effectiveBloodline)?.label ?? ""}
+                      </span>
+                    </Label>
+                    <BloodlinePicker
+                      options={bloodlines}
+                      value={effectiveBloodline}
+                      onChange={(id) => onSetupChange({ ...setup, bloodline: id })}
+                    />
                   </div>
                 </div>
               </Section>
@@ -282,9 +346,15 @@ export function PetConfigDialog({
                             }}
                           >
                             <span className="truncate">{skill ? skill.name : `槽 ${i + 1}`}</span>
-                            <span className="shrink-0 text-[10px] opacity-70">
-                              {skill ? `${elementZh(catalog, skill.element)} · 能耗${skill.cost}` : "选技能"}
-                            </span>
+                            {skill ? (
+                              <span className="flex shrink-0 items-center gap-1 text-[10px] opacity-70">
+                                <SkillCategoryIcon skill={skill} size={13} />
+                                <ElementIcon catalog={catalog} element={skill.element} size={13} />
+                                {`能耗${skill.cost}`}
+                              </span>
+                            ) : (
+                              <span className="shrink-0 text-[10px] opacity-70">选技能</span>
+                            )}
                           </Button>
                           {skill && (
                             <Button
@@ -310,6 +380,7 @@ export function PetConfigDialog({
                     <SkillSelector
                       catalog={catalog}
                       spriteId={spriteId}
+                      bloodline={effectiveBloodline}
                       value={setup.skills[slot]}
                       onSelect={(skillId) => {
                         const next = [...setup.skills];

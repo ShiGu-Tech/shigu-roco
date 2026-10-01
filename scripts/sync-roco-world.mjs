@@ -47,7 +47,8 @@ function skillFromData(skill, types) {
     categoryZh: category, actionType: category === "防御" ? "Defense" : category === "状态" ? "Status" : "Attack", actionTypeZh: category === "防御" ? "防御" : category === "状态" ? "状态" : "攻击",
     power: Math.max(...damage.map(Number), 0), powerMin: Math.min(...damage.map(Number), 0), powerMax: Math.max(...damage.map(Number), 0), cost: skill.energy_cost ?? 0,
     cooldown: Math.max(...(skill.cooldown ?? [0]), 0), hitRate: 100, priority: 0, rawText: skill.description ?? "", description: skill.description ?? "",
-    icon: skill.image_url ? absoluteUrl(skill.image_url) : null, source: absoluteUrl(`/skill/${skill.id}`), sourceData: skill,
+    icon: skill.image_url ? absoluteUrl(skill.image_url) : null, categoryIcon: skill.skill_category?.image_url ? absoluteUrl(skill.skill_category.image_url) : null,
+    source: absoluteUrl(`/skill/${skill.id}`), sourceData: skill,
   };
 }
 
@@ -61,6 +62,10 @@ async function main() {
   if (!spiritUrls.length || !skillUrls.length) throw new Error("中文站 sitemap 未解析到精灵或技能");
   const first = bootstrap(await get(spiritUrls[0]));
   const types = typeMap(first.catalog);
+  const bloodlines = (first.page.data.bloodline_options ?? [])
+    .map((option) => option.bloodline)
+    .filter(Boolean)
+    .map((bl) => ({ id: bl.bloodline_id, key: bl.key, name: bl.name, short: bl.short_name, battleTypeId: bl.battle_type_id, icon: bl.image_url ? absoluteUrl(bl.image_url) : null }));
   const spiritPages = await mapConcurrent(spiritUrls, async (url) => bootstrap(await get(url)));
   const skillPages = await mapConcurrent(skillUrls, async (url) => bootstrap(await get(url)));
   const glossaryPages = await mapConcurrent(glossaryUrls, async (url) => bootstrap(await get(url)));
@@ -73,7 +78,7 @@ async function main() {
   const spiritSkills = Object.fromEntries(spirits.map((spirit) => [`${spirit.id}:${spirit.formId}`, spirit.skillIds]));
   const glossary = glossaryPages.map((page) => ({ id: page.page.data.id, name: page.page.data.note, descPlain: page.page.data.description }));
   const matchups = (first.catalog.types?.matchups ?? []).map((item) => [item.attacking_type_id, item.defending_type_id, item.effect]);
-  const snapshot = { meta: { locale: "zh-Hans", catalogVersion: first.catalog.catalogVersion, generatedAt: new Date().toISOString(), origin: "https://roco.world/zh/", types: [...types.values()].map((type) => ({ id: type.id, name: type.name, short: type.short, color: type.color, iconOnline: type.icon_url ? absoluteUrl(type.icon_url) : null })) }, spirits, skills, spiritSkills, skillLearners: {}, matchups, glossary, teams: [] };
+  const snapshot = { meta: { locale: "zh-Hans", catalogVersion: first.catalog.catalogVersion, generatedAt: new Date().toISOString(), origin: "https://roco.world/zh/", types: [...types.values()].map((type) => { const icon = type.type_icon_image_url ?? type.icon_url ?? null; return { id: type.id, name: type.name, short: type.short_name ?? type.short, color: type.color, iconOnline: icon ? absoluteUrl(icon) : null }; }), bloodlines }, spirits, skills, spiritSkills, skillLearners: {}, matchups, glossary, teams: [] };
   const invalid = spirits.filter((spirit) => !spirit.types.length || Object.values(spirit.stats).some((value) => !Number.isFinite(value)));
   if (invalid.length || !skills.length || !Object.keys(spiritSkills).length) throw new Error(`中文站数据校验失败：精灵异常 ${invalid.length}，技能 ${skills.length}，学习关系 ${Object.keys(spiritSkills).length}`);
   await mkdir(outputDir, { recursive: true });

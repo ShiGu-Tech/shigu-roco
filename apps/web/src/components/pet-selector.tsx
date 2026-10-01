@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 
-import { Badge } from "@/components/ui/badge";
+import { ElementBadge, ElementIcon } from "@/components/element-icon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SpriteImage } from "@/components/sprite-image";
@@ -15,10 +15,6 @@ interface Species {
   name: string;
   elements: string[];
   variants: CatalogSprite[];
-}
-
-function elementZh(catalog: Catalog, key: string): string {
-  return catalog.elements.find((el) => el.name === key)?.nameZh ?? key;
 }
 
 /** 按 no 归并种族，形态按 formId 排序（第一个为基准形态）。 */
@@ -95,6 +91,7 @@ export function PetSelector({ catalog, value, onSelect, className }: PetSelector
             className="shrink-0"
             onClick={() => setElement(el.name)}
           >
+            <ElementIcon catalog={catalog} element={el.name} size={14} />
             {el.nameZh ?? el.name}
           </Button>
         ))}
@@ -128,9 +125,7 @@ export function PetSelector({ catalog, value, onSelect, className }: PetSelector
                   #{sp.no} {sp.name}
                 </button>
                 {sp.elements.map((el) => (
-                  <Badge key={el} variant="outline">
-                    {elementZh(catalog, el)}
-                  </Badge>
+                  <ElementBadge key={el} catalog={catalog} element={el} />
                 ))}
                 {multi && (
                   <label className="ml-auto flex items-center gap-1 text-[11px] text-muted-foreground">

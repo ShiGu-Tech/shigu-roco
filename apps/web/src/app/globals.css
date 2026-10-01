@@ -23,6 +23,7 @@
   --color-destructive: var(--destructive);
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
+  --color-star: var(--star);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -69,6 +70,7 @@
   --radius: 0.9rem;
   --success: oklch(0.58 0.13 168);
   --success-soft: oklch(0.955 0.036 168);
+  --star: oklch(0.8 0.15 85);
   --overlay: oklch(0.33 0.042 300 / 42%);
   --shadow-tint: oklch(0.5 0.09 305 / 0.22);
   --shadow-tint-soft: oklch(0.5 0.09 305 / 0.07);
@@ -106,6 +108,7 @@
   --chart-5: oklch(0.74 0.15 22);
   --success: oklch(0.76 0.12 168);
   --success-soft: oklch(0.32 0.05 168);
+  --star: oklch(0.85 0.14 88);
   --overlay: oklch(0.14 0.024 286 / 68%);
   --shadow-tint: oklch(0.08 0.02 286 / 0.6);
   --shadow-tint-soft: oklch(0.08 0.02 286 / 0.4);

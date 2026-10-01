@@ -133,6 +133,7 @@ function skillBrief(bundle: DataBundle, sk: Dict, icons: Dict): Dict {
     cost: toNum(sk.cost, 0),
     priority: toNum(sk.priority, 0),
     icon: toStr(sk.icon) || icons[id] || null,
+    categoryIcon: toStr(sk.categoryIcon) || null,
     description: toStr(sk.description, toStr(sk.rawText)),
   };
 }
@@ -193,6 +194,7 @@ export function catalog(bundle: DataBundle): Dict {
     dataVersion: bundle.dataVersion,
     dataUpdatedAt: bundle.dataUpdatedAt,
     elements: toArray(asDict(bundle.elements).elements),
+    bloodlines: toArray(asDict(bundle.elements).bloodlines),
     sprites,
     allSkills,
     marks: Object.values(bundle.marks).map((m) => ({ id: toStr(m.id), name: toStr(m.nameZh, toStr(m.name)), nameZh: toStr(m.nameZh, toStr(m.name)), description: toStr(m.description, toStr(m.rawText)), maxStack: toNum(m.maxStack, 0) })),
@@ -209,8 +211,11 @@ export function catalog(bundle: DataBundle): Dict {
       level: toNum(asDict(stats.level).default, 60),
       panels: stats.panels ?? {},
       individual: stats.individual ?? {},
+      natureScaling: stats.natureScaling ?? {},
+      starBonus: stats.starBonus ?? {},
       natures: stats.natures ?? [],
       trainingProfiles: stats.trainingProfiles ?? { options: [] },
+      talentRecommend: stats.talentRecommend ?? {},
     },
     warnings: bundle.warnings.slice(0, 50),
   };

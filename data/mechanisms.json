@@ -1,7 +1,7 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.3.0",
-  "updatedAt": "2026-09-28",
+  "version": "0.5.0",
+  "updatedAt": "2026-10-01",
   "mechanisms": [
     {
       "id": "skill:sk-7020370",
@@ -2256,15 +2256,83 @@
       "id": "skill:sk-7080240",
       "ownerType": "skill",
       "ownerId": "sk-7080240",
-      "trigger": "beforeAction",
+      "trigger": "actionDeclared",
       "when": [
         {
-          "path": "event.action.skillId",
-          "op": "eq",
-          "value": "sk-7080240"
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7080240"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
         }
       ],
-      "effects": []
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "barrier",
+          "layers": 1
+        },
+        {
+          "type": "modifyCooldown",
+          "target": "self",
+          "scope": "defense",
+          "delta": -1
+        }
+      ],
+      "note": "壁垒：应对攻击成功 → 必定先手 + 防御技能冷却 -1（术语 1016）"
+    },
+    {
+      "id": "skill:sk-7080240:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7080240",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.barrier",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 90
+        }
+      ],
+      "note": "壁垒：本回合承伤 -90%"
+    },
+    {
+      "id": "skill:sk-7080240:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7080240",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.barrier",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "barrier"
+        }
+      ]
     },
     {
       "id": "skill:sk-7080340",
@@ -3219,9 +3287,18 @@
       "trigger": "turnEnd",
       "when": [
         {
-          "path": "event.markId",
-          "op": "eq",
-          "value": "burn"
+          "anyOf": [
+            {
+              "path": "self.active.marks.burn",
+              "op": "gte",
+              "value": 1
+            },
+            {
+              "path": "self.teamMarks.burn",
+              "op": "gte",
+              "value": 1
+            }
+          ]
         }
       ],
       "effects": [
@@ -3231,9 +3308,17 @@
           "category": "Passive",
           "power": 0,
           "basis": "maxHp",
-          "amount": 0.02
+          "amount": 0.02,
+          "element": "Fire"
+        },
+        {
+          "type": "settleMark",
+          "target": "self",
+          "markId": "burn",
+          "decayLayers": "half"
         }
-      ]
+      ],
+      "note": "灼烧：回合末 2% 最大生命火系伤害，层数减半（术语 1002）"
     },
     {
       "id": "mark:poison",
@@ -3242,9 +3327,18 @@
       "trigger": "turnEnd",
       "when": [
         {
-          "path": "event.markId",
-          "op": "eq",
-          "value": "poison"
+          "anyOf": [
+            {
+              "path": "self.active.marks.poison",
+              "op": "gte",
+              "value": 1
+            },
+            {
+              "path": "self.teamMarks.poison",
+              "op": "gte",
+              "value": 1
+            }
+          ]
         }
       ],
       "effects": [
@@ -3254,9 +3348,11 @@
           "category": "Passive",
           "power": 0,
           "basis": "maxHp",
-          "amount": 0.03
+          "amount": 0.03,
+          "element": "Poison"
         }
-      ]
+      ],
+      "note": "中毒：回合末 3% 最大生命毒系伤害（术语 1001）。衰减规则【待校准】"
     },
     {
       "id": "mark:freeze",
@@ -3265,9 +3361,18 @@
       "trigger": "turnEnd",
       "when": [
         {
-          "path": "event.markId",
-          "op": "eq",
-          "value": "freeze"
+          "anyOf": [
+            {
+              "path": "self.active.marks.freeze",
+              "op": "gte",
+              "value": 1
+            },
+            {
+              "path": "self.teamMarks.freeze",
+              "op": "gte",
+              "value": 1
+            }
+          ]
         }
       ],
       "effects": [
@@ -3277,9 +3382,11 @@
           "category": "Passive",
           "power": 0,
           "basis": "maxHp",
-          "amount": 0.05
+          "amount": 0.05,
+          "element": "Ice"
         }
-      ]
+      ],
+      "note": "冻结：回合末造成 5% 最大生命冰系伤害，低于该比例则力竭（术语 1004）。衰减【待校准】"
     },
     {
       "id": "mark:starfall",
@@ -3308,9 +3415,18 @@
       "trigger": "turnEnd",
       "when": [
         {
-          "path": "event.markId",
-          "op": "eq",
-          "value": "parasitism"
+          "anyOf": [
+            {
+              "path": "self.active.marks.parasitism",
+              "op": "gte",
+              "value": 1
+            },
+            {
+              "path": "self.teamMarks.parasitism",
+              "op": "gte",
+              "value": 1
+            }
+          ]
         }
       ],
       "effects": [
@@ -3320,7 +3436,8 @@
           "amount": 0.02,
           "basis": "maxHp"
         }
-      ]
+      ],
+      "note": "寄生：回合末从来源吸收 2% 最大生命（术语 1008）"
     },
     {
       "id": "mark:conductive-charge",
@@ -3943,6 +4060,200 @@
         }
       ],
       "effects": []
+    },
+    {
+      "id": "skill:sk-7040300",
+      "ownerType": "skill",
+      "ownerId": "sk-7040300",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7040300"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "flame-shield",
+          "layers": 1
+        },
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "burn",
+          "layers": 6,
+          "immuneElements": [
+            "Fire"
+          ]
+        },
+        {
+          "type": "modifyCooldown",
+          "target": "self",
+          "scope": "defense",
+          "delta": 1
+        }
+      ],
+      "note": "火焰护盾：应对攻击成功 → 必定先手 + 敌方 6 层灼烧 + 防御技能 +1 冷却（术语 1016）"
+    },
+    {
+      "id": "skill:sk-7040300:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7040300",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.flame-shield",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 70
+        }
+      ],
+      "note": "火焰护盾：本回合承伤 -70%"
+    },
+    {
+      "id": "skill:sk-7040300:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7040300",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.flame-shield",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "flame-shield"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7140160",
+      "ownerType": "skill",
+      "ownerId": "sk-7140160",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7140160"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Defense"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "opponent",
+          "stat": "defense",
+          "mode": "percent",
+          "value": -70
+        },
+        {
+          "type": "modifyStat",
+          "target": "opponent",
+          "stat": "spdef",
+          "mode": "percent",
+          "value": -70
+        },
+        {
+          "type": "modifyCooldown",
+          "target": "opponent",
+          "skillIdFrom": "event.opponentAction.skillId",
+          "delta": 2
+        }
+      ],
+      "note": "破防：应对防御成功 → 敌方双防 -70% + 被应对技能冷却 +2（术语 1017）"
+    },
+    {
+      "id": "trait:sp-380-1",
+      "ownerType": "trait",
+      "ownerId": "sp-380-1",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "self.active.spriteId",
+              "op": "eq",
+              "value": "sp-380-1"
+            },
+            {
+              "path": "event.opponentAction.kind",
+              "op": "eq",
+              "value": "skill"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyCooldown",
+          "target": "opponent",
+          "skillIdFrom": "event.opponentAction.skillId",
+          "delta": 1
+        }
+      ],
+      "note": "上锁（飞飞钥 sp-380-1 特性）：敌方本回合使用的技能冷却 +1"
+    },
+    {
+      "id": "skill:sk-7170300",
+      "ownerType": "skill",
+      "ownerId": "sk-7170300",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7170300"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyCooldown",
+          "target": "self",
+          "skillId": "sk-7170300",
+          "delta": 2
+        },
+        {
+          "type": "unsupported",
+          "effectType": "nextTurnEnergyPenalty",
+          "reason": "入梦「敌方下回合回复能量-5」为延迟效果，待校准"
+        }
+      ],
+      "note": "入梦：自身冷却 +2（两回合不可用）"
     }
   ]
 }

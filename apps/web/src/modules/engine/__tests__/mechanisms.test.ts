@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ActionQueue, MechanismRegistry, MechanismRuntime } from "../mechanisms";
-import type { EffectCommand } from "../mechanisms";
+import type { EffectCommand, MechanismDefinition } from "../mechanisms";
 import { Rng } from "../rng";
 import { Simulator } from "../simulator/battle";
 import { makeActive, makeSide, makeState, revertSkillOverride } from "../state";
@@ -18,8 +18,8 @@ const miniBundle: DataBundle = {
     "sp-b": { id: "sp-b", elements: ["Normal"], race: { hp: 120, atk: 60, spatk: 60, defense: 60, spdef: 60, speed: 60 }, skillList: ["sk-1"] },
   },
   skills: {
-    "sk-1": { id: "sk-1", skillName: "撞击", element: "Normal", category: "Physical", power: 40, cost: 0 },
-    "sk-2": { id: "sk-2", skillName: "换招", element: "Normal", category: "Physical", power: 40, cost: 0 },
+    "sk-1": { id: "sk-1", skillName: "撞击", element: "Normal", category: "Physical", actionType: "Attack", power: 40, cost: 0 },
+    "sk-2": { id: "sk-2", skillName: "换招", element: "Normal", category: "Physical", actionType: "Attack", power: 40, cost: 0 },
   },
   marks: {},
   weather: {},
@@ -110,7 +110,7 @@ describe("mechanism state transaction", () => {
     );
     const status = {
       type: "applyStatus" as const,
-      definition: { type: "applyStatus" as const, target: "target", statusId: "frozen", duration: 3 },
+      definition: { type: "applyStatus" as const, target: "target", statusId: "frozen", layers: 3 },
       mechanismId: "freeze",
       trigger: "actionResolved" as const,
       actorSide: "player" as const,
@@ -173,9 +173,246 @@ describe("trigger cascade", () => {
       makeSide(makeActive("sp-a", { hp: 100, maxHp: 100, energy: 8 })),
       makeSide(makeActive("sp-b", { hp: 100, maxHp: 100, energy: 8 })),
     );
-    runtime.applyStateCommands(battle, [command({ type: "applyStatus", target: "target", statusId: "frozen", duration: 2 })]);
+    runtime.applyStateCommands(battle, [command({ type: "applyStatus", target: "target", statusId: "frozen", layers: 2 })]);
     expect(battle.enemy.active.statuses.frozen).toBe(2);
     expect(battle.enemy.active.energy).toBe(5);
+  });
+});
+
+describe("damage modifiers (beforeDamage)", () => {
+  function battle() {
+    return makeState(
+      makeSide(makeActive("sp-a", { hp: 1000, maxHp: 1000 })),
+      makeSide(makeActive("sp-b", { hp: 1000, maxHp: 1000 })),
+    );
+  }
+  const dealDamage: EffectCommand = {
+    type: "dealDamage",
+    definition: { type: "dealDamage", target: "target", category: "Physical", power: 40, skillId: "sk-1" },
+    mechanismId: "sk-1",
+    trigger: "beforeAction",
+    actorSide: "player",
+    targetSide: "enemy",
+  };
+
+  function run(defs: MechanismDefinition[] = []) {
+    const runtime = new MechanismRuntime(new MechanismRegistry(defs));
+    const st = battle();
+    const [event] = runtime.applyDamageCommands(st, miniBundle, [dealDamage]);
+    return event;
+  }
+
+  it("collects outgoing/incoming multipliers, reduction and hits", () => {
+    const event = run([
+      {
+        id: "dmg",
+        ownerType: "trait",
+        ownerId: "t",
+        trigger: "beforeDamage",
+        effects: [
+          { type: "modifyDamage", scope: "outgoing", mode: "multiply", value: 2 },
+          { type: "modifyDamage", scope: "incoming", mode: "multiply", value: 0.5 },
+          { type: "setDamageReduction", percent: 50 },
+          { type: "setHits", hits: 3 },
+        ],
+      },
+    ]);
+    expect((event.data.modifiers as Record<string, number>)).toEqual({ attackerMult: 2, defenderMult: 0.5, reduction: 50, hits: 3 });
+  });
+
+  it("no modifiers → baseline formula", () => {
+    const event = run();
+    expect((event.data.modifiers as Record<string, number>)).toEqual({ attackerMult: 1, defenderMult: 1, reduction: 0, hits: 1 });
+  });
+
+  it("100% reduction → zero damage", () => {
+    const event = run([{ id: "guard", ownerType: "trait", ownerId: "t", trigger: "beforeDamage", effects: [{ type: "setDamageReduction", percent: 100 }] }]);
+    expect(event.data.value).toBe(0);
+  });
+
+  it("hits multiply damage", () => {
+    const base = run().data.value as number;
+    const event = run([{ id: "combo", ownerType: "trait", ownerId: "t", trigger: "beforeDamage", effects: [{ type: "setHits", hits: 2 }] }]);
+    expect(event.data.value).toBe(base * 2);
+  });
+
+  it("outgoing multiply scales per-hit damage", () => {
+    const base = run().data.value as number;
+    const event = run([{ id: "brave", ownerType: "trait", ownerId: "t", trigger: "beforeDamage", effects: [{ type: "modifyDamage", scope: "outgoing", mode: "multiply", value: 2 }] }]);
+    const value = event.data.value as number;
+    expect(value).toBeGreaterThan(base);
+    expect(value).toBeLessThanOrEqual(base * 2 + 2);
+  });
+});
+
+describe("condition logic", () => {
+  it("supports allOf / anyOf / not", () => {
+    const registry = new MechanismRegistry([
+      {
+        id: "logic",
+        ownerType: "trait",
+        ownerId: "t",
+        trigger: "actionDeclared",
+        when: [
+          { allOf: [{ path: "event.action.kind", op: "eq", value: "skill" }, { not: { path: "event.action.skillId", op: "eq", value: "sk-1" } }] },
+          { anyOf: [{ path: "event.turn", op: "gte", value: 1 }, { path: "event.turn", op: "lt", value: 0 }] },
+        ],
+        effects: [{ type: "forceFirst" }],
+      },
+    ]);
+    expect(registry.collect({ state, trigger: "actionDeclared", event: { action: { kind: "skill", skillId: "sk-2" }, turn: 3 } })).toHaveLength(1);
+    expect(registry.collect({ state, trigger: "actionDeclared", event: { action: { kind: "skill", skillId: "sk-1" }, turn: 3 } })).toHaveLength(0);
+  });
+});
+
+describe("chance gating", () => {
+  function run(chance: number) {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const battle = makeState(makeSide(makeActive("sp-a", { hp: 100, maxHp: 100 })), makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })), { seed: 9 });
+    runtime.applyStateCommands(battle, [command({ type: "modifyEnergy", target: "self", delta: 5, chance })]);
+    return battle.player.active.energy;
+  }
+  it("chance 0 never, chance 1 always, deterministic in between", () => {
+    expect(run(0)).toBe(0);
+    expect(run(1)).toBe(5);
+    expect(run(0.5)).toBe(run(0.5));
+  });
+});
+
+describe("immunity", () => {
+  function battle() {
+    const b = makeState(
+      makeSide(makeActive("sp-a", { hp: 100, maxHp: 100 })),
+      makeSide(makeActive("sp-fire", { hp: 100, maxHp: 100 })),
+    );
+    return b;
+  }
+  const bundle: DataBundle = {
+    ...miniBundle,
+    sprites: { ...miniBundle.sprites, "sp-fire": { id: "sp-fire", elements: ["Fire"], race: {}, skillList: [] } },
+  };
+  it("skips applying a mark when the target element is immune", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const st = battle();
+    runtime.applyStateCommands(st, [command({ type: "applyMark", target: "target", markId: "burn", layers: 6, immuneElements: ["Fire"] })], bundle);
+    expect(st.enemy.active.marks.burn).toBeUndefined();
+  });
+  it("applies the mark to a non-immune target", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const st = makeState(makeSide(makeActive("sp-a", { hp: 100, maxHp: 100 })), makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })));
+    runtime.applyStateCommands(st, [command({ type: "applyMark", target: "target", markId: "burn", layers: 6, immuneElements: ["Fire"] })], bundle);
+    expect(st.enemy.active.marks.burn).toBe(6);
+  });
+});
+
+describe("turnEnd mark settlement (per side)", () => {
+  const bundle: DataBundle = {
+    ...miniBundle,
+    marks: { burn: { id: "burn", name: "灼烧", maxStack: 10 } },
+    mechanisms: [
+      ...(miniBundle.mechanisms ?? []),
+      {
+        id: "mark:burn",
+        ownerType: "mark",
+        ownerId: "burn",
+        trigger: "turnEnd",
+        when: [{ anyOf: [{ path: "self.active.marks.burn", op: "gte", value: 1 }, { path: "self.teamMarks.burn", op: "gte", value: 1 }] }],
+        effects: [
+          { type: "dealDamage", target: "self", category: "Passive", power: 0, basis: "maxHp", amount: 0.02 },
+          { type: "settleMark", target: "self", markId: "burn", decayLayers: "half" },
+        ],
+      },
+    ],
+  };
+  it("deals 2% maxHp and halves burn layers on the carrier", () => {
+    const sim = new Simulator(bundle);
+    const battle = makeState(
+      makeSide(makeActive("sp-a", { hp: 200, maxHp: 200, energy: 5 })),
+      makeSide(makeActive("sp-b", { hp: 200, maxHp: 200, energy: 5 })),
+      { turn: 1, seed: 1 },
+    );
+    battle.enemy.active.marks.burn = 4;
+    const result = sim.step(battle, { kind: "energy" }, { kind: "energy" }, new Rng(1));
+    expect(result.state.enemy.active.hp).toBe(200 - 4);
+    expect(result.state.enemy.active.marks.burn).toBe(2);
+  });
+});
+
+describe("counter (actionDeclared + forceFirst)", () => {
+  const bundle: DataBundle = {
+    ...miniBundle,
+    skills: { ...miniBundle.skills, "sk-shield": { id: "sk-shield", skillName: "护盾", element: "Fire", category: "Defense", actionType: "Defense", power: 0, cost: 0 } },
+    mechanisms: [
+      ...(miniBundle.mechanisms ?? []),
+      {
+        id: "skill:sk-shield",
+        ownerType: "skill",
+        ownerId: "sk-shield",
+        trigger: "actionDeclared",
+        when: [{ path: "event.opponentAction.actionType", op: "eq", value: "Attack" }],
+        effects: [{ type: "forceFirst", target: "self" }],
+      },
+    ],
+  };
+  it("forces first when the opponent declares an attack", () => {
+    const sim = new Simulator(bundle);
+    const battle = makeState(
+      makeSide(makeActive("sp-a", { hp: 200, maxHp: 200, energy: 5 })),
+      makeSide(makeActive("sp-b", { hp: 200, maxHp: 200, energy: 5 })),
+      { turn: 1, seed: 3 },
+    );
+    battle.player.active.loadout = ["sk-shield"];
+    battle.enemy.active.loadout = ["sk-1"];
+    const result = sim.step(battle, { kind: "skill", skillId: "sk-shield" }, { kind: "skill", skillId: "sk-1" }, new Rng(3));
+    expect(result.events.some((event) => event.type === "action-priority-changed")).toBe(true);
+  });
+});
+
+describe("cooldown subsystem", () => {
+  it("resolves dynamic skillIdFrom from the context", () => {
+    const registry = new MechanismRegistry([
+      {
+        id: "lock",
+        ownerType: "trait",
+        ownerId: "sp-380-1",
+        trigger: "actionDeclared",
+        when: [{ path: "event.opponentAction.kind", op: "eq", value: "skill" }],
+        effects: [{ type: "modifyCooldown", target: "opponent", skillIdFrom: "event.opponentAction.skillId", delta: 1 }],
+      },
+    ]);
+    const commands = registry.collect({ state, trigger: "actionDeclared", event: { opponentAction: { kind: "skill", skillId: "sk-9" } }, actorSide: "player", targetSide: "enemy" });
+    expect((commands[0].definition as { skillId?: string }).skillId).toBe("sk-9");
+  });
+
+  const bundle: DataBundle = {
+    ...miniBundle,
+    skills: { ...miniBundle.skills, "sk-cd": { id: "sk-cd", skillName: "冷却技", element: "Normal", category: "Physical", actionType: "Attack", power: 30, cost: 0, cooldown: 1 } },
+  };
+
+  it("does not tick a cooldown set this turn (net, not off-by-one)", () => {
+    const sim = new Simulator(bundle);
+    const battle = makeState(
+      makeSide(makeActive("sp-a", { hp: 200, maxHp: 200, energy: 5 })),
+      makeSide(makeActive("sp-b", { hp: 200, maxHp: 200, energy: 5 })),
+      { turn: 1, seed: 5 },
+    );
+    battle.player.active.loadout = ["sk-cd"];
+    const result = sim.step(battle, { kind: "skill", skillId: "sk-cd" }, { kind: "energy" }, new Rng(5));
+    expect(result.state.player.active.cooldowns?.["sk-cd"]).toBe(1);
+  });
+
+  it("freezes cooldown while benched and resumes on field", () => {
+    const sim = new Simulator(bundle);
+    const battle = makeState(
+      makeSide(makeActive("sp-a", { hp: 200, maxHp: 200, energy: 5 }), { bench: [makeActive("sp-b", { hp: 200, maxHp: 200 })] }),
+      makeSide(makeActive("sp-b", { hp: 200, maxHp: 200, energy: 5 })),
+      { turn: 1, seed: 5 },
+    );
+    battle.player.active.loadout = ["sk-cd"];
+    let result = sim.step(battle, { kind: "skill", skillId: "sk-cd" }, { kind: "energy" }, new Rng(5));
+    result = sim.step(result.state, { kind: "switch", benchId: "sp-b" }, { kind: "energy" }, new Rng(5));
+    const benched = result.state.player.bench.find((sprite) => sprite.spriteId === "sp-a");
+    expect(benched?.cooldowns?.["sk-cd"]).toBe(1);
   });
 });
 

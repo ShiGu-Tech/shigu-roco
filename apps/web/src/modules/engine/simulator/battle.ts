@@ -6,7 +6,7 @@ import type { Rng } from "../rng";
 import { cloneState, expireSkillOverrides, revertSkillOverride } from "../state";
 import type { Action, BattleEvent, BattleState, DataBundle, Side, StepResult, Terminal } from "../types";
 import { asDict, toArray, toNum, toStr } from "../types";
-import { clearMarksOnSwitch, settleMarks } from "./marks";
+import { clearMarksOnSwitch } from "./marks";
 import { ActionQueue, MechanismRegistry, MechanismRuntime, mechanismsFromData } from "../mechanisms";
 
 const SIDES: Side[] = ["player", "enemy"];
@@ -80,6 +80,8 @@ export class Simulator {
     const logs: string[] = [];
     const actions: Record<Side, Action> = { player: playerAction, enemy: enemyAction };
     const rules = this.bundle.rules;
+    /** 本回合被置/改/使用的技能，冷却结算时跳过（净 ±N，避免刚置就被 tick）。 */
+    const touched: Record<Side, Set<string>> = { player: new Set(), enemy: new Set() };
 
     if (st.turn === 1) {
       events.push(...this.triggerState(st, "battleStart", { event: { turn: st.turn } }));
@@ -122,13 +124,19 @@ export class Simulator {
       queue.enqueue({ id: actionIds[side], actorSide: side, action: actions[side], declaredAt: index, priority, speedSnapshot: speed, status: "queued" });
     });
     for (const side of actorSides) {
+      const opponentAction = actions[otherSide(side)];
+      const opponentSkill = opponentAction.kind === "skill" && opponentAction.skillId ? getSkill(this.bundle, opponentAction.skillId) : {};
       const commands = this.mechanisms.dispatch({
         state: st,
         trigger: "actionDeclared",
         actorSide: side,
         targetSide: otherSide(side),
         action: actions[side],
-        event: { action: actions[side], actionId: actionIds[side] },
+        event: {
+          action: actions[side],
+          actionId: actionIds[side],
+          opponentAction: { kind: opponentAction.kind, skillId: opponentAction.skillId, actionType: toStr(opponentSkill.actionType), category: toStr(opponentSkill.category) },
+        },
       });
       const mechanismEvents = this.mechanisms.applyActionCommands(queue, commands, actionIds, () => `action-${st.turn}-extra-${queue.all().length}`);
       events.push(...mechanismEvents.map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
@@ -162,6 +170,7 @@ export class Simulator {
       }
       entry.status = "resolved";
       if (entry.action.kind === "skill") {
+        if (entry.action.skillId) touched[side].add(entry.action.skillId);
         events.push(...this.triggerState(st, "skillUsed", { actorSide: side, targetSide: opp, action: entry.action, event: { skillId: entry.action.skillId, actionId: entry.id } }));
         const skillId = entry.action.skillId;
         if (skillId && caster.skillOverrides?.[skillId]?.expires === 0) {
@@ -180,11 +189,17 @@ export class Simulator {
       events.push(...this.mechanisms.applyStateCommands(st, afterCommands, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
     });
 
-    // ④ 结算阶段
-    const turnEndCommands = this.mechanisms.dispatch({ state: st, trigger: "turnEnd", event: { turn: st.turn } });
-    events.push(...this.mechanisms.applyStateCommands(st, turnEndCommands, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
-    events.push(...settleMarks(st, "turnEnd", this.bundle));
-    this.decay(st);
+    // ④ 结算阶段：按侧状态 / 印记结算（DoT、衰减）→ 环境衰减 → 阵亡
+    for (const side of SIDES) {
+      events.push(...this.triggerState(st, "turnEnd", { actorSide: side, targetSide: otherSide(side), event: { turn: st.turn, side } }));
+    }
+    for (const event of events) {
+      if (event.type === "cooldown-modified" && event.side) {
+        const skillId = toStr(event.data.skillId);
+        if (skillId) touched[event.side].add(skillId);
+      }
+    }
+    this.decay(st, touched);
     events.push(...this.handleFaints(st));
 
     st.turn += 1;
@@ -327,6 +342,7 @@ export class Simulator {
       });
       events.push(...this.mechanisms.applyStateCommands(st, beforeDamage, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
       events.push(...this.mechanisms.applyDamageCommands(st, this.bundle, damageCommands).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+      events.push(...this.triggerState(st, "onHit", { actorSide: side, targetSide: opp, action, event: { skillId: action.skillId, damageType: category } }));
       events.push(...this.triggerMarkMechanisms(st, opp, side));
       const afterDamage = this.mechanisms.dispatch({
         state: st,
@@ -341,7 +357,7 @@ export class Simulator {
     return events;
   }
 
-  private decay(st: BattleState): void {
+  private decay(st: BattleState, touched: Record<Side, Set<string>>): void {
     if (st.weather) {
       st.weather.turnsLeft -= 1;
       if (st.weather.turnsLeft <= 0) st.weather = null;
@@ -349,17 +365,14 @@ export class Simulator {
     for (const side of SIDES) {
       const s = this.sideState(st, side);
       if (s.wishCooldown > 0) s.wishCooldown -= 1;
-      for (const sprite of [s.active, ...s.bench]) {
-        for (const skillId of Object.keys(sprite.cooldowns ?? {})) {
-          sprite.cooldowns![skillId] -= 1;
-          if (sprite.cooldowns![skillId] <= 0) delete sprite.cooldowns![skillId];
-        }
-        for (const status of Object.keys({ ...sprite.statuses })) {
-          sprite.statuses[status] -= 1;
-          if (sprite.statuses[status] <= 0) delete sprite.statuses[status];
-        }
-        expireSkillOverrides(sprite, st.turn);
+      // 冷却按精灵「占场消耗」：只结算在场精灵；下场（bench）冻结，换回后从剩余值继续。
+      const active = s.active;
+      for (const skillId of Object.keys(active.cooldowns ?? {})) {
+        if (touched[side].has(skillId)) continue;
+        active.cooldowns![skillId] -= 1;
+        if (active.cooldowns![skillId] <= 0) delete active.cooldowns![skillId];
       }
+      for (const sprite of [active, ...s.bench]) expireSkillOverrides(sprite, st.turn);
       if (s.switchLock > 0) s.switchLock -= 1;
     }
   }

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 
+import { ElementBadge } from "@/components/element-icon";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,7 +30,6 @@ import {
   actionKey,
   buildState,
   deriveActions,
-  elementZh,
   emptySetup,
   optionFromSkill,
   skillById,
@@ -94,9 +94,7 @@ function FaintPicker({
                   <SpriteImage sprite={sp} size="sm" className="h-11 w-11 rounded-lg" />
                   <span className="text-sm font-medium">{sp?.name ?? b.spriteId}</span>
                   {sp?.elements.map((el) => (
-                    <Badge key={el} variant="outline">
-                      {elementZh(catalog, el)}
-                    </Badge>
+                    <ElementBadge key={el} catalog={catalog} element={el} />
                   ))}
                   <span className="text-xs text-muted-foreground">
                     HP {b.hp}/{b.maxHp} · 能量 {b.energy}

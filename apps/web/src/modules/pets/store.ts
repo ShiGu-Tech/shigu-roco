@@ -40,6 +40,7 @@ function normalizeInstance(raw: unknown): PetInstance | null {
     level: typeof obj.level === "number" && Number.isFinite(obj.level) ? obj.level : DEFAULT_LEVEL,
     stars: typeof obj.stars === "number" && Number.isFinite(obj.stars) ? obj.stars : DEFAULT_STARS,
     nature: typeof obj.nature === "string" ? obj.nature : null,
+    bloodline: typeof obj.bloodline === "string" ? obj.bloodline : undefined,
     talent,
     skills: Array.isArray(obj.skills) ? obj.skills.filter((s): s is string => typeof s === "string") : [],
     note: typeof obj.note === "string" ? obj.note : undefined,

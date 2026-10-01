@@ -86,6 +86,7 @@ export function normalizeSnapshot(snapshot: ExternalSnapshot, registrationId: st
     rawText: skill.description ?? skill.descPlain ?? skill.desc ?? "",
     description: skill.description ?? skill.descPlain ?? skill.desc ?? "",
     icon: skill.icon ?? skill.imgOnline ?? null,
+    categoryIcon: skill.categoryIcon ?? null,
     source: skill.source ?? snapshot.meta.origin ?? "",
     sourceData: skill,
   }));
@@ -126,6 +127,6 @@ export function normalizeSnapshot(snapshot: ExternalSnapshot, registrationId: st
     glossary: snapshot.glossary ?? [],
     marks,
     weather,
-    elements: { $schemaVersion: "0.1", version: snapshot.meta.catalogVersion, updatedAt: snapshot.meta.generatedAt, elements: types, matrix, values: { counter: 2, counter3: 3, neutral: 1, resisted: 0.5, resisted4: 0.25 }, combine: { mode: "count", clampTo: [0.25, 3] } },
+    elements: { $schemaVersion: "0.2", version: snapshot.meta.catalogVersion, updatedAt: snapshot.meta.generatedAt, elements: types, bloodlines: snapshot.meta.bloodlines ?? [], matrix, values: { counter: 2, counter3: 3, neutral: 1, resisted: 0.5, resisted4: 0.25 }, combine: { mode: "count", clampTo: [0.25, 3] } },
   };
 }

@@ -7,7 +7,7 @@ export * from "./stats";
 export * from "./calc";
 export { buildBundle, typeMultiplier, bundleTypeMultiplier, DataError } from "./data";
 export { Simulator } from "./simulator/battle";
-export { settleMarks, clearMarksOnSwitch } from "./simulator/marks";
+export { clearMarksOnSwitch } from "./simulator/marks";
 export { MCTS, DEFAULT_MCTS_CONFIG } from "./mcts/search";
 export type { MCTSConfig, TrainingContext, RecommendOutput, RecommendAction } from "./mcts/search";
 export { OpponentModel } from "./opponent/bayes";

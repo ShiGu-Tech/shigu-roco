@@ -2,21 +2,21 @@
 
 import { useMemo, useState } from "react";
 
-import { Badge } from "@/components/ui/badge";
+import { ElementBadge, ElementIcon } from "@/components/element-icon";
+import { SkillCategoryIcon } from "@/components/skill-category-icon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
 import { cn } from "cn";
 import type { Catalog, CatalogSkill } from "@/modules/battle/types";
-
-function elementZh(catalog: Catalog, key: string): string {
-  return catalog.elements.find((el) => el.name === key)?.nameZh ?? key;
-}
+import { bloodlineKind } from "@/modules/pets/instance";
 
 export interface SkillSelectorProps {
   catalog: Catalog;
   /** 传入精灵后按来源分 4 列：精灵可学 / 血脉 / 技能石 / 全部。 */
   spriteId?: string;
+  /** 已选血脉：首领化 = 血脉列为空；系别血脉 = 只留该系；污染 / 奇异 / 未选 = 不筛选。 */
+  bloodline?: string;
   /** 当前选中的技能 id。 */
   value?: string;
   onSelect: (skillId: string, skill: CatalogSkill) => void;
@@ -27,7 +27,7 @@ export interface SkillSelectorProps {
  * 通用技能选择器：系别筛选 + 名字模糊搜索 + 按使用精灵筛选；
  * 传入 `spriteId` 时分 4 列（精灵可学技能 / 血脉技能 / 技能石技能 / 全部技能）。
  */
-export function SkillSelector({ catalog, spriteId, value, onSelect, className }: SkillSelectorProps) {
+export function SkillSelector({ catalog, spriteId, bloodline, value, onSelect, className }: SkillSelectorProps) {
   const [query, setQuery] = useState("");
   const [element, setElement] = useState<string | null>(null);
   const [learnerId, setLearnerId] = useState("");
@@ -50,10 +50,19 @@ export function SkillSelector({ catalog, spriteId, value, onSelect, className }:
   const own = sprite?.skills ?? [];
   const srcOf = (skill: CatalogSkill) => sprite?.skillSources?.[skill.id] ?? "level";
 
+  // 血脉技能：按已选血脉筛选（首领化无血脉技能；系别只留该系；污染/奇异/未选不筛选）。
+  const bloodKind = bloodlineKind(catalog, bloodline);
+  const bloodSkills =
+    bloodKind === "leader"
+      ? []
+      : bloodKind === "element"
+        ? own.filter((s) => srcOf(s) === "blood" && s.element === bloodline)
+        : own.filter((s) => srcOf(s) === "blood");
+
   const columns = sprite
     ? [
         { key: "level", label: "精灵可学技能", skills: own.filter((s) => srcOf(s) === "level"), learnerScoped: false },
-        { key: "blood", label: "血脉技能", skills: own.filter((s) => srcOf(s) === "blood"), learnerScoped: false },
+        { key: "blood", label: "血脉技能", skills: bloodSkills, learnerScoped: false },
         { key: "machine", label: "技能石技能", skills: own.filter((s) => srcOf(s) === "machine"), learnerScoped: false },
         { key: "all", label: "全部技能", skills: allSkills, learnerScoped: true },
       ]
@@ -77,6 +86,7 @@ export function SkillSelector({ catalog, spriteId, value, onSelect, className }:
             className="shrink-0"
             onClick={() => setElement(el.name)}
           >
+            <ElementIcon catalog={catalog} element={el.name} size={14} />
             {el.nameZh ?? el.name}
           </Button>
         ))}
@@ -155,9 +165,8 @@ export function SkillSelector({ catalog, spriteId, value, onSelect, className }:
                       <span className="h-7 w-7 shrink-0 rounded-md border bg-muted/50" />
                     )}
                     <span className="truncate">{skill.name}</span>
-                    <Badge variant="outline" className="shrink-0 px-1 py-0 text-[10px]">
-                      {elementZh(catalog, skill.element)}
-                    </Badge>
+                    <SkillCategoryIcon skill={skill} size={14} />
+                    <ElementBadge catalog={catalog} element={skill.element} className="shrink-0 px-1 py-0 text-[10px]" />
                     <span className="ml-auto shrink-0 text-[10px] opacity-70">
                       能耗{skill.cost}
                       {skill.power ? ` · 威力${skill.power}` : ""}

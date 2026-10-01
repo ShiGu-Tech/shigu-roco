@@ -68,7 +68,19 @@ export interface CatalogSkill {
   cost: number;
   priority: number;
   icon?: string | null;
+  /** 类别图标（物理 / 魔法 / 防御 / 状态）。 */
+  categoryIcon?: string | null;
   description?: string;
+}
+
+/** 血脉定义（图鉴 meta.bloodlines）：battleTypeId 对应属性 id，icon 为血脉图标。 */
+export interface CatalogBloodline {
+  id: number;
+  key: string;
+  name: string;
+  short?: string;
+  battleTypeId?: number;
+  icon?: string | null;
 }
 
 export interface CatalogSprite {
@@ -106,6 +118,8 @@ export interface Catalog {
   dataVersion: string;
   dataUpdatedAt: string;
   elements: CatalogElement[];
+  /** 18 系别血脉（含图标）。 */
+  bloodlines?: CatalogBloodline[];
   sprites: CatalogSprite[];
   allSkills: CatalogSkill[];
   marks: { id: string; name: string; nameZh?: string; description?: string; maxStack: number }[];

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -15,7 +16,15 @@ import { getCatalog } from "@/modules/battle/client";
 import type { Catalog } from "@/modules/battle/types";
 import { PANEL_ORDER, STAT_LABEL } from "@/modules/engine/calc";
 import { computeStats, type StatKey } from "@/modules/engine/stats";
-import { newInstance, resolveInstance, type InstanceIssue, type PetInstance, type TalentMap } from "./instance";
+import {
+  bloodlineOptionOf,
+  defaultBloodline,
+  newInstance,
+  resolveInstance,
+  type InstanceIssue,
+  type PetInstance,
+  type TalentMap,
+} from "./instance";
 import { deletePet, exportPets, importPets, listPets, upsertPet } from "./store";
 
 function issueLabel(issue: InstanceIssue): string {
@@ -49,6 +58,7 @@ function PetCard({
   const sprite = resolved.sprite;
   const panel = sprite && catalog.stats ? computeStats(catalog.stats, { race: sprite.race }, resolved.profile) : null;
   const nature = (catalog.stats?.natures ?? []).find((n) => n.id === instance.nature);
+  const bloodline = bloodlineOptionOf(catalog, instance.bloodline || defaultBloodline(catalog, instance.spriteId));
   const invested = PANEL_ORDER.filter((k) => instance.talent[k] != null).length;
 
   return (
@@ -72,6 +82,14 @@ function PetCard({
                 {nature?.down ? ` · ${STAT_LABEL[nature.down as StatKey]}↓` : ""}
               </Badge>
               <Badge variant="outline">三维 {invested}</Badge>
+              {bloodline ? (
+                <Badge variant="outline" className="gap-1">
+                  {bloodline.icon ? (
+                    <Image src={bloodline.icon} alt="" width={14} height={14} className="h-3.5 w-3.5 object-contain" />
+                  ) : null}
+                  {bloodline.label}
+                </Badge>
+              ) : null}
               <Badge variant="outline">技能 {resolved.loadout.length || "默认"}</Badge>
             </div>
           </div>
@@ -146,7 +164,7 @@ export function Warehouse() {
   }
 
   function createInstance(spriteId: string) {
-    const instance = newInstance(spriteId);
+    const instance = { ...newInstance(spriteId), bloodline: catalog ? defaultBloodline(catalog, spriteId) : undefined };
     upsertPet(instance);
     refresh();
     setPickerOpen(false);
@@ -201,6 +219,7 @@ export function Warehouse() {
     level: editing.level,
     stars: editing.stars,
     nature: editing.nature,
+    bloodline: editing.bloodline,
     talent: editing.talent as TalentMap,
     skills: editing.skills,
   };

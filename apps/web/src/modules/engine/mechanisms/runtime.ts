@@ -3,9 +3,17 @@ import { computeDamage } from "../effects/damage";
 import { Rng } from "../rng";
 import { recordSkillOverride } from "../state";
 import type { BattleState, DataBundle, Side } from "../types";
+import { asDict, toArray, toNum } from "../types";
 import { ActionQueue } from "./action-queue";
 import { MechanismRegistry } from "./registry";
-import type { EffectCommand, MechanismContext, MechanismEvent } from "./types";
+import type { EffectCommand, EffectDefinition, MechanismContext, MechanismEvent } from "./types";
+
+interface DamageModifiers {
+  attackerMult: number;
+  defenderMult: number;
+  reduction: number;
+  hits: number;
+}
 
 function actionIdFor(target: string | undefined, actorSide: Side | undefined, actionIds: Record<Side, string>): string | undefined {
   if (target?.startsWith("action:")) return target.slice("action:".length);
@@ -31,9 +39,34 @@ export class MechanismRuntime {
     return this.registry.collect(context);
   }
 
+  /** 确定性概率门：无 chance 恒过；chance 以「机制 + 触发 + 序号」派生，保证同状态同种子可复现。 */
+  private chancePass(state: BattleState, command: EffectCommand, index: number): boolean {
+    const chance = command.definition.chance;
+    if (chance === undefined) return true;
+    if (chance <= 0) return false;
+    if (chance >= 1) return true;
+    return new Rng(hashSeed(state, `${command.mechanismId}:${command.trigger}:${index}`)).next() < chance;
+  }
+
+  /** 免疫：目标精灵系别命中 effect 声明的 immuneElements（站点无免疫字段，故由机制数据声明）。 */
+  private isImmune(bundle: DataBundle | undefined, spriteId: string, immuneElements: string[] | undefined): boolean {
+    if (!bundle || !immuneElements?.length) return false;
+    const elements = toArray<string>(getSprite(bundle, spriteId).elements);
+    return elements.some((element) => immuneElements.includes(element));
+  }
+
+  /** 防御技能判定（供 modifyCooldown scope=defense）。 */
+  private isDefenseSkill(bundle: DataBundle | undefined, skillId: string): boolean {
+    if (!bundle || !bundle.skills[skillId]) return false;
+    const skill = getSkill(bundle, skillId);
+    return skill.category === "Defense" || skill.actionType === "Defense";
+  }
+
   applyStateCommands(state: BattleState, commands: EffectCommand[], bundle?: DataBundle, depth = 0): MechanismEvent[] {
     const events: MechanismEvent[] = [];
-    for (const command of commands) {
+    for (let index = 0; index < commands.length; index++) {
+      const command = commands[index];
+      if (!this.chancePass(state, command, index)) continue;
       const definition = command.definition;
       const targetSide = this.resolveSide(definition, command);
       if (!targetSide && definition.type !== "changeWeather") continue;
@@ -71,6 +104,10 @@ export class MechanismRuntime {
         }
         case "applyMark": {
           if (!active || !targetSide) break;
+          if (this.isImmune(bundle, active.spriteId, definition.immuneElements)) {
+            events.push({ type: "mark-immune", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { markId: definition.markId } });
+            break;
+          }
           const side = targetSide === "player" ? state.player : state.enemy;
           const markDef = bundle?.marks[definition.markId];
           const isTeam = definition.scope === "team" || (!definition.scope && (markDef?.carrier === "field" || markDef?.carrier === "team"));
@@ -94,16 +131,48 @@ export class MechanismRuntime {
           events.push({ type: "mark-removed", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { markId: definition.markId, scope: isTeam ? "team" : "sprite", before, after } });
           break;
         }
+        case "settleMark": {
+          if (!active || !targetSide) break;
+          const side = targetSide === "player" ? state.player : state.enemy;
+          const store = definition.markId in active.marks ? active.marks : side.teamMarks;
+          const before = store[definition.markId] ?? 0;
+          if (before <= 0) break;
+          let after = before;
+          if (typeof definition.delta === "number") after = Math.max(0, before - definition.delta);
+          else if (definition.decayLayers === "half") after = Math.floor(before / 2);
+          else if (definition.decayLayers === "clear") after = 0;
+          if (after === 0) delete store[definition.markId];
+          else store[definition.markId] = after;
+          events.push({ type: "mark-settled", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { markId: definition.markId, before, after } });
+          break;
+        }
         case "changeWeather":
           state.weather = { id: definition.weatherId, turnsLeft: definition.turns ?? 1 };
           events.push({ type: "weather-changed", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, data: { weatherId: definition.weatherId, turns: state.weather.turnsLeft } });
           break;
         case "applyStatus": {
           if (!active || !targetSide) break;
+          if (this.isImmune(bundle, active.spriteId, definition.immuneElements)) {
+            events.push({ type: "status-immune", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { statusId: definition.statusId } });
+            break;
+          }
           const before = active.statuses[definition.statusId] ?? 0;
           const delta = definition.layers ?? 1;
-          active.statuses[definition.statusId] = definition.duration ?? before + delta;
+          active.statuses[definition.statusId] = before + delta;
           events.push({ type: "status-applied", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { statusId: definition.statusId, before, after: active.statuses[definition.statusId], layers: delta } });
+          break;
+        }
+        case "settleStatus": {
+          if (!active || !targetSide) break;
+          const before = active.statuses[definition.statusId] ?? 0;
+          if (before <= 0) break;
+          let after = before;
+          if (typeof definition.delta === "number") after = Math.max(0, before - definition.delta);
+          else if (definition.decayLayers === "half") after = Math.floor(before / 2);
+          else if (definition.decayLayers === "clear") after = 0;
+          if (after === 0) delete active.statuses[definition.statusId];
+          else active.statuses[definition.statusId] = after;
+          events.push({ type: "status-settled", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { statusId: definition.statusId, before, after } });
           break;
         }
         case "removeStatus": {
@@ -115,20 +184,27 @@ export class MechanismRuntime {
         }
         case "modifyCooldown": {
           if (!active || !targetSide) break;
-          const skillId = definition.skillId;
-          if (!skillId) break;
+          const skillIds = definition.skillId
+            ? [definition.skillId]
+            : definition.scope === "defense"
+              ? active.loadout.filter((id) => this.isDefenseSkill(bundle, id))
+              : [];
+          if (!skillIds.length) break;
           active.cooldowns ??= {};
-          const before = active.cooldowns[skillId] ?? 0;
-          active.cooldowns[skillId] = Math.max(definition.minimum ?? 0, before + definition.delta);
-          events.push({ type: "cooldown-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { skillId, before, after: active.cooldowns[skillId], delta: definition.delta } });
+          for (const skillId of skillIds) {
+            const before = active.cooldowns[skillId] ?? 0;
+            active.cooldowns[skillId] = Math.max(definition.minimum ?? 0, before + definition.delta);
+            events.push({ type: "cooldown-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { skillId, before, after: active.cooldowns[skillId], delta: definition.delta } });
+          }
           break;
         }
         case "modifyStat": {
           if (!active || !targetSide) break;
           const value = definition.mode === "percent" && Math.abs(definition.value) > 1 ? definition.value / 100 : definition.value;
           const bucket = value >= 0 ? active.buffs : active.debuffs;
+          const cap = definition.maxStages ?? toNum(asDict(bundle?.rules.stage).cap, Number.POSITIVE_INFINITY);
           const before = bucket[definition.stat] ?? 0;
-          bucket[definition.stat] = before + value;
+          bucket[definition.stat] = Math.max(-cap, Math.min(cap, before + value));
           events.push({ type: "stat-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { stat: definition.stat, before, after: bucket[definition.stat], mode: definition.mode } });
           break;
         }
@@ -213,7 +289,9 @@ export class MechanismRuntime {
 
   applyDamageCommands(state: BattleState, bundle: DataBundle, commands: EffectCommand[]): MechanismEvent[] {
     const events: MechanismEvent[] = [];
-    for (const command of commands) {
+    for (let index = 0; index < commands.length; index++) {
+      const command = commands[index];
+      if (!this.chancePass(state, command, index)) continue;
       const definition = command.definition;
       if (definition.type !== "dealDamage") continue;
       const targetSide = this.resolveSide(definition, command) ?? command.targetSide;
@@ -226,17 +304,58 @@ export class MechanismRuntime {
       const targetDef = getSprite(bundle, target.spriteId);
       const skill = definition.skillId ? getSkill(bundle, definition.skillId) : { category: definition.category, power: definition.power };
       let damage: number;
+      let modifiers: DamageModifiers | null = null;
       if (definition.basis && definition.basis !== "formula") {
         const amount = definition.amount ?? definition.power;
         damage = definition.basis === "maxHp" ? Math.floor(target.maxHp * amount) : definition.basis === "currentHp" ? Math.floor(target.hp * amount) : definition.basis === "stack" ? Math.floor(target.maxHp * amount * (target.marks[definition.markId ?? ""] ?? 0)) : Math.floor(amount);
       } else {
-      const result = computeDamage(bundle, attackerDef, targetDef, attacker, target, skill, { weatherId: state.weather?.id ?? null });
+        modifiers = this.damageModifiers(state, attackerSide, targetSide, definition);
+        const result = computeDamage(bundle, attackerDef, targetDef, attacker, target, skill, {
+          weatherId: state.weather?.id ?? null,
+          attackerTraitMult: modifiers.attackerMult,
+          defenderTraitMult: modifiers.defenderMult,
+          damageReduction: modifiers.reduction,
+          hits: modifiers.hits,
+        });
         damage = result.damage;
       }
       target.hp = Math.max(0, target.hp - damage);
-      events.push({ type: "damage", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { value: damage, attackerSide, skillId: definition.skillId, damageType: definition.category } });
+      events.push({ type: "damage", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { value: damage, attackerSide, skillId: definition.skillId, damageType: definition.category, modifiers } });
     }
     return events;
+  }
+
+  /** 结算一次 dealDamage 前，按 `beforeDamage` 收集攻/防伤害修饰（攻方倍率 / 防方倍率 / 减伤 / 连击）。 */
+  private damageModifiers(state: BattleState, attackerSide: Side, targetSide: Side, definition: EffectDefinition): DamageModifiers {
+    const commands = this.dispatch({
+      state,
+      trigger: "beforeDamage",
+      actorSide: attackerSide,
+      targetSide,
+      event: {
+        skillId: definition.type === "dealDamage" ? definition.skillId : undefined,
+        category: definition.type === "dealDamage" ? definition.category : undefined,
+        power: definition.type === "dealDamage" ? definition.power : undefined,
+      },
+    });
+    let attackerMult = 1;
+    let defenderMult = 1;
+    let reduction = 0;
+    let hits = 1;
+    for (const command of commands) {
+      const d = command.definition;
+      if (d.type === "modifyDamage") {
+        const outgoing = d.scope ? d.scope === "outgoing" : command.actorSide === attackerSide;
+        const factor = d.mode === "add" ? 1 + d.value : d.value;
+        if (outgoing) attackerMult *= factor;
+        else defenderMult *= factor;
+      } else if (d.type === "setHits") {
+        hits = Math.max(1, Math.floor(d.hits));
+      } else if (d.type === "setDamageReduction") {
+        reduction += d.percent;
+      }
+    }
+    return { attackerMult, defenderMult, reduction, hits };
   }
 
   private resolveSide(definition: EffectCommand["definition"], command: EffectCommand): Side | undefined {

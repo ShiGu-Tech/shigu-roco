@@ -15,6 +15,15 @@ export interface ExternalMeta {
     icon?: string;
     iconOnline?: string;
   }>;
+  /** 血脉定义（首领化 / 各系别血脉），含图标。 */
+  bloodlines?: Array<{
+    id: number;
+    key: string;
+    name: string;
+    short?: string;
+    battleTypeId?: number;
+    icon?: string | null;
+  }>;
 }
 
 export interface ExternalSpirit {
@@ -72,6 +81,8 @@ export interface ExternalSkill {
   rawText?: string;
   description?: string;
   icon?: string | null;
+  /** 技能类别图标（物理 / 魔法 / 防御 / 状态）。 */
+  categoryIcon?: string | null;
   source?: string;
   sourceData?: unknown;
   /** 兼容旧快照字段。 */

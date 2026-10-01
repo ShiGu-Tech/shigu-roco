@@ -8,6 +8,7 @@
 import { DataError } from "./data";
 import { loadData } from "./data-node";
 import { getActiveCatalog } from "./catalog";
+import { toArray } from "./types";
 import type { DataBundle, Dict } from "./types";
 
 let cached: DataBundle | null = null;
@@ -19,8 +20,14 @@ export function getBundle(force = false): DataBundle {
     if (!registered) {
       throw new DataError("未找到激活图鉴：请先同步并注册 roco.world 快照（node scripts/sync-roco-world.mjs --register）");
     }
+    const authored = (base.mechanisms ?? []) as Dict[];
+    const authoredDamageSkills = new Set(
+      authored
+        .filter((mechanism) => mechanism.ownerType === "skill" && toArray<Dict>(mechanism.effects).some((effect) => effect.type === "dealDamage"))
+        .map((mechanism) => String(mechanism.ownerId)),
+    );
     const skillMechanisms = registered.skills
-      .filter((skill) => (skill.category === "Physical" || skill.category === "Magic") && Number(skill.power ?? 0) > 0)
+      .filter((skill) => (skill.category === "Physical" || skill.category === "Magic") && Number(skill.power ?? 0) > 0 && !authoredDamageSkills.has(String(skill.id)))
       .map((skill) => ({
         id: `registered:skill:${String(skill.id)}`,
         ownerType: "skill",
@@ -36,10 +43,7 @@ export function getBundle(force = false): DataBundle {
       marks: Object.fromEntries(registered.marks.map((mark) => [String(mark.id), mark])),
       weather: Object.fromEntries(registered.weather.map((item) => [String(item.id), item])),
       elements: registered.elements,
-      mechanisms: [
-        ...(base.mechanisms ?? []).filter((mechanism) => (mechanism as Dict).ownerType !== "skill"),
-        ...skillMechanisms,
-      ],
+      mechanisms: [...authored, ...skillMechanisms],
       dataVersion: registered.catalogVersion,
       dataUpdatedAt: registered.generatedAt,
       warnings: [...base.warnings, ...registered.warnings],

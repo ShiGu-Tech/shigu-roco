@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
+import { ElementBadge } from "@/components/element-icon";
+import { SkillCategoryIcon } from "@/components/skill-category-icon";
 import { SpriteImage } from "@/components/sprite-image";
 import { SkillSlotDialog } from "@/components/skill-slot-dialog";
 import { Badge } from "@/components/ui/badge";
@@ -12,14 +14,7 @@ import { Progress } from "@/components/ui/progress";
 
 import type { ActiveSpriteState, Catalog, RecommendResult, SideState } from "@/modules/battle/types";
 import { ENEMY_COLOR, PLAYER_COLOR } from "@/lib/chart-theme";
-import {
-  actionKey,
-  elementZh,
-  energyRule,
-  skillById,
-  spriteOf,
-  type ActionOption,
-} from "./util";
+import { actionKey, energyRule, skillById, spriteOf, type ActionOption } from "./util";
 
 export type Tone = "player" | "enemy";
 
@@ -108,9 +103,7 @@ export function SpriteCard({
           </span>
           <span className="text-sm font-medium">{sprite?.name ?? side.active.spriteId ?? "—"}</span>
           {sprite?.elements.map((el) => (
-            <Badge key={el} variant="outline">
-              {elementZh(catalog, el)}
-            </Badge>
+            <ElementBadge key={el} catalog={catalog} element={el} />
           ))}
           {subtitle && <span className="text-xs text-muted-foreground">{subtitle}</span>}
         </div>
@@ -216,10 +209,13 @@ function SkillTile({
               </span>
               {recommended && <Badge variant="success">推荐</Badge>}
             </div>
-            <div className="mt-1 truncate text-[11px] text-muted-foreground">
-              {sk.categoryZh ?? sk.category} · 能耗{sk.cost}
-              {sk.power ? ` · 威力${sk.power}` : ""}
-              {sk.priority ? ` · 先手+${sk.priority}` : ""}
+            <div className="mt-1 flex items-center gap-1 truncate text-[11px] text-muted-foreground">
+              <SkillCategoryIcon skill={sk} size={14} />
+              <span className="truncate">
+                {sk.categoryZh ?? sk.category} · 能耗{sk.cost}
+                {sk.power ? ` · 威力${sk.power}` : ""}
+                {sk.priority ? ` · 先手+${sk.priority}` : ""}
+              </span>
             </div>
             <div className="mt-1 flex items-center gap-2">
               <Progress value={(winRate ?? 0) * 100} className="flex-1" />

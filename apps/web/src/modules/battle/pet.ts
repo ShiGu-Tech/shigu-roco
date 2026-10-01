@@ -14,6 +14,8 @@ export interface PetSetup {
   level: number;
   stars: number;
   nature: string | null;
+  /** 血脉槽 id（首领化 / 系别 / 污染 / 奇异）；缺省 = 精灵本体第一属性。 */
+  bloodline?: string;
   talent: TalentMap;
   /** 出战 4 招；空数组 = 尚未确定（对方技能未知）。 */
   skills: string[];
