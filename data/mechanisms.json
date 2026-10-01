@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "updatedAt": "2026-10-01",
   "mechanisms": [
     {
@@ -4761,27 +4761,6 @@
       ]
     },
     {
-      "id": "derived:skill:sk-7040500",
-      "ownerType": "skill",
-      "ownerId": "sk-7040500",
-      "trigger": "beforeAction",
-      "when": [
-        {
-          "path": "event.action.skillId",
-          "op": "eq",
-          "value": "sk-7040500"
-        }
-      ],
-      "effects": [
-        {
-          "type": "applyStatus",
-          "target": "opponent",
-          "statusId": "burn",
-          "layers": 5
-        }
-      ]
-    },
-    {
       "id": "derived:skill:sk-7040630",
       "ownerType": "skill",
       "ownerId": "sk-7040630",
@@ -5831,26 +5810,6 @@
       "note": "护盾回合末清除"
     },
     {
-      "id": "skill:sk-7021150:todo",
-      "ownerType": "skill",
-      "ownerId": "sk-7021150",
-      "trigger": "beforeAction",
-      "when": [
-        {
-          "path": "event.action.skillId",
-          "op": "eq",
-          "value": "sk-7021150"
-        }
-      ],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "dynamic-power",
-          "reason": "「能耗每 +1 威力 +50」需要按当前能耗动态取值"
-        }
-      ]
-    },
-    {
       "id": "skill:sk-7050510:todo",
       "ownerType": "skill",
       "ownerId": "sk-7050510",
@@ -6071,6 +6030,468 @@
         }
       ],
       "note": "翅刃：应对状态 → 改为偷取敌方印记"
+    },
+    {
+      "id": "skill:sk-7040470",
+      "ownerType": "skill",
+      "ownerId": "sk-7040470",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040470"
+        }
+      ],
+      "effects": [
+        {
+          "type": "consumeMark",
+          "target": "opponent",
+          "effectsPerLayer": [
+            {
+              "type": "modifyStat",
+              "target": "self",
+              "stat": "atk",
+              "mode": "percent",
+              "value": 20
+            }
+          ]
+        }
+      ],
+      "note": "焚毁：驱散敌方所有印记，每层获得物攻 +20%"
+    },
+    {
+      "id": "skill:sk-7040680",
+      "ownerType": "skill",
+      "ownerId": "sk-7040680",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040680"
+        }
+      ],
+      "effects": [
+        {
+          "type": "consumeMark",
+          "target": "self",
+          "effectsPerLayer": [
+            {
+              "type": "modifyStat",
+              "target": "self",
+              "stat": "atk",
+              "mode": "percent",
+              "value": 50
+            }
+          ]
+        }
+      ],
+      "note": "焚尽：驱散自己所有印记，每层获得物攻 +50%"
+    },
+    {
+      "id": "skill:sk-7040500",
+      "ownerType": "skill",
+      "ownerId": "sk-7040500",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040500"
+        }
+      ],
+      "effects": [
+        {
+          "type": "consumeMark",
+          "target": "opponent",
+          "effectsPerLayer": [
+            {
+              "type": "applyStatus",
+              "target": "target",
+              "statusId": "burn",
+              "layers": 5
+            }
+          ]
+        },
+        {
+          "type": "consumeMark",
+          "target": "self",
+          "effectsPerLayer": [
+            {
+              "type": "applyStatus",
+              "target": "target",
+              "statusId": "burn",
+              "layers": 5
+            }
+          ]
+        }
+      ],
+      "note": "焚烧烙印：驱散双方所有印记，每驱散 1 层敌方获得 5 层灼烧"
+    },
+    {
+      "id": "skill:sk-7021150",
+      "ownerType": "skill",
+      "ownerId": "sk-7021150",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7021150"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 450,
+          "powerFrom": {
+            "path": "self.active.skillMods.sk-7021150.cost",
+            "scale": 50,
+            "offset": 450
+          },
+          "skillId": "sk-7021150"
+        }
+      ],
+      "note": "逆袭：本技能能耗每 +1，威力 +50"
+    },
+    {
+      "id": "skill:sk-7030570",
+      "ownerType": "skill",
+      "ownerId": "sk-7030570",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030570"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 50,
+          "powerFrom": {
+            "path": "self.active.energy",
+            "scale": 10,
+            "offset": 50
+          },
+          "skillId": "sk-7030570"
+        }
+      ],
+      "note": "甜蜜陷阱：自己每有 1 能量，本次威力 +10"
+    },
+    {
+      "id": "skill:sk-7090310",
+      "ownerType": "skill",
+      "ownerId": "sk-7090310",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7090310"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 40,
+          "powerFrom": {
+            "path": "target.active.statuses.freeze",
+            "scale": 20,
+            "offset": 40
+          },
+          "skillId": "sk-7090310"
+        }
+      ],
+      "note": "碎冰冰：敌方每有 1 层冻结，本次威力 +20"
+    },
+    {
+      "id": "skill:sk-7190440",
+      "ownerType": "skill",
+      "ownerId": "sk-7190440",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7190440"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 20,
+          "powerFrom": {
+            "path": "target.active.marks.*",
+            "scale": 20,
+            "offset": 20
+          },
+          "skillId": "sk-7190440"
+        }
+      ],
+      "note": "天体吸积：敌方每有 1 层印记，本次威力 +20"
+    },
+    {
+      "id": "skill:sk-7120220",
+      "ownerType": "skill",
+      "ownerId": "sk-7120220",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7120220"
+        },
+        {
+          "not": {
+            "path": "event.reacted",
+            "op": "eq",
+            "value": true
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 75,
+          "powerFrom": {
+            "path": "target.active.statuses.poison",
+            "scale": 10,
+            "offset": 75
+          },
+          "skillId": "sk-7120220"
+        }
+      ],
+      "note": "鸩毒：敌方每层中毒 +10 威力"
+    },
+    {
+      "id": "skill:sk-7120220:react",
+      "ownerType": "skill",
+      "ownerId": "sk-7120220",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7120220"
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 75,
+          "powerFrom": {
+            "path": "target.active.statuses.poison",
+            "scale": 40,
+            "offset": 75
+          },
+          "skillId": "sk-7120220"
+        }
+      ],
+      "note": "鸩毒：应对状态 → 每层中毒 +40 威力"
+    },
+    {
+      "id": "skill:sk-7120150",
+      "ownerType": "skill",
+      "ownerId": "sk-7120150",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7120150"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "target.active.statuses.poison",
+            "scale": 30
+          }
+        }
+      ],
+      "note": "以毒攻毒：敌方每层中毒，自己魔攻 +30%"
+    },
+    {
+      "id": "skill:sk-7120230",
+      "ownerType": "skill",
+      "ownerId": "sk-7120230",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7120230"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "opponent",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "target.active.statuses.poison",
+            "scale": -30
+          }
+        },
+        {
+          "type": "modifyStat",
+          "target": "opponent",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "target.active.statuses.poison",
+            "scale": -30
+          }
+        }
+      ],
+      "note": "腐化：敌方每层中毒，敌方双攻 -30%"
+    },
+    {
+      "id": "skill:sk-7090430",
+      "ownerType": "skill",
+      "ownerId": "sk-7090430",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7090430"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 0,
+          "deltaFrom": {
+            "path": "target.active.statuses.freeze",
+            "scale": 1
+          }
+        }
+      ],
+      "note": "冷凝：敌方每有 1 层冻结，自己回复 1 能量"
+    },
+    {
+      "id": "skill:sk-7190240",
+      "ownerType": "skill",
+      "ownerId": "sk-7190240",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7190240"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "skillId": "sk-7190240",
+          "mode": "set",
+          "deltaFrom": {
+            "path": "target.active.marks.*",
+            "scale": -1
+          }
+        }
+      ],
+      "note": "四维降解：敌方每有 1 层印记，本技能能耗 -1"
+    },
+    {
+      "id": "skill:sk-7120250",
+      "ownerType": "skill",
+      "ownerId": "sk-7120250",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7120250"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "untouchable-shield",
+          "layers": 1
+        }
+      ],
+      "note": "不可接触：减伤护盾"
+    },
+    {
+      "id": "skill:sk-7120250:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7120250",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.untouchable-shield",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 50,
+          "percentFrom": {
+            "path": "self.active.statuses.poison",
+            "scale": 10,
+            "offset": 50
+          }
+        }
+      ],
+      "note": "不可接触：减伤 50% + 敌方每层中毒 +10%"
+    },
+    {
+      "id": "skill:sk-7120250:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7120250",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.untouchable-shield",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "untouchable-shield"
+        }
+      ]
     }
   ]
 }

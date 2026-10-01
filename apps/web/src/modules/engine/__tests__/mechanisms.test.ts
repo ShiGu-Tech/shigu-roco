@@ -277,6 +277,50 @@ describe("memory domain (counters / skill mods)", () => {
   });
 });
 
+describe("dynamic values & consumeMark", () => {
+  function st() {
+    return makeState(makeSide(makeActive("sp-a", { hp: 100, maxHp: 100 })), makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })));
+  }
+
+  it("scales a dynamic path on applyMark", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const battle = st();
+    battle.player.active.counters = { stacks: 3 };
+    runtime.applyStateCommands(battle, [command({ type: "applyMark", target: "opponent", markId: "poison-mark", layersFrom: { path: "self.active.counters.stacks", scale: 2 } })]);
+    expect(battle.enemy.active.marks["poison-mark"]).toBe(6);
+  });
+
+  it("sums a `*` wildcard path", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const battle = st();
+    battle.player.active.debuffs = { atk: 2, speed: 3 };
+    runtime.applyStateCommands(battle, [command({ type: "setCounter", target: "self", key: "debuffTotal", valueFrom: "self.active.debuffs.*" })]);
+    expect(battle.player.active.counters?.debuffTotal).toBe(5);
+  });
+
+  it("consumeMark applies per-layer effects", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const battle = st();
+    battle.enemy.active.marks = { "starfall-mark": 3, "thorn-mark": 2 };
+    runtime.applyStateCommands(battle, [
+      command({ type: "consumeMark", target: "opponent", effectsPerLayer: [{ type: "modifyStat", target: "self", stat: "atk", mode: "percent", value: 20 }] }),
+    ]);
+    expect(battle.enemy.active.marks["starfall-mark"]).toBeUndefined();
+    expect(battle.player.active.buffs.atk).toBeCloseTo(1);
+  });
+
+  it("powerFrom drives per-hit damage from state", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const base = st();
+    const boosted = st();
+    boosted.player.active.counters = { boost: 2 };
+    const def = { type: "dealDamage" as const, target: "target", category: "Physical" as const, power: 450, powerFrom: { path: "self.active.counters.boost", scale: 50, offset: 450 }, skillId: "sk-1" };
+    const [low] = runtime.applyDamageCommands(base, miniBundle, [command(def)]);
+    const [high] = runtime.applyDamageCommands(boosted, miniBundle, [command(def)]);
+    expect(high.data.value as number).toBeGreaterThan(low.data.value as number);
+  });
+});
+
 describe("control domain (buffs / status / cost / switch)", () => {
   function st() {
     return makeState(makeSide(makeActive("sp-a", { hp: 100, maxHp: 100 })), makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })));

@@ -7,7 +7,7 @@ import { asDict, toArray, toNum } from "../types";
 import { ActionQueue } from "./action-queue";
 import { resolveContextPath } from "./conditions";
 import { MechanismRegistry } from "./registry";
-import type { EffectCommand, EffectDefinition, MechanismContext, MechanismEvent } from "./types";
+import type { DynamicRef, EffectCommand, EffectDefinition, MechanismContext, MechanismEvent } from "./types";
 
 interface DamageModifiers {
   attackerMult: number;
@@ -88,11 +88,14 @@ export class MechanismRuntime {
     return [...new Set([...Object.keys(s.active.marks), ...Object.keys(s.teamMarks)])];
   }
 
-  /** 动态取值：`from` 为上下文点路径时按当前状态求值，否则返回 fallback。 */
-  private dynamicValue(state: BattleState, command: EffectCommand, from: string | undefined, fallback: number): number {
-    if (!from) return fallback;
+  /** 动态取值：字符串 = 点路径；对象 = 路径 + 系数 + 偏移（末尾 `*` 合计）。 */
+  private dynamicValue(state: BattleState, command: EffectCommand, from: DynamicRef | undefined, fallback: number): number {
+    if (from === undefined) return fallback;
+    const spec = typeof from === "string" ? { path: from } : from;
     const context = { state, trigger: command.trigger, actorSide: command.actorSide, targetSide: command.targetSide, event: {} };
-    return toNum(resolveContextPath(context, from), fallback);
+    const raw = toNum(resolveContextPath(context, spec.path), fallback);
+    const scaled = raw * (spec.scale ?? 1) + (spec.offset ?? 0);
+    return spec.round === "ceil" ? Math.ceil(scaled) : spec.round === "round" ? Math.round(scaled) : Math.floor(scaled);
   }
 
   /** 印记有效上限：passive 覆盖 ?? 印记自身 ?? rules.marks.maxStack。 */
@@ -123,7 +126,8 @@ export class MechanismRuntime {
         case "heal": {
           if (!active || !targetSide) break;
           const before = active.hp;
-          const amount = definition.basis === "maxHp" ? active.maxHp * definition.amount : definition.basis === "currentHp" ? active.hp * definition.amount : definition.amount;
+          const base = definition.amountFrom ? this.dynamicValue(state, command, definition.amountFrom, definition.amount) : definition.amount;
+          const amount = definition.basis === "maxHp" ? active.maxHp * base : definition.basis === "currentHp" ? active.hp * base : base;
           active.hp = Math.min(active.maxHp, active.hp + Math.floor(amount));
           events.push({ type: "healed", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { before, after: active.hp, value: active.hp - before } });
           break;
@@ -138,8 +142,9 @@ export class MechanismRuntime {
         case "modifyEnergy": {
           if (!active || !targetSide) break;
           const before = active.energy;
-          active.energy = Math.max(0, active.energy + definition.delta);
-          events.push({ type: "energy-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { before, after: active.energy, delta: definition.delta } });
+          const delta = definition.deltaFrom ? this.dynamicValue(state, command, definition.deltaFrom, definition.delta) : definition.delta;
+          active.energy = Math.max(0, active.energy + delta);
+          events.push({ type: "energy-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { before, after: active.energy, delta } });
           break;
         }
         case "modifySwitchLock": {
@@ -207,9 +212,11 @@ export class MechanismRuntime {
           active.skillMods ??= {};
           for (const skillId of skillIds) {
             let delta = definition.delta ?? 0;
+            if (definition.deltaFrom) delta += this.dynamicValue(state, command, definition.deltaFrom, 0);
             if (typeof definition.multiply === "number" && bundle) delta += Math.round(toNum(getSkill(bundle, skillId).cost, 0) * (definition.multiply - 1));
             const mod = (active.skillMods[skillId] ??= {});
-            mod.cost = (mod.cost ?? 0) + delta;
+            // mode=set：用当前计算值替换（每回合重算不累加，适合「每有 1 层 X 能耗 -1」）。
+            mod.cost = definition.mode === "set" ? delta : (mod.cost ?? 0) + delta;
           }
           events.push({ type: "skill-cost-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { scope: definition.scope ?? "skill", skillId: definition.skillId ?? null, delta: definition.delta ?? 0, multiply: definition.multiply ?? 1, skills: skillIds } });
           break;
@@ -336,6 +343,29 @@ export class MechanismRuntime {
           events.push({ type: "mark-transformed", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { markId: definition.toMarkId, before: total } });
           break;
         }
+        case "consumeMark": {
+          if (!active || !targetSide) break;
+          const ids = definition.markId ? [definition.markId] : this.allMarkIds(state, targetSide);
+          let total = 0;
+          for (const markId of ids) {
+            const { store } = this.markStore(state, bundle, targetSide, markId, definition.scope);
+            const layers = store[markId] ?? 0;
+            if (layers <= 0) continue;
+            total += layers;
+            delete store[markId];
+          }
+          // 嵌套效果沿用「施法者视角」：self = 施法方，target/opponent = 施法方的对手。
+          const opposite: Side | undefined = command.actorSide === "player" ? "enemy" : command.actorSide === "enemy" ? "player" : command.targetSide;
+          const perLayer: EffectCommand[] = [];
+          for (let i = 0; i < total; i++) {
+            for (const effect of definition.effectsPerLayer) {
+              perLayer.push({ type: effect.type, definition: effect, mechanismId: command.mechanismId, trigger: command.trigger, actorSide: command.actorSide, targetSide: opposite });
+            }
+          }
+          events.push({ type: "mark-consumed", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { markId: definition.markId ?? null, total } });
+          if (perLayer.length) events.push(...this.applyStateCommands(state, perLayer, bundle, depth + 1));
+          break;
+        }
         case "removeMark": {
           if (!active || !targetSide) break;
           // markId 省略 = 驱散该侧全部印记（精灵 + 团队）。
@@ -441,7 +471,8 @@ export class MechanismRuntime {
         }
         case "modifyStat": {
           if (!active || !targetSide) break;
-          const value = definition.mode === "percent" && Math.abs(definition.value) > 1 ? definition.value / 100 : definition.value;
+          const raw = definition.valueFrom ? this.dynamicValue(state, command, definition.valueFrom, definition.value) : definition.value;
+          const value = definition.mode === "percent" && Math.abs(raw) > 1 ? raw / 100 : raw;
           const bucket = value >= 0 ? active.buffs : active.debuffs;
           const cap = definition.maxStages ?? toNum(asDict(bundle?.rules.stage).cap, Number.POSITIVE_INFINITY);
           const before = bucket[definition.stat] ?? 0;
@@ -546,7 +577,10 @@ export class MechanismRuntime {
       const skill = definition.skillId ? getSkill(bundle, definition.skillId) : { category: definition.category, power: definition.power };
       // 记忆域 · 技能永久修正：本技能的威力 delta 叠加到基础威力上。
       const powerDelta = toNum(attacker.skillMods?.[definition.skillId ?? ""]?.power, 0);
-      const effectiveSkill = powerDelta ? { ...skill, power: toNum(skill.power, 0) + powerDelta } : skill;
+      let effectiveSkill = powerDelta ? { ...skill, power: toNum(skill.power, 0) + powerDelta } : skill;
+      // 动态威力：`powerFrom` 按当前状态求值（如「能耗每 +1 威力 +50」= offset 450 + scale 50×能耗）。
+      // 路径缺失按 0 计，基线由 offset 提供，避免把 fallback 也乘上 scale。
+      if (definition.powerFrom) effectiveSkill = { ...effectiveSkill, power: this.dynamicValue(state, command, definition.powerFrom, 0) };
       let damage: number;
       let modifiers: DamageModifiers | null = null;
       if (definition.basis && definition.basis !== "formula") {
@@ -599,7 +633,8 @@ export class MechanismRuntime {
       } else if (d.type === "setHits") {
         if (d.hitsFrom) {
           const context = { state, trigger: "beforeDamage" as const, actorSide: attackerSide, targetSide, event: { skillId } };
-          hits = Math.max(1, Math.floor(toNum(resolveContextPath(context, d.hitsFrom), 1)));
+          const spec = typeof d.hitsFrom === "string" ? { path: d.hitsFrom } : d.hitsFrom;
+          hits = Math.max(1, Math.floor(toNum(resolveContextPath(context, spec.path), 1) * (spec.scale ?? 1) + (spec.offset ?? 0)));
         } else if (d.markId) {
           const holder = targetSide === "player" ? state.player.active : state.enemy.active;
           const stacks = toNum(holder.marks?.[d.markId], 0);
@@ -608,7 +643,12 @@ export class MechanismRuntime {
           hits = Math.max(1, Math.floor(d.hits ?? 1));
         }
       } else if (d.type === "setDamageReduction") {
-        reduction += d.percent;
+        if (d.percentFrom) {
+          const context = { state, trigger: "beforeDamage" as const, actorSide: attackerSide, targetSide, event: { skillId } };
+          reduction += toNum(resolveContextPath(context, d.percentFrom.path), 0) * (d.percentFrom.scale ?? 1) + (d.percentFrom.offset ?? 0);
+        } else {
+          reduction += d.percent;
+        }
       }
     }
     return { attackerMult, defenderMult, reduction, hits };

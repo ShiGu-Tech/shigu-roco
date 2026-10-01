@@ -2,7 +2,16 @@ import type { Side } from "../types";
 import type { Condition, MechanismContext } from "./types";
 
 function readPath(root: unknown, path: string): unknown {
-  return path.split(".").reduce<unknown>((value, key) => {
+  const keys = path.split(".");
+  // 末尾 `*` = 合计该对象的全部数值（如 `self.active.debuffs.*` 求减益总层数）。
+  if (keys[keys.length - 1] === "*") {
+    const container = readPath(root, keys.slice(0, -1).join("."));
+    if (container && typeof container === "object" && !Array.isArray(container)) {
+      return Object.values(container as Record<string, unknown>).reduce<number>((sum, value) => sum + (Number(value) || 0), 0);
+    }
+    return 0;
+  }
+  return keys.reduce<unknown>((value, key) => {
     if (value && typeof value === "object") return (value as Record<string, unknown>)[key];
     return undefined;
   }, root);
