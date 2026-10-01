@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "updatedAt": "2026-10-01",
   "mechanisms": [
     {
@@ -1065,6 +1065,13 @@
           "path": "event.action.skillId",
           "op": "eq",
           "value": "sk-7020430"
+        },
+        {
+          "not": {
+            "path": "self.lastTurn.actionType",
+            "op": "eq",
+            "value": "Status"
+          }
         }
       ],
       "effects": [
@@ -1075,7 +1082,8 @@
           "power": 65,
           "skillId": "sk-7020430"
         }
-      ]
+      ],
+      "note": "见招拆招：基础（上回合非状态技）"
     },
     {
       "id": "skill:sk-7020480",
@@ -4264,19 +4272,33 @@
       ]
     },
     {
-      "ownerType": "skill",
-      "trigger": "beforeAction",
       "id": "starfall:sk-7190310",
+      "ownerType": "skill",
       "ownerId": "sk-7190310",
-      "note": "超新星馈赠：基础 +2 层；「每使用 1 次永久 +1」待校准",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7190310"
+        }
+      ],
       "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "supernova",
+          "delta": 1
+        },
         {
           "type": "applyMark",
           "target": "opponent",
           "markId": "starfall-mark",
-          "layers": 2
+          "layers": 1,
+          "layersFrom": "self.active.counters.supernova"
         }
-      ]
+      ],
+      "note": "超新星馈赠：敌方 +2 层星陨，每使用 1 次赋予层数永久 +1"
     },
     {
       "ownerType": "skill",
@@ -5430,6 +5452,561 @@
           "type": "setHits",
           "target": "target",
           "hitsFrom": "self.active.counters.hits:sk-7020510"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7020430:boost",
+      "ownerType": "skill",
+      "ownerId": "sk-7020430",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020430"
+        },
+        {
+          "path": "self.lastTurn.actionType",
+          "op": "eq",
+          "value": "Status"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 120,
+          "skillId": "sk-7020430"
+        }
+      ],
+      "note": "见招拆招：上回合使用状态技能 → 威力 +55"
+    },
+    {
+      "id": "skill:sk-7020600",
+      "ownerType": "skill",
+      "ownerId": "sk-7020600",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "neq",
+          "value": "sk-7020600"
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Normal"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "skillId": "sk-7020600",
+          "delta": -2
+        }
+      ],
+      "note": "蓄能轰击：每次使用其他普通系技能，本技能能耗永久 -2"
+    },
+    {
+      "id": "skill:sk-7021070",
+      "ownerType": "skill",
+      "ownerId": "sk-7021070",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7021070"
+        }
+      ],
+      "effects": [
+        {
+          "type": "clearStat",
+          "target": "opponent",
+          "polarity": "buff",
+          "layers": 5
+        }
+      ],
+      "note": "消毒法：驱散敌方 5 层增益"
+    },
+    {
+      "id": "skill:sk-7040610",
+      "ownerType": "skill",
+      "ownerId": "sk-7040610",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040610"
+        }
+      ],
+      "effects": [
+        {
+          "type": "clearStat",
+          "target": "self",
+          "polarity": "debuff",
+          "layers": "all"
+        }
+      ],
+      "note": "除厄：驱散自己的减益"
+    },
+    {
+      "id": "skill:sk-7150260",
+      "ownerType": "skill",
+      "ownerId": "sk-7150260",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7150260"
+        }
+      ],
+      "effects": [
+        {
+          "type": "clearStat",
+          "target": "opponent",
+          "polarity": "buff",
+          "layers": "all",
+          "limit": 1
+        }
+      ],
+      "note": "飞羽：驱散敌方 1 种增益"
+    },
+    {
+      "id": "skill:sk-7130290",
+      "ownerType": "skill",
+      "ownerId": "sk-7130290",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7130290"
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeMark",
+          "target": "opponent"
+        }
+      ],
+      "note": "翅刃：驱散敌方所有印记（应对状态→偷取的变体待建模）"
+    },
+    {
+      "id": "skill:sk-7130290:todo",
+      "ownerType": "skill",
+      "ownerId": "sk-7130290",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7130290"
+        }
+      ],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "react-variant",
+          "reason": "「应对状态：改为偷取印记」需要应对判定"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7110220",
+      "ownerType": "skill",
+      "ownerId": "sk-7110220",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7110220"
+        }
+      ],
+      "effects": [
+        {
+          "type": "escape",
+          "target": "self"
+        }
+      ],
+      "note": "闪击折返：自己脱离"
+    },
+    {
+      "id": "skill:sk-7110220:hits",
+      "ownerType": "skill",
+      "ownerId": "sk-7110220",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7110220"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 2
+        }
+      ],
+      "note": "闪击折返：2 连击"
+    },
+    {
+      "id": "skill:sk-7150270",
+      "ownerType": "skill",
+      "ownerId": "sk-7150270",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7150270"
+        }
+      ],
+      "effects": [
+        {
+          "type": "escape",
+          "target": "self"
+        },
+        {
+          "type": "forceSwitch",
+          "target": "opponent"
+        },
+        {
+          "type": "setPriority",
+          "target": "self",
+          "value": -1
+        }
+      ],
+      "note": "风隐：敌方和自己均脱离，先手 -1"
+    },
+    {
+      "id": "skill:sk-7170360",
+      "ownerType": "skill",
+      "ownerId": "sk-7170360",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7170360"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "opponent",
+          "delta": -2
+        },
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 2
+        },
+        {
+          "type": "escape",
+          "target": "self"
+        }
+      ],
+      "note": "离魂术：偷取敌方 2 能量并脱离"
+    },
+    {
+      "id": "skill:sk-7120270",
+      "ownerType": "skill",
+      "ownerId": "sk-7120270",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7120270"
+        },
+        {
+          "path": "event.opponentAction.actionType",
+          "op": "eq",
+          "value": "Attack"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "dissolve-shield",
+          "layers": 1
+        },
+        {
+          "type": "clearStat",
+          "target": "opponent",
+          "polarity": "buff",
+          "layers": "all",
+          "limit": 1
+        }
+      ],
+      "note": "防御技护盾 dissolve-shield"
+    },
+    {
+      "id": "skill:sk-7120270:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7120270",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.dissolve-shield",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 90
+        }
+      ],
+      "note": "防御减伤 90%"
+    },
+    {
+      "id": "skill:sk-7120270:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7120270",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.dissolve-shield",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "dissolve-shield"
+        }
+      ],
+      "note": "护盾回合末清除"
+    },
+    {
+      "id": "skill:sk-7150420",
+      "ownerType": "skill",
+      "ownerId": "sk-7150420",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7150420"
+        },
+        {
+          "path": "event.opponentAction.actionType",
+          "op": "eq",
+          "value": "Attack"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "windless-shield",
+          "layers": 1
+        },
+        {
+          "type": "escape",
+          "target": "self"
+        },
+        {
+          "type": "forceSwitch",
+          "target": "opponent"
+        }
+      ],
+      "note": "防御技护盾 windless-shield"
+    },
+    {
+      "id": "skill:sk-7150420:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7150420",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.windless-shield",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 50
+        }
+      ],
+      "note": "防御减伤 50%"
+    },
+    {
+      "id": "skill:sk-7150420:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7150420",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.windless-shield",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "windless-shield"
+        }
+      ],
+      "note": "护盾回合末清除"
+    },
+    {
+      "id": "skill:sk-7021170:todo",
+      "ownerType": "skill",
+      "ownerId": "sk-7021170",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7021170"
+        }
+      ],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "conditional-dispel",
+          "reason": "「未被防御技能应对则驱散双方印记」需要应对判定"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7021150:todo",
+      "ownerType": "skill",
+      "ownerId": "sk-7021150",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7021150"
+        }
+      ],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "dynamic-power",
+          "reason": "「能耗每 +1 威力 +50」需要按当前能耗动态取值"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7020570:todo",
+      "ownerType": "skill",
+      "ownerId": "sk-7020570",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020570"
+        }
+      ],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "react-stack",
+          "reason": "「每应对成功 1 次威力永久 +90」需要应对成功事件"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7020580:todo",
+      "ownerType": "skill",
+      "ownerId": "sk-7020580",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020580"
+        }
+      ],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "last-react",
+          "reason": "「上回合应对成功威力 +180」需要应对成功记忆"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7050510:todo",
+      "ownerType": "skill",
+      "ownerId": "sk-7050510",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7050510"
+        }
+      ],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "dynamic-cost",
+          "reason": "「每有 1 层减益本技能能耗 -1」需要按减益层数动态取值"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7110270:todo",
+      "ownerType": "skill",
+      "ownerId": "sk-7110270",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7110270"
+        }
+      ],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "inherit-on-enter",
+          "reason": "「下个入场精灵回复 8 能量」需要「本次脱离」传递"
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7160270:todo",
+      "ownerType": "skill",
+      "ownerId": "sk-7160270",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7160270"
+        }
+      ],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "inherit-buffs",
+          "reason": "「下个入场精灵继承增益」需要入场继承"
         }
       ]
     }

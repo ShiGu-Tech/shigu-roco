@@ -257,11 +257,69 @@ describe("memory domain (counters / skill mods)", () => {
     expect(battle.player.active.counters?.uses).toBeUndefined();
   });
 
+  it("applyMark adds layers + counter-based dynamic layers; removeMark all", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const battle = st();
+    battle.player.active.counters = { supernova: 1 };
+    runtime.applyStateCommands(battle, [
+      command({ type: "applyMark", target: "opponent", markId: "starfall-mark", layers: 1, layersFrom: "self.active.counters.supernova" }),
+    ]);
+    expect(battle.enemy.active.marks["starfall-mark"]).toBe(2);
+    runtime.applyStateCommands(battle, [command({ type: "removeMark", target: "opponent" })]);
+    expect(battle.enemy.active.marks["starfall-mark"]).toBeUndefined();
+  });
+
   it("modifySkill records a persistent delta", () => {
     const runtime = new MechanismRuntime(new MechanismRegistry());
     const battle = st();
     runtime.applyStateCommands(battle, [command({ type: "modifySkill", target: "self", skillId: "sk-1", power: 45, cost: -1 })]);
     expect(battle.player.active.skillMods?.["sk-1"]).toEqual({ power: 45, cost: -1 });
+  });
+});
+
+describe("control domain (buffs / status / cost / switch)", () => {
+  function st() {
+    return makeState(makeSide(makeActive("sp-a", { hp: 100, maxHp: 100 })), makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })));
+  }
+
+  it("clearStat removes debuffs by polarity and honors layer count", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const battle = st();
+    battle.player.active.debuffs = { atk: 3, speed: 2 };
+    battle.player.active.buffs = { def: 1 };
+    runtime.applyStateCommands(battle, [command({ type: "clearStat", target: "self", layers: 2, polarity: "debuff" })]);
+    expect(battle.player.active.debuffs.atk).toBe(1);
+    expect(battle.player.active.debuffs.speed).toBeUndefined();
+    expect(battle.player.active.buffs.def).toBe(1);
+  });
+
+  it("setStatus / scaleStatus adjust layers", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const battle = st();
+    runtime.applyStateCommands(battle, [command({ type: "setStatus", target: "target", statusId: "burn", layers: 3 })]);
+    expect(battle.enemy.active.statuses.burn).toBe(3);
+    runtime.applyStateCommands(battle, [command({ type: "scaleStatus", target: "target", statusId: "burn", factor: 2 })]);
+    expect(battle.enemy.active.statuses.burn).toBe(6);
+  });
+
+  it("modifySkillCost writes per-skill cost deltas by scope", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const battle = st();
+    battle.player.active.loadout = ["sk-1"];
+    runtime.applyStateCommands(battle, [command({ type: "modifySkillCost", target: "self", scope: "attack", delta: 2 })], miniBundle);
+    expect(battle.player.active.skillMods?.["sk-1"]?.cost).toBe(2);
+    runtime.applyStateCommands(battle, [command({ type: "modifySkillCost", target: "self", skillId: "sk-1", delta: -1 })], miniBundle);
+    expect(battle.player.active.skillMods?.["sk-1"]?.cost).toBe(1);
+  });
+
+  it("forceSwitch / escape / allowSwitch set side flags", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const battle = st();
+    battle.enemy.switchLock = 2;
+    runtime.applyStateCommands(battle, [command({ type: "forceSwitch", target: "opponent" })]);
+    expect(battle.enemy.forcedSwitch).toBe(true);
+    runtime.applyStateCommands(battle, [command({ type: "allowSwitch", target: "opponent" })]);
+    expect(battle.enemy.switchLock).toBe(0);
   });
 });
 

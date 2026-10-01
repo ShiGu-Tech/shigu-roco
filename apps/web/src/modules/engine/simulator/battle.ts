@@ -173,7 +173,8 @@ export class Simulator {
       entry.status = "resolved";
       if (entry.action.kind === "skill") {
         if (entry.action.skillId) touched[side].add(entry.action.skillId);
-        events.push(...this.triggerState(st, "skillUsed", { actorSide: side, targetSide: opp, action: entry.action, event: { skillId: entry.action.skillId, actionId: entry.id } }));
+        const usedSkill = entry.action.skillId ? getSkill(this.bundle, entry.action.skillId) : {};
+        events.push(...this.triggerState(st, "skillUsed", { actorSide: side, targetSide: opp, action: entry.action, event: { skillId: entry.action.skillId, actionId: entry.id, element: toStr(usedSkill.element), category: toStr(usedSkill.category), actionType: toStr(usedSkill.actionType) } }));
         const skillId = entry.action.skillId;
         if (skillId && caster.skillOverrides?.[skillId]?.expires === 0) {
           revertSkillOverride(caster, skillId);
@@ -360,7 +361,8 @@ export class Simulator {
     s.bench = s.bench.filter((b) => b !== target);
     s.bench.push(old);
     s.active = target;
-    events.push({ type: "switch", side, text: `${side} 换上 ${target.spriteId}`, data: {} });
+    s.forcedSwitch = false;
+    events.push({ type: "switch", side, text: `${side} 换上 ${target.spriteId}`, data: { forced } });
     events.push(...this.triggerState(st, "afterSwitch", { actorSide: side, targetSide: otherSide(side), action: { kind: "switch", benchId }, event: { from: old.spriteId, to: target.spriteId, forced } }));
     return events;
   }

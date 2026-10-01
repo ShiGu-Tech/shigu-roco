@@ -69,6 +69,8 @@ export interface SideState {
   counters?: Record<string, number>;
   /** 记忆域 · 上回合本队动作。 */
   lastTurn?: LastTurn;
+  /** 行动域 · 本队被强制换人（引擎标记，前端须补一次 forced-switch）。 */
+  forcedSwitch?: boolean;
 }
 
 export interface Weather {

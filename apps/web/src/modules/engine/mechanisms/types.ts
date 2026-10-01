@@ -72,6 +72,10 @@ export type EffectSpec =
   | { type: "modifyCooldown"; target?: string; skillId?: string; skillIdFrom?: string; scope?: "skill" | "defense"; delta: number; minimum?: number }
   /** 状态层数（不再混存 duration）；immuneElements 与目标系别比对，命中即免疫。 */
   | { type: "applyStatus"; target?: string; statusId: string; layers?: number; immuneElements?: string[] }
+  /** 状态设为指定层数（0 = 移除）；`layersFrom` 为上下文点路径动态取值。 */
+  | { type: "setStatus"; target?: string; statusId: string; layers?: number; layersFrom?: string }
+  /** 状态缩放：对指定状态（省略 = 全部）做 `factor` 乘 + `delta` 加（如减益翻倍）。 */
+  | { type: "scaleStatus"; target?: string; statusId?: string; factor?: number; delta?: number }
   /** 状态结算：按策略衰减层数（half/clear）或减去固定层数（delta），DoT 由同机制的 dealDamage 承担。 */
   | { type: "settleStatus"; target?: string; statusId: string; decayLayers?: "half" | "clear"; delta?: number }
   | { type: "removeStatus"; target?: string; statusId: string }
@@ -85,11 +89,21 @@ export type EffectSpec =
   | { type: "transferMark"; markId?: string; amount?: number | "all"; from?: "self" | "opponent"; to?: "self" | "opponent" }
   /** 印记收拢：把目标身上的印记合计层数收拢成 `toMarkId` 一种。 */
   | { type: "transformMark"; target?: string; toMarkId: string; scope?: "sprite" | "team" }
+  /** 强化域 · 驱散 / 偷取增益减益：按 `stat`（省略 = 全部）与 `polarity` 移除 `layers` 层（"all" 或省略 = 清空）；`limit` 限制作用的属性种类数。 */
+  | { type: "clearStat"; target?: string; stat?: string; layers?: number | "all"; polarity?: "buff" | "debuff" | "all"; limit?: number }
+  /** 能耗域 · 技能能耗修正：对某技能 / 全体 / 攻击技 / 防御技叠加 `delta` 或按 `multiply` 缩放。 */
+  | { type: "modifySkillCost"; target?: string; skillId?: string; scope?: "skill" | "all" | "attack" | "defense"; delta?: number; multiply?: number }
+  /** 行动域 · 强制换人（引擎只标记 `forcedSwitch`，由前端补一次换人）。 */
+  | { type: "forceSwitch"; target?: string }
+  /** 行动域 · 脱离（强制换人 + 解除离场锁）。 */
+  | { type: "escape"; target?: string }
+  /** 行动域 · 允许被限制的换人（清除离场锁）。 */
+  | { type: "allowSwitch"; target?: string }
   | { type: "modifyMagic"; target?: string; delta: number }
   | { type: "modifyEnergy"; target?: string; delta: number }
   | { type: "modifySwitchLock"; target?: string; delta: number }
   | { type: "applyMark"; target?: string; markId: string; layers?: number; layersFrom?: string; scope?: "sprite" | "team"; immuneElements?: string[] }
-  | { type: "removeMark"; target?: string; markId: string; layers?: number; scope?: "sprite" | "team" }
+  | { type: "removeMark"; target?: string; markId?: string; layers?: number; scope?: "sprite" | "team" }
   | { type: "changeWeather"; weatherId: string; turns?: number }
   | { type: "setPriority"; target?: string; value: number }
   | { type: "forceFirst"; target?: string }

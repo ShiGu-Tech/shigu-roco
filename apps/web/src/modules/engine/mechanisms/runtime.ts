@@ -149,6 +149,71 @@ export class MechanismRuntime {
           events.push({ type: "switch-lock-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { before, after: side.switchLock, delta: definition.delta } });
           break;
         }
+        case "forceSwitch": {
+          if (!targetSide) break;
+          const side = targetSide === "player" ? state.player : state.enemy;
+          side.forcedSwitch = true;
+          events.push({ type: "forced-switch", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: {} });
+          break;
+        }
+        case "escape": {
+          if (!targetSide) break;
+          const side = targetSide === "player" ? state.player : state.enemy;
+          side.forcedSwitch = true;
+          side.switchLock = 0;
+          events.push({ type: "escaped", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: {} });
+          break;
+        }
+        case "allowSwitch": {
+          if (!targetSide) break;
+          const side = targetSide === "player" ? state.player : state.enemy;
+          const before = side.switchLock;
+          side.switchLock = 0;
+          events.push({ type: "switch-allowed", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { before } });
+          break;
+        }
+        case "clearStat": {
+          if (!active || !targetSide) break;
+          const polarity = definition.polarity ?? "all";
+          const amount = definition.layers === "all" || definition.layers === undefined ? Number.POSITIVE_INFINITY : Math.max(0, definition.layers);
+          const buckets: Record<string, number>[] = [];
+          if (polarity !== "debuff") buckets.push(active.buffs);
+          if (polarity !== "buff") buckets.push(active.debuffs);
+          const cleared: Record<string, number> = {};
+          let typesLeft = definition.limit ?? Number.POSITIVE_INFINITY;
+          for (const bucket of buckets) {
+            for (const stat of definition.stat ? [definition.stat] : Object.keys(bucket)) {
+              if (typesLeft <= 0) break;
+              const before = bucket[stat] ?? 0;
+              if (before <= 0) continue;
+              const removed = Math.min(before, amount);
+              if (before - removed <= 0) delete bucket[stat];
+              else bucket[stat] = before - removed;
+              cleared[stat] = (cleared[stat] ?? 0) + removed;
+              typesLeft -= 1;
+            }
+          }
+          events.push({ type: "stat-cleared", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { polarity, stat: definition.stat ?? null, layers: definition.layers ?? "all", cleared } });
+          break;
+        }
+        case "modifySkillCost": {
+          if (!active || !targetSide) break;
+          let skillIds: string[] = [];
+          if (definition.scope === "all") skillIds = [...active.loadout];
+          else if (definition.scope === "defense") skillIds = active.loadout.filter((id) => this.isDefenseSkill(bundle, id));
+          else if (definition.scope === "attack") skillIds = bundle ? active.loadout.filter((id) => { const sk = getSkill(bundle, id); return sk.category === "Physical" || sk.category === "Magic"; }) : [];
+          else skillIds = definition.skillId ? [definition.skillId] : [];
+          if (!skillIds.length) break;
+          active.skillMods ??= {};
+          for (const skillId of skillIds) {
+            let delta = definition.delta ?? 0;
+            if (typeof definition.multiply === "number" && bundle) delta += Math.round(toNum(getSkill(bundle, skillId).cost, 0) * (definition.multiply - 1));
+            const mod = (active.skillMods[skillId] ??= {});
+            mod.cost = (mod.cost ?? 0) + delta;
+          }
+          events.push({ type: "skill-cost-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { scope: definition.scope ?? "skill", skillId: definition.skillId ?? null, delta: definition.delta ?? 0, multiply: definition.multiply ?? 1, skills: skillIds } });
+          break;
+        }
         case "addCounter": {
           if (!active || !targetSide) break;
           active.counters ??= {};
@@ -195,7 +260,10 @@ export class MechanismRuntime {
           // 有效规则 = passive 覆盖 ?? rules 默认。异种印记互斥 / 上限都可由特性（如吟游之弦）经 setRuleModifier 突破。
           const markPolicy = asDict(bundle?.rules.marks);
           const mods = this.ruleModifiers(state, bundle, command.actorSide ?? null);
-          const delta = Math.floor(this.dynamicValue(state, command, definition.layersFrom, definition.layers ?? 1));
+          // 层数 = 基础值 + layersFrom 动态值（layersFrom 存在时基础默认 0，纯动态）。
+          const base = definition.layers ?? (definition.layersFrom ? 0 : 1);
+          const dynamic = definition.layersFrom ? this.dynamicValue(state, command, definition.layersFrom, 0) : 0;
+          const delta = Math.floor(base + dynamic);
           if (delta <= 0) break;
           if ((mods["marks.replaceDifferent"] ?? markPolicy.replaceDifferent) !== false) {
             for (const other of Object.keys(store)) if (other !== definition.markId) delete store[other];
@@ -270,15 +338,17 @@ export class MechanismRuntime {
         }
         case "removeMark": {
           if (!active || !targetSide) break;
-          const side = targetSide === "player" ? state.player : state.enemy;
-          const markDef = bundle?.marks[definition.markId];
-          const isTeam = definition.scope === "team" || (!definition.scope && (markDef?.carrier === "field" || markDef?.carrier === "team"));
-          const store = isTeam ? side.teamMarks : active.marks;
-          const before = store[definition.markId] ?? 0;
-          const after = Math.max(0, before - (definition.layers ?? before));
-          if (after === 0) delete store[definition.markId];
-          else store[definition.markId] = after;
-          events.push({ type: "mark-removed", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { markId: definition.markId, scope: isTeam ? "team" : "sprite", before, after } });
+          // markId 省略 = 驱散该侧全部印记（精灵 + 团队）。
+          const ids = definition.markId ? [definition.markId] : this.allMarkIds(state, targetSide);
+          for (const markId of ids) {
+            const { store, isTeam } = this.markStore(state, bundle, targetSide, markId, definition.scope);
+            const before = store[markId] ?? 0;
+            if (before <= 0) continue;
+            const after = Math.max(0, before - (definition.layers ?? before));
+            if (after === 0) delete store[markId];
+            else store[markId] = after;
+            events.push({ type: "mark-removed", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { markId, scope: isTeam ? "team" : "sprite", before, after } });
+          }
           break;
         }
         case "settleMark": {
@@ -310,6 +380,27 @@ export class MechanismRuntime {
           const delta = definition.layers ?? 1;
           active.statuses[definition.statusId] = before + delta;
           events.push({ type: "status-applied", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { statusId: definition.statusId, before, after: active.statuses[definition.statusId], layers: delta } });
+          break;
+        }
+        case "setStatus": {
+          if (!active || !targetSide) break;
+          const before = active.statuses[definition.statusId] ?? 0;
+          const wanted = Math.max(0, Math.floor(this.dynamicValue(state, command, definition.layersFrom, definition.layers ?? 0)));
+          if (wanted <= 0) delete active.statuses[definition.statusId];
+          else active.statuses[definition.statusId] = wanted;
+          events.push({ type: "status-set", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { statusId: definition.statusId, before, after: wanted } });
+          break;
+        }
+        case "scaleStatus": {
+          if (!active || !targetSide) break;
+          for (const statusId of definition.statusId ? [definition.statusId] : Object.keys(active.statuses)) {
+            const before = active.statuses[statusId] ?? 0;
+            if (before <= 0) continue;
+            const after = Math.max(0, Math.floor(before * (definition.factor ?? 1) + (definition.delta ?? 0)));
+            if (after <= 0) delete active.statuses[statusId];
+            else active.statuses[statusId] = after;
+            events.push({ type: "status-scaled", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { statusId, before, after } });
+          }
           break;
         }
         case "settleStatus": {
