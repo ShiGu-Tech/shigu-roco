@@ -9,6 +9,7 @@ const ITEMS = [
   { href: "/", label: "对战台" },
   { href: "/warehouse", label: "精灵仓库" },
   { href: "/data", label: "基础数据" },
+  { href: "/replays", label: "对战记录" },
   { href: "/record", label: "复盘" },
 ];
 

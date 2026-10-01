@@ -7,9 +7,19 @@ import { toast } from "sonner";
 import { Panel } from "@/components/panel";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 import { forcedSwitch, getCatalog, recommend, requestLeader, simulateTurn } from "@/modules/battle/client";
 import { loadOpponentLibrary } from "@/modules/battle/storage";
+import { saveReplay } from "@/modules/replays/storage";
 import { ENEMY_COLOR, PLAYER_COLOR } from "@/lib/chart-theme";
 import { describeEvent } from "./log";
 import type { BattleEvent, BattleState, Catalog, RecommendResult, Terminal } from "@/modules/battle/types";
@@ -62,6 +72,13 @@ function enemyEntries(): TeamEntry[] {
   return DEFAULT_ENEMY.map((spriteId) => ({ spriteId, skillsUnknown: true }));
 }
 
+/** 阵容摘要（场上 + 场下精灵名），用于对战记录列表展示。 */
+function sideLabel(catalog: Catalog, side: BattleState["player"]): string {
+  return [side.active, ...side.bench]
+    .map((a) => spriteOf(catalog, a.spriteId)?.name ?? a.spriteId)
+    .join("、");
+}
+
 export function BattleBoard() {
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -84,6 +101,8 @@ export function BattleBoard() {
   const [pendingP, setPendingP] = useState<ActionOption | null>(null);
   const [pendingE, setPendingE] = useState<ActionOption | null>(null);
   const [busy, setBusy] = useState(false);
+  const [saveOpen, setSaveOpen] = useState(false);
+  const [saveName, setSaveName] = useState("");
 
   function refreshLineups() {
     setPlayerLineups(listLineups("player"));
@@ -312,6 +331,26 @@ export function BattleBoard() {
     else chooseEnemy(option);
   }
 
+  function saveRecord() {
+    if (!catalog || frames.length === 0) return;
+    const first = frames[0];
+    const result = saveReplay({
+      name: saveName,
+      catalog,
+      frames,
+      seed: first.state.seed,
+      playerLabel: sideLabel(catalog, first.state.player),
+      enemyLabel: sideLabel(catalog, first.state.enemy),
+    });
+    if (!result.ok) {
+      toast.error(result.error);
+      return;
+    }
+    toast.success(result.truncated ? "已保存（仅保留前 200 帧）" : "已保存到「对战记录」");
+    setSaveOpen(false);
+    setSaveName("");
+  }
+
   if (error) {
     return (
       <Panel title="引擎未就绪">
@@ -500,6 +539,16 @@ export function BattleBoard() {
           <Button
             type="button"
             size="sm"
+            onClick={() => {
+              setSaveName(`${sideLabel(catalog!, state!.player)} vs ${sideLabel(catalog!, state!.enemy)}`);
+              setSaveOpen(true);
+            }}
+          >
+            保存记录
+          </Button>
+          <Button
+            type="button"
+            size="sm"
             variant="outline"
             onClick={() => {
               setSetupStep("lineups");
@@ -626,6 +675,28 @@ export function BattleBoard() {
           />
         </div>
       </div>
+
+      <Dialog open={saveOpen} onOpenChange={setSaveOpen}>
+        <DialogContent className="max-w-[460px]">
+          <DialogHeader>
+            <DialogTitle>保存对战记录</DialogTitle>
+          </DialogHeader>
+          <DialogBody className="space-y-2">
+            <p className="text-[12px] text-muted-foreground">
+              保存当前共 {frames.length} 帧（局面 + 事件 + 胜率走势）与当时的图鉴快照，存入浏览器本地，可在「对战记录」离线回放。
+            </p>
+            <Input value={saveName} onChange={(e) => setSaveName(e.target.value)} placeholder="记录名称" />
+          </DialogBody>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setSaveOpen(false)}>
+              取消
+            </Button>
+            <Button type="button" onClick={saveRecord}>
+              保存
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

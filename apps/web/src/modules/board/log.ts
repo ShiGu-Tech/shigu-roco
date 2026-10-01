@@ -4,11 +4,13 @@ function sideName(side?: string): string {
   return side === "enemy" ? "敌方" : side === "player" ? "我方" : "";
 }
 
-/** 把事件文本里的技能 / 精灵 id 换成中文名。 */
+/** 把事件文本里的技能 / 精灵 id 与 side 换成中文。 */
 function localizeIds(text: string, catalog: Catalog): string {
   return text
     .replace(/sk-\d+/g, (m) => catalog.allSkills.find((s) => s.id === m)?.name ?? m)
-    .replace(/sp-\d+-\d+/g, (m) => catalog.sprites.find((s) => s.id === m)?.name ?? m);
+    .replace(/sp-\d+-\d+/g, (m) => catalog.sprites.find((s) => s.id === m)?.name ?? m)
+    .replace(/\bplayer\b/g, "我方")
+    .replace(/\benemy\b/g, "敌方");
 }
 
 /** 把一条战斗事件翻成中文可读句子（引擎机制事件多为英文 type + data，这里统一成中文）。 */
@@ -62,6 +64,38 @@ export function describeEvent(e: BattleEvent, catalog: Catalog): string {
       return `技能被替换`;
     case "action-inserted":
       return `插入额外行动`;
+    case "mark-consumed":
+      return `${side}消耗印记「${markName(d.markId)}」共 ${n(d.total)} 层`;
+    case "mark-scaled":
+      return `${side}印记「${markName(d.markId)}」${n(d.before)} → ${n(d.after)}`;
+    case "mark-set":
+      return `${side}印记「${markName(d.markId)}」${n(d.before)} → ${n(d.after)}`;
+    case "mark-transferred":
+      return `印记「${markName(d.markId)}」转移 ${n(d.moved)} 层`;
+    case "mark-transformed":
+      return `印记「${markName(d.markId)}」收拢（共 ${n(d.before)}）`;
+    case "stat-modified":
+      return `${side}${d.stat} ${n(d.before)} → ${n(d.after)}`;
+    case "stat-cleared":
+      return `${side}被驱散增益`;
+    case "skill-modified":
+      return `${side}技能「${skillName(d.skillId)}」永久修正`;
+    case "skill-cost-modified": {
+      const delta = n(d.delta);
+      return `${side}能耗修正 ${delta >= 0 ? "+" : ""}${delta}`;
+    }
+    case "counter-added":
+      return `${side}计数器 ${d.key} ${n(d.before)} → ${n(d.after)}`;
+    case "counter-set":
+      return `${side}计数器 ${d.key} 设为 ${n(d.after)}`;
+    case "counter-cleared":
+      return `${side}清除计数器 ${d.key ?? "全部"}`;
+    case "entry-scheduled":
+      return `预约了入场效果（${n(d.count)} 条）`;
+    case "switch":
+    case "stat-inherited":
+    case "faint":
+      return localizeIds(e.text, catalog);
     default:
       return localizeIds(e.text || e.type, catalog);
   }
