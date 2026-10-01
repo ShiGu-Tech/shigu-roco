@@ -110,6 +110,10 @@ export type EffectSpec =
   | { type: "escape"; target?: string }
   /** 行动域 · 允许被限制的换人（清除离场锁）。 */
   | { type: "allowSwitch"; target?: string }
+  /** 行动域 · 入场继承：把 `effects` 排入目标侧「下个入场精灵」队列，换人时执行。 */
+  | { type: "scheduleEntry"; target?: string; effects: EffectSpec[] }
+  /** 入场继承 · 继承离场精灵的强化：仅在 `scheduleEntry.effects` 内有效，于换人时由模拟器执行。 */
+  | { type: "inheritStat"; polarity?: "buff" | "debuff" | "all" }
   | { type: "modifyMagic"; target?: string; delta: number }
   | { type: "modifyEnergy"; target?: string; delta: number; deltaFrom?: DynamicValue }
   | { type: "modifySwitchLock"; target?: string; delta: number }

@@ -16,6 +16,7 @@ const miniBundle: DataBundle = {
   sprites: {
     "sp-a": { id: "sp-a", elements: ["Normal"], race: { hp: 120, atk: 60, spatk: 60, defense: 60, spdef: 60, speed: 60 }, skillList: ["sk-1"] },
     "sp-b": { id: "sp-b", elements: ["Normal"], race: { hp: 120, atk: 60, spatk: 60, defense: 60, spdef: 60, speed: 60 }, skillList: ["sk-1"] },
+    "sp-c": { id: "sp-c", elements: ["Normal"], race: { hp: 120, atk: 60, spatk: 60, defense: 60, spdef: 60, speed: 60 }, skillList: [] },
   },
   skills: {
     "sk-1": { id: "sk-1", skillName: "撞击", element: "Normal", category: "Physical", actionType: "Attack", power: 40, cost: 0 },
@@ -318,6 +319,37 @@ describe("dynamic values & consumeMark", () => {
     const [low] = runtime.applyDamageCommands(base, miniBundle, [command(def)]);
     const [high] = runtime.applyDamageCommands(boosted, miniBundle, [command(def)]);
     expect(high.data.value as number).toBeGreaterThan(low.data.value as number);
+  });
+});
+
+describe("entry inheritance (scheduleEntry)", () => {
+  function st() {
+    const bench = makeActive("sp-c", { hp: 100, maxHp: 100, energy: 0 });
+    return makeState(
+      makeSide(makeActive("sp-a", { hp: 100, maxHp: 100, energy: 2 }), { bench: [bench] }),
+      makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })),
+    );
+  }
+
+  it("applies scheduled effects to the next entrant", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const battle = st();
+    runtime.applyStateCommands(battle, [command({ type: "scheduleEntry", target: "self", effects: [{ type: "modifyEnergy", target: "self", delta: 8 }] })]);
+    expect(battle.player.pendingEntry?.length).toBe(1);
+    const events = new Simulator(miniBundle).doSwitch(battle, "player", "sp-c");
+    expect(battle.player.active.spriteId).toBe("sp-c");
+    expect(battle.player.active.energy).toBe(13);
+    expect(battle.player.pendingEntry).toBeUndefined();
+    expect(events.some((event) => event.type === "energy-modified")).toBe(true);
+  });
+
+  it("inherits buffs from the outgoing sprite", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const battle = st();
+    battle.player.active.buffs = { atk: 2 };
+    runtime.applyStateCommands(battle, [command({ type: "scheduleEntry", target: "self", effects: [{ type: "inheritStat", polarity: "buff" }] })]);
+    new Simulator(miniBundle).doSwitch(battle, "player", "sp-c");
+    expect(battle.player.active.buffs.atk).toBe(2);
   });
 });
 

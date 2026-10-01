@@ -27,5 +27,7 @@
  *          动态入口扩展到 `dealDamage.powerFrom` / `modifyStat.valueFrom` / `setDamageReduction.percentFrom` /
  *          `heal.amountFrom` / `modifyEnergy.deltaFrom` / `modifySkillCost.deltaFrom`（含 `mode: "set"`）；
  *          新增 `consumeMark`（驱散印记并按每层执行效果，可表达「每层 +X%」）。
+ * - 0.7.0  入场继承：`scheduleEntry`（把效果排入目标侧「下个入场精灵」队列，换人时执行）+
+ *          `inheritStat`（换人时把离场精灵的强化 / 减益复制给入场精灵）；`SideState.pendingEntry` 随换人清空。
  */
-export const ENGINE_VERSION = "0.6.0";
+export const ENGINE_VERSION = "0.7.0";

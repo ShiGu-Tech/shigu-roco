@@ -391,6 +391,24 @@ export class Simulator {
     s.active = target;
     s.forcedSwitch = false;
     events.push({ type: "switch", side, text: `${side} 换上 ${target.spriteId}`, data: { forced } });
+    // 行动域 · 入场继承：执行排队的「下个入场精灵」效果（inheritStat 由模拟器直接处理）。
+    const pending = s.pendingEntry ?? [];
+    s.pendingEntry = undefined;
+    if (pending.length) {
+      const commands: import("../mechanisms").EffectCommand[] = [];
+      for (const effect of pending) {
+        if (effect.type === "inheritStat") {
+          const polarity = effect.polarity ?? "all";
+          if (polarity !== "debuff") for (const [stat, value] of Object.entries(old.buffs)) target.buffs[stat] = (target.buffs[stat] ?? 0) + value;
+          if (polarity !== "buff") for (const [stat, value] of Object.entries(old.debuffs)) target.debuffs[stat] = (target.debuffs[stat] ?? 0) + value;
+          events.push({ type: "stat-inherited", side, text: `${target.spriteId} 继承 ${old.spriteId} 的强化`, data: { polarity } });
+          continue;
+        }
+        commands.push({ type: effect.type, definition: effect, mechanismId: `entry:${side}`, trigger: "afterSwitch", actorSide: side, targetSide: side });
+      }
+      events.push(...this.mechanisms.applyStateCommands(st, commands, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+      events.push(...this.mechanisms.applyDamageCommands(st, this.bundle, commands).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+    }
     events.push(...this.triggerState(st, "afterSwitch", { actorSide: side, targetSide: otherSide(side), action: { kind: "switch", benchId }, event: { from: old.spriteId, to: target.spriteId, forced } }));
     return events;
   }

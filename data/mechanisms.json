@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "updatedAt": "2026-10-01",
   "mechanisms": [
     {
@@ -5830,46 +5830,6 @@
       ]
     },
     {
-      "id": "skill:sk-7110270:todo",
-      "ownerType": "skill",
-      "ownerId": "sk-7110270",
-      "trigger": "beforeAction",
-      "when": [
-        {
-          "path": "event.action.skillId",
-          "op": "eq",
-          "value": "sk-7110270"
-        }
-      ],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "inherit-on-enter",
-          "reason": "「下个入场精灵回复 8 能量」需要「本次脱离」传递"
-        }
-      ]
-    },
-    {
-      "id": "skill:sk-7160270:todo",
-      "ownerType": "skill",
-      "ownerId": "sk-7160270",
-      "trigger": "beforeAction",
-      "when": [
-        {
-          "path": "event.action.skillId",
-          "op": "eq",
-          "value": "sk-7160270"
-        }
-      ],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "inherit-buffs",
-          "reason": "「下个入场精灵继承增益」需要入场继承"
-        }
-      ]
-    },
-    {
       "id": "skill:sk-7020580",
       "ownerType": "skill",
       "ownerId": "sk-7020580",
@@ -6492,6 +6452,67 @@
           "statusId": "untouchable-shield"
         }
       ]
+    },
+    {
+      "id": "skill:sk-7110270",
+      "ownerType": "skill",
+      "ownerId": "sk-7110270",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7110270"
+        }
+      ],
+      "effects": [
+        {
+          "type": "escape",
+          "target": "self"
+        },
+        {
+          "type": "scheduleEntry",
+          "target": "self",
+          "effects": [
+            {
+              "type": "modifyEnergy",
+              "target": "self",
+              "delta": 8
+            }
+          ]
+        }
+      ],
+      "note": "加大功率：自己脱离，下个入场精灵回复 8 能量"
+    },
+    {
+      "id": "skill:sk-7160270",
+      "ownerType": "skill",
+      "ownerId": "sk-7160270",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7160270"
+        }
+      ],
+      "effects": [
+        {
+          "type": "escape",
+          "target": "self"
+        },
+        {
+          "type": "scheduleEntry",
+          "target": "self",
+          "effects": [
+            {
+              "type": "inheritStat",
+              "polarity": "buff"
+            }
+          ]
+        }
+      ],
+      "note": "击鼓传花：自己脱离，下个入场精灵继承自己增益"
     }
   ]
 }

@@ -154,6 +154,13 @@ export class MechanismRuntime {
           events.push({ type: "switch-lock-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { before, after: side.switchLock, delta: definition.delta } });
           break;
         }
+        case "scheduleEntry": {
+          if (!targetSide) break;
+          const side = targetSide === "player" ? state.player : state.enemy;
+          side.pendingEntry = [...(side.pendingEntry ?? []), ...definition.effects];
+          events.push({ type: "entry-scheduled", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { count: definition.effects.length } });
+          break;
+        }
         case "forceSwitch": {
           if (!targetSide) break;
           const side = targetSide === "player" ? state.player : state.enemy;

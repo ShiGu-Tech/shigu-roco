@@ -71,6 +71,8 @@ export interface SideState {
   lastTurn?: LastTurn;
   /** 行动域 · 本队被强制换人（引擎标记，前端须补一次 forced-switch）。 */
   forcedSwitch?: boolean;
+  /** 行动域 · 下个入场精灵待执行的继承 / 附加效果队列。 */
+  pendingEntry?: import("./mechanisms/types").EffectSpec[];
 }
 
 export interface Weather {

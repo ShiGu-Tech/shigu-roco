@@ -75,6 +75,7 @@ export function cloneSide(s: SideState): SideState {
     counters: s.counters ? { ...s.counters } : undefined,
     lastTurn: s.lastTurn ? { ...s.lastTurn } : undefined,
     forcedSwitch: s.forcedSwitch,
+    pendingEntry: s.pendingEntry ? s.pendingEntry.map((effect) => ({ ...effect })) : undefined,
   };
 }
 
