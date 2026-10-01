@@ -168,8 +168,8 @@ export function buildState(
   playerTeam: (string | TeamEntry)[],
   enemyTeam: (string | TeamEntry)[],
 ): BattleState {
-  const rules = catalog.rules as { initialMagic?: number; wishCharges?: number };
-  const magic = Number(rules.initialMagic ?? 3);
+  const rules = catalog.rules as { initialMagic?: number; magic?: { initialPerSide?: number }; wishCharges?: number };
+  const magic = Number(rules.initialMagic ?? rules.magic?.initialPerSide ?? 4);
   const wish = Number(rules.wishCharges ?? 2);
   return {
     turn: 1,

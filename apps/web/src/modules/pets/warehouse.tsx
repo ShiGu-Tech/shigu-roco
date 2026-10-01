@@ -6,12 +6,11 @@ import { toast } from "sonner";
 
 import { PageHeader } from "@/components/page-header";
 import { PetConfigDialog } from "@/components/pet-config-dialog";
-import { PetSelector } from "@/components/pet-selector";
+import { PetSelectorDialog } from "@/components/pet-selector-dialog";
 import { SpriteImage } from "@/components/sprite-image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogBody, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { getCatalog } from "@/modules/battle/client";
 import type { Catalog } from "@/modules/battle/types";
 import { PANEL_ORDER, STAT_LABEL } from "@/modules/engine/calc";
@@ -279,16 +278,14 @@ export function Warehouse() {
         </div>
       )}
 
-      <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
-        <DialogContent className="max-w-[720px]">
-          <DialogHeader>
-            <DialogTitle className="text-base">选择精灵（模板）</DialogTitle>
-          </DialogHeader>
-          <DialogBody>
-            <PetSelector catalog={catalog} onSelect={(spriteId) => createInstance(spriteId)} />
-          </DialogBody>
-        </DialogContent>
-      </Dialog>
+      <PetSelectorDialog
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        catalog={catalog}
+        title="选择精灵（模板）"
+        description="选中一只图鉴模板作为新精灵，随后可配置等级 / 星级 / 性格 / 加点 / 出战技能。"
+        onSelect={(spriteId) => createInstance(spriteId)}
+      />
 
       {editing && editingSetup && (
         <PetConfigDialog

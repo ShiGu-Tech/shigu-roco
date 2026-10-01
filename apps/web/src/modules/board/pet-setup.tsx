@@ -4,7 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { PetConfigDialog } from "@/components/pet-config-dialog";
-import { PetSelector } from "@/components/pet-selector";
+import { PetSelectorDialog } from "@/components/pet-selector-dialog";
 import { SpriteImage } from "@/components/sprite-image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -123,10 +123,10 @@ function EntryRow({
           type="button"
           variant="outline"
           className="min-w-0 flex-1 justify-between gap-2 font-normal"
-          onClick={() => setPickerOpen((v) => !v)}
+          onClick={() => setPickerOpen(true)}
         >
           <span className="truncate">{sprite ? `#${sprite.no} ${sprite.name}` : "— 选择精灵 —"}</span>
-          <span className="shrink-0 text-[10px] text-muted-foreground">{pickerOpen ? "收起" : "选择"}</span>
+          <span className="shrink-0 text-[10px] text-muted-foreground">选择</span>
         </Button>
         <Button
           type="button"
@@ -140,16 +140,13 @@ function EntryRow({
         </Button>
       </div>
 
-      {pickerOpen && (
-        <PetSelector
-          catalog={catalog}
-          value={entry.spriteId}
-          onSelect={(spriteId) => {
-            onChange({ ...entry, spriteId });
-            setPickerOpen(false);
-          }}
-        />
-      )}
+      <PetSelectorDialog
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        catalog={catalog}
+        value={entry.spriteId}
+        onSelect={(spriteId) => onChange({ ...entry, spriteId })}
+      />
 
       {editable && entry.setup && sprite ? (
         <SetupSummary

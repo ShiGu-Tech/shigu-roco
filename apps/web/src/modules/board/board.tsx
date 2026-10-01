@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 
-import { ElementBadge } from "@/components/element-icon";
 import { Panel } from "@/components/panel";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -12,20 +11,12 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { forcedSwitch, getCatalog, recommend, requestLeader, simulateTurn } from "@/modules/battle/client";
 import { loadOpponentLibrary } from "@/modules/battle/storage";
 import { ENEMY_COLOR, PLAYER_COLOR } from "@/lib/chart-theme";
-import type {
-  ActiveSpriteState,
-  BattleEvent,
-  BattleState,
-  Catalog,
-  RecommendResult,
-  Terminal,
-} from "@/modules/battle/types";
-import { OtherActions, SkillGrid, SpriteCard } from "./side-panel";
+import { describeEvent } from "./log";
+import type { BattleEvent, BattleState, Catalog, RecommendResult, Terminal } from "@/modules/battle/types";
+import { ActiveBoard } from "./active-board";
 import { TeamEditor } from "./pet-setup";
-import { StatRadar } from "@/components/stat-radar";
-import { SpriteImage } from "@/components/sprite-image";
+import { Timeline } from "./timeline";
 import { TrendChart, type TrendPoint } from "./trend-chart";
-import { computeStats } from "@/modules/engine/stats";
 import {
   actionKey,
   buildState,
@@ -47,80 +38,30 @@ const PRESETS = {
 
 type PresetKey = keyof typeof PRESETS;
 
-function rateMap(r: RecommendResult | null): Map<string, number> {
-  const m = new Map<string, number>();
-  for (const a of r?.actions ?? []) m.set(actionKey(a.action), a.winRate);
-  return m;
+/** 一个可回退的存档点：该回合「开始前」的局面 + 抵达时的日志 / 走势。 */
+interface Frame {
+  turn: number;
+  state: BattleState;
+  log: BattleEvent[];
+  history: TrendPoint[];
+  terminal: Terminal | null;
+  label: string;
 }
 
-function FaintPicker({
-  catalog,
-  title,
-  bench,
-  tone,
-  rate,
-  busy,
-  onPick,
-}: {
-  catalog: Catalog;
-  title: string;
-  bench: ActiveSpriteState[];
-  tone: "player" | "enemy";
-  rate: Map<string, number>;
-  busy: boolean;
-  onPick: (benchId: string) => void;
-}) {
-  const color = tone === "player" ? PLAYER_COLOR : ENEMY_COLOR;
-  return (
-    <Panel title={<span className="text-destructive">{title}阵亡 · 选择上场精灵</span>} className="border-destructive/50">
-      <div className="space-y-2">
-        {bench
-          .filter((b) => b.hp > 0)
-          .map((b) => {
-            const sp = spriteOf(catalog, b.spriteId);
-            const wr = rate.get(`switch:${b.spriteId}`);
-            return (
-              <button
-                key={b.spriteId}
-                type="button"
-                disabled={busy}
-                onClick={() => onPick(b.spriteId)}
-                className="flex w-full items-center justify-between gap-2 rounded-sm border p-2 text-left transition-colors hover:bg-accent disabled:opacity-60"
-              >
-                <span className="flex min-w-0 flex-wrap items-center gap-2">
-                  <SpriteImage sprite={sp} size="sm" className="h-9 w-9 rounded-sm" />
-                  <span className="text-[13px] font-medium">{sp?.name ?? b.spriteId}</span>
-                  {sp?.elements.map((el) => (
-                    <ElementBadge key={el} catalog={catalog} element={el} />
-                  ))}
-                  <span className="tnum text-[12px] text-muted-foreground">
-                    HP {b.hp}/{b.maxHp} · 能量 {b.energy}
-                  </span>
-                </span>
-                <span className="tnum shrink-0 text-[13px] font-semibold" style={{ color }}>
-                  {wr === undefined ? "—" : `${(wr * 100).toFixed(1)}%`}
-                </span>
-              </button>
-            );
-          })}
-      </div>
-    </Panel>
-  );
+function plain(team: TeamEntry[]): TeamEntry[] {
+  return team.map((e) => ({ spriteId: e.spriteId }));
 }
 
-const DEFAULT_PLAYER = ["sp-6", "sp-7", "sp-10", "sp-17"];
-const DEFAULT_ENEMY = ["sp-14", "sp-20", "sp-29", "sp-38"];
+const DEFAULT_PLAYER = ["sp-1-1", "sp-4-1", "sp-7-1", "sp-10-1", "sp-15-1", "sp-13-1"];
+const DEFAULT_ENEMY = ["sp-2-1", "sp-5-1", "sp-8-1", "sp-11-1", "sp-16-1", "sp-12-1"];
 
-/** 我方：资质 / 技能已知 → 带 setup；技能留空即默认本精灵 4 招。 */
 function playerEntries(): TeamEntry[] {
   return DEFAULT_PLAYER.map((spriteId) => ({ spriteId, setup: emptySetup() }));
 }
 
-/** 对方：只知道精灵 → 无资质、技能未知。 */
 function enemyEntries(): TeamEntry[] {
   return DEFAULT_ENEMY.map((spriteId) => ({ spriteId, skillsUnknown: true }));
 }
-
 
 export function BattleBoard() {
   const [catalog, setCatalog] = useState<Catalog | null>(null);
@@ -131,14 +72,12 @@ export function BattleBoard() {
   const [enemyTeam, setEnemyTeam] = useState<TeamEntry[]>(enemyEntries);
   const [preset, setPreset] = useState<PresetKey>("standard");
 
-  const [state, setState] = useState<BattleState | null>(null);
+  const [frames, setFrames] = useState<Frame[]>([]);
+  const [cursor, setCursor] = useState(0);
   const [rec, setRec] = useState<RecommendResult | null>(null);
   const [enemyRec, setEnemyRec] = useState<RecommendResult | null>(null);
-  const [history, setHistory] = useState<TrendPoint[]>([]);
   const [pendingP, setPendingP] = useState<ActionOption | null>(null);
   const [pendingE, setPendingE] = useState<ActionOption | null>(null);
-  const [log, setLog] = useState<BattleEvent[]>([]);
-  const [terminal, setTerminal] = useState<Terminal | null>(null);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -146,6 +85,12 @@ export function BattleBoard() {
       .then(setCatalog)
       .catch((e: Error) => setError(e.message));
   }, []);
+
+  const current = frames[cursor] ?? null;
+  const state = current?.state ?? null;
+  const log = current?.log ?? [];
+  const history = current?.history ?? [];
+  const terminal = current?.terminal ?? null;
 
   const playerOptions = useMemo(
     () => (catalog && state ? deriveActions(state.player, catalog) : []),
@@ -155,8 +100,14 @@ export function BattleBoard() {
     () => (catalog && state ? deriveActions(state.enemy, catalog) : []),
     [catalog, state],
   );
-  const playerOthers = useMemo(() => playerOptions.filter((o) => o.action.kind !== "skill"), [playerOptions]);
-  const enemyOthers = useMemo(() => enemyOptions.filter((o) => o.action.kind !== "skill"), [enemyOptions]);
+  const playerOthers = useMemo(
+    () => playerOptions.filter((o) => o.action.kind !== "skill" && o.action.kind !== "switch"),
+    [playerOptions],
+  );
+  const enemyOthers = useMemo(
+    () => enemyOptions.filter((o) => o.action.kind !== "skill" && o.action.kind !== "switch"),
+    [enemyOptions],
+  );
 
   async function refresh(st: BattleState): Promise<Omit<TrendPoint, "turn">> {
     const o = {
@@ -174,22 +125,18 @@ export function BattleBoard() {
 
   async function start() {
     if (!catalog) return;
-    const plain = (team: TeamEntry[]): TeamEntry[] => team.map((e) => ({ spriteId: e.spriteId }));
     const st =
       mode === "pvp"
         ? buildState(catalog, playerTeam, enemyTeam)
         : buildState(catalog, plain(playerTeam), plain(enemyTeam));
-    setState(st);
-    setHistory([]);
-    setLog([]);
-    setTerminal(null);
     setPendingP(null);
     setPendingE(null);
     setPhase("battle");
     setBusy(true);
     try {
       const w = await refresh(st);
-      setHistory([{ turn: st.turn, ...w }]);
+      setFrames([{ turn: st.turn, state: st, log: [], history: [{ turn: st.turn, ...w }], terminal: null, label: `回合 ${st.turn}` }]);
+      setCursor(0);
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
@@ -198,23 +145,25 @@ export function BattleBoard() {
   }
 
   async function resolve(pP: ActionOption, pE: ActionOption) {
-    if (!state) return;
+    if (!current) return;
+    const base = current;
     setBusy(true);
     try {
-      const res = await simulateTurn(state, pP.action, pE.action, state.seed);
-      setState(res.state);
-      setLog(res.log);
-      setTerminal(res.terminal);
+      const res = await simulateTurn(base.state, pP.action, pE.action, base.state.seed);
       setPendingP(null);
       setPendingE(null);
+      let frame: Frame;
       if (res.terminal.ended) {
         setRec(null);
         setEnemyRec(null);
         toast.success(res.terminal.reason);
+        frame = { turn: res.state.turn, state: res.state, log: res.log, history: base.history, terminal: res.terminal, label: `回合 ${res.state.turn}（结束）` };
       } else {
         const w = await refresh(res.state);
-        setHistory((h) => [...h, { turn: res.state.turn, ...w }]);
+        frame = { turn: res.state.turn, state: res.state, log: res.log, history: [...base.history, { turn: res.state.turn, ...w }], terminal: null, label: `回合 ${res.state.turn}` };
       }
+      setFrames((f) => [...f, frame]);
+      setCursor((c) => c + 1);
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
@@ -223,26 +172,44 @@ export function BattleBoard() {
   }
 
   function choosePlayer(o: ActionOption) {
-    if (busy || terminal?.ended) return;
-    if (state && (state.player.active.hp <= 0 || state.enemy.active.hp <= 0)) return;
+    if (busy || terminal?.ended || !state) return;
+    if (state.player.active.hp <= 0 || state.enemy.active.hp <= 0) return;
     setPendingP(o);
     if (pendingE) void resolve(o, pendingE);
   }
 
   function chooseEnemy(o: ActionOption) {
-    if (busy || terminal?.ended) return;
-    if (state && (state.player.active.hp <= 0 || state.enemy.active.hp <= 0)) return;
+    if (busy || terminal?.ended || !state) return;
+    if (state.player.active.hp <= 0 || state.enemy.active.hp <= 0) return;
     setPendingE(o);
     if (pendingP) void resolve(pendingP, o);
   }
 
+  function chooseOther(who: "player" | "enemy", o: ActionOption) {
+    if (o.action.kind === "leader") {
+      void applyLeader(who);
+      return;
+    }
+    if (who === "player") choosePlayer(o);
+    else chooseEnemy(o);
+  }
+
   async function applyForcedSwitch(who: "player" | "enemy", benchId: string) {
-    if (!state || busy) return;
+    if (!current || busy) return;
+    const base = current;
     setBusy(true);
     try {
-      const res = await forcedSwitch(state, who, benchId);
-      setState(res.state);
-      setLog(res.log);
+      const res = await forcedSwitch(base.state, who, benchId);
+      const frame: Frame = {
+        turn: res.state.turn,
+        state: res.state,
+        log: res.log,
+        history: base.history,
+        terminal: base.terminal,
+        label: `${who === "player" ? "我方" : "敌方"}阵亡换人`,
+      };
+      setFrames((f) => [...f, frame]);
+      setCursor((c) => c + 1);
       await refresh(res.state);
     } catch (e) {
       toast.error((e as Error).message);
@@ -252,12 +219,21 @@ export function BattleBoard() {
   }
 
   async function applyLeader(who: "player" | "enemy") {
-    if (!state || busy || terminal?.ended) return;
+    if (!current || busy || terminal?.ended) return;
+    const base = current;
     setBusy(true);
     try {
-      const res = await requestLeader(state, who);
-      setState(res.state);
-      setLog(res.log);
+      const res = await requestLeader(base.state, who);
+      const frame: Frame = {
+        turn: res.state.turn,
+        state: res.state,
+        log: res.log,
+        history: base.history,
+        terminal: base.terminal,
+        label: `${who === "player" ? "我方" : "敌方"}首领化`,
+      };
+      setFrames((f) => [...f, frame]);
+      setCursor((c) => c + 1);
       await refresh(res.state);
     } catch (e) {
       toast.error((e as Error).message);
@@ -266,13 +242,53 @@ export function BattleBoard() {
     }
   }
 
+  function pickBench(who: "player" | "enemy", benchId: string) {
+    if (!state || busy || terminal?.ended) return;
+    if (state[who].active.hp <= 0) {
+      void applyForcedSwitch(who, benchId);
+      return;
+    }
+    const bs = spriteOf(catalog!, benchId);
+    const option: ActionOption = {
+      action: { kind: "switch", benchId, label: `换 ${bs?.name ?? benchId}` },
+      label: `换 ${bs?.name ?? benchId}`,
+      kindLabel: "换人",
+    };
+    if (who === "player") choosePlayer(option);
+    else chooseEnemy(option);
+  }
+
+  async function rollbackTo(index: number) {
+    if (busy || index < 0 || index >= frames.length) return;
+    setPendingP(null);
+    setPendingE(null);
+    setFrames(frames.slice(0, index + 1));
+    setCursor(index);
+    setBusy(true);
+    try {
+      const target = frames[index];
+      if (target.terminal?.ended) {
+        setRec(null);
+        setEnemyRec(null);
+      } else {
+        await refresh(target.state);
+      }
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   function setLoadout(who: "player" | "enemy", index: number, skillId: string) {
-    if (!state || terminal?.ended) return;
-    const next = structuredClone(state);
+    if (!current || terminal?.ended) return;
+    const next = structuredClone(current.state);
     const loadout = [...next[who].active.loadout];
     loadout[index] = skillId;
     next[who].active.loadout = loadout.filter(Boolean).filter((v, i, arr) => arr.indexOf(v) === i).slice(0, 4);
-    setState(next);
+    const nextFrames = [...frames];
+    nextFrames[cursor] = { ...current, state: next };
+    setFrames(nextFrames);
     setPendingP(null);
     setPendingE(null);
     void refresh(next);
@@ -304,11 +320,11 @@ export function BattleBoard() {
     return <p className="text-[13px] text-muted-foreground">正在加载引擎数据…</p>;
   }
 
-  if (phase === "setup" || !state) {
+  if (phase === "setup" || !current) {
     return (
       <div className="space-y-3">
         <div className="rounded-md border border-dashed p-3 text-[13px] text-muted-foreground">
-          <span className="font-medium text-foreground">先配置双方阵容</span>，首位精灵作为首发、双方各上场一只；每队最多 6 只。PvP 模式下我方录入资质 / 技能，对方只登记精灵。
+          <span className="font-medium text-foreground">先配置双方阵容</span>，首位精灵作为首发、双方各上场一只；每队最多 6 只（6v6）。PvP 模式下我方录入资质 / 技能，对方只登记精灵。
         </div>
         <Panel>
           <div className="flex flex-col gap-3 text-[13px] min-[520px]:flex-row min-[520px]:items-center min-[520px]:justify-between">
@@ -341,24 +357,35 @@ export function BattleBoard() {
     );
   }
 
-  const playerFainted = state.player.active.hp <= 0 && state.player.bench.some((b) => b.hp > 0);
-  const enemyFainted = state.enemy.active.hp <= 0 && state.enemy.bench.some((b) => b.hp > 0);
+  const playerFainted = state!.player.active.hp <= 0 && state!.player.bench.some((b) => b.hp > 0);
+  const enemyFainted = state!.enemy.active.hp <= 0 && state!.enemy.bench.some((b) => b.hp > 0);
+  const maxMagic = Number(
+    (catalog.rules as { magicMax?: number; magic?: { maxPerSide?: number } }).magicMax ??
+      (catalog.rules as { magic?: { maxPerSide?: number } }).magic?.maxPerSide ??
+      4,
+  );
   const anyFaint = playerFainted || enemyFainted;
-  const playerRate = rateMap(rec);
-  const enemyRate = rateMap(enemyRec);
-  const playerSprite = spriteOf(catalog, state.player.active.spriteId);
-  const playerPanel =
-    catalog.stats && playerSprite
-      ? computeStats(catalog.stats, { race: playerSprite.race }, state.player.active.profile)
-      : null;
+
+  const playerLeader =
+    spriteOf(catalog, state!.player.active.spriteId)?.leaderAllowed && !state!.player.leaderUsed
+      ? ([{ action: { kind: "leader", label: "首领化" }, label: "首领化", kindLabel: "全局一次" }] as ActionOption[])
+      : [];
+  const enemyLeader =
+    spriteOf(catalog, state!.enemy.active.spriteId)?.leaderAllowed && !state!.enemy.leaderUsed
+      ? ([{ action: { kind: "leader", label: "首领化" }, label: "首领化", kindLabel: "全局一次" }] as ActionOption[])
+      : [];
 
   return (
     <div className="space-y-3">
       <div className="flex flex-col gap-2 rounded-md border bg-card p-2 min-[520px]:flex-row min-[520px]:items-center">
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant={mode === "pvp" ? "default" : "outline"}>{mode === "pvp" ? "PvP" : "沙盒"}</Badge>
-          <Badge variant="outline" className="tnum">第 {state?.turn ?? 1} 回合</Badge>
-          <Badge variant="outline">{state?.weather ? `天气 ${state.weather.id}（${state.weather.turnsLeft}）` : "无天气"}</Badge>
+          <Badge variant="outline" className="tnum">第 {state!.turn} 回合</Badge>
+          <Badge variant="outline">
+            {state!.weather
+              ? `天气 ${catalog.weather.find((w) => w.id === state!.weather!.id)?.nameZh ?? state!.weather.id}（剩 ${state!.weather.turnsLeft}）`
+              : "无天气"}
+          </Badge>
           {rec && <Badge variant="outline" className="tnum">推演 {rec.meta.iterations} 次 / {rec.meta.elapsedMs}ms</Badge>}
           {busy && <Badge variant="secondary">重算中…</Badge>}
         </div>
@@ -377,178 +404,118 @@ export function BattleBoard() {
         </div>
       </div>
 
-      {terminal?.ended && (
-        <div className="rounded-md border border-primary/50 bg-primary/5 px-3 py-2 text-[13px] font-medium">
-          对局结束：{terminal.winner === "player" ? "我方" : "敌方"}胜 · {terminal.reason}
-        </div>
-      )}
-
-      <Panel title="胜率走势">
-        <TrendChart history={history} />
-      </Panel>
-
-      <div className="grid gap-3 min-[860px]:grid-cols-2">
-        <div className="space-y-3">
-          <SpriteCard title="我方场上" side={state.player} tone="player" catalog={catalog} />
-          {playerPanel && (
-            <Panel title="我方面板">
-              <StatRadar panel={playerPanel} className="h-[220px] w-full" />
-            </Panel>
-          )}
-          {playerFainted ? (
-            <FaintPicker
-              catalog={catalog}
-              title="我方"
-              bench={state.player.bench}
-              tone="player"
-              rate={playerRate}
-              busy={busy}
-              onPick={(id) => applyForcedSwitch("player", id)}
-            />
-          ) : (
-          <Panel
-            title="我方动作"
-            actions={<span className="text-[12px] font-normal text-muted-foreground">{pendingP ? `已选：${pendingP.label}` : "待选"}</span>}
-          >
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-[12px] text-muted-foreground">技能（2×2，点技能即使用；右上「换」改技能）</span>
-                {spriteOf(catalog, state.player.active.spriteId)?.leaderAllowed && !state.player.leaderUsed ? (
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    disabled={busy || anyFaint || Boolean(terminal?.ended)}
-                    onClick={() => applyLeader("player")}
-                  >
-                    首领化
-                  </Button>
-                ) : state.player.leaderUsed ? (
-                  <Badge variant="secondary">已首领化</Badge>
-                ) : null}
-              </div>
-              <SkillGrid
-                catalog={catalog}
-                side={state.player}
-                rec={rec}
-                tone="player"
-                selectedKey={pendingP ? actionKey(pendingP.action) : null}
-                disabled={busy || anyFaint || Boolean(terminal?.ended)}
-                onUse={(id) => playSkill("player", id)}
-                onChangeSlot={(i, id) => setLoadout("player", i, id)}
-              />
-              <div className="h-px bg-border" />
-              <OtherActions
-                options={playerOthers}
-                rec={rec}
-                tone="player"
-                selectedKey={pendingP ? actionKey(pendingP.action) : null}
-                disabled={busy || anyFaint || Boolean(terminal?.ended)}
-                onUse={choosePlayer}
-              />
-            </div>
-          </Panel>
-          )}
-        </div>
-
-        <div className="space-y-3">
-          <SpriteCard
-            title="敌方场上"
-            side={state.enemy}
-            tone="enemy"
+      <div className="grid gap-3 min-[860px]:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_minmax(0,1fr)]">
+        <div className="order-1 min-w-0">
+          <ActiveBoard
             catalog={catalog}
-            subtitle={mode === "pvp" ? "资质未知 · 按中性 5★·60 级估算" : "推测 / 可观测"}
+            side={state!.player}
+            tone="player"
+            title="我方场上"
+            maxMagic={maxMagic}
+            rec={rec}
+            selectedKey={pendingP ? actionKey(pendingP.action) : null}
+            selectedBenchId={pendingP?.action.kind === "switch" ? (pendingP.action.benchId ?? null) : null}
+            disabled={busy || anyFaint || Boolean(terminal?.ended)}
+            benchDisabled={busy || Boolean(terminal?.ended)}
+            fainted={playerFainted}
+            otherOptions={[...playerOthers, ...playerLeader]}
+            onUseSkill={(id) => playSkill("player", id)}
+            onChangeSlot={(i, id) => setLoadout("player", i, id)}
+            onUseOther={(o) => chooseOther("player", o)}
+            onPickBench={(benchId) => pickBench("player", benchId)}
           />
-          {enemyFainted ? (
-            <FaintPicker
-              catalog={catalog}
-              title="敌方"
-              bench={state.enemy.bench}
-              tone="enemy"
-              rate={enemyRate}
-              busy={busy}
-              onPick={(id) => applyForcedSwitch("enemy", id)}
-            />
-          ) : (
-          <Panel
-            title="敌方动作"
-            actions={<span className="text-[12px] font-normal text-muted-foreground">{pendingE ? `已选：${pendingE.label}` : "待选"}</span>}
-          >
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-[12px] text-muted-foreground">
-                  {mode === "pvp"
-                    ? "对方技能未知 → 用右上「换」记录它这回合实际用的技能"
-                    : "技能（2×2，点技能即使用；右上「换」改技能）"}
-                </span>
-                {spriteOf(catalog, state.enemy.active.spriteId)?.leaderAllowed && !state.enemy.leaderUsed ? (
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    disabled={busy || anyFaint || Boolean(terminal?.ended)}
-                    onClick={() => applyLeader("enemy")}
-                  >
-                    首领化
-                  </Button>
-                ) : state.enemy.leaderUsed ? (
-                  <Badge variant="secondary">已首领化</Badge>
-                ) : null}
-              </div>
-              <SkillGrid
-                catalog={catalog}
-                side={state.enemy}
-                rec={enemyRec}
-                tone="enemy"
-                selectedKey={pendingE ? actionKey(pendingE.action) : null}
-                disabled={busy || anyFaint || Boolean(terminal?.ended)}
-                onUse={(id) => playSkill("enemy", id)}
-                onChangeSlot={(i, id) => setLoadout("enemy", i, id)}
-              />
-              <div className="h-px bg-border" />
-              <OtherActions
-                options={enemyOthers}
-                rec={enemyRec}
-                tone="enemy"
-                selectedKey={pendingE ? actionKey(pendingE.action) : null}
-                disabled={busy || anyFaint || Boolean(terminal?.ended)}
-                onUse={chooseEnemy}
-              />
+        </div>
+
+        <div className="order-3 flex min-w-0 flex-col gap-3 min-[860px]:order-2">
+          {terminal?.ended && (
+            <div className="rounded-md border border-primary/50 bg-primary/5 px-3 py-2 text-[13px] font-medium">
+              对局结束：{terminal.winner === "player" ? "我方" : "敌方"}胜 · {terminal.reason}
             </div>
-          </Panel>
           )}
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-2 min-[520px]:flex-row min-[520px]:items-center">
-        <Button
-          type="button"
-          className="w-full min-[520px]:w-auto"
-          size="sm"
-          variant="secondary"
-          disabled={busy || (!pendingP && !pendingE)}
-          onClick={() => {
-            setPendingP(null);
-            setPendingE(null);
-          }}
-        >
-          撤销选择
-        </Button>
-        <span className="text-xs text-muted-foreground">双方各选一个动作后自动结算并重算胜率。</span>
-      </div>
-
-      <Panel title="回合日志" bodyClassName="p-0">
-        <div className="max-h-[300px] overflow-y-auto">
-          {log.length === 0 && <p className="px-3 py-2 text-[12px] text-muted-foreground">暂无事件。</p>}
-          {log.map((e, i) => (
-            <div key={i} className="flex gap-2 border-b px-3 py-1.5 text-[12px] last:border-0">
-              <span className="shrink-0 font-mono text-[10px] text-muted-foreground">{e.type}</span>
-              <span className={e.side === "enemy" ? "text-muted-foreground" : ""}>{e.text}</span>
+          <Panel title="胜率走势">
+            <TrendChart history={history} />
+          </Panel>
+          <Panel title="回合时间线">
+            <Timeline
+              frames={frames.map((f) => ({ turn: f.turn, label: f.label }))}
+              cursor={cursor}
+              busy={busy}
+              onJump={(i) => void rollbackTo(i)}
+              onUndo={() => void rollbackTo(cursor - 1)}
+            />
+          </Panel>
+          <Panel
+            title="对战记录"
+            actions={
+              <span className="text-[12px] font-normal text-muted-foreground">
+                {pendingP || pendingE ? "已选一侧，等待另一侧" : "双方各选一个动作后自动结算"}
+              </span>
+            }
+            bodyClassName="p-0"
+          >
+            <div className="max-h-[380px] overflow-y-auto">
+              {log.length === 0 && <p className="px-3 py-2 text-[12px] text-muted-foreground">暂无事件。</p>}
+              {log.map((e, i) => (
+                <div key={i} className="flex items-start gap-2 border-b px-3 py-1.5 text-[12px] last:border-0">
+                  <span
+                    className="mt-[3px] shrink-0 text-[10px] leading-none"
+                    style={{
+                      color:
+                        e.side === "player" ? PLAYER_COLOR : e.side === "enemy" ? ENEMY_COLOR : "var(--muted-foreground)",
+                    }}
+                  >
+                    ●
+                  </span>
+                  <span>{describeEvent(e, catalog)}</span>
+                </div>
+              ))}
             </div>
-          ))}
+            {(pendingP || pendingE) && (
+              <div className="flex items-center gap-2 border-t px-3 py-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  disabled={busy}
+                  onClick={() => {
+                    setPendingP(null);
+                    setPendingE(null);
+                  }}
+                >
+                  撤销选择
+                </Button>
+                <span className="text-[11px] text-muted-foreground">
+                  {pendingP ? `我方已选：${pendingP.label}` : ""}
+                  {pendingP && pendingE ? " · " : ""}
+                  {pendingE ? `敌方已选：${pendingE.label}` : ""}
+                </span>
+              </div>
+            )}
+          </Panel>
         </div>
-      </Panel>
 
+        <div className="order-2 min-w-0 min-[860px]:order-3">
+          <ActiveBoard
+            catalog={catalog}
+            side={state!.enemy}
+            tone="enemy"
+            title="敌方场上"
+            subtitle={mode === "pvp" ? "资质未知 · 按中性 5★·60 级估算" : "推测 / 可观测"}
+            maxMagic={maxMagic}
+            rec={enemyRec}
+            selectedKey={pendingE ? actionKey(pendingE.action) : null}
+            selectedBenchId={pendingE?.action.kind === "switch" ? (pendingE.action.benchId ?? null) : null}
+            disabled={busy || anyFaint || Boolean(terminal?.ended)}
+            benchDisabled={busy || Boolean(terminal?.ended)}
+            fainted={enemyFainted}
+            otherOptions={[...enemyOthers, ...enemyLeader]}
+            onUseSkill={(id) => playSkill("enemy", id)}
+            onChangeSlot={(i, id) => setLoadout("enemy", i, id)}
+            onUseOther={(o) => chooseOther("enemy", o)}
+            onPickBench={(benchId) => pickBench("enemy", benchId)}
+          />
+        </div>
+      </div>
     </div>
   );
 }

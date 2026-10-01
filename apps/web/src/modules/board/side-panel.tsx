@@ -1,136 +1,22 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 
-import { ElementBadge } from "@/components/element-icon";
 import { SkillCategoryIcon } from "@/components/skill-category-icon";
-import { SpriteImage } from "@/components/sprite-image";
 import { SkillSlotDialog } from "@/components/skill-slot-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 
-import type { ActiveSpriteState, Catalog, RecommendResult, SideState } from "@/modules/battle/types";
+import type { Catalog, RecommendResult, SideState } from "@/modules/battle/types";
 import { ENEMY_COLOR, PLAYER_COLOR } from "@/lib/chart-theme";
-import { actionKey, energyRule, skillById, spriteOf, type ActionOption } from "./util";
+import { actionKey, skillById, type ActionOption } from "./util";
 
 export type Tone = "player" | "enemy";
 
-function toneColor(tone: Tone): string {
+export function toneColor(tone: Tone): string {
   return tone === "player" ? PLAYER_COLOR : ENEMY_COLOR;
-}
-
-function MagicHearts({ magic, max, tone }: { magic: number; max: number; tone: Tone }) {
-  const total = Math.max(1, max, magic);
-  const color = toneColor(tone);
-  return (
-    <div className="mb-1 flex items-center gap-2">
-      <div className="flex text-base leading-none" aria-label={`魔力 ${magic}`}>
-        {Array.from({ length: total }, (_, i) => (
-          <span key={i} style={{ color: i < magic ? color : "var(--border)" }}>
-            {i < magic ? "♥" : "♡"}
-          </span>
-        ))}
-      </div>
-      <span className="text-xs font-semibold tabular-nums" style={{ color }}>
-        魔力 {magic}/{total}
-      </span>
-    </div>
-  );
-}
-
-function HpBar({ active }: { active: ActiveSpriteState }) {
-  const prev = useRef({ id: active.spriteId, hp: active.hp });
-  const [delta, setDelta] = useState<number | null>(null);
-
-  useEffect(() => {
-    const p = prev.current;
-    if (p.id === active.spriteId && p.hp !== active.hp) {
-      setDelta(active.hp - p.hp);
-      prev.current = { id: active.spriteId, hp: active.hp };
-      const t = setTimeout(() => setDelta(null), 900);
-      return () => clearTimeout(t);
-    }
-    prev.current = { id: active.spriteId, hp: active.hp };
-  }, [active.spriteId, active.hp]);
-
-  const hpPct = active.maxHp > 0 ? (active.hp / active.maxHp) * 100 : 0;
-  return (
-    <div className="space-y-1">
-      <div className="flex justify-between text-xs text-muted-foreground">
-        <span>HP</span>
-        <span className="tabular-nums">
-          {active.hp} / {active.maxHp}
-          {delta !== null && delta !== 0 && (
-            <span className={`hp-delta ml-2 font-semibold ${delta < 0 ? "text-destructive" : "text-[var(--success)]"}`}>
-              {delta > 0 ? `+${delta}` : delta}
-            </span>
-          )}
-        </span>
-      </div>
-      <Progress value={hpPct} />
-    </div>
-  );
-}
-
-export function SpriteCard({
-  title,
-  subtitle,
-  side,
-  tone,
-  catalog,
-}: {
-  title: string;
-  subtitle?: string;
-  side: SideState;
-  tone: Tone;
-  catalog: Catalog;
-}) {
-  const sprite = spriteOf(catalog, side.active.spriteId);
-  const { max: energyMax } = energyRule(catalog);
-  const maxMagic = Number((catalog.rules as { magicMax?: number }).magicMax ?? 4);
-
-  return (
-    <section className="rounded-md border bg-card p-3">
-      <div className="space-y-3">
-        <MagicHearts magic={side.magic} max={maxMagic} tone={tone} />
-        <div className="flex flex-wrap items-center gap-2 rounded-sm bg-muted/45 p-2">
-          {sprite ? <SpriteImage sprite={sprite} size="sm" className="h-10 w-10 rounded-sm" /> : null}
-          <span className="text-[13px] font-medium" style={{ color: toneColor(tone) }}>
-            {title}
-          </span>
-          <span className="text-[13px] font-medium">{sprite?.name ?? side.active.spriteId ?? "—"}</span>
-          {sprite?.elements.map((el) => (
-            <ElementBadge key={el} catalog={catalog} element={el} />
-          ))}
-          {subtitle && <span className="text-[12px] text-muted-foreground">{subtitle}</span>}
-        </div>
-        <HpBar active={side.active} />
-        <div className="flex flex-wrap items-center gap-1.5 text-[12px]">
-          <Badge variant="outline" className="tnum">
-            能量 {side.active.energy}/{energyMax}
-          </Badge>
-          {side.wishChargesLeft > 0 && <Badge variant="outline" className="tnum">愿力 {side.wishChargesLeft}</Badge>}
-          {side.wishCooldown > 0 && <Badge variant="secondary" className="tnum">愿力CD {side.wishCooldown}</Badge>}
-          {Object.entries(side.active.statuses)
-            .filter(([, n]) => n > 0)
-            .map(([id, n]) => (
-              <Badge key={`s-${id}`} variant="outline" className="tnum">
-                {catalog.statuses.find((s) => s.id === id)?.nameZh ?? id} × {n}
-              </Badge>
-            ))}
-          {Object.entries(side.active.marks)
-            .filter(([, n]) => n > 0)
-            .map(([id, n]) => (
-              <Badge key={`m-${id}`} variant="secondary" className="tnum">
-                {catalog.marks.find((m) => m.id === id)?.nameZh ?? id} × {n}
-              </Badge>
-            ))}
-        </div>
-      </div>
-    </section>
-  );
 }
 
 function SkillTile({
@@ -231,9 +117,7 @@ function SkillTile({
             </div>
           </>
         ) : (
-          <div className="flex min-h-[56px] items-center justify-center text-xs text-muted-foreground">
-            空槽 · 点右上「换」选择技能
-          </div>
+          <div className="flex min-h-[56px] items-center justify-center text-xs text-muted-foreground">无</div>
         )}
       </button>
     </div>
