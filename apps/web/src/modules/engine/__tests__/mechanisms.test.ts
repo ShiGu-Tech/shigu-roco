@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { effectiveCost } from "../cost";
 import { ActionQueue, MechanismRegistry, MechanismRuntime } from "../mechanisms";
 import type { EffectCommand, MechanismDefinition } from "../mechanisms";
 import { Rng } from "../rng";
@@ -391,14 +392,14 @@ describe("control domain (buffs / status / cost / switch)", () => {
     expect(battle.enemy.active.statuses.burn).toBe(6);
   });
 
-  it("modifySkillCost writes per-skill cost deltas by scope", () => {
+  it("modifySkillCost registers cost mods scoped by skill type", () => {
     const runtime = new MechanismRuntime(new MechanismRegistry());
     const battle = st();
     battle.player.active.loadout = ["sk-1"];
     runtime.applyStateCommands(battle, [command({ type: "modifySkillCost", target: "self", scope: "attack", delta: 2 })], miniBundle);
-    expect(battle.player.active.skillMods?.["sk-1"]?.cost).toBe(2);
+    expect(effectiveCost(battle, miniBundle, "player", "sk-1")).toBe(2);
     runtime.applyStateCommands(battle, [command({ type: "modifySkillCost", target: "self", skillId: "sk-1", delta: -1 })], miniBundle);
-    expect(battle.player.active.skillMods?.["sk-1"]?.cost).toBe(1);
+    expect(effectiveCost(battle, miniBundle, "player", "sk-1")).toBe(1);
   });
 
   it("forceSwitch / escape / allowSwitch set side flags", () => {
@@ -945,8 +946,8 @@ describe("weather domain (element-filtered cost / damage / turn-end status)", ()
       [command({ type: "modifySkillCost", target: "self", scope: "all", elements: ["Earth"], multiply: 0.5, mode: "set" })],
       bundle,
     );
-    expect(st.player.active.skillMods?.["sk-e"]?.cost).toBe(-2);
-    expect(st.player.active.skillMods?.["sk-n"]).toBeUndefined();
+    expect(effectiveCost(st, bundle, "player", "sk-e")).toBe(2);
+    expect(effectiveCost(st, bundle, "player", "sk-n")).toBe(4);
   });
 
   it("boosts water damage by ~75% in rain", () => {
@@ -976,5 +977,71 @@ describe("weather domain (element-filtered cost / damage / turn-end status)", ()
     const r = sim.step(st, { kind: "energy" }, { kind: "energy" }, new Rng(3));
     expect(r.state.player.active.statuses.freeze).toBe(2);
     expect(r.state.enemy.active.statuses.freeze).toBe(2);
+  });
+});
+
+describe("cost mod model (floor / dispel / oncePerTurn / duration)", () => {
+  const st = () => makeState(makeSide(makeActive("sp-a", { hp: 100, maxHp: 100 })), makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })));
+
+  it("floors to whole energy and clamps at 0", () => {
+    const b = st();
+    b.player.active.costMods = [
+      { key: "half", source: "trait", scope: "skill", skillId: "sk-1", multiply: 0.5, duration: "permanent", dispellable: false, hidden: false },
+      { key: "big", source: "skill", scope: "skill", skillId: "sk-1", delta: -9, duration: "permanent", dispellable: true, hidden: false },
+    ];
+    expect(effectiveCost(b, miniBundle, "player", "sk-1")).toBe(0);
+    // 3 能耗 × 0.5 = 1.5 → floor 1
+    b.player.active.costMods = [{ key: "half", source: "skill", scope: "skill", skillId: "sk-3", multiply: 0.5, duration: "permanent", dispellable: true, hidden: false }];
+    b.player.active.skillMods = undefined;
+    expect(effectiveCost(b, { ...miniBundle, skills: { ...miniBundle.skills, "sk-3": { id: "sk-3", element: "Earth", category: "Physical", actionType: "Attack", power: 40, cost: 3 } } }, "player", "sk-3")).toBe(1);
+  });
+
+  it("clearCostMod removes dispellable harmful entries only", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const b = st();
+    b.player.active.costMods = [
+      { key: "debuff", source: "skill", scope: "all", delta: 2, duration: "permanent", dispellable: true, hidden: false },
+      { key: "trait", source: "trait", scope: "all", delta: 2, duration: "permanent", dispellable: false, hidden: false },
+    ];
+    runtime.applyStateCommands(b, [command({ type: "clearCostMod", target: "self" })], miniBundle);
+    expect(b.player.active.costMods?.map((m) => m.key)).toEqual(["trait"]);
+  });
+
+  it("oncePerTurn lets a mechanism fire only once per turn", () => {
+    const registry = new MechanismRegistry([
+      { id: "m", ownerType: "trait", ownerId: "t", trigger: "beforeAction", oncePerTurn: true, effects: [{ type: "modifyEnergy", target: "self", delta: 1 }] },
+    ]);
+    const b = st();
+    b.onceFired = {};
+    expect(registry.collect({ state: b, trigger: "beforeAction", actorSide: "player", event: {} })).toHaveLength(1);
+    expect(registry.collect({ state: b, trigger: "beforeAction", actorSide: "player", event: {} })).toHaveLength(0);
+    b.onceFired = {};
+    expect(registry.collect({ state: b, trigger: "beforeAction", actorSide: "player", event: {} })).toHaveLength(1);
+  });
+
+  it("expires timed cost mods at turn end and charges the modified cost", () => {
+    const bundle: DataBundle = {
+      ...miniBundle,
+      mechanisms: [
+        {
+          id: "timed-cost",
+          ownerType: "trait",
+          ownerId: "t",
+          trigger: "beforeAction",
+          when: [{ path: "event.action.skillId", op: "eq", value: "sk-1" }],
+          effects: [{ type: "modifySkillCost", target: "self", skillId: "sk-1", delta: 3, duration: "turns", turns: 1 }],
+        },
+      ],
+    };
+    const sim = new Simulator(bundle);
+    const battle = makeState(
+      makeSide(makeActive("sp-a", { hp: 100, maxHp: 100, energy: 5 })),
+      makeSide(makeActive("sp-b", { hp: 100, maxHp: 100, energy: 5 })),
+      { turn: 1, seed: 1 },
+    );
+    battle.player.active.loadout = ["sk-1"];
+    const r = sim.step(battle, { kind: "skill", skillId: "sk-1" }, { kind: "energy" }, new Rng(1));
+    expect(r.state.player.active.energy).toBe(2);
+    expect(r.state.player.active.costMods?.some((m) => m.duration === "turns")).toBeFalsy();
   });
 });

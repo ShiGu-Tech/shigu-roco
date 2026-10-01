@@ -30,6 +30,7 @@ export function cloneActive(a: ActiveSprite): ActiveSprite {
       : undefined,
     counters: a.counters ? { ...a.counters } : undefined,
     skillMods: a.skillMods ? Object.fromEntries(Object.entries(a.skillMods).map(([k, v]) => [k, { ...v }])) : undefined,
+    costMods: a.costMods ? a.costMods.map((m) => ({ ...m, elements: m.elements ? [...m.elements] : undefined, excludeElements: m.excludeElements ? [...m.excludeElements] : undefined })) : undefined,
     entered: a.entered,
   };
 }

@@ -105,8 +105,12 @@ export type EffectSpec =
   | { type: "transformMark"; target?: string; toMarkId: string; scope?: "sprite" | "team" }
   /** 强化域 · 驱散 / 偷取增益减益：按 `stat`（省略 = 全部）与 `polarity` 移除 `layers` 层（"all" 或省略 = 清空）；`limit` 限制作用的属性种类数。 */
   | { type: "clearStat"; target?: string; stat?: string; layers?: number | "all"; polarity?: "buff" | "debuff" | "all"; limit?: number }
-  /** 能耗域 · 技能能耗修正：对某技能 / 全体 / 攻击技 / 防御技叠加 `delta` 或按 `multiply` 缩放；`elements` 可再按技能元素筛选（如「地系技能能耗减半」）。 */
-  | { type: "modifySkillCost"; target?: string; skillId?: string; scope?: "skill" | "all" | "attack" | "defense"; elements?: string[]; delta?: number; deltaFrom?: DynamicValue; multiply?: number; mode?: "add" | "set" }
+  /** 能耗域 · 技能能耗修正：对某技能 / 全体 / 攻击技 / 防御技叠加 `delta` 或按 `multiply` 缩放；
+   *  `elements` / `excludeElements` 按技能元素筛选；`duration` / `turns` 时效；`oncePerTurn` 每回合限次；
+   *  `hidden` 是否对 UI 隐藏来源；`dispellable` 是否可被驱散（默认 false，仅名义 debuff 置 true）。 */
+  | { type: "modifySkillCost"; target?: string; skillId?: string; scope?: "skill" | "all" | "attack" | "defense"; elements?: string[]; excludeElements?: string[]; delta?: number; deltaFrom?: DynamicValue; multiply?: number; mode?: "add" | "set"; key?: string; duration?: "permanent" | "turns" | "nextAction" | "aura"; turns?: number; oncePerTurn?: boolean; hidden?: boolean; dispellable?: boolean }
+  /** 能耗域 · 驱散能耗修正：移除目标身上 `dispellable` 且（默认）有害的条目。 */
+  | { type: "clearCostMod"; target?: string; all?: boolean }
   /** 行动域 · 强制换人（引擎只标记 `forcedSwitch`，由前端补一次换人）。 */
   | { type: "forceSwitch"; target?: string }
   /** 行动域 · 脱离（强制换人 + 解除离场锁）。 */
@@ -155,6 +159,9 @@ export interface EffectCommand {
   type: EffectDefinition["type"];
   definition: EffectDefinition;
   mechanismId: string;
+  /** 机制归属（技能 / 特性 / 状态…），供能耗条目记录来源。 */
+  ownerType?: MechanismOwnerType;
+  ownerId?: string;
   trigger: TriggerName;
   actorSide?: Side;
   targetSide?: Side;

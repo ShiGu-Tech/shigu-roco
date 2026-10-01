@@ -1,5 +1,6 @@
 /** 战斗模拟器（MDP 环境）：按四阶段回合结算。对应 Python simulator/battle.py。 */
 
+import { effectiveCost } from "../cost";
 import { getSkill, getSprite } from "../data";
 import { effectiveStat } from "../effects/damage";
 import type { Rng } from "../rng";
@@ -51,7 +52,7 @@ export class Simulator {
       : (toArray<string>(spriteDef.loadout).length ? toArray<string>(spriteDef.loadout) : toArray<string>(spriteDef.skillList));
     for (const skillId of loadout) {
       const skill = getSkill(this.bundle, skillId);
-      if (toNum(skill.cost, 0) <= active.energy && toNum(active.cooldowns?.[skillId], 0) <= 0) {
+      if (effectiveCost(state, this.bundle, who, skillId) <= active.energy && toNum(active.cooldowns?.[skillId], 0) <= 0) {
         actions.push({ kind: "skill", skillId, label: toStr(skill.skillName, skillId) });
       }
     }
@@ -83,8 +84,9 @@ export class Simulator {
     const rules = this.bundle.rules;
     /** 本回合被置/改/使用的技能，冷却结算时跳过（净 ±N，避免刚置就被 tick）。 */
     const touched: Record<Side, Set<string>> = { player: new Set(), enemy: new Set() };
-    // 回合开始清空「本回合是否换人」标记。
+    // 回合开始清空「本回合是否换人」标记与 `oncePerTurn` 计数。
     for (const side of SIDES) this.sideState(st, side).switchedThisTurn = false;
+    st.onceFired = {};
 
     if (st.turn === 1) {
       // 入场域：开局在场精灵各自「入场」一次（供「首次入场」类特性）。
@@ -350,6 +352,8 @@ export class Simulator {
     const before = active.energy;
     active.energy = Math.min(cap, active.energy + recover);
     const gained = active.energy - before;
+    // 单次（nextAction）能耗条目：聚能也算一次行动，结算后移除。
+    if (active.costMods?.some((m) => m.duration === "nextAction")) active.costMods = active.costMods.filter((m) => m.duration !== "nextAction");
     return [{ type: "energy", side, text: `${active.spriteId} 聚能 +${gained}（${active.energy}/${cap}）`, data: { value: gained } }];
   }
 
@@ -367,6 +371,8 @@ export class Simulator {
     s.bench.push(old);
     s.active = target;
     s.forcedSwitch = false;
+    // 能耗域 · aura：来源离场的条目随换人回收。
+    this.pruneAuraCostMods(st);
     events.push({ type: "switch", side, text: `${side} 换上 ${target.spriteId}`, data: { forced } });
     // 入场域：换入的精灵「入场」（供「首次入场」类特性）。
     events.push(...this.enterField(st, side, { from: old.spriteId, forced }));
@@ -402,8 +408,10 @@ export class Simulator {
   ): BattleEvent[] {
     const skill = action.skillId ? getSkill(this.bundle, action.skillId) : {};
     const caster = this.sideState(st, side).active;
-    const costDelta = toNum(action.skillId ? caster.skillMods?.[action.skillId]?.cost : 0, 0);
-    caster.energy = Math.max(0, caster.energy - Math.max(0, Math.floor(toNum(skill.cost, 0) + costDelta)));
+    const cost = action.skillId ? effectiveCost(st, this.bundle, side, action.skillId) : Math.floor(toNum(skill.cost, 0));
+    caster.energy = Math.max(0, caster.energy - Math.max(0, cost));
+    // 单次（nextAction）能耗条目：本次行动结算后移除。
+    if (caster.costMods?.some((m) => m.duration === "nextAction")) caster.costMods = caster.costMods.filter((m) => m.duration !== "nextAction");
     const cooldown = Math.max(0, Math.floor(toNum(skill.cooldown, 0)));
     if (action.skillId && cooldown > 0) {
       caster.cooldowns ??= {};
@@ -460,6 +468,28 @@ export class Simulator {
       }
       for (const sprite of [active, ...s.bench]) expireSkillOverrides(sprite, st.turn);
       if (s.switchLock > 0) s.switchLock -= 1;
+      // 能耗域 · 时效：回合末递减 `turns` 条目。
+      if (active.costMods?.length) {
+        active.costMods = active.costMods.filter((m) => {
+          if (m.duration !== "turns") return true;
+          m.turnsLeft = toNum(m.turnsLeft, 0) - 1;
+          return m.turnsLeft > 0;
+        });
+      }
+    }
+  }
+
+  /** 能耗域 · aura：来源精灵不在场的条目回收（换人 / 阵亡后调用）。 */
+  private pruneAuraCostMods(st: BattleState): void {
+    for (const side of SIDES) {
+      const active = this.sideState(st, side).active;
+      if (!active.costMods?.length) continue;
+      active.costMods = active.costMods.filter((m) => {
+        if (m.duration !== "aura") return true;
+        if (!m.sourceSide || !m.sourceSpriteId) return true;
+        const sourceActive = this.sideState(st, m.sourceSide).active;
+        return sourceActive.spriteId === m.sourceSpriteId && sourceActive.hp > 0;
+      });
     }
   }
 
@@ -477,6 +507,7 @@ export class Simulator {
       s.magic -= perFaint;
       events.push({ type: "faint", side, text: `${s.active.spriteId} 阵亡，魔力 -${perFaint}`, data: {} });
       events.push(...this.triggerState(st, "afterDeath", { actorSide: side, targetSide: opp, event: deathEvent }));
+      this.pruneAuraCostMods(st);
     }
     return events;
   }

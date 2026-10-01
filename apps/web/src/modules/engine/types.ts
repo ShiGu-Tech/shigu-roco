@@ -43,8 +43,37 @@ export interface ActiveSprite {
   counters?: Record<string, number>;
   /** 记忆域 · 技能永久修正：skillId → 威力 / 能耗 / 连击 / 先手的持久 delta。 */
   skillMods?: Record<string, { power?: number; cost?: number; hits?: number; priority?: number }>;
+  /** 能耗域 · 声明式能耗修正条目（读时求和，见 `effectiveCost`）。 */
+  costMods?: CostMod[];
   /** 入场域 · 本局是否已入场过（供「首次入场」类机制判断 `event.first`）。 */
   entered?: boolean;
+}
+
+/** 能耗修正条目：挂在精灵身上、由技能 / 特性 / 状态登记，读时按作用域求和。 */
+export interface CostMod {
+  /** 唯一键；同 key 覆盖（去重、驱散定位、`mode:"set"` 每回合重算）。 */
+  key: string;
+  /** 来源类别（引擎只存字符串，具体 id 在 sourceId）。 */
+  source: "skill" | "trait" | "status" | "system";
+  sourceId?: string;
+  /** 来源侧 / 来源在场精灵（供 aura 在来源离场时回收）。 */
+  sourceSide?: Side;
+  sourceSpriteId?: string;
+  scope: "skill" | "attack" | "defense" | "all";
+  skillId?: string;
+  elements?: string[];
+  excludeElements?: string[];
+  delta?: number;
+  multiply?: number;
+  /** add（默认，累加/相乘）| set（用 delta 覆盖基础值，每回合重算）。 */
+  mode?: "add" | "set";
+  duration: "permanent" | "turns" | "nextAction" | "aura";
+  turnsLeft?: number;
+  oncePerTurn?: boolean;
+  /** 名义 debuff（技能造成）可驱散；特性造成的不可。 */
+  dispellable: boolean;
+  /** 隐藏（天洪：只改数字、不显示来源）；特性 / 状态可见。 */
+  hidden: boolean;
 }
 
 /** 记忆域 · 上回合记忆（供「若上回合…」类条件）。 */
@@ -92,6 +121,8 @@ export interface BattleState {
   enemy: SideState;
   weather: Weather | null;
   seed: number;
+  /** 本回合已触发过的 `oncePerTurn` 机制（`side:mechanismId`），回合开始清空。 */
+  onceFired?: Record<string, boolean>;
 }
 
 export interface Action {

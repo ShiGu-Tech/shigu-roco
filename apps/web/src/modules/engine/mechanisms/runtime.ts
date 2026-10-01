@@ -2,7 +2,7 @@ import { getSkill, getSprite } from "../data";
 import { computeDamage } from "../effects/damage";
 import { Rng } from "../rng";
 import { recordSkillOverride } from "../state";
-import type { BattleState, DataBundle, Side } from "../types";
+import type { BattleState, CostMod, DataBundle, Side } from "../types";
 import { asDict, toArray, toNum, toStr } from "../types";
 import { ActionQueue } from "./action-queue";
 import { resolveContextPath } from "./conditions";
@@ -211,27 +211,53 @@ export class MechanismRuntime {
         }
         case "modifySkillCost": {
           if (!active || !targetSide) break;
-          let skillIds: string[] = [];
-          if (definition.scope === "all") skillIds = [...active.loadout];
-          else if (definition.scope === "defense") skillIds = active.loadout.filter((id) => this.isDefenseSkill(bundle, id));
-          else if (definition.scope === "attack") skillIds = bundle ? active.loadout.filter((id) => { const sk = getSkill(bundle, id); return sk.category === "Physical" || sk.category === "Magic"; }) : [];
-          else skillIds = definition.skillId ? [definition.skillId] : [];
-          // 可选按技能元素筛选（如「地系技能能耗减半」）。
-          if (definition.elements?.length && bundle) {
-            const allow = new Set(definition.elements);
-            skillIds = skillIds.filter((id) => allow.has(toStr(getSkill(bundle, id).element)));
+          const scope = definition.scope ?? "skill";
+          const key = definition.key ?? `${command.mechanismId}:${scope}:${definition.skillId ?? "*"}`;
+          let delta = definition.delta ?? 0;
+          if (definition.deltaFrom) delta += this.dynamicValue(state, command, definition.deltaFrom, 0);
+          const sourceActive = command.actorSide === "player" ? state.player.active : command.actorSide === "enemy" ? state.enemy.active : undefined;
+          const source: CostMod["source"] =
+            command.ownerType === "trait" ? "trait" : command.ownerType === "skill" ? "skill" : command.ownerType === "status" || command.ownerType === "mark" ? "status" : "system";
+          const entry: CostMod = {
+            key,
+            source,
+            sourceId: command.ownerId,
+            sourceSide: command.actorSide,
+            sourceSpriteId: sourceActive?.spriteId,
+            scope,
+            skillId: definition.skillId,
+            elements: definition.elements,
+            excludeElements: definition.excludeElements,
+            delta,
+            multiply: definition.multiply,
+            mode: definition.mode,
+            duration: definition.duration ?? "permanent",
+            turnsLeft: definition.duration === "turns" ? Math.max(1, definition.turns ?? 1) : undefined,
+            oncePerTurn: definition.oncePerTurn,
+            dispellable: definition.dispellable ?? false,
+            hidden: definition.hidden ?? (source !== "trait" && source !== "status"),
+          };
+          active.costMods ??= [];
+          const existingIndex = active.costMods.findIndex((m) => m.key === key);
+          if (existingIndex >= 0 && definition.mode !== "set") {
+            const existing = active.costMods[existingIndex];
+            existing.delta = toNum(existing.delta, 0) + delta;
+            existing.multiply = (existing.multiply ?? 1) * (definition.multiply ?? 1);
+            existing.turnsLeft = entry.turnsLeft ?? existing.turnsLeft;
+          } else if (existingIndex >= 0) {
+            active.costMods[existingIndex] = entry;
+          } else {
+            active.costMods.push(entry);
           }
-          if (!skillIds.length) break;
-          active.skillMods ??= {};
-          for (const skillId of skillIds) {
-            let delta = definition.delta ?? 0;
-            if (definition.deltaFrom) delta += this.dynamicValue(state, command, definition.deltaFrom, 0);
-            if (typeof definition.multiply === "number" && bundle) delta += Math.round(toNum(getSkill(bundle, skillId).cost, 0) * (definition.multiply - 1));
-            const mod = (active.skillMods[skillId] ??= {});
-            // mode=set：用当前计算值替换（每回合重算不累加，适合「每有 1 层 X 能耗 -1」）。
-            mod.cost = definition.mode === "set" ? delta : (mod.cost ?? 0) + delta;
-          }
-          events.push({ type: "skill-cost-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { scope: definition.scope ?? "skill", skillId: definition.skillId ?? null, delta: definition.delta ?? 0, multiply: definition.multiply ?? 1, skills: skillIds } });
+          events.push({ type: "skill-cost-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { scope, skillId: definition.skillId ?? null, delta, multiply: definition.multiply ?? 1, duration: entry.duration, source, sourceId: entry.sourceId ?? null, dispellable: entry.dispellable, hidden: entry.hidden, key } });
+          break;
+        }
+        case "clearCostMod": {
+          if (!active || !targetSide) break;
+          const before = active.costMods ?? [];
+          const kept = before.filter((m) => !(definition.all ? true : (m.dispellable && toNum(m.delta, 0) >= 0 && (m.multiply ?? 1) >= 1)));
+          active.costMods = kept;
+          events.push({ type: "skill-cost-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { cleared: before.length - kept.length } });
           break;
         }
         case "addCounter": {

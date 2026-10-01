@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.22.0",
+  "version": "0.23.0",
   "updatedAt": "2026-10-01",
   "mechanisms": [
     {
@@ -3991,10 +3991,12 @@
             "Earth"
           ],
           "multiply": 0.5,
-          "mode": "set"
+          "mode": "set",
+          "duration": "turns",
+          "turns": 1
         }
       ],
-      "note": "沙暴：地系技能能耗减半（每回合按当前天气重算）"
+      "note": "沙暴：地系技能能耗减半（每回合 beforeAction 续期 1 回合，天气结束自然到期）"
     },
     {
       "id": "weather:blizzard",
@@ -8790,32 +8792,6 @@
         }
       ],
       "note": "铃兰晚钟：首次入场时失去自己一半当前生命"
-    },
-    {
-      "id": "weather:sandstorm-clear",
-      "ownerType": "weather",
-      "ownerId": "sandstorm",
-      "trigger": "beforeAction",
-      "when": [
-        {
-          "path": "state.weather.id",
-          "op": "neq",
-          "value": "sandstorm"
-        }
-      ],
-      "effects": [
-        {
-          "type": "modifySkillCost",
-          "target": "self",
-          "scope": "all",
-          "elements": [
-            "Earth"
-          ],
-          "delta": 0,
-          "mode": "set"
-        }
-      ],
-      "note": "无沙暴时把地系技能能耗修正归零"
     },
     {
       "id": "weather:rain",

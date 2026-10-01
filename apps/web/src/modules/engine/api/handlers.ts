@@ -63,6 +63,34 @@ function parseSkillMods(raw: unknown): ActiveSprite["skillMods"] {
   return Object.keys(out).length ? out : undefined;
 }
 
+function parseCostMods(raw: unknown): ActiveSprite["costMods"] {
+  const list = Array.isArray(raw) ? raw : [];
+  if (!list.length) return undefined;
+  return list.map((item) => {
+    const m = asDict(item);
+    const source = toStr(m.source, "system") as NonNullable<ActiveSprite["costMods"]>[number]["source"];
+    return {
+      key: toStr(m.key),
+      source,
+      sourceId: m.sourceId === undefined ? undefined : toStr(m.sourceId),
+      sourceSide: m.sourceSide === undefined ? undefined : (toStr(m.sourceSide) as "player" | "enemy"),
+      sourceSpriteId: m.sourceSpriteId === undefined ? undefined : toStr(m.sourceSpriteId),
+      scope: toStr(m.scope, "skill") as NonNullable<ActiveSprite["costMods"]>[number]["scope"],
+      skillId: m.skillId === undefined ? undefined : toStr(m.skillId),
+      elements: m.elements === undefined ? undefined : toArray<string>(m.elements),
+      excludeElements: m.excludeElements === undefined ? undefined : toArray<string>(m.excludeElements),
+      delta: m.delta === undefined ? undefined : toNum(m.delta, 0),
+      multiply: m.multiply === undefined ? undefined : toNum(m.multiply, 1),
+      mode: m.mode === undefined ? undefined : (toStr(m.mode) as "add" | "set"),
+      duration: toStr(m.duration, "permanent") as NonNullable<ActiveSprite["costMods"]>[number]["duration"],
+      turnsLeft: m.turnsLeft === undefined ? undefined : toNum(m.turnsLeft, 0),
+      oncePerTurn: m.oncePerTurn === undefined ? undefined : Boolean(m.oncePerTurn),
+      dispellable: Boolean(m.dispellable),
+      hidden: Boolean(m.hidden),
+    };
+  });
+}
+
 function parseActive(raw: Dict): ActiveSprite {
   const counters = numDict(raw.counters);
   return {
@@ -81,6 +109,7 @@ function parseActive(raw: Dict): ActiveSprite {
     skillOverrides: parseSkillOverrides(raw.skillOverrides),
     counters: Object.keys(counters).length ? counters : undefined,
     skillMods: parseSkillMods(raw.skillMods),
+    costMods: parseCostMods(raw.costMods),
     entered: raw.entered === undefined ? undefined : Boolean(raw.entered),
   };
 }
@@ -107,6 +136,7 @@ export function parseState(raw: Dict): BattleState {
     enemy: parseSide(asDict(raw.enemy)),
     weather: weather ? { id: toStr(weather.id), turnsLeft: toNum(weather.turnsLeft, 0) } : null,
     seed: toNum(raw.seed, 0),
+    onceFired: raw.onceFired ? Object.fromEntries(Object.entries(asDict(raw.onceFired)).map(([k, v]) => [k, Boolean(v)])) : undefined,
   };
 }
 

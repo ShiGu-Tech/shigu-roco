@@ -27,14 +27,25 @@ export class MechanismRegistry {
   }
 
   collect(context: MechanismContext): EffectCommand[] {
+    // oncePerTurn：同一回合内同一机制（按侧）只触发一次；`passive` 为按需读取，不计次。
+    const fired = context.trigger === "passive" ? undefined : context.state.onceFired;
     return this.definitions
       .filter((definition) => definition.trigger === context.trigger && conditionsMatch(context, definition.when))
+      .filter((definition) => {
+        if (!definition.oncePerTurn || !fired) return true;
+        const key = `${context.actorSide ?? "-"}:${definition.id}`;
+        if (fired[key]) return false;
+        fired[key] = true;
+        return true;
+      })
       .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0) || a.id.localeCompare(b.id))
       .flatMap((definition) =>
         definition.effects.map((effect) => ({
           type: effect.type,
           definition: resolveEffect(context, effect),
           mechanismId: definition.id,
+          ownerType: definition.ownerType,
+          ownerId: definition.ownerId,
           trigger: context.trigger,
           actorSide: context.actorSide,
           targetSide: context.targetSide,
