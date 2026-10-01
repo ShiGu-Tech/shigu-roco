@@ -322,6 +322,18 @@ describe("dynamic values & consumeMark", () => {
   });
 });
 
+describe("condition operators", () => {
+  it("contains matches array membership for loadout guards", () => {
+    const registry = new MechanismRegistry([
+      { id: "own", ownerType: "skill", ownerId: "sk-2", trigger: "turnEnd", when: [{ path: "self.active.loadout", op: "contains", value: "sk-2" }], effects: [{ type: "modifyMagic", target: "self", delta: 1 }] },
+    ]);
+    const st = makeState(makeSide(makeActive("sp-a")), makeSide(makeActive("sp-b")));
+    st.player.active.loadout = ["sk-2"];
+    expect(registry.collect({ state: st, trigger: "turnEnd", actorSide: "player", targetSide: "enemy", event: {} }).length).toBe(1);
+    expect(registry.collect({ state: st, trigger: "turnEnd", actorSide: "enemy", targetSide: "player", event: {} }).length).toBe(0);
+  });
+});
+
 describe("entry inheritance (scheduleEntry)", () => {
   function st() {
     const bench = makeActive("sp-c", { hp: 100, maxHp: 100, energy: 0 });

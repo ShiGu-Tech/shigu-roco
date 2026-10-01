@@ -55,7 +55,7 @@ export type Condition =
   | { allOf: Condition[] }
   | { anyOf: Condition[] }
   | { not: Condition }
-  | { path: string; op: "eq" | "neq" | "gt" | "gte" | "lt" | "lte" | "in" | "has"; value?: unknown; valueFrom?: string };
+  | { path: string; op: "eq" | "neq" | "gt" | "gte" | "lt" | "lte" | "in" | "has" | "contains"; value?: unknown; valueFrom?: string };
 
 /** 动态取值：点路径 + 系数 + 偏移（如「每层印记 ×2」= { path, scale: 2 }）。`path` 末尾 `*` 表示合计对象数值。 */
 export interface DynamicValue {

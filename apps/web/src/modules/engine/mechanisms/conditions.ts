@@ -61,6 +61,8 @@ function matches(context: MechanismContext, condition: Condition): boolean {
       return Number(actual) <= Number(expected);
     case "in":
       return Array.isArray(expected) && expected.includes(actual);
+    case "contains":
+      return Array.isArray(actual) && actual.includes(expected);
     case "has":
       return Boolean(
         actual &&

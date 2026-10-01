@@ -29,5 +29,7 @@
  *          新增 `consumeMark`（驱散印记并按每层执行效果，可表达「每层 +X%」）。
  * - 0.7.0  入场继承：`scheduleEntry`（把效果排入目标侧「下个入场精灵」队列，换人时执行）+
  *          `inheritStat`（换人时把离场精灵的强化 / 减益复制给入场精灵）；`SideState.pendingEntry` 随换人清空。
+ * - 0.8.0  条件运算符 `contains`（数组包含，用于 `self.active.loadout` 归属守卫），配合被动型机制
+ *          （`turnEnd` / `afterSwitch` 的永久修正）只在携带该技能的精灵上触发。
  */
-export const ENGINE_VERSION = "0.7.0";
+export const ENGINE_VERSION = "0.8.0";

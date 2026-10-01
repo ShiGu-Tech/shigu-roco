@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "updatedAt": "2026-10-01",
   "mechanisms": [
     {
@@ -411,13 +411,12 @@
       ],
       "effects": [
         {
-          "type": "dealDamage",
-          "target": "target",
-          "category": "Physical",
-          "power": 35,
-          "skillId": "sk-7020360"
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 1
         }
-      ]
+      ],
+      "note": "命中回复 1 能量"
     },
     {
       "id": "skill:sk-7020390",
@@ -6513,6 +6512,1106 @@
         }
       ],
       "note": "击鼓传花：自己脱离，下个入场精灵继承自己增益"
+    },
+    {
+      "id": "skill:sk-7020500:hits5",
+      "ownerType": "skill",
+      "ownerId": "sk-7020500",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7020500"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 5
+        }
+      ],
+      "note": "连击 5"
+    },
+    {
+      "id": "skill:sk-7020920:hits2",
+      "ownerType": "skill",
+      "ownerId": "sk-7020920",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7020920"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 2
+        }
+      ],
+      "note": "连击 2"
+    },
+    {
+      "id": "skill:sk-7030420:hits2",
+      "ownerType": "skill",
+      "ownerId": "sk-7030420",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7030420"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 2
+        }
+      ],
+      "note": "连击 2"
+    },
+    {
+      "id": "skill:sk-7040190:hits2",
+      "ownerType": "skill",
+      "ownerId": "sk-7040190",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7040190"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 2
+        }
+      ],
+      "note": "连击 2"
+    },
+    {
+      "id": "skill:sk-7040350:hits3",
+      "ownerType": "skill",
+      "ownerId": "sk-7040350",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7040350"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 3
+        }
+      ],
+      "note": "连击 3"
+    },
+    {
+      "id": "skill:sk-7050350:hits4",
+      "ownerType": "skill",
+      "ownerId": "sk-7050350",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7050350"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 4
+        }
+      ],
+      "note": "连击 4"
+    },
+    {
+      "id": "skill:sk-7060170:hits3",
+      "ownerType": "skill",
+      "ownerId": "sk-7060170",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7060170"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 3
+        }
+      ],
+      "note": "连击 3"
+    },
+    {
+      "id": "skill:sk-7090260:hits2",
+      "ownerType": "skill",
+      "ownerId": "sk-7090260",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7090260"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 2
+        }
+      ],
+      "note": "连击 2"
+    },
+    {
+      "id": "skill:sk-7180260:hits2",
+      "ownerType": "skill",
+      "ownerId": "sk-7180260",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7180260"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 2
+        }
+      ],
+      "note": "连击 2"
+    },
+    {
+      "id": "skill:sk-7190380:hits3",
+      "ownerType": "skill",
+      "ownerId": "sk-7190380",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7190380"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 3
+        }
+      ],
+      "note": "连击 3"
+    },
+    {
+      "id": "skill:sk-7140230:hits2",
+      "ownerType": "skill",
+      "ownerId": "sk-7140230",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7140230"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 2
+        }
+      ],
+      "note": "连击 2"
+    },
+    {
+      "id": "skill:sk-7150380:hits3",
+      "ownerType": "skill",
+      "ownerId": "sk-7150380",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7150380"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 3
+        }
+      ],
+      "note": "连击 3"
+    },
+    {
+      "id": "skill:sk-7170210:hits5",
+      "ownerType": "skill",
+      "ownerId": "sk-7170210",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7170210"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 5
+        }
+      ],
+      "note": "连击 5"
+    },
+    {
+      "id": "skill:sk-7030450:hits2",
+      "ownerType": "skill",
+      "ownerId": "sk-7030450",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7030450"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 2
+        }
+      ],
+      "note": "连击 2"
+    },
+    {
+      "id": "skill:sk-7120280:hits3:x",
+      "ownerType": "skill",
+      "ownerId": "sk-7120280",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7120280"
+        },
+        {
+          "path": "target.active.statuses.poison",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 3
+        }
+      ],
+      "note": "连击 3"
+    },
+    {
+      "id": "skill:sk-7140070:hits-react",
+      "ownerType": "skill",
+      "ownerId": "sk-7140070",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7140070"
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 6
+        }
+      ],
+      "note": "散手：应对状态 → 6 连击"
+    },
+    {
+      "id": "skill:sk-7140070:hits-base",
+      "ownerType": "skill",
+      "ownerId": "sk-7140070",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7140070"
+        },
+        {
+          "not": {
+            "path": "event.reacted",
+            "op": "eq",
+            "value": true
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 2
+        }
+      ],
+      "note": "散手：2 连击"
+    },
+    {
+      "id": "skill:sk-7020470:hits-react",
+      "ownerType": "skill",
+      "ownerId": "sk-7020470",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7020470"
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 3
+        }
+      ],
+      "note": "追打：应对状态 → 3 连击"
+    },
+    {
+      "id": "skill:sk-7090100",
+      "ownerType": "skill",
+      "ownerId": "sk-7090100",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7090100"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 1
+        }
+      ],
+      "note": "命中回复 1 能量"
+    },
+    {
+      "id": "skill:sk-7130140",
+      "ownerType": "skill",
+      "ownerId": "sk-7130140",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7130140"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 1
+        }
+      ],
+      "note": "命中回复 1 能量"
+    },
+    {
+      "id": "skill:sk-7140050",
+      "ownerType": "skill",
+      "ownerId": "sk-7140050",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7140050"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 1
+        }
+      ],
+      "note": "命中回复 1 能量"
+    },
+    {
+      "id": "skill:sk-7190250",
+      "ownerType": "skill",
+      "ownerId": "sk-7190250",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7190250"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 1
+        }
+      ],
+      "note": "命中回复 1 能量"
+    },
+    {
+      "id": "skill:sk-7020400",
+      "ownerType": "skill",
+      "ownerId": "sk-7020400",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7020400"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkill",
+          "target": "self",
+          "skillId": "sk-7020400",
+          "power": 45
+        }
+      ],
+      "note": "使用后威力永久 +45"
+    },
+    {
+      "id": "skill:sk-7020540",
+      "ownerType": "skill",
+      "ownerId": "sk-7020540",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7020540"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "skillId": "sk-7020540",
+          "delta": 1
+        }
+      ],
+      "note": "使用后能耗永久 +1"
+    },
+    {
+      "id": "skill:sk-7030450",
+      "ownerType": "skill",
+      "ownerId": "sk-7030450",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7030450"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkill",
+          "target": "self",
+          "skillId": "sk-7030450",
+          "hits": 2
+        }
+      ],
+      "note": "孢子爆散：使用后连击数永久 +2"
+    },
+    {
+      "id": "skill:sk-7050300",
+      "ownerType": "skill",
+      "ownerId": "sk-7050300",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7050300"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkill",
+          "target": "self",
+          "skillId": "sk-7050300",
+          "power": 20
+        }
+      ],
+      "note": "水波术：回合结束威力永久 +20"
+    },
+    {
+      "id": "skill:sk-7080170",
+      "ownerType": "skill",
+      "ownerId": "sk-7080170",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7080170"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "skillId": "sk-7080170",
+          "delta": -5
+        }
+      ],
+      "note": "抛石：回合结束能耗永久 -5"
+    },
+    {
+      "id": "skill:sk-7100260",
+      "ownerType": "skill",
+      "ownerId": "sk-7100260",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7100260"
+        },
+        {
+          "not": {
+            "path": "self.lastTurn.actionType",
+            "op": "eq",
+            "value": "Attack"
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkill",
+          "target": "self",
+          "skillId": "sk-7100260",
+          "power": 20
+        }
+      ],
+      "note": "绵里藏针：上回合未攻击 → 威力永久 +20"
+    },
+    {
+      "id": "skill:sk-7110230",
+      "ownerType": "skill",
+      "ownerId": "sk-7110230",
+      "trigger": "afterSwitch",
+      "when": [
+        {
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7110230"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkill",
+          "target": "self",
+          "skillId": "sk-7110230",
+          "power": 40
+        }
+      ],
+      "note": "落雷：每次入场威力永久 +40"
+    },
+    {
+      "id": "skill:sk-7050480",
+      "ownerType": "skill",
+      "ownerId": "sk-7050480",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7050480"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 30,
+          "powerFrom": {
+            "path": "self.active.skillMods.sk-7050480.cost",
+            "scale": -10,
+            "offset": 30
+          },
+          "skillId": "sk-7050480"
+        }
+      ],
+      "note": "叠浪：能耗每 -1 威力 +10"
+    },
+    {
+      "id": "skill:sk-7050480:hits3",
+      "ownerType": "skill",
+      "ownerId": "sk-7050480",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7050480"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 3
+        }
+      ],
+      "note": "连击 3"
+    },
+    {
+      "id": "skill:sk-7020450",
+      "ownerType": "skill",
+      "ownerId": "sk-7020450",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020450"
+        },
+        {
+          "not": {
+            "path": "event.reacted",
+            "op": "eq",
+            "value": true
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 70,
+          "skillId": "sk-7020450"
+        }
+      ],
+      "note": "基础威力 70"
+    },
+    {
+      "id": "skill:sk-7020450:react",
+      "ownerType": "skill",
+      "ownerId": "sk-7020450",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020450"
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 210,
+          "skillId": "sk-7020450"
+        }
+      ],
+      "note": "应对状态 → 威力 ×3"
+    },
+    {
+      "id": "skill:sk-7020490",
+      "ownerType": "skill",
+      "ownerId": "sk-7020490",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020490"
+        },
+        {
+          "not": {
+            "path": "event.reacted",
+            "op": "eq",
+            "value": true
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 85,
+          "skillId": "sk-7020490"
+        }
+      ],
+      "note": "基础威力 85"
+    },
+    {
+      "id": "skill:sk-7020490:react",
+      "ownerType": "skill",
+      "ownerId": "sk-7020490",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020490"
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 255,
+          "skillId": "sk-7020490"
+        }
+      ],
+      "note": "应对状态 → 威力 ×3"
+    },
+    {
+      "id": "skill:sk-7070240",
+      "ownerType": "skill",
+      "ownerId": "sk-7070240",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7070240"
+        },
+        {
+          "not": {
+            "path": "event.reacted",
+            "op": "eq",
+            "value": true
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 85,
+          "skillId": "sk-7070240"
+        }
+      ],
+      "note": "基础威力 85"
+    },
+    {
+      "id": "skill:sk-7070240:react",
+      "ownerType": "skill",
+      "ownerId": "sk-7070240",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7070240"
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 170,
+          "skillId": "sk-7070240"
+        }
+      ],
+      "note": "应对状态 → 威力 ×2"
+    },
+    {
+      "id": "skill:sk-7130150",
+      "ownerType": "skill",
+      "ownerId": "sk-7130150",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7130150"
+        },
+        {
+          "not": {
+            "path": "event.reacted",
+            "op": "eq",
+            "value": true
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 90,
+          "skillId": "sk-7130150"
+        }
+      ],
+      "note": "基础威力 90"
+    },
+    {
+      "id": "skill:sk-7130150:react",
+      "ownerType": "skill",
+      "ownerId": "sk-7130150",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7130150"
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 180,
+          "skillId": "sk-7130150"
+        }
+      ],
+      "note": "应对状态 → 威力 ×2"
+    },
+    {
+      "id": "skill:sk-7140080",
+      "ownerType": "skill",
+      "ownerId": "sk-7140080",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7140080"
+        },
+        {
+          "not": {
+            "path": "event.reacted",
+            "op": "eq",
+            "value": true
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 85,
+          "skillId": "sk-7140080"
+        }
+      ],
+      "note": "基础威力 85"
+    },
+    {
+      "id": "skill:sk-7140080:react",
+      "ownerType": "skill",
+      "ownerId": "sk-7140080",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7140080"
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 170,
+          "skillId": "sk-7140080"
+        }
+      ],
+      "note": "应对状态 → 威力 ×2"
+    },
+    {
+      "id": "skill:sk-7140120",
+      "ownerType": "skill",
+      "ownerId": "sk-7140120",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7140120"
+        },
+        {
+          "not": {
+            "path": "event.reacted",
+            "op": "eq",
+            "value": true
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 35,
+          "skillId": "sk-7140120"
+        }
+      ],
+      "note": "基础威力 35"
+    },
+    {
+      "id": "skill:sk-7140120:react",
+      "ownerType": "skill",
+      "ownerId": "sk-7140120",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7140120"
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 350,
+          "skillId": "sk-7140120"
+        }
+      ],
+      "note": "应对状态 → 威力 ×10"
+    },
+    {
+      "id": "skill:sk-7140220",
+      "ownerType": "skill",
+      "ownerId": "sk-7140220",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7140220"
+        },
+        {
+          "not": {
+            "path": "event.reacted",
+            "op": "eq",
+            "value": true
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 65,
+          "skillId": "sk-7140220"
+        }
+      ],
+      "note": "基础威力 65"
+    },
+    {
+      "id": "skill:sk-7140220:react",
+      "ownerType": "skill",
+      "ownerId": "sk-7140220",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7140220"
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 325,
+          "skillId": "sk-7140220"
+        }
+      ],
+      "note": "应对状态 → 威力 ×5"
     }
   ]
 }
