@@ -1,7 +1,7 @@
 "use client";
 
 import { ElementBadge } from "@/components/element-icon";
-import { SkillCategoryIcon } from "@/components/skill-category-icon";
+import { SkillRow } from "@/components/skill-row";
 import { SpriteImage } from "@/components/sprite-image";
 import { Badge } from "@/components/ui/badge";
 import { PANEL_ORDER, STAT_LABEL } from "@/modules/engine/calc";
@@ -58,7 +58,7 @@ export function PetDetailCard({ catalog, sprite, active, headline }: PetDetailCa
         </div>
       </div>
 
-      {active && (
+      {active && active.maxHp > 0 && (
         <div className="flex items-center gap-2 text-[12px]">
           <Badge variant="outline" className="tnum">HP {active.hp}/{active.maxHp}</Badge>
           <Badge variant="outline" className="tnum">能量 {active.energy}</Badge>
@@ -103,21 +103,9 @@ export function PetDetailCard({ catalog, sprite, active, headline }: PetDetailCa
       )}
 
       {skills.length > 0 && (
-        <div className="space-y-1">
-          <div className="text-[11px] font-medium text-muted-foreground">出战技能</div>
-          {skills.map(
-            (sk) =>
-              sk && (
-                <div key={sk.id} className="flex items-center gap-1.5 text-[12px]">
-                  <SkillCategoryIcon skill={sk} size={14} />
-                  <span className="truncate font-medium">{sk.name}</span>
-                  <span className="ml-auto shrink-0 text-[11px] text-muted-foreground">
-                    能耗{sk.cost}
-                    {sk.power ? ` · 威力${sk.power}` : ""}
-                  </span>
-                </div>
-              ),
-          )}
+        <div className="space-y-0.5">
+          <div className="px-1.5 text-[11px] font-medium text-muted-foreground">出战技能</div>
+          {skills.map((sk) => sk && <SkillRow key={sk.id} catalog={catalog} skill={sk} />)}
         </div>
       )}
     </div>

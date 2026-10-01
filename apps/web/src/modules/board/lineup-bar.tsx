@@ -13,10 +13,12 @@ export function LineupBar({
   scope,
   entries,
   onApply,
+  onChange,
 }: {
   scope: LineupScope;
   entries: TeamEntry[];
   onApply: (entries: TeamEntry[]) => void;
+  onChange?: (list: Lineup[]) => void;
 }) {
   const [list, setList] = useState<Lineup[]>(() => listLineups(scope));
   const [name, setName] = useState("");
@@ -36,7 +38,9 @@ export function LineupBar({
       toast.error("阵容是空的，先加精灵");
       return;
     }
-    setList(saveLineup(scope, trimmed, entries));
+    const next = saveLineup(scope, trimmed, entries);
+    setList(next);
+    onChange?.(next);
     setName("");
     toast.success(`已保存${scopeLabel(scope)}阵容「${trimmed}」`);
   }
@@ -83,6 +87,7 @@ export function LineupBar({
                     onClick={() => {
                       deleteLineup(l.id);
                       refresh();
+                      onChange?.(listLineups(scope));
                       setPendingDelete(null);
                       toast.success(`已删除「${l.name}」`);
                     }}

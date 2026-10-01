@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 
+import { ElementIcon } from "@/components/element-icon";
 import { SkillCategoryIcon } from "@/components/skill-category-icon";
 import { SkillSlotDialog } from "@/components/skill-slot-dialog";
 import { Badge } from "@/components/ui/badge";
@@ -11,7 +12,7 @@ import { Progress } from "@/components/ui/progress";
 
 import type { Catalog, RecommendResult, SideState } from "@/modules/battle/types";
 import { ENEMY_COLOR, PLAYER_COLOR } from "@/lib/chart-theme";
-import { actionKey, skillById, type ActionOption } from "./util";
+import { actionKey, elementZh, skillById, type ActionOption } from "./util";
 
 export type Tone = "player" | "enemy";
 
@@ -49,7 +50,6 @@ function SkillTile({
   const sk = skillId ? skillById(catalog, skillId) : undefined;
   const affordable = sk ? sk.cost <= energy : false;
   const usable = Boolean(sk) && affordable && !disabled;
-  const color = sk ? catalog.elements.find((e) => e.name === sk.element)?.color : undefined;
   const [slotOpen, setSlotOpen] = useState(false);
 
   return (
@@ -90,26 +90,41 @@ function SkillTile({
       >
         {sk ? (
           <>
-            <div className="flex items-center gap-1 pr-9">
+            <div className="flex items-start gap-2 pr-9">
               {sk.icon ? (
-                <Image src={sk.icon} alt="" width={28} height={28} className="h-7 w-7 shrink-0 rounded object-contain" />
-              ) : color ? (
-                <span className="inline-block h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: color }} />
-              ) : null}
-              <span className={`truncate text-sm font-semibold ${affordable ? "" : "text-muted-foreground"}`}>
-                {sk.name}
-              </span>
-              {recommended && <Badge variant="success">推荐</Badge>}
+                <Image src={sk.icon} alt="" width={32} height={32} className="h-8 w-8 shrink-0 rounded-md border bg-muted object-contain" />
+              ) : (
+                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md border bg-muted/50">
+                  <SkillCategoryIcon skill={sk} size={16} />
+                </span>
+              )}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1">
+                  <span className={`truncate text-sm font-semibold ${affordable ? "" : "text-muted-foreground"}`}>
+                    {sk.name}
+                  </span>
+                  {recommended && <Badge variant="success">推荐</Badge>}
+                </div>
+                <div className="mt-0.5 text-[11px] leading-4 text-muted-foreground">
+                  <div className="flex flex-wrap items-center gap-x-1.5">
+                    <span className="inline-flex items-center gap-0.5">
+                      <ElementIcon catalog={catalog} element={sk.element} size={13} />
+                      {elementZh(catalog, sk.element)}
+                    </span>
+                    <span className="inline-flex items-center gap-0.5">
+                      <SkillCategoryIcon skill={sk} size={13} />
+                      {sk.categoryZh ?? sk.category}
+                    </span>
+                  </div>
+                  <div className="tnum flex flex-wrap items-center gap-x-1.5">
+                    <span>能耗 {sk.cost}</span>
+                    {sk.power ? <span>威力 {sk.power}</span> : null}
+                    {sk.priority ? <span>先手 +{sk.priority}</span> : null}
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="mt-1 flex items-center gap-1 truncate text-[11px] text-muted-foreground">
-              <SkillCategoryIcon skill={sk} size={14} />
-              <span className="truncate">
-                {sk.categoryZh ?? sk.category} · 能耗{sk.cost}
-                {sk.power ? ` · 威力${sk.power}` : ""}
-                {sk.priority ? ` · 先手+${sk.priority}` : ""}
-              </span>
-            </div>
-            <div className="mt-1 flex items-center gap-2">
+            <div className="mt-1.5 flex items-center gap-2">
               <Progress value={(winRate ?? 0) * 100} className="flex-1" />
               <span className="shrink-0 text-xs font-semibold tabular-nums" style={{ color: toneColor(tone) }}>
                 {winRate === undefined ? "—" : `${(winRate * 100).toFixed(1)}%`}
@@ -151,7 +166,7 @@ export function SkillGrid({
   const loadout = side.active.loadout;
 
   return (
-    <div className="grid grid-cols-2 gap-2">
+    <div className="flex flex-col gap-1.5">
       {[0, 1, 2, 3].map((i) => {
         const id = loadout[i] ?? "";
         const k = `skill:${id}`;

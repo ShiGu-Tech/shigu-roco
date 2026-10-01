@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 
-import { ElementBadge, ElementIcon } from "@/components/element-icon";
-import { SkillCategoryIcon } from "@/components/skill-category-icon";
+import { ElementIcon } from "@/components/element-icon";
+import { SkillRow } from "@/components/skill-row";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
@@ -148,30 +148,13 @@ export function SkillSelector({ catalog, spriteId, bloodline, value, onSelect, c
               <div className="max-h-[58vh] overflow-y-auto p-1 min-[860px]:max-h-[280px]">
                 {list.length === 0 && <p className="p-2 text-[11px] text-muted-foreground">无。</p>}
                 {list.map((skill) => (
-                  <button
+                  <SkillRow
                     key={skill.id}
-                    type="button"
+                    catalog={catalog}
+                    skill={skill}
+                    selected={skill.id === value}
                     onClick={() => onSelect(skill.id, skill)}
-                    className={cn(
-                      "flex w-full items-center gap-1.5 rounded px-1.5 py-1 text-left text-xs",
-                      skill.id === value ? "bg-primary text-primary-foreground" : "hover:bg-accent",
-                    )}
-                  >
-                    {skill.icon ? (
-                      // Skill icons are catalog-owned local files; plain img keeps every snapshot renderable.
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={skill.icon} alt="" className="h-7 w-7 shrink-0 rounded-md border bg-muted object-contain" loading="lazy" />
-                    ) : (
-                      <span className="h-7 w-7 shrink-0 rounded-md border bg-muted/50" />
-                    )}
-                    <span className="truncate">{skill.name}</span>
-                    <SkillCategoryIcon skill={skill} size={14} />
-                    <ElementBadge catalog={catalog} element={skill.element} className="shrink-0 px-1 py-0 text-[10px]" />
-                    <span className="ml-auto shrink-0 text-[10px] opacity-70">
-                      能耗{skill.cost}
-                      {skill.power ? ` · 威力${skill.power}` : ""}
-                    </span>
-                  </button>
+                  />
                 ))}
               </div>
             </div>

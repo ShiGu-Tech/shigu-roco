@@ -14,6 +14,9 @@ import { ENEMY_COLOR, PLAYER_COLOR } from "@/lib/chart-theme";
 import { describeEvent } from "./log";
 import type { BattleEvent, BattleState, Catalog, RecommendResult, Terminal } from "@/modules/battle/types";
 import { ActiveBoard } from "./active-board";
+import { LineupDetailDialog, LineupLibrary } from "./lineup-library";
+import { deleteLineup, listLineups, type Lineup } from "./lineups";
+import { ensureSeedLineups } from "./seed-lineups";
 import { TeamEditor } from "./pet-setup";
 import { Timeline } from "./timeline";
 import { TrendChart, type TrendPoint } from "./trend-chart";
@@ -48,10 +51,6 @@ interface Frame {
   label: string;
 }
 
-function plain(team: TeamEntry[]): TeamEntry[] {
-  return team.map((e) => ({ spriteId: e.spriteId }));
-}
-
 const DEFAULT_PLAYER = ["sp-1-1", "sp-4-1", "sp-7-1", "sp-10-1", "sp-15-1", "sp-13-1"];
 const DEFAULT_ENEMY = ["sp-2-1", "sp-5-1", "sp-8-1", "sp-11-1", "sp-16-1", "sp-12-1"];
 
@@ -67,10 +66,16 @@ export function BattleBoard() {
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [phase, setPhase] = useState<"setup" | "battle">("setup");
-  const [mode, setMode] = useState<"sandbox" | "pvp">("pvp");
+  const [setupStep, setSetupStep] = useState<"lineups" | "enemy">("lineups");
+  const [enemyUnknown, setEnemyUnknown] = useState(true);
   const [playerTeam, setPlayerTeam] = useState<TeamEntry[]>(playerEntries);
   const [enemyTeam, setEnemyTeam] = useState<TeamEntry[]>(enemyEntries);
   const [preset, setPreset] = useState<PresetKey>("standard");
+
+  const [playerLineups, setPlayerLineups] = useState<Lineup[]>(() => listLineups("player"));
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [viewLineup, setViewLineup] = useState<Lineup | null>(null);
+  const [editingTeam, setEditingTeam] = useState(false);
 
   const [frames, setFrames] = useState<Frame[]>([]);
   const [cursor, setCursor] = useState(0);
@@ -80,9 +85,16 @@ export function BattleBoard() {
   const [pendingE, setPendingE] = useState<ActionOption | null>(null);
   const [busy, setBusy] = useState(false);
 
+  function refreshLineups() {
+    setPlayerLineups(listLineups("player"));
+  }
+
   useEffect(() => {
     getCatalog()
-      .then(setCatalog)
+      .then((c) => {
+        setCatalog(c);
+        setPlayerLineups(ensureSeedLineups(c));
+      })
       .catch((e: Error) => setError(e.message));
   }, []);
 
@@ -123,12 +135,9 @@ export function BattleBoard() {
     return { myWin: p.actions[0]?.winRate ?? 0, enemyWin: e.actions[0]?.winRate ?? 0 };
   }
 
-  async function start() {
+  async function start(playerArg: TeamEntry[], enemyArg: TeamEntry[]) {
     if (!catalog) return;
-    const st =
-      mode === "pvp"
-        ? buildState(catalog, playerTeam, enemyTeam)
-        : buildState(catalog, plain(playerTeam), plain(enemyTeam));
+    const st = buildState(catalog, playerArg, enemyArg);
     setPendingP(null);
     setPendingE(null);
     setPhase("battle");
@@ -321,38 +330,131 @@ export function BattleBoard() {
   }
 
   if (phase === "setup" || !current) {
+    const selectedLineups = selectedIds
+      .map((id) => playerLineups.find((l) => l.id === id))
+      .filter((l): l is Lineup => Boolean(l));
+
+    function toggleSelect(lineup: Lineup) {
+      setSelectedIds((ids) => {
+        if (ids.includes(lineup.id)) return ids.filter((id) => id !== lineup.id);
+        if (ids.length >= 2) {
+          toast.error("最多选 2 套阵容（第 2 套作为对手）");
+          return ids;
+        }
+        return [...ids, lineup.id];
+      });
+    }
+
+    function beginFromSelection() {
+      if (selectedLineups.length === 0) return;
+      const mine = selectedLineups[0];
+      const mineTeam = structuredClone(mine.entries);
+      setPlayerTeam(mineTeam);
+      if (selectedLineups.length === 2) {
+        const opp = structuredClone(selectedLineups[1].entries);
+        setEnemyTeam(opp);
+        setEnemyUnknown(false);
+        void start(mineTeam, opp);
+      } else {
+        setEnemyUnknown(true);
+        setSetupStep("enemy");
+      }
+    }
+
+    if (setupStep === "enemy") {
+      return (
+        <div className="space-y-3">
+          <div className="rounded-md border border-dashed p-3 text-[13px] text-muted-foreground">
+            <span className="font-medium text-foreground">选择对手的 6 只精灵</span>
+            ：对手属于「未知」——只知道精灵，不知道资质 / 性格 / 技能（引擎按中性 5★·60 级估算）。
+          </div>
+          <TeamEditor
+            title="对手队伍（仅登记精灵）"
+            scope="enemy"
+            entries={enemyTeam}
+            catalog={catalog}
+            editable={false}
+            skillsUnknown
+            onChange={setEnemyTeam}
+          />
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" onClick={() => setSetupStep("lineups")}>
+              返回
+            </Button>
+            <Button type="button" disabled={busy} onClick={() => void start(playerTeam, enemyTeam)}>
+              {busy ? "准备中…" : "开始对战"}
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="space-y-3">
         <div className="rounded-md border border-dashed p-3 text-[13px] text-muted-foreground">
-          <span className="font-medium text-foreground">先配置双方阵容</span>，首位精灵作为首发、双方各上场一只；每队最多 6 只（6v6）。PvP 模式下我方录入资质 / 技能，对方只登记精灵。
+          <span className="font-medium text-foreground">选择阵容开始对战</span>：选 <b>1 套</b> → 下一步挑对手的 6 只精灵（未知）；
+          选 <b>2 套</b> → 直接对战（先选的为我方、后选的为对手）。
         </div>
-        <Panel>
-          <div className="flex flex-col gap-3 text-[13px] min-[520px]:flex-row min-[520px]:items-center min-[520px]:justify-between">
-            <div className="space-y-0.5">
-              <div className="font-medium">对战模式</div>
-              <p className="text-muted-foreground">
-                {mode === "pvp"
-                  ? "PvP：我方资质 / 技能已知；对方只知道精灵，资质 / 性格 / 技能未知（按中性 5★·60 级估算）。"
-                  : "沙盒：双方都按默认，纯推演。"}
-              </p>
-            </div>
-            <div className="flex shrink-0 gap-2">
-              <Button type="button" size="sm" variant={mode === "pvp" ? "default" : "outline"} onClick={() => setMode("pvp")}>
-                PvP
-              </Button>
-              <Button type="button" size="sm" variant={mode === "sandbox" ? "default" : "outline"} onClick={() => setMode("sandbox")}>
-                沙盒
-              </Button>
-            </div>
-          </div>
+
+        <Panel
+          title="我的阵容"
+          actions={
+            <Button
+              type="button"
+              size="sm"
+              variant={editingTeam ? "secondary" : "outline"}
+              onClick={() => setEditingTeam((v) => !v)}
+            >
+              {editingTeam ? "收起配队" : "新建 / 配队"}
+            </Button>
+          }
+        >
+          <LineupLibrary
+            catalog={catalog}
+            lineups={playerLineups}
+            selectedIds={selectedIds}
+            onToggle={toggleSelect}
+            onView={setViewLineup}
+            onEdit={(lineup) => {
+              setPlayerTeam(structuredClone(lineup.entries));
+              setEditingTeam(true);
+            }}
+            onDelete={(lineup) => {
+              deleteLineup(lineup.id);
+              setSelectedIds((ids) => ids.filter((id) => id !== lineup.id));
+              refreshLineups();
+              toast.success(`已删除「${lineup.name}」`);
+            }}
+          />
         </Panel>
-        <div className="grid gap-3 min-[860px]:grid-cols-2">
-          <TeamEditor title="我方队伍" scope="player" entries={playerTeam} catalog={catalog} editable={mode === "pvp"} onChange={setPlayerTeam} />
-          <TeamEditor title="敌方队伍（对方）" scope="enemy" entries={enemyTeam} catalog={catalog} editable={false} skillsUnknown onChange={setEnemyTeam} />
+
+        {editingTeam && (
+          <TeamEditor
+            title="配队（我方）"
+            scope="player"
+            entries={playerTeam}
+            catalog={catalog}
+            editable
+            onChange={setPlayerTeam}
+            onLineupsChange={refreshLineups}
+          />
+        )}
+
+        <div className="flex flex-wrap items-center gap-2">
+          <Button type="button" disabled={busy || selectedLineups.length === 0} onClick={beginFromSelection}>
+            {selectedLineups.length === 2 ? "两队对战" : "开始对战"}
+          </Button>
+          <span className="text-[11px] text-muted-foreground">已选 {selectedLineups.length} 套</span>
         </div>
-        <Button type="button" onClick={start} disabled={busy}>
-          {busy ? "准备中…" : "开始对战"}
-        </Button>
+
+        <LineupDetailDialog
+          open={viewLineup !== null}
+          onOpenChange={(open) => {
+            if (!open) setViewLineup(null);
+          }}
+          catalog={catalog}
+          lineup={viewLineup}
+        />
       </div>
     );
   }
@@ -379,7 +481,7 @@ export function BattleBoard() {
     <div className="space-y-3">
       <div className="flex flex-col gap-2 rounded-md border bg-card p-2 min-[520px]:flex-row min-[520px]:items-center">
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant={mode === "pvp" ? "default" : "outline"}>{mode === "pvp" ? "PvP" : "沙盒"}</Badge>
+          <Badge variant={enemyUnknown ? "default" : "outline"}>{enemyUnknown ? "对手未知" : "双方已知"}</Badge>
           <Badge variant="outline" className="tnum">第 {state!.turn} 回合</Badge>
           <Badge variant="outline">
             {state!.weather
@@ -395,7 +497,15 @@ export function BattleBoard() {
               {PRESETS[k].label}
             </Button>
           ))}
-          <Button type="button" size="sm" variant="outline" onClick={() => setPhase("setup")}>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              setSetupStep("lineups");
+              setPhase("setup");
+            }}
+          >
             重选队伍
           </Button>
           <Link href="/record" className={buttonVariants({ variant: "ghost", size: "sm" })}>
@@ -500,7 +610,7 @@ export function BattleBoard() {
             side={state!.enemy}
             tone="enemy"
             title="敌方场上"
-            subtitle={mode === "pvp" ? "资质未知 · 按中性 5★·60 级估算" : "推测 / 可观测"}
+            subtitle={enemyUnknown ? "资质未知 · 按中性 5★·60 级估算" : "已知"}
             maxMagic={maxMagic}
             rec={enemyRec}
             selectedKey={pendingE ? actionKey(pendingE.action) : null}

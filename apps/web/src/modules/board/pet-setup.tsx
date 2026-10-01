@@ -176,6 +176,7 @@ export function TeamEditor({
   editable,
   skillsUnknown = false,
   onChange,
+  onLineupsChange,
 }: {
   title: string;
   scope: LineupScope;
@@ -185,6 +186,8 @@ export function TeamEditor({
   /** 我方 = false；对方 = true（技能未知，引擎按默认 4 招估算，界面不展示为已知）。 */
   skillsUnknown?: boolean;
   onChange: (entries: TeamEntry[]) => void;
+  /** 阵容库保存 / 删除后回调（用于让外部列表刷新）。 */
+  onLineupsChange?: () => void;
 }) {
   const [warehouseOpen, setWarehouseOpen] = useState(false);
   const [pets, setPets] = useState<PetInstance[]>([]);
@@ -241,7 +244,7 @@ export function TeamEditor({
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
-        <LineupBar scope={scope} entries={entries} onApply={onChange} />
+        <LineupBar scope={scope} entries={entries} onApply={onChange} onChange={() => onLineupsChange?.()} />
         {entries.length === 0 && <p className="text-xs text-muted-foreground">还没有精灵。</p>}
         {entries.map((entry, i) => (
           <EntryRow
