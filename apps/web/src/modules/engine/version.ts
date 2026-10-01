@@ -46,5 +46,7 @@
  * - 0.13.0 增减益获得事件 + 图鉴计数：新增 `buffGained` / `debuffGained` 触发器（`modifyStat` 生效后派发，
  *          带 `stat` / `value` / `sourceSide`）；`statusApplied` 事件补 `sourceSide` / `sourceSpriteId`（施加者上下文）；
  *          `DynamicValue.count`（`path` 指向技能 id 数组时按图鉴 `element`/`category`/`actionType` 统计条目数）。
+ * - 0.14.0 伤害修饰上下文补全：`beforeDamage`（伤害修饰口径）事件补 `reacted` / 行动上下文，
+ *          使「应对成功 → 连击翻倍」等条件连击可由 `setHits` + `event.reacted` 表达。
  */
-export const ENGINE_VERSION = "0.13.0";
+export const ENGINE_VERSION = "0.14.0";

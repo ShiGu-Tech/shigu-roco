@@ -526,6 +526,32 @@ describe("damage modifiers (beforeDamage)", () => {
     expect(value).toBeGreaterThan(base);
     expect(value).toBeLessThanOrEqual(base * 2 + 2);
   });
+
+  it("exposes reacted to damage modifiers (react-doubled hits)", () => {
+    const defs: MechanismDefinition[] = [
+      {
+        id: "base-hits",
+        ownerType: "skill",
+        ownerId: "sk-1",
+        trigger: "beforeDamage",
+        when: [{ path: "event.skillId", op: "eq", value: "sk-1" }, { not: { path: "event.reacted", op: "eq", value: true } }],
+        effects: [{ type: "setHits", hits: 2 }],
+      },
+      {
+        id: "react-hits",
+        ownerType: "skill",
+        ownerId: "sk-1",
+        trigger: "beforeDamage",
+        when: [{ path: "event.skillId", op: "eq", value: "sk-1" }, { path: "event.reacted", op: "eq", value: true }],
+        effects: [{ type: "setHits", hits: 4 }],
+      },
+    ];
+    const runtime = new MechanismRuntime(new MechanismRegistry(defs));
+    const [normal] = runtime.applyDamageCommands(battle(), miniBundle, [dealDamage]);
+    expect((normal.data.modifiers as Record<string, number>).hits).toBe(2);
+    const [react] = runtime.applyDamageCommands(battle(), miniBundle, [dealDamage], { reacted: true });
+    expect((react.data.modifiers as Record<string, number>).hits).toBe(4);
+  });
 });
 
 describe("condition logic", () => {
@@ -1186,5 +1212,23 @@ describe("batch-18 capabilities (loadout count / buff-debuff trigger / status so
     expect(find("trait:sp-427-1")?.oncePerTurn).toBe(true);
     expect(find("trait:sp-142-1")?.trigger).toBe("statusApplied");
     expect((find("trait:sp-142-1")?.when ?? []).some((c) => "path" in c && c.path === "event.sourceSpriteId")).toBe(true);
+  });
+
+  it("ships batch-19 multi-hit registrations", () => {
+    const real = getBundle();
+    const all = (real.mechanisms ?? []) as MechanismDefinition[];
+    const find = (id: string) => all.find((m) => m.id === id);
+    const firstEffect = (id: string) => (find(id)?.effects?.[0] ?? {}) as { type?: string; hits?: number };
+    expect(firstEffect("skill:sk-7020480:hits")).toMatchObject({ type: "setHits", hits: 3 });
+    expect(firstEffect("skill:sk-7030190:hits")).toMatchObject({ hits: 2 });
+    expect(firstEffect("skill:sk-7130250:hits")).toMatchObject({ hits: 3 });
+    expect(firstEffect("skill:sk-7150050:hits")).toMatchObject({ hits: 2 });
+    expect(firstEffect("skill:sk-7020460:hits-react")).toMatchObject({ hits: 4 });
+    expect(firstEffect("skill:sk-7170230:hits-switch")).toMatchObject({ hits: 6 });
+    expect(firstEffect("skill:sk-7180340:hits-base")).toMatchObject({ type: "modifySkill", hits: 1 });
+    // 原 base 机制不再残留 unsupported 占位。
+    for (const id of ["sk-7020480", "sk-7020890", "sk-7030190", "sk-7080290", "sk-7130250", "sk-7150050", "sk-7020460", "sk-7170230", "sk-7180340"]) {
+      expect((find(`skill:${id}`)?.effects ?? []).some((e) => e.type === "unsupported")).toBe(false);
+    }
   });
 });

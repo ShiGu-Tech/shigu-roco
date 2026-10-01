@@ -2,7 +2,7 @@ import { getSkill, getSprite } from "../data";
 import { computeDamage } from "../effects/damage";
 import { Rng } from "../rng";
 import { recordSkillOverride } from "../state";
-import type { BattleState, CostMod, DataBundle, Side } from "../types";
+import type { BattleState, CostMod, DataBundle, Dict, Side } from "../types";
 import { asDict, toArray, toNum, toStr } from "../types";
 import { ActionQueue } from "./action-queue";
 import { resolveContextPath } from "./conditions";
@@ -633,7 +633,7 @@ export class MechanismRuntime {
     return events;
   }
 
-  applyDamageCommands(state: BattleState, bundle: DataBundle, commands: EffectCommand[]): MechanismEvent[] {
+  applyDamageCommands(state: BattleState, bundle: DataBundle, commands: EffectCommand[], extraEvent?: Dict): MechanismEvent[] {
     const events: MechanismEvent[] = [];
     for (let index = 0; index < commands.length; index++) {
       const command = commands[index];
@@ -662,7 +662,7 @@ export class MechanismRuntime {
         const amount = definition.amount ?? definition.power;
         damage = definition.basis === "maxHp" ? Math.floor(target.maxHp * amount) : definition.basis === "currentHp" ? Math.floor(target.hp * amount) : definition.basis === "stack" ? Math.floor(target.maxHp * amount * (target.marks[definition.markId ?? ""] ?? 0)) : Math.floor(amount);
       } else {
-        modifiers = this.damageModifiers(state, attackerSide, targetSide, definition, toStr(skill.element));
+        modifiers = this.damageModifiers(state, attackerSide, targetSide, definition, toStr(skill.element), extraEvent);
         const result = computeDamage(bundle, attackerDef, targetDef, attacker, target, effectiveSkill, {
           weatherId: state.weather?.id ?? null,
           attackerTraitMult: modifiers.attackerMult,
@@ -682,7 +682,7 @@ export class MechanismRuntime {
   }
 
   /** 结算一次 dealDamage 前，按 `beforeDamage` 收集攻/防伤害修饰（攻方倍率 / 防方倍率 / 减伤 / 连击）。 */
-  private damageModifiers(state: BattleState, attackerSide: Side, targetSide: Side, definition: EffectDefinition, element?: string): DamageModifiers {
+  private damageModifiers(state: BattleState, attackerSide: Side, targetSide: Side, definition: EffectDefinition, element?: string, extraEvent?: Dict): DamageModifiers {
     const commands = this.dispatch({
       state,
       trigger: "beforeDamage",
@@ -693,6 +693,7 @@ export class MechanismRuntime {
         category: definition.type === "dealDamage" ? definition.category : undefined,
         power: definition.type === "dealDamage" ? definition.power : undefined,
         element,
+        ...(extraEvent ?? {}),
       },
     });
     const attacker = attackerSide === "player" ? state.player.active : state.enemy.active;

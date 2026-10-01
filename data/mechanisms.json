@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.25.0",
+  "version": "0.26.0",
   "updatedAt": "2026-10-01",
   "mechanisms": [
     {
@@ -1103,11 +1103,6 @@
           "category": "Physical",
           "power": 35,
           "skillId": "sk-7020480"
-        },
-        {
-          "type": "unsupported",
-          "effectType": "multi_hit",
-          "reason": "复杂旧效果需要按真实机制逐条确认"
         }
       ]
     },
@@ -1531,11 +1526,6 @@
           "category": "Physical",
           "power": 15,
           "skillId": "sk-7150050"
-        },
-        {
-          "type": "unsupported",
-          "effectType": "multi_hit",
-          "reason": "复杂旧效果需要按真实机制逐条确认"
         }
       ]
     },
@@ -1856,11 +1846,6 @@
           "category": "Magic",
           "power": 25,
           "skillId": "sk-7170230"
-        },
-        {
-          "type": "unsupported",
-          "effectType": "multi_hit",
-          "reason": "复杂旧效果需要按真实机制逐条确认"
         }
       ]
     },
@@ -1948,11 +1933,6 @@
           "category": "Magic",
           "power": 60,
           "skillId": "sk-7020890"
-        },
-        {
-          "type": "unsupported",
-          "effectType": "multi_hit",
-          "reason": "复杂旧效果需要按真实机制逐条确认"
         }
       ]
     },
@@ -2083,11 +2063,6 @@
           "category": "Physical",
           "power": 55,
           "skillId": "sk-7080290"
-        },
-        {
-          "type": "unsupported",
-          "effectType": "multi_hit",
-          "reason": "复杂旧效果需要按真实机制逐条确认"
         }
       ]
     },
@@ -2568,11 +2543,6 @@
           "category": "Physical",
           "power": 40,
           "skillId": "sk-7180340"
-        },
-        {
-          "type": "unsupported",
-          "effectType": "multi_hit",
-          "reason": "复杂旧效果需要按真实机制逐条确认"
         }
       ]
     },
@@ -2681,11 +2651,6 @@
           "category": "Magic",
           "power": 15,
           "skillId": "sk-7130250"
-        },
-        {
-          "type": "unsupported",
-          "effectType": "multi_hit",
-          "reason": "复杂旧效果需要按真实机制逐条确认"
         }
       ]
     },
@@ -2882,11 +2847,6 @@
           "category": "Physical",
           "power": 45,
           "skillId": "sk-7030190"
-        },
-        {
-          "type": "unsupported",
-          "effectType": "multi_hit",
-          "reason": "复杂旧效果需要按真实机制逐条确认"
         }
       ]
     },
@@ -3025,11 +2985,6 @@
           "category": "Physical",
           "power": 30,
           "skillId": "sk-7020460"
-        },
-        {
-          "type": "unsupported",
-          "effectType": "multi_hit",
-          "reason": "复杂旧效果需要按真实机制逐条确认"
         }
       ]
     },
@@ -10052,6 +10007,247 @@
         }
       ],
       "note": "捉迷藏：使敌方获得冻结时，敌方全技能能耗 +1（时长待校准）"
+    },
+    {
+      "id": "skill:sk-7020480:hits",
+      "ownerType": "skill",
+      "ownerId": "sk-7020480",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7020480"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 3
+        }
+      ],
+      "note": "3 连击"
+    },
+    {
+      "id": "skill:sk-7030190:hits",
+      "ownerType": "skill",
+      "ownerId": "sk-7030190",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7030190"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 2
+        }
+      ],
+      "note": "2 连击"
+    },
+    {
+      "id": "skill:sk-7130250:hits",
+      "ownerType": "skill",
+      "ownerId": "sk-7130250",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7130250"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 3
+        }
+      ],
+      "note": "3 连击"
+    },
+    {
+      "id": "skill:sk-7150050:hits",
+      "ownerType": "skill",
+      "ownerId": "sk-7150050",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7150050"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 2
+        }
+      ],
+      "note": "2 连击"
+    },
+    {
+      "id": "skill:sk-7020460:hits-base",
+      "ownerType": "skill",
+      "ownerId": "sk-7020460",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7020460"
+        },
+        {
+          "not": {
+            "path": "event.reacted",
+            "op": "eq",
+            "value": true
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 2
+        }
+      ],
+      "note": "连续爪击：2 连击"
+    },
+    {
+      "id": "skill:sk-7020460:hits-react",
+      "ownerType": "skill",
+      "ownerId": "sk-7020460",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7020460"
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 4
+        }
+      ],
+      "note": "连续爪击：应对状态 → 4 连击"
+    },
+    {
+      "id": "skill:sk-7170230:hits-base",
+      "ownerType": "skill",
+      "ownerId": "sk-7170230",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7170230"
+        },
+        {
+          "not": {
+            "path": "opponent.switchedThisTurn",
+            "op": "eq",
+            "value": true
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 3
+        }
+      ],
+      "note": "灵光：3 连击"
+    },
+    {
+      "id": "skill:sk-7170230:hits-switch",
+      "ownerType": "skill",
+      "ownerId": "sk-7170230",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7170230"
+        },
+        {
+          "path": "opponent.switchedThisTurn",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 6
+        }
+      ],
+      "note": "灵光：敌方换人 → 6 连击"
+    },
+    {
+      "id": "skill:sk-7180340:hits-base",
+      "ownerType": "skill",
+      "ownerId": "sk-7180340",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.first",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7180340"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkill",
+          "target": "self",
+          "skillId": "sk-7180340",
+          "hits": 1
+        }
+      ],
+      "note": "趁火打劫：2 连击（基础 +1）"
+    },
+    {
+      "id": "skill:sk-7180340:kill",
+      "ownerType": "skill",
+      "ownerId": "sk-7180340",
+      "trigger": "afterDeath",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7180340"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkill",
+          "target": "opponent",
+          "skillId": "sk-7180340",
+          "hits": 2
+        }
+      ],
+      "note": "趁火打劫：击败 → 本技能连击永久 +2"
     }
   ]
 }

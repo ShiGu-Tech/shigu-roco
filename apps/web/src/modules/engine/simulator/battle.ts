@@ -432,7 +432,7 @@ export class Simulator {
         event: { action, skillId: action.skillId, damageType: category, reacted },
       });
       events.push(...this.mechanisms.applyStateCommands(st, beforeDamage, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
-      const damageEvents = this.mechanisms.applyDamageCommands(st, this.bundle, damageCommands);
+      const damageEvents = this.mechanisms.applyDamageCommands(st, this.bundle, damageCommands, { reacted });
       events.push(...damageEvents.map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
       const dealt = damageEvents.reduce((sum, event) => sum + toNum(event.data.value, 0), 0);
       const effectiveness = damageEvents.length ? toNum(damageEvents[damageEvents.length - 1].data.effectiveness, 1) : 1;
