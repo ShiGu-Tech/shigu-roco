@@ -28,6 +28,8 @@ function dispatch(current: DataBundle, route: string, body: Dict): unknown {
       return handlers.recommend(current, body as unknown as handlers.RecommendBody);
     case "simulate/turn":
       return handlers.simulateTurn(current, body);
+    case "simulate/legal":
+      return handlers.legalActions(current, body);
     case "simulate/forced-switch":
       return handlers.forcedSwitch(current, body);
     case "simulate/leader":

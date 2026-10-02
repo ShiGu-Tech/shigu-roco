@@ -59,6 +59,8 @@
  *          供「迸发：入场首次行动额外效果」类条件。
  * - 0.20.0 技能栏位置域：`loadout` 升级为有序技能栏；新增 `rotateLoadout`（传动下移）与 `addPower`（条件威力加成）
  *          效果、`CostMod.slots`（按槽位筛选能耗）；`turnStart` 改为按侧派发，行动事件暴露 `slot` /
- *          `neighborPowerSum` / `neighborPowerDiff`；命令携带 trigger event 使 `event.action.*` 可取。
+ *           `neighborPowerSum` / `neighborPowerDiff`；命令携带 trigger event 使 `event.action.*` 可取。
+ * - 0.21.0 内省补强（引擎工作台 W0）：事件保留 `trigger`；伤害事件挂 `computeDamage().breakdown`
+ *          （威力 / 属性 / STAB / 克制 / 天气 / 增减伤 / 连击）；经 Worker/REST 暴露 `simulate/legal`（`legalActions`）。
  */
-export const ENGINE_VERSION = "0.20.0";
+export const ENGINE_VERSION = "0.21.0";

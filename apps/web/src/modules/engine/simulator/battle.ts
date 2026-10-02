@@ -319,13 +319,13 @@ export class Simulator {
     const reaction = this.reactionOf(skillId);
     return !!reaction && reaction === this.actionTypeOf(opponentAction);
   }
-
-  private asBattleEvent(type: string, side: Side | null, event: { data: Record<string, unknown>; mechanismId?: string; effectType?: string }): BattleEvent {
+  private asBattleEvent(type: string, side: Side | null, event: {
+    data: Record<string, unknown>; mechanismId?: string; effectType?: string; trigger?: string }): BattleEvent {
     return {
       type,
       side,
       text: event.mechanismId ? `机制 ${event.mechanismId}：${type}` : type,
-      data: { ...event.data, mechanismId: event.mechanismId, effectType: event.effectType },
+      data: { ...event.data, mechanismId: event.mechanismId, effectType: event.effectType, trigger: event.trigger },
     };
   }
 

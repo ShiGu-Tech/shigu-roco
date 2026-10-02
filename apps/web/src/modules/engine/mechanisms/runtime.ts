@@ -692,6 +692,7 @@ export class MechanismRuntime {
       let damage: number;
       let effectiveness = 1;
       let modifiers: DamageModifiers | null = null;
+      let breakdown: Record<string, number> | null = null;
       if (definition.basis && definition.basis !== "formula") {
         const amount = definition.amount ?? definition.power;
         damage = definition.basis === "maxHp" ? Math.floor(target.maxHp * amount) : definition.basis === "currentHp" ? Math.floor(target.hp * amount) : definition.basis === "stack" ? Math.floor(target.maxHp * amount * (target.marks[definition.markId ?? ""] ?? 0)) : Math.floor(amount);
@@ -707,11 +708,13 @@ export class MechanismRuntime {
         });
         damage = result.damage;
         effectiveness = result.typeMult;
+        // 内省：把已算好的伤害明细（威力 / 属性 / STAB / 克制 / 天气 / 增减伤 / 连击）透出，供 UI 与回归。
+        breakdown = result.breakdown;
       }
       target.hp = Math.max(0, target.hp - damage);
       const targetState = targetSide === "player" ? state.player : state.enemy;
       targetState.lastHit = { side: attackerSide, skillId: definition.skillId };
-      events.push({ type: "damage", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { value: damage, attackerSide, skillId: definition.skillId, damageType: definition.category, effectiveness, modifiers } });
+      events.push({ type: "damage", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { value: damage, attackerSide, skillId: definition.skillId, damageType: definition.category, effectiveness, modifiers, breakdown } });
     }
     return events;
   }

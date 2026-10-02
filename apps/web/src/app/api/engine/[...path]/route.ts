@@ -39,6 +39,8 @@ async function handle(request: Request, ctx: { params: Promise<{ path: string[] 
         return json(handlers.recommend(getBundle(), body as unknown as handlers.RecommendBody));
       case "simulate/turn":
         return json(handlers.simulateTurn(getBundle(), body));
+      case "simulate/legal":
+        return json(handlers.legalActions(getBundle(), body));
       case "simulate/forced-switch":
         return json(handlers.forcedSwitch(getBundle(), body));
       case "simulate/leader":

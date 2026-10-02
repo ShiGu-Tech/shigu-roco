@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { bundlePayload } from "../api/handlers";
+import { bundlePayload, legalActions } from "../api/handlers";
 import { buildBundle } from "../data";
 import { Rng } from "../rng";
 import { Simulator } from "../simulator/battle";
@@ -82,5 +82,38 @@ describe("static bundle", () => {
       new Rng(1),
     );
     expect(result.state.enemy.active.hp < 300 || result.state.player.active.hp < 300).toBe(true);
+  });
+
+  it("surfaces trigger and damage breakdown for introspection (W0)", () => {
+    const playerSkill = damagingSkill("sp-1-1")!;
+    const enemySkill = damagingSkill("sp-14-1")!;
+    const state = makeState(
+      makeSide(makeActive("sp-1-1", { hp: 300, maxHp: 300, energy: 10 })),
+      makeSide(makeActive("sp-14-1", { hp: 300, maxHp: 300, energy: 10 })),
+    );
+    const result = new Simulator(staticBundle).step(
+      state,
+      { kind: "skill", skillId: playerSkill },
+      { kind: "skill", skillId: enemySkill },
+      new Rng(1),
+    );
+    const damage = result.events.find((e) => e.type === "damage");
+    expect(damage).toBeTruthy();
+    expect(typeof damage?.data.trigger).toBe("string");
+    const breakdown = damage?.data.breakdown as Record<string, number> | undefined;
+    expect(breakdown).toBeTruthy();
+    for (const key of ["atk", "dfn", "effectivePower", "perHit", "stab", "typeMult", "hits"]) {
+      expect(typeof breakdown?.[key]).toBe("number");
+    }
+  });
+
+  it("returns engine-authoritative legal actions", () => {
+    const state = makeState(
+      makeSide(makeActive("sp-1-1", { hp: 300, maxHp: 300, energy: 10 })),
+      makeSide(makeActive("sp-14-1", { hp: 300, maxHp: 300, energy: 10 })),
+    );
+    const result = legalActions(staticBundle, { state, side: "player" }) as { actions: { kind: string }[] };
+    expect(Array.isArray(result.actions)).toBe(true);
+    expect(result.actions.length).toBeGreaterThan(0);
   });
 });

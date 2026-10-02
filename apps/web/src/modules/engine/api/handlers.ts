@@ -323,6 +323,13 @@ export function simulateTurn(bundle: DataBundle, body: Dict): Dict {
   };
 }
 
+export function legalActions(bundle: DataBundle, body: Dict): Dict {
+  const sim = new Simulator(bundle);
+  const state = parseState(asDict(body.state));
+  const side = toStr(body.side, "player") as Side;
+  return { side, actions: sim.legalActions(state, side) };
+}
+
 export function forcedSwitch(bundle: DataBundle, body: Dict): Dict {
   const sim = new Simulator(bundle);
   const state = parseState(asDict(body.state));

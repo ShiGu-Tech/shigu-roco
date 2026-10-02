@@ -56,6 +56,20 @@ export async function simulateTurn(
 
 type StepResult = { state: BattleState; log: SimulateTurnResult["log"] };
 
+export type LegalActionResult = { side: "player" | "enemy"; actions: EngineAction[] };
+
+/** 引擎真值的合法行动（调试台用；避免前端重实现 legalActions）。 */
+export async function legalActions(state: BattleState, side: "player" | "enemy"): Promise<LegalActionResult> {
+  try {
+    return await workerRequest<LegalActionResult>("simulate/legal", { state, side });
+  } catch {
+    return engineFetch<LegalActionResult>("/simulate/legal", {
+      method: "POST",
+      body: JSON.stringify({ state, side }),
+    });
+  }
+}
+
 export async function forcedSwitch(state: BattleState, side: "player" | "enemy", benchId: string) {
   try {
     return await workerRequest<StepResult>("simulate/forced-switch", { state, side, benchId });
