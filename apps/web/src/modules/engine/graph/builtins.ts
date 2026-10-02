@@ -3,12 +3,10 @@
  * 每个节点只干一件事；「怎么执行」在此（代码），「用哪些 / 怎么连 / 什么参数」在程序（配置）。
  */
 
-import { computeDamage } from "../effects/damage";
 import { evalExpr, type Expr } from "../effects/formula";
-import { getSprite } from "../data";
 import type { Side } from "../types";
 import type { NodeTypeRegistry } from "./registry";
-import type { NodeContext, NodeExecution, NodePort, StateMutation } from "./types";
+import type { NodeContext, NodeExecution, NodePort } from "./types";
 
 const anyPort = (name: string): NodePort => ({ name, type: "any" });
 
@@ -43,10 +41,6 @@ function scope(ctx: NodeContext): Record<string, unknown> {
     target: sideOf(ctx.state, target),
     opponent: sideOf(ctx.state, target),
   };
-}
-
-function mutate(path: string, before: unknown, after: unknown): StateMutation {
-  return { path, before, after };
 }
 
 export function registerBuiltins(registry: NodeTypeRegistry): void {
@@ -86,6 +80,50 @@ export function registerBuiltins(registry: NodeTypeRegistry): void {
       const positive = ctx.params.negate ? !cond : cond;
       return { control: [positive ? "then" : "else"] };
     },
+  });
+
+  registry.register({
+    type: "flow.gate",
+    title: "门 · 每回合一次",
+    category: "flow",
+    inputs: [],
+    outputs: [],
+    controlIn: true,
+    controlOut: ["out"],
+    params: [{ name: "key", type: "string", required: true }],
+    effect: true,
+    executor: (ctx): NodeExecution => {
+      const key = String(ctx.params.key);
+      ctx.state.onceFired ??= {};
+      if (ctx.state.onceFired[key]) return { control: [] };
+      ctx.state.onceFired[key] = true;
+      return { control: ["out"] };
+    },
+  });
+
+  // ---------------------------------------------------------------- 资源
+  registry.register({
+    type: "resource.elements",
+    title: "资源 · 系别克制",
+    category: "resource",
+    inputs: [],
+    outputs: [{ name: "matrix", type: "object" }, { name: "values", type: "object" }, { name: "combine", type: "object" }],
+    params: [],
+    pure: true,
+    executor: (ctx): NodeExecution => {
+      const elements = (ctx.bundle.elements ?? {}) as Record<string, unknown>;
+      return { outputs: { matrix: elements.matrix ?? {}, values: elements.values ?? {}, combine: elements.combine ?? {} } };
+    },
+  });
+  registry.register({
+    type: "resource.rules",
+    title: "资源 · 规则",
+    category: "resource",
+    inputs: [],
+    outputs: [{ name: "rules", type: "object" }],
+    params: [],
+    pure: true,
+    executor: (ctx): NodeExecution => ({ outputs: { rules: ctx.bundle.rules ?? {} } }),
   });
 
   // ---------------------------------------------------------------- 取值
@@ -246,97 +284,4 @@ export function registerBuiltins(registry: NodeTypeRegistry): void {
     },
   });
 
-  // ---------------------------------------------------------------- 写入（唯一副作用）
-  registry.register({
-    type: "write.modifyEnergy",
-    title: "写入 · 能量",
-    category: "write",
-    inputs: [anyPort("target")],
-    outputs: [],
-    controlIn: true,
-    controlOut: ["out"],
-    params: [{ name: "delta", type: "number", required: true }],
-    effect: true,
-    executor: (ctx): NodeExecution => {
-      const side = (ctx.input("target") as Side | undefined) ?? actorSide(ctx);
-      const active = sideOf(ctx.state, side).active;
-      const before = active.energy;
-      active.energy = Math.max(0, before + Number(ctx.params.delta ?? 0));
-      return { mutations: [mutate(`${side}.active.energy`, before, active.energy)] };
-    },
-  });
-  registry.register({
-    type: "write.modifyStat",
-    title: "写入 · 属性层",
-    category: "write",
-    inputs: [anyPort("target")],
-    outputs: [],
-    controlIn: true,
-    controlOut: ["out"],
-    params: [{ name: "stat", type: "string", required: true }, { name: "value", type: "number", required: true }],
-    effect: true,
-    executor: (ctx): NodeExecution => {
-      const side = (ctx.input("target") as Side | undefined) ?? actorSide(ctx);
-      const active = sideOf(ctx.state, side).active;
-      const stat = String(ctx.params.stat);
-      const before = Number(active.buffs[stat] ?? 0);
-      active.buffs[stat] = before + Number(ctx.params.value ?? 0);
-      return { mutations: [mutate(`${side}.active.buffs.${stat}`, before, active.buffs[stat])] };
-    },
-  });
-  registry.register({
-    type: "write.applyStatus",
-    title: "写入 · 状态",
-    category: "write",
-    inputs: [anyPort("target")],
-    outputs: [],
-    controlIn: true,
-    controlOut: ["out"],
-    params: [{ name: "statusId", type: "string", required: true }, { name: "layers", type: "number", default: 1 }],
-    effect: true,
-    executor: (ctx): NodeExecution => {
-      const side = (ctx.input("target") as Side | undefined) ?? actorSide(ctx);
-      const active = sideOf(ctx.state, side).active;
-      const statusId = String(ctx.params.statusId);
-      const before = Number(active.statuses[statusId] ?? 0);
-      active.statuses[statusId] = before + Number(ctx.params.layers ?? 1);
-      return { mutations: [mutate(`${side}.active.statuses.${statusId}`, before, active.statuses[statusId])] };
-    },
-  });
-  registry.register({
-    type: "write.dealDamage",
-    title: "写入 · 造成伤害",
-    category: "write",
-    inputs: [anyPort("target")],
-    outputs: [],
-    controlIn: true,
-    controlOut: ["out"],
-    params: [
-      { name: "category", type: "string", required: true },
-      { name: "power", type: "number", required: true },
-      { name: "skillId", type: "string" },
-      { name: "element", type: "string" },
-    ],
-    effect: true,
-    executor: (ctx): NodeExecution => {
-      const attacker = actorSide(ctx);
-      const target = (ctx.input("target") as Side | undefined) ?? other(attacker);
-      const attackerActive = sideOf(ctx.state, attacker).active;
-      const targetActive = sideOf(ctx.state, target).active;
-      const category = String(ctx.params.category ?? "Physical");
-      const skill = { category, power: Number(ctx.params.power ?? 0), element: ctx.params.element };
-      const result = computeDamage(
-        ctx.bundle,
-        getSprite(ctx.bundle, attackerActive.spriteId),
-        getSprite(ctx.bundle, targetActive.spriteId),
-        attackerActive,
-        targetActive,
-        skill,
-        { weatherId: ctx.state.weather?.id ?? null },
-      );
-      const before = targetActive.hp;
-      targetActive.hp = Math.max(0, before - result.damage);
-      return { mutations: [mutate(`${target}.active.hp`, before, targetActive.hp)], outputs: { damage: result.damage } };
-    },
-  });
 }

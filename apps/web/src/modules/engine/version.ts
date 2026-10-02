@@ -67,5 +67,7 @@
  * - 0.23.0 执行图运行时段（G0/G1）：`NodeTypeRegistry`（可插拔原语节点）+ `runProgram` 解释器（控制边 / 数据边）
  *          + 逐节点 `TraceEntry`（node/type/inputs/outputs/mutations/parent）+ `validateProgram` / `programHash`；
  *          首批内建节点（事件源 / flow.branch / read / math / logic / cmp / write / query / rng）。
+ * - 0.24.0 节点库扩充（G1）：全量 `write.*`（40+ 效果原语，复用 `MechanismRuntime` 结算，图数据流取代 `powerFrom`/
+ *          `valueFrom`）、`flow.gate`（每回合一次）、`resource.elements` / `resource.rules`。
  */
-export const ENGINE_VERSION = "0.23.0";
+export const ENGINE_VERSION = "0.24.0";

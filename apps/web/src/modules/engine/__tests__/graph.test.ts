@@ -32,7 +32,8 @@ const program: Program = {
     { id: "cmp", type: "cmp.lt" },
     { id: "branch", type: "flow.branch" },
     { id: "who", type: "query.side", params: { from: "target" } },
-    { id: "hit", type: "write.dealDamage", params: { category: "Physical", power: 50 } },
+    { id: "pw", type: "read.literal", params: { value: 50 } },
+    { id: "hit", type: "write.dealDamage", params: { category: "Physical" } },
   ],
   edges: [
     { from: { node: "ev", port: "out" }, to: { node: "branch", port: "in" }, kind: "control" },
@@ -41,6 +42,7 @@ const program: Program = {
     { from: { node: "cmp", port: "value" }, to: { node: "branch", port: "cond" }, kind: "data" },
     { from: { node: "branch", port: "then" }, to: { node: "hit", port: "in" }, kind: "control" },
     { from: { node: "who", port: "side" }, to: { node: "hit", port: "target" }, kind: "data" },
+    { from: { node: "pw", port: "value" }, to: { node: "hit", port: "power" }, kind: "data" },
   ],
   entries: ["ev"],
 };
@@ -89,10 +91,52 @@ describe("engine graph interpreter (G0)", () => {
   });
 
   it("validates unknown node types and missing required params", () => {
-    const bad: Program = { programVersion: "1", nodes: [{ id: "x", type: "nope" }, { id: "d", type: "write.modifyEnergy" }], edges: [], entries: ["x"] };
+    const bad: Program = { programVersion: "1", nodes: [{ id: "x", type: "nope" }, { id: "d", type: "write.applyStatus" }], edges: [], entries: ["x"] };
     const issues = validateProgram(bad, registry);
     expect(issues.some((i) => i.message.includes("未知节点类型"))).toBe(true);
-    expect(issues.some((i) => i.message.includes("缺少必填参数: delta"))).toBe(true);
+    expect(issues.some((i) => i.message.includes("缺少必填参数: statusId"))).toBe(true);
+  });
+
+  it("reuses effect semantics through write.* nodes", () => {
+    const p: Program = {
+      programVersion: "1",
+      nodes: [
+        { id: "ev", type: "on.turnStart" },
+        { id: "who", type: "query.side", params: { from: "target" } },
+        { id: "n", type: "read.literal", params: { value: 2 } },
+        { id: "st", type: "write.applyStatus", params: { statusId: "burn" } },
+      ],
+      edges: [
+        { from: { node: "ev", port: "out" }, to: { node: "st", port: "in" }, kind: "control" },
+        { from: { node: "who", port: "side" }, to: { node: "st", port: "target" }, kind: "data" },
+        { from: { node: "n", port: "value" }, to: { node: "st", port: "layers" }, kind: "data" },
+      ],
+      entries: ["ev"],
+    };
+    const { state } = runProgram({ program: p, registry, bundle, state: battle(150), entry: "ev", event: { actorSide: "player" } });
+    expect(state.enemy.active.statuses.burn).toBe(2);
+  });
+
+  it("exposes resources such as the type matrix", () => {
+    const withMatrix: DataBundle = { ...bundle, elements: { elements: [], matrix: { Fire: { Grass: 2 } }, values: { resisted: 0.5 }, combine: {} } };
+    const p: Program = {
+      programVersion: "1",
+      nodes: [
+        { id: "ev", type: "on.turnStart" },
+        { id: "el", type: "resource.elements" },
+        { id: "k", type: "read.countKeys" },
+        { id: "st", type: "write.modifyStat", params: { stat: "atk" } },
+      ],
+      edges: [
+        { from: { node: "ev", port: "out" }, to: { node: "st", port: "in" }, kind: "control" },
+        { from: { node: "el", port: "matrix" }, to: { node: "k", port: "object" }, kind: "data" },
+        { from: { node: "k", port: "value" }, to: { node: "st", port: "value" }, kind: "data" },
+      ],
+      entries: ["ev"],
+    };
+    const { state, trace } = runProgram({ program: p, registry, bundle: withMatrix, state: battle(150), entry: "ev" });
+    expect(trace.some((t) => t.node === "el")).toBe(true);
+    expect(state.player.active.buffs.atk).toBe(1);
   });
 
   it("produces a stable program hash", () => {
