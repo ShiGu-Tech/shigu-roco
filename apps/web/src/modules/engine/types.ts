@@ -39,6 +39,8 @@ export interface ActiveSprite {
   /** 技能池临时改动的还原记录（机制扩展）：临时技能 id → { original, expires }。
    *  original 为空 = 临时新增（到期移除）；expires 为绝对回合（-1 永久、0 表示使用后即还原）。 */
   skillOverrides?: Record<string, { original: string; expires: number }>;
+  /** 入场域 · 本次入场后是否已行动过（供「迸发：入场首次行动」类条件）。 */
+  actedSinceEntry?: boolean;
   /** 记忆域 · 计数器：任意 key → 值（如每使用/累计类）。 */
   counters?: Record<string, number>;
   /** 记忆域 · 技能永久修正：skillId → 威力 / 能耗 / 连击 / 先手的持久 delta。 */

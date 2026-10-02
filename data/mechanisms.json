@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.31.0",
+  "version": "0.32.0",
   "updatedAt": "2026-10-01",
   "mechanisms": [
     {
@@ -10435,6 +10435,231 @@
         }
       ],
       "note": "疾风刺：1 连击"
+    },
+    {
+      "id": "skill:sk-7110180:base",
+      "ownerType": "skill",
+      "ownerId": "sk-7110180",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7110180"
+        },
+        {
+          "not": {
+            "path": "event.burst",
+            "op": "eq",
+            "value": true
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 80,
+          "skillId": "sk-7110180"
+        }
+      ],
+      "note": "电弧：基础威力"
+    },
+    {
+      "id": "skill:sk-7110180:burst",
+      "ownerType": "skill",
+      "ownerId": "sk-7110180",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7110180"
+        },
+        {
+          "path": "event.burst",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 120,
+          "skillId": "sk-7110180"
+        }
+      ],
+      "note": "电弧：迸发 → 威力 +40"
+    },
+    {
+      "id": "skill:sk-7110210:hits",
+      "ownerType": "skill",
+      "ownerId": "sk-7110210",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7110210"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 2
+        }
+      ],
+      "note": "引雷：2 连击"
+    },
+    {
+      "id": "skill:sk-7110210:base",
+      "ownerType": "skill",
+      "ownerId": "sk-7110210",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7110210"
+        },
+        {
+          "not": {
+            "path": "event.burst",
+            "op": "eq",
+            "value": true
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 35,
+          "skillId": "sk-7110210"
+        }
+      ],
+      "note": "引雷：基础威力"
+    },
+    {
+      "id": "skill:sk-7110210:burst",
+      "ownerType": "skill",
+      "ownerId": "sk-7110210",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7110210"
+        },
+        {
+          "path": "event.burst",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 55,
+          "skillId": "sk-7110210"
+        }
+      ],
+      "note": "引雷：迸发 → 威力 +20"
+    },
+    {
+      "id": "skill:sk-7020980:base",
+      "ownerType": "skill",
+      "ownerId": "sk-7020980",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020980"
+        },
+        {
+          "not": {
+            "path": "event.burst",
+            "op": "eq",
+            "value": true
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 60,
+          "skillId": "sk-7020980"
+        }
+      ],
+      "note": "天旋地转：基础威力"
+    },
+    {
+      "id": "skill:sk-7020980:burst",
+      "ownerType": "skill",
+      "ownerId": "sk-7020980",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020980"
+        },
+        {
+          "path": "event.burst",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 90,
+          "skillId": "sk-7020980"
+        }
+      ],
+      "note": "天旋地转：迸发 → 威力 +30"
+    },
+    {
+      "id": "skill:sk-7110200:burst-cost",
+      "ownerType": "skill",
+      "ownerId": "sk-7110200",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7110200"
+        },
+        {
+          "path": "event.burst",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "skill",
+          "skillId": "sk-7110200",
+          "delta": -2,
+          "duration": "nextAction",
+          "key": "burst:7110200"
+        }
+      ],
+      "note": "超导：迸发 → 本技能能耗 -2"
     }
   ]
 }

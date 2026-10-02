@@ -167,13 +167,15 @@ export class Simulator {
       if (caster.hp <= 0) return;
       const wentFirst = firstResolvedSide === null;
       if (wentFirst) firstResolvedSide = side;
+      // 入场域 · 迸发：本次入场后的首次行动。
+      const burst = !caster.actedSinceEntry;
       const beforeCommands = this.mechanisms.dispatch({
         state: st,
         trigger: "beforeAction",
         actorSide: side,
         targetSide: otherSide(side),
         action: entry.action,
-        event: { action: entry.action, actionId: entry.id, reacted: reactedBySide[side] === true, wentFirst },
+        event: { action: entry.action, actionId: entry.id, reacted: reactedBySide[side] === true, wentFirst, burst },
       });
       events.push(...this.mechanisms.applyActionCommands(queue, beforeCommands, { ...actionIds, [side]: entry.id }, () => `action-${st.turn}-extra-${queue.all().length}`).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
       events.push(...this.mechanisms.applyStateCommands(st, beforeCommands, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
@@ -184,14 +186,15 @@ export class Simulator {
         events.push(...this.applyEnergy(st, side));
         logs.push(`energy: ${side}`);
       } else {
-        events.push(...this.executeSkill(st, side, entry.action, rng, beforeCommands, reactedBySide[side] === true, wentFirst));
+        events.push(...this.executeSkill(st, side, entry.action, rng, beforeCommands, reactedBySide[side] === true, wentFirst, burst));
         logs.push(`skill: ${side} -> ${entry.action.skillId ?? ""}`);
       }
       entry.status = "resolved";
+      caster.actedSinceEntry = true;
       if (entry.action.kind === "skill") {
         if (entry.action.skillId) touched[side].add(entry.action.skillId);
         const usedSkill = entry.action.skillId ? getSkill(this.bundle, entry.action.skillId) : {};
-        events.push(...this.triggerState(st, "skillUsed", { actorSide: side, targetSide: opp, action: entry.action, event: { skillId: entry.action.skillId, actionId: entry.id, element: toStr(usedSkill.element), category: toStr(usedSkill.category), actionType: toStr(usedSkill.actionType), reacted: reactedBySide[side] === true, wentFirst } }));
+        events.push(...this.triggerState(st, "skillUsed", { actorSide: side, targetSide: opp, action: entry.action, event: { skillId: entry.action.skillId, actionId: entry.id, element: toStr(usedSkill.element), category: toStr(usedSkill.category), actionType: toStr(usedSkill.actionType), reacted: reactedBySide[side] === true, wentFirst, burst } }));
         const skillId = entry.action.skillId;
         if (skillId && caster.skillOverrides?.[skillId]?.expires === 0) {
           revertSkillOverride(caster, skillId);
@@ -204,7 +207,7 @@ export class Simulator {
         actorSide: side,
         targetSide: opp,
         action: entry.action,
-        event: { action: entry.action, actionId: entry.id, reacted: reactedBySide[side] === true, wentFirst },
+        event: { action: entry.action, actionId: entry.id, reacted: reactedBySide[side] === true, wentFirst, burst },
       });
       events.push(...this.mechanisms.applyStateCommands(st, afterCommands, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
     });
@@ -306,6 +309,7 @@ export class Simulator {
     const active = this.sideState(st, side).active;
     const first = !active.entered;
     active.entered = true;
+    active.actedSinceEntry = false;
     return this.triggerState(st, "onEntry", {
       actorSide: side,
       targetSide: otherSide(side),
@@ -432,6 +436,7 @@ export class Simulator {
     commands: import("../mechanisms").EffectCommand[],
     reacted = false,
     wentFirst = false,
+    burst = false,
   ): BattleEvent[] {
     const skill = action.skillId ? getSkill(this.bundle, action.skillId) : {};
     const caster = this.sideState(st, side).active;
@@ -456,10 +461,10 @@ export class Simulator {
         actorSide: side,
         targetSide: opp,
         action,
-        event: { action, skillId: action.skillId, damageType: category, reacted, wentFirst },
+        event: { action, skillId: action.skillId, damageType: category, reacted, wentFirst, burst },
       });
       events.push(...this.mechanisms.applyStateCommands(st, beforeDamage, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
-      const damageEvents = this.mechanisms.applyDamageCommands(st, this.bundle, damageCommands, { reacted, wentFirst });
+      const damageEvents = this.mechanisms.applyDamageCommands(st, this.bundle, damageCommands, { reacted, wentFirst, burst });
       events.push(...damageEvents.map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
       const dealt = damageEvents.reduce((sum, event) => sum + toNum(event.data.value, 0), 0);
       const effectiveness = damageEvents.length ? toNum(damageEvents[damageEvents.length - 1].data.effectiveness, 1) : 1;

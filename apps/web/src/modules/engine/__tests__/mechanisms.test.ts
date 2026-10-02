@@ -1454,3 +1454,54 @@ describe("batch-23/24 (starfall counter / entry status / cleanse)", () => {
     expect(all.some((m) => (m.effects ?? []).some((e) => e.type === "unsupported"))).toBe(false);
   });
 });
+
+describe("batch-25 burst tag (迸发)", () => {
+  const bundle: DataBundle = {
+    ...miniBundle,
+    mechanisms: [
+      {
+        id: "burst-bonus",
+        ownerType: "skill",
+        ownerId: "sk-1",
+        trigger: "beforeAction",
+        when: [{ path: "event.burst", op: "eq", value: true }],
+        effects: [{ type: "modifyEnergy", target: "self", delta: 3 }],
+      },
+    ],
+  };
+
+  it("flags only the first action after entry", () => {
+    const sim = new Simulator(bundle);
+    const st = makeState(makeSide(makeActive("sp-a", { hp: 100, maxHp: 100, energy: 0 })), makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })), { turn: 1, seed: 1 });
+    st.player.active.loadout = ["sk-1"];
+    const r1 = sim.step(st, { kind: "skill", skillId: "sk-1" }, { kind: "energy" }, new Rng(1));
+    expect(r1.events.some((e) => e.type === "energy-modified" && e.data.delta === 3)).toBe(true);
+    const r2 = sim.step(r1.state, { kind: "skill", skillId: "sk-1" }, { kind: "energy" }, new Rng(1));
+    expect(r2.events.some((e) => e.type === "energy-modified" && e.data.delta === 3)).toBe(false);
+  });
+
+  it("resets burst after switching out and back in", () => {
+    const sim = new Simulator(bundle);
+    const st = makeState(
+      makeSide(makeActive("sp-a", { hp: 100, maxHp: 100, energy: 0 }), { bench: [makeActive("sp-c", { hp: 100, maxHp: 100 })] }),
+      makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })),
+      { turn: 1, seed: 1 },
+    );
+    st.player.active.loadout = ["sk-1"];
+    const r1 = sim.step(st, { kind: "skill", skillId: "sk-1" }, { kind: "energy" }, new Rng(1));
+    const r2 = sim.step(r1.state, { kind: "switch", benchId: "sp-c" }, { kind: "energy" }, new Rng(1));
+    const r3 = sim.step(r2.state, { kind: "switch", benchId: "sp-a" }, { kind: "energy" }, new Rng(1));
+    const r4 = sim.step(r3.state, { kind: "skill", skillId: "sk-1" }, { kind: "energy" }, new Rng(1));
+    expect(r4.events.some((e) => e.type === "energy-modified" && e.data.delta === 3)).toBe(true);
+  });
+
+  it("ships the simple 迸发 registrations", () => {
+    const all = (getBundle().mechanisms ?? []) as MechanismDefinition[];
+    const find = (id: string) => all.find((m) => m.id === id);
+    expect((find("skill:sk-7110180:burst")?.effects?.[0] as { power?: number }).power).toBe(120);
+    expect((find("skill:sk-7110180:base")?.effects?.[0] as { power?: number }).power).toBe(80);
+    expect((find("skill:sk-7110210:hits")?.effects?.[0] as { hits?: number }).hits).toBe(2);
+    expect((find("skill:sk-7020980:burst")?.effects?.[0] as { power?: number }).power).toBe(90);
+    expect((find("skill:sk-7110200:burst-cost")?.effects?.[0] as { delta?: number }).delta).toBe(-2);
+  });
+});
