@@ -1232,3 +1232,61 @@ describe("batch-18 capabilities (loadout count / buff-debuff trigger / status so
     }
   });
 });
+
+describe("batch-20 (derived condition / wentFirst)", () => {
+  const dealDamage: EffectCommand = {
+    type: "dealDamage",
+    definition: { type: "dealDamage", target: "target", category: "Physical", power: 40, skillId: "sk-1" },
+    mechanismId: "sk-1",
+    trigger: "beforeAction",
+    actorSide: "player",
+    targetSide: "enemy",
+  };
+  const st = (hp: number) =>
+    makeState(makeSide(makeActive("sp-a", { hp, maxHp: 100 })), makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })));
+
+  it("compares a path against a derived value (HP ratio)", () => {
+    const registry = new MechanismRegistry([
+      {
+        id: "low-hp",
+        ownerType: "trait",
+        ownerId: "t",
+        trigger: "beforeAction",
+        when: [{ path: "self.active.hp", op: "lt", valueFrom: { path: "self.active.maxHp", scale: 0.5 } }],
+        effects: [{ type: "modifyEnergy", target: "self", delta: 1 }],
+      },
+    ]);
+    const ctx = (hp: number) => ({ state: st(hp), trigger: "beforeAction" as const, actorSide: "player" as const, targetSide: "enemy" as const, event: {} });
+    expect(registry.collect(ctx(40))).toHaveLength(1);
+    expect(registry.collect(ctx(60))).toHaveLength(0);
+    expect(registry.collect(ctx(50))).toHaveLength(0);
+  });
+
+  it("exposes wentFirst to damage modifiers", () => {
+    const defs: MechanismDefinition[] = [
+      {
+        id: "first-hits",
+        ownerType: "skill",
+        ownerId: "sk-1",
+        trigger: "beforeDamage",
+        when: [{ path: "event.skillId", op: "eq", value: "sk-1" }, { path: "event.wentFirst", op: "eq", value: true }],
+        effects: [{ type: "setHits", hits: 3 }],
+      },
+    ];
+    const runtime = new MechanismRuntime(new MechanismRegistry(defs));
+    const [second] = runtime.applyDamageCommands(st(100), miniBundle, [dealDamage]);
+    expect((second.data.modifiers as Record<string, number>).hits).toBe(1);
+    const [first] = runtime.applyDamageCommands(st(100), miniBundle, [dealDamage], { wentFirst: true });
+    expect((first.data.modifiers as Record<string, number>).hits).toBe(3);
+  });
+
+  it("ships batch-20 registrations (撕咬 / 疾风刺)", () => {
+    const all = (getBundle().mechanisms ?? []) as MechanismDefinition[];
+    const find = (id: string) => all.find((m) => m.id === id);
+    expect(find("skill:sk-7180110:hits-low")?.when).toContainEqual({ path: "self.active.hp", op: "lt", valueFrom: { path: "self.active.maxHp", scale: 0.5 } });
+    expect(find("skill:sk-7150090:hits-first")?.when).toContainEqual({ path: "event.wentFirst", op: "eq", value: true });
+    for (const id of ["sk-7180110", "sk-7150090"]) {
+      expect((find(`skill:${id}`)?.effects ?? []).some((e) => e.type === "unsupported")).toBe(false);
+    }
+  });
+});

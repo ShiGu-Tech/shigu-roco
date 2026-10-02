@@ -1,5 +1,6 @@
 import type { Side } from "../types";
-import type { Condition, MechanismContext } from "./types";
+import { toNum } from "../types";
+import type { Condition, DynamicRef, MechanismContext } from "./types";
 
 function readPath(root: unknown, path: string): unknown {
   const keys = path.split(".");
@@ -39,13 +40,21 @@ export function resolveContextPath(context: MechanismContext, path: string): unk
   return readPath(scope(context), path);
 }
 
+/** 解析动态引用（字符串 = 点路径；对象 = 路径 + 系数 / 偏移 / 多项式）。条件里不含 bundle，故不支持 `count`。 */
+function resolveRef(root: unknown, ref: DynamicRef): unknown {
+  if (typeof ref === "string") return readPath(root, ref);
+  const raw = toNum(readPath(root, ref.path), 0);
+  if (ref.terms) return ref.terms.reduce((sum, term) => sum + term.coef * Math.pow(raw, term.power), 0) + (ref.offset ?? 0);
+  return raw * (ref.scale ?? 1) + (ref.offset ?? 0);
+}
+
 function matches(context: MechanismContext, condition: Condition): boolean {
   if ("allOf" in condition) return condition.allOf.every((item) => matches(context, item));
   if ("anyOf" in condition) return condition.anyOf.some((item) => matches(context, item));
   if ("not" in condition) return !matches(context, condition.not);
 
   const actual = readPath(scope(context), condition.path);
-  const expected = condition.valueFrom ? readPath(scope(context), condition.valueFrom) : condition.value;
+  const expected = condition.valueFrom !== undefined ? resolveRef(scope(context), condition.valueFrom) : condition.value;
   switch (condition.op) {
     case "eq":
       return actual === expected;

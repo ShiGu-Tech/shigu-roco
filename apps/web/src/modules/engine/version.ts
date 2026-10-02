@@ -48,5 +48,7 @@
  *          `DynamicValue.count`（`path` 指向技能 id 数组时按图鉴 `element`/`category`/`actionType` 统计条目数）。
  * - 0.14.0 伤害修饰上下文补全：`beforeDamage`（伤害修饰口径）事件补 `reacted` / 行动上下文，
  *          使「应对成功 → 连击翻倍」等条件连击可由 `setHits` + `event.reacted` 表达。
+ * - 0.15.0 条件派生值 + 行动时序：`Condition.valueFrom` 支持 `DynamicRef`（路径 + `scale`/`offset`/`terms`，
+ *          可比较 HP 比例等派生值）；本回合首个结算的行动在 `beforeDamage`/`skillUsed`/`actionResolved` 事件暴露 `wentFirst`。
  */
-export const ENGINE_VERSION = "0.14.0";
+export const ENGINE_VERSION = "0.15.0";

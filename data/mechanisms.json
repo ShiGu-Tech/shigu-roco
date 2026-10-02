@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.26.0",
+  "version": "0.27.0",
   "updatedAt": "2026-10-01",
   "mechanisms": [
     {
@@ -1413,11 +1413,6 @@
           "category": "Physical",
           "power": 20,
           "skillId": "sk-7180110"
-        },
-        {
-          "type": "unsupported",
-          "effectType": "multi_hit",
-          "reason": "复杂旧效果需要按真实机制逐条确认"
         }
       ]
     },
@@ -2422,11 +2417,6 @@
           "category": "Physical",
           "power": 25,
           "skillId": "sk-7150090"
-        },
-        {
-          "type": "unsupported",
-          "effectType": "multi_hit",
-          "reason": "复杂旧效果需要按真实机制逐条确认"
         }
       ]
     },
@@ -10248,6 +10238,120 @@
         }
       ],
       "note": "趁火打劫：击败 → 本技能连击永久 +2"
+    },
+    {
+      "id": "skill:sk-7180110:hits-low",
+      "ownerType": "skill",
+      "ownerId": "sk-7180110",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7180110"
+        },
+        {
+          "path": "self.active.hp",
+          "op": "lt",
+          "valueFrom": {
+            "path": "self.active.maxHp",
+            "scale": 0.5
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 5
+        }
+      ],
+      "note": "撕咬：生命低于 50% → 5 连击"
+    },
+    {
+      "id": "skill:sk-7180110:hits-base",
+      "ownerType": "skill",
+      "ownerId": "sk-7180110",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7180110"
+        },
+        {
+          "not": {
+            "path": "self.active.hp",
+            "op": "lt",
+            "valueFrom": {
+              "path": "self.active.maxHp",
+              "scale": 0.5
+            }
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 3
+        }
+      ],
+      "note": "撕咬：3 连击"
+    },
+    {
+      "id": "skill:sk-7150090:hits-first",
+      "ownerType": "skill",
+      "ownerId": "sk-7150090",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7150090"
+        },
+        {
+          "path": "event.wentFirst",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 3
+        }
+      ],
+      "note": "疾风刺：先于敌方攻击 → 3 连击"
+    },
+    {
+      "id": "skill:sk-7150090:hits-base",
+      "ownerType": "skill",
+      "ownerId": "sk-7150090",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7150090"
+        },
+        {
+          "not": {
+            "path": "event.wentFirst",
+            "op": "eq",
+            "value": true
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "target",
+          "hits": 1
+        }
+      ],
+      "note": "疾风刺：1 连击"
     }
   ]
 }

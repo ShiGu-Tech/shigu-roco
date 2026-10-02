@@ -58,7 +58,7 @@ export type Condition =
   | { allOf: Condition[] }
   | { anyOf: Condition[] }
   | { not: Condition }
-  | { path: string; op: "eq" | "neq" | "gt" | "gte" | "lt" | "lte" | "in" | "has" | "contains"; value?: unknown; valueFrom?: string };
+  | { path: string; op: "eq" | "neq" | "gt" | "gte" | "lt" | "lte" | "in" | "has" | "contains"; value?: unknown; valueFrom?: DynamicRef };
 
 /** 动态取值：点路径 + 系数 + 偏移（如「每层印记 ×2」= { path, scale: 2 }）。`path` 末尾 `*` 表示合计对象数值。
  *  需要非线性时可给 `terms`（对取值做多项式，如 `N²+24N−24` → [{ coef:1, power:2 },{ coef:24, power:1 },{ coef:-24, power:0 }]）。 */
