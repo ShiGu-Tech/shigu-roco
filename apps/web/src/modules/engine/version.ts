@@ -54,5 +54,6 @@
  *          `turnStart` / `turnEnd` 结算，保留原施法方视角）。
  * - 0.17.0 层数阈值触发：新增 `statusReached` / `markReached` 触发器（状态 / 印记施加后与 `*Applied` 一并派发，
  *          跨阈值由数据 `when` 用 `event.before` / `event.after` 判定），供「满 N 层触发并消耗」类效果。
+ * - 0.18.0 对象计数：`DynamicValue.countKeys`（路径指向对象时取其键数量，如「每有 1 种减益」）。
  */
-export const ENGINE_VERSION = "0.17.0";
+export const ENGINE_VERSION = "0.18.0";

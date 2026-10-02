@@ -1382,3 +1382,75 @@ describe("batch-22 stack threshold (statusReached)", () => {
     expect((m?.effects ?? []).some((e) => e.type === "dealDamage")).toBe(true);
   });
 });
+
+describe("batch-23/24 (starfall counter / entry status / cleanse)", () => {
+  it("观测者效应 escapes and applies 月陨星 to the switching-in sprite", () => {
+    const bundle: DataBundle = {
+      ...miniBundle,
+      mechanisms: [
+        {
+          id: "observer",
+          ownerType: "skill",
+          ownerId: "sk-1",
+          trigger: "beforeAction",
+          when: [{ path: "event.action.skillId", op: "eq", value: "sk-1" }],
+          effects: [
+            { type: "escape", target: "self" },
+            { type: "scheduleEntry", target: "self", effects: [{ type: "applyStatus", target: "self", statusId: "moonfall-star-state", layers: 1 }] },
+          ],
+        },
+      ],
+    };
+    const sim = new Simulator(bundle);
+    const st = makeState(
+      makeSide(makeActive("sp-a", { hp: 100, maxHp: 100, energy: 5 }), { bench: [makeActive("sp-c", { hp: 100, maxHp: 100 })] }),
+      makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })),
+      { turn: 1, seed: 1 },
+    );
+    st.player.active.loadout = ["sk-1"];
+    const r1 = sim.step(st, { kind: "skill", skillId: "sk-1" }, { kind: "energy" }, new Rng(1));
+    expect(r1.state.player.forcedSwitch).toBe(true);
+    sim.forcedSwitch(r1.state, "player", "sp-c");
+    expect(r1.state.player.active.spriteId).toBe("sp-c");
+    expect(r1.state.player.active.statuses["moonfall-star-state"]).toBe(1);
+  });
+
+  it("清洗 charges less per debuff entry, then clears debuffs", () => {
+    const bundle: DataBundle = {
+      ...miniBundle,
+      skills: { ...miniBundle.skills, "sk-clean": { id: "sk-clean", skillName: "清洗", element: "Water", category: "Magic", actionType: "Attack", power: 0, cost: 4 } },
+      mechanisms: [
+        {
+          id: "cleanse",
+          ownerType: "skill",
+          ownerId: "sk-clean",
+          trigger: "beforeAction",
+          when: [{ path: "event.action.skillId", op: "eq", value: "sk-clean" }],
+          effects: [
+            { type: "modifySkillCost", target: "self", scope: "skill", skillId: "sk-clean", mode: "set", duration: "nextAction", deltaFrom: { path: "self.active.debuffs", countKeys: true, scale: -1 } },
+            { type: "clearStat", target: "self", polarity: "debuff" },
+          ],
+        },
+      ],
+    };
+    const sim = new Simulator(bundle);
+    const st = makeState(makeSide(makeActive("sp-a", { hp: 100, maxHp: 100, energy: 6 })), makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })), { turn: 1, seed: 1 });
+    st.player.active.loadout = ["sk-clean"];
+    st.player.active.debuffs = { atk: -0.4, spatk: -0.2, speed: -0.3 };
+    const r = sim.step(st, { kind: "skill", skillId: "sk-clean" }, { kind: "energy" }, new Rng(1));
+    expect(r.state.player.active.energy).toBe(5);
+    expect(r.state.player.active.debuffs).toEqual({});
+  });
+
+  it("ships batch-23/24 registrations", () => {
+    const all = (getBundle().mechanisms ?? []) as MechanismDefinition[];
+    const find = (id: string) => all.find((m) => m.id === id);
+    expect((find("starfall:sk-7190520:counter")?.effects ?? []).some((e) => e.type === "consumeMark")).toBe(true);
+    const obs = find("starfall:sk-7190490");
+    expect((obs?.effects ?? []).map((e) => e.type)).toEqual(["escape", "scheduleEntry"]);
+    const cleanse = find("skill:sk-7050510");
+    expect(cleanse?.trigger).toBe("beforeAction");
+    expect((cleanse?.effects ?? []).some((e) => e.type === "clearStat")).toBe(true);
+    expect(all.some((m) => (m.effects ?? []).some((e) => e.type === "unsupported"))).toBe(false);
+  });
+});

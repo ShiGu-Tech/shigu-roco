@@ -94,7 +94,11 @@ export class MechanismRuntime {
     const spec = typeof from === "string" ? { path: from } : from;
     const context = { state, trigger: command.trigger, actorSide: command.actorSide, targetSide: command.targetSide, event: command.event ?? {} };
     const resolved = resolveContextPath(context, spec.path);
-    const raw = spec.count ? this.countMatches(bundle, resolved, spec.count) : toNum(resolved, fallback);
+    const raw = spec.count
+      ? this.countMatches(bundle, resolved, spec.count)
+      : spec.countKeys
+        ? Object.keys(asDict(resolved)).length
+        : toNum(resolved, fallback);
     let value = spec.terms ? spec.terms.reduce((sum, term) => sum + term.coef * Math.pow(raw, term.power), 0) : raw * (spec.scale ?? 1) + (spec.offset ?? 0);
     value += spec.terms ? (spec.offset ?? 0) : 0;
     return spec.round === "ceil" ? Math.ceil(value) : spec.round === "round" ? Math.round(value) : Math.floor(value);
@@ -224,10 +228,12 @@ export class MechanismRuntime {
             for (const stat of definition.stat ? [definition.stat] : Object.keys(bucket)) {
               if (typesLeft <= 0) break;
               const before = bucket[stat] ?? 0;
-              if (before <= 0) continue;
-              const removed = Math.min(before, amount);
-              if (before - removed <= 0) delete bucket[stat];
-              else bucket[stat] = before - removed;
+              // 增益为正、减益为负（`modifyStat` 口径），故按绝对值结算。
+              const magnitude = Math.abs(before);
+              if (magnitude <= 0) continue;
+              const removed = Math.min(magnitude, amount);
+              if (magnitude - removed <= 0) delete bucket[stat];
+              else bucket[stat] = before - Math.sign(before) * removed;
               cleared[stat] = (cleared[stat] ?? 0) + removed;
               typesLeft -= 1;
             }

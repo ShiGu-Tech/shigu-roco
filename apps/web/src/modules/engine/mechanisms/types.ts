@@ -72,6 +72,8 @@ export interface DynamicValue {
   terms?: { coef: number; power: number }[];
   /** `path` 指向技能 id 数组时（如 `self.active.loadout`），按图鉴条目属性筛选计数（需 bundle）。 */
   count?: { element?: string; category?: string; actionType?: string };
+  /** `path` 指向对象（如 `self.active.debuffs`）时，取其键数量（如「每有 1 层 / 种减益」）。 */
+  countKeys?: boolean;
 }
 
 /** 动态引用：字符串等价于 `{ path }`。 */

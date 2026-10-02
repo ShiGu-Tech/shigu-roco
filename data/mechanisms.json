@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.29.0",
+  "version": "0.31.0",
   "updatedAt": "2026-10-01",
   "mechanisms": [
     {
@@ -4555,11 +4555,38 @@
       ],
       "effects": [
         {
-          "type": "unsupported",
-          "effectType": "conditional",
-          "reason": "引力偏转：应对攻击时以魔法伤害触发星陨（待接入）"
+          "type": "consumeMark",
+          "target": "target",
+          "markId": "starfall-mark",
+          "effectsOnConsume": [
+            {
+              "type": "dealDamage",
+              "target": "target",
+              "category": "Magic",
+              "element": "Psychic",
+              "power": 0,
+              "powerFrom": {
+                "path": "event.consumed",
+                "terms": [
+                  {
+                    "coef": 1,
+                    "power": 2
+                  },
+                  {
+                    "coef": 24,
+                    "power": 1
+                  },
+                  {
+                    "coef": -24,
+                    "power": 0
+                  }
+                ]
+              }
+            }
+          ]
         }
-      ]
+      ],
+      "note": "引力偏转：应对攻击 → 以魔法伤害引爆敌方星陨印记（威力 = N²+24N−24）"
     },
     {
       "ownerType": "skill",
@@ -4668,9 +4695,20 @@
       "ownerId": "sk-7190490",
       "effects": [
         {
-          "type": "unsupported",
-          "effectType": "conditional",
-          "reason": "观测者效应：换上精灵以月陨星状态登场（待接入）"
+          "type": "escape",
+          "target": "self"
+        },
+        {
+          "type": "scheduleEntry",
+          "target": "self",
+          "effects": [
+            {
+              "type": "applyStatus",
+              "target": "self",
+              "statusId": "moonfall-star-state",
+              "layers": 1
+            }
+          ]
         }
       ],
       "when": [
@@ -4679,7 +4717,8 @@
           "op": "eq",
           "value": "sk-7190490"
         }
-      ]
+      ],
+      "note": "观测者效应：自己脱离，换入的精灵以月陨星状态登场（层数 / 结算待校准）"
     },
     {
       "id": "derived:skill:sk-7020770",
@@ -5871,7 +5910,7 @@
       "note": "护盾回合末清除"
     },
     {
-      "id": "skill:sk-7050510:todo",
+      "id": "skill:sk-7050510",
       "ownerType": "skill",
       "ownerId": "sk-7050510",
       "trigger": "beforeAction",
@@ -5884,11 +5923,26 @@
       ],
       "effects": [
         {
-          "type": "unsupported",
-          "effectType": "dynamic-cost",
-          "reason": "「每有 1 层减益本技能能耗 -1」需要按减益层数动态取值"
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "skill",
+          "skillId": "sk-7050510",
+          "mode": "set",
+          "duration": "nextAction",
+          "deltaFrom": {
+            "path": "self.active.debuffs",
+            "countKeys": true,
+            "scale": -1
+          },
+          "key": "cleanse:7050510"
+        },
+        {
+          "type": "clearStat",
+          "target": "self",
+          "polarity": "debuff"
         }
-      ]
+      ],
+      "note": "清洗：驱散自身全部减益；每有 1 层减益本技能能耗 -1（巧变·水系攻击 tag 待接入）"
     },
     {
       "id": "skill:sk-7020580",
