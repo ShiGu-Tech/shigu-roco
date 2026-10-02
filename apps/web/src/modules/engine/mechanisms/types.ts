@@ -24,6 +24,8 @@ export type TriggerName =
   | "onHit"
   | "statusApplied"
   | "markApplied"
+  | "statusReached"
+  | "markReached"
   | "buffGained"
   | "debuffGained"
   | "weatherChanged"

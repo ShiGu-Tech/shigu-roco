@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.28.0",
+  "version": "0.29.0",
   "updatedAt": "2026-10-01",
   "mechanisms": [
     {
@@ -3339,21 +3339,42 @@
       "id": "status:conductive-charge",
       "ownerType": "status",
       "ownerId": "conductive-charge",
-      "trigger": "onHit",
+      "trigger": "statusReached",
       "when": [
         {
           "path": "event.statusId",
           "op": "eq",
           "value": "conductive-charge"
+        },
+        {
+          "path": "event.after",
+          "op": "gte",
+          "value": 2
+        },
+        {
+          "path": "event.before",
+          "op": "lt",
+          "value": 2
         }
       ],
       "effects": [
         {
-          "type": "unsupported",
-          "effectType": "conditional",
-          "reason": "引电（状态）满 2 层触发，待校准"
+          "type": "dealDamage",
+          "target": "self",
+          "category": "Magic",
+          "power": 0,
+          "basis": "maxHp",
+          "amount": 0.25,
+          "element": "Electric"
+        },
+        {
+          "type": "settleStatus",
+          "target": "self",
+          "statusId": "conductive-charge",
+          "delta": 2
         }
-      ]
+      ],
+      "note": "引电：满 2 层 → 受 25% 最大生命电系伤害并失去 2 层（电系免疫施加；数值待校准）"
     },
     {
       "id": "trait:sp-1",

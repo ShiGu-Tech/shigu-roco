@@ -1340,3 +1340,45 @@ describe("batch-21 delayed effects (scheduleEffect)", () => {
     expect(sched).toMatchObject({ delay: 1, timing: "turnStart" });
   });
 });
+
+describe("batch-22 stack threshold (statusReached)", () => {
+  const bundle: DataBundle = {
+    ...miniBundle,
+    mechanisms: [
+      {
+        id: "zap",
+        ownerType: "status",
+        ownerId: "conductive-charge",
+        trigger: "statusReached",
+        when: [
+          { path: "event.statusId", op: "eq", value: "conductive-charge" },
+          { path: "event.after", op: "gte", value: 2 },
+          { path: "event.before", op: "lt", value: 2 },
+        ],
+        effects: [
+          { type: "dealDamage", target: "self", category: "Magic", power: 0, basis: "maxHp", amount: 0.25, element: "Electric" },
+          { type: "settleStatus", target: "self", statusId: "conductive-charge", delta: 2 },
+        ],
+      },
+    ],
+  };
+
+  it("fires on crossing the threshold and consumes layers", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry(bundle.mechanisms as MechanismDefinition[]));
+    const st = makeState(makeSide(makeActive("sp-a", { hp: 100, maxHp: 100 })), makeSide(makeActive("sp-b", { hp: 200, maxHp: 200 })));
+    const apply = (n: number) => runtime.applyStateCommands(st, [command({ type: "applyStatus", target: "opponent", statusId: "conductive-charge", layers: n })], bundle);
+    apply(1);
+    expect(st.enemy.active.statuses["conductive-charge"]).toBe(1);
+    expect(st.enemy.active.hp).toBe(200);
+    apply(1);
+    expect(st.enemy.active.hp).toBe(150);
+    expect(st.enemy.active.statuses["conductive-charge"] ?? 0).toBe(0);
+  });
+
+  it("ships the 引电 threshold registration", () => {
+    const all = (getBundle().mechanisms ?? []) as MechanismDefinition[];
+    const m = all.find((x) => x.id === "status:conductive-charge");
+    expect(m?.trigger).toBe("statusReached");
+    expect((m?.effects ?? []).some((e) => e.type === "dealDamage")).toBe(true);
+  });
+});

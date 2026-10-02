@@ -7,7 +7,7 @@ import { asDict, toArray, toNum, toStr } from "../types";
 import { ActionQueue } from "./action-queue";
 import { resolveContextPath } from "./conditions";
 import { MechanismRegistry } from "./registry";
-import type { DynamicRef, DynamicValue, EffectCommand, EffectDefinition, MechanismContext, MechanismEvent } from "./types";
+import type { DynamicRef, DynamicValue, EffectCommand, EffectDefinition, MechanismContext, MechanismEvent, TriggerName } from "./types";
 
 interface DamageModifiers {
   attackerMult: number;
@@ -622,20 +622,21 @@ export class MechanismRuntime {
 
     if (depth < 4) {
       for (const event of [...events]) {
-        const trigger =
-          event.type === "status-applied" ? "statusApplied"
-          : event.type === "mark-applied" ? "markApplied"
-          : event.type === "buff-gained" ? "buffGained"
-          : event.type === "debuff-gained" ? "debuffGained"
-          : null;
-        if (!trigger) continue;
-        const cascaded = this.dispatch({
-          state,
-          trigger,
-          actorSide: event.side,
-          targetSide: event.side === "player" ? "enemy" : event.side === "enemy" ? "player" : undefined,
-          event: event.data,
-        });
+        // 领域事件 → 级联触发器（状态 / 印记同时派发「已施加」与「跨阈值」两类，阈值由数据 `when` 判定）。
+        const triggers: TriggerName[] =
+          event.type === "status-applied" ? ["statusApplied", "statusReached"]
+          : event.type === "mark-applied" ? ["markApplied", "markReached"]
+          : event.type === "buff-gained" ? ["buffGained"]
+          : event.type === "debuff-gained" ? ["debuffGained"]
+          : [];
+        if (!triggers.length) continue;
+        const actorSide = event.side;
+        const targetSide = actorSide === "player" ? "enemy" : actorSide === "enemy" ? "player" : undefined;
+        const cascaded: EffectCommand[] = [];
+        for (const trigger of triggers) {
+          cascaded.push(...this.dispatch({ state, trigger, actorSide, targetSide, event: event.data }));
+        }
+        if (!cascaded.length) continue;
         events.push(...this.applyStateCommands(state, cascaded, bundle, depth + 1));
         if (bundle) events.push(...this.applyDamageCommands(state, bundle, cascaded));
       }

@@ -52,5 +52,7 @@
  *          可比较 HP 比例等派生值）；本回合首个结算的行动在 `beforeDamage`/`skillUsed`/`actionResolved` 事件暴露 `wentFirst`。
  * - 0.16.0 延迟效果：新增 `scheduleEffect`（把 `effects` 排入目标侧 `pendingEffects`，于 `delay` 回合后的
  *          `turnStart` / `turnEnd` 结算，保留原施法方视角）。
+ * - 0.17.0 层数阈值触发：新增 `statusReached` / `markReached` 触发器（状态 / 印记施加后与 `*Applied` 一并派发，
+ *          跨阈值由数据 `when` 用 `event.before` / `event.after` 判定），供「满 N 层触发并消耗」类效果。
  */
-export const ENGINE_VERSION = "0.16.0";
+export const ENGINE_VERSION = "0.17.0";
