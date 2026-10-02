@@ -63,6 +63,8 @@ export interface CostMod {
   sourceSpriteId?: string;
   scope: "skill" | "attack" | "defense" | "all";
   skillId?: string;
+  /** 技能栏域 · 仅当技能位于这些槽位（1-based）时生效（「位于 1/3 号位能耗 −2」）。 */
+  slots?: number[];
   elements?: string[];
   excludeElements?: string[];
   delta?: number;

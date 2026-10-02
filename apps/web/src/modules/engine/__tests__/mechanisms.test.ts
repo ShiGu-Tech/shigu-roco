@@ -167,6 +167,43 @@ describe("skill pool commands", () => {
   });
 });
 
+describe("skill-bar transmission domain (B4b)", () => {
+  it("rotates a skill down by slots, wrapping cyclically", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const battle = makeState(makeSide(makeActive("sp-a", { hp: 100, maxHp: 100 })), makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })));
+    battle.player.active.loadout = ["sk-1", "sk-2", "sk-3", "sk-4"];
+    runtime.applyStateCommands(battle, [command({ type: "rotateLoadout", skillId: "sk-1", slots: 1 })]);
+    expect(battle.player.active.loadout).toEqual(["sk-2", "sk-1", "sk-3", "sk-4"]);
+    runtime.applyStateCommands(battle, [command({ type: "rotateLoadout", skillId: "sk-1", slots: 2 })]);
+    expect(battle.player.active.loadout).toEqual(["sk-2", "sk-3", "sk-4", "sk-1"]);
+  });
+
+  it("adds flat power when the acting skill is in the given slot", () => {
+    const definition: MechanismDefinition = {
+      id: "slot-power",
+      ownerType: "skill",
+      ownerId: "sk-1",
+      trigger: "beforeDamage",
+      when: [{ path: "event.action.skillId", op: "eq", value: "sk-1" }, { path: "event.action.slot", op: "in", value: [1] }],
+      effects: [{ type: "addPower", value: 60 }],
+    };
+    const runtime = new MechanismRuntime(new MechanismRegistry([definition]));
+    const deal: EffectCommand = { type: "dealDamage", definition: { type: "dealDamage", target: "target", category: "Physical", skillId: "sk-1", power: 40 }, mechanismId: "base", trigger: "beforeAction", actorSide: "player", targetSide: "enemy" };
+    const plain = makeState(makeSide(makeActive("sp-a", { hp: 999, maxHp: 999 })), makeSide(makeActive("sp-b", { hp: 999, maxHp: 999 })));
+    const boosted = makeState(makeSide(makeActive("sp-a", { hp: 999, maxHp: 999 })), makeSide(makeActive("sp-b", { hp: 999, maxHp: 999 })));
+    const base = runtime.applyDamageCommands(plain, miniBundle, [deal])[0]?.data.value as number;
+    const withBonus = runtime.applyDamageCommands(boosted, miniBundle, [deal], { action: { kind: "skill", skillId: "sk-1", slot: 1 } })[0]?.data.value as number;
+    expect(withBonus).toBeGreaterThan(base);
+  });
+
+  it("registers 传动 for all 14 shift skills", () => {
+    const real = getBundle();
+    const ids = ["sk-7070010", "sk-7070030", "sk-7070040", "sk-7070060", "sk-7070110", "sk-7070120", "sk-7070140", "sk-7070150", "sk-7070170", "sk-7070200", "sk-7070220", "sk-7070250", "sk-7070270", "sk-7070340"];
+    const all = (real.mechanisms ?? []) as MechanismDefinition[];
+    for (const id of ids) expect(all.find((m) => m.id === `skill:${id}:transmission`)).toBeTruthy();
+  });
+});
+
 describe("mark stacking", () => {
   it("accumulates mark layers up to the stack cap", () => {
     const runtime = new MechanismRuntime(new MechanismRegistry());
@@ -467,12 +504,12 @@ describe("damage modifiers (beforeDamage)", () => {
         ],
       },
     ]);
-    expect((event.data.modifiers as Record<string, number>)).toEqual({ attackerMult: 2, defenderMult: 0.5, reduction: 50, hits: 3 });
+    expect((event.data.modifiers as Record<string, number>)).toEqual({ attackerMult: 2, defenderMult: 0.5, reduction: 50, hits: 3, powerBonus: 0 });
   });
 
   it("no modifiers → baseline formula", () => {
     const event = run();
-    expect((event.data.modifiers as Record<string, number>)).toEqual({ attackerMult: 1, defenderMult: 1, reduction: 0, hits: 1 });
+    expect((event.data.modifiers as Record<string, number>)).toEqual({ attackerMult: 1, defenderMult: 1, reduction: 0, hits: 1, powerBonus: 0 });
   });
 
   it("100% reduction → zero damage", () => {
@@ -1503,5 +1540,27 @@ describe("batch-25 burst tag (迸发)", () => {
     expect((find("skill:sk-7110210:hits")?.effects?.[0] as { hits?: number }).hits).toBe(2);
     expect((find("skill:sk-7020980:burst")?.effects?.[0] as { power?: number }).power).toBe(90);
     expect((find("skill:sk-7110200:burst-cost")?.effects?.[0] as { delta?: number }).delta).toBe(-2);
+  });
+});
+
+describe("skill-bar transmission end-to-end (B4b)", () => {
+  const bundle: DataBundle = {
+    ...miniBundle,
+    skills: { ...miniBundle.skills, "sk-shift": { id: "sk-shift", skillName: "传动技", element: "Normal", category: "Physical", actionType: "Attack", power: 40, cost: 0 } },
+    mechanisms: [
+      ...(miniBundle.mechanisms ?? []),
+      { id: "skill:sk-shift:transmission", ownerType: "skill", ownerId: "sk-shift", trigger: "turnStart", when: [{ path: "self.active.loadout", op: "contains", value: "sk-shift" }], effects: [{ type: "rotateLoadout", slots: 1 }] },
+    ],
+  };
+  it("rotates the loadout downward at turn start", () => {
+    const sim = new Simulator(bundle);
+    const battle = makeState(
+      makeSide(makeActive("sp-a", { hp: 200, maxHp: 200, energy: 5 })),
+      makeSide(makeActive("sp-b", { hp: 200, maxHp: 200, energy: 5 })),
+      { turn: 1, seed: 1 },
+    );
+    battle.player.active.loadout = ["sk-shift", "sk-1", "sk-2"];
+    const result = sim.step(battle, { kind: "energy" }, { kind: "energy" }, new Rng(1));
+    expect(result.state.player.active.loadout).toEqual(["sk-1", "sk-shift", "sk-2"]);
   });
 });

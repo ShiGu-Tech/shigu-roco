@@ -86,6 +86,10 @@ export type EffectSpec =
   | { type: "modifyStat"; target?: string; stat: string; mode: "flat" | "percent"; value: number; valueFrom?: DynamicValue; maxStages?: number }
   /** 伤害修饰：scope=outgoing 攻方输出倍率、incoming 防方承伤倍率；multiply 相乘 / add 相加（+value）。 */
   | { type: "modifyDamage"; target?: string; mode: "multiply" | "add"; value: number; scope?: "outgoing" | "incoming" }
+  /** 技能栏域 · 条件威力加成：在 `beforeDamage` 收集，累加到本次 `dealDamage` 的有效威力（先于属性 / STAB）。 */
+  | { type: "addPower"; target?: string; value: number; valueFrom?: DynamicValue }
+  /** 技能栏域 · 传动：把目标侧 active 的 `skillId`（默认机制 ownerId）在 `loadout` 内向下移 `slots` 位（循环）。 */
+  | { type: "rotateLoadout"; target?: string; skillId?: string; slots: number }
   /** 连击段数（覆盖默认 1）；给 markId 时按目标持有该印记层数动态计算 base + perStack×层数；hitsFrom 为上下文点路径。 */
   | { type: "setHits"; target?: string; hits?: number; markId?: string; base?: number; perStack?: number; hitsFrom?: DynamicRef }
   /** 减伤百分比（累加后受 rules.combat.damageReductionCap 限制）。 */
@@ -116,7 +120,7 @@ export type EffectSpec =
   /** 能耗域 · 技能能耗修正：对某技能 / 全体 / 攻击技 / 防御技叠加 `delta` 或按 `multiply` 缩放；
    *  `elements` / `excludeElements` 按技能元素筛选；`duration` / `turns` 时效；`oncePerTurn` 每回合限次；
    *  `hidden` 是否对 UI 隐藏来源；`dispellable` 是否可被驱散（默认 false，仅名义 debuff 置 true）。 */
-  | { type: "modifySkillCost"; target?: string; skillId?: string; scope?: "skill" | "all" | "attack" | "defense"; elements?: string[]; excludeElements?: string[]; delta?: number; deltaFrom?: DynamicValue; multiply?: number; mode?: "add" | "set"; key?: string; duration?: "permanent" | "turns" | "nextAction" | "aura"; turns?: number; oncePerTurn?: boolean; hidden?: boolean; dispellable?: boolean }
+  | { type: "modifySkillCost"; target?: string; skillId?: string; scope?: "skill" | "all" | "attack" | "defense"; slots?: number[]; elements?: string[]; excludeElements?: string[]; delta?: number; deltaFrom?: DynamicValue; multiply?: number; mode?: "add" | "set"; key?: string; duration?: "permanent" | "turns" | "nextAction" | "aura"; turns?: number; oncePerTurn?: boolean; hidden?: boolean; dispellable?: boolean }
   /** 能耗域 · 驱散能耗修正：移除目标身上 `dispellable` 且（默认）有害的条目。 */
   | { type: "clearCostMod"; target?: string; all?: boolean }
   /** 行动域 · 强制换人（引擎只标记 `forcedSwitch`，由前端补一次换人）。 */

@@ -49,6 +49,7 @@ export class MechanismRegistry {
           trigger: context.trigger,
           actorSide: context.actorSide,
           targetSide: context.targetSide,
+          event: context.event,
         })),
       );
   }

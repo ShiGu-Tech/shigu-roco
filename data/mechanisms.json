@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.33.0",
+  "version": "0.34.0",
   "updatedAt": "2026-10-01",
   "mechanisms": [
     {
@@ -10660,6 +10660,609 @@
         }
       ],
       "note": "超导：迸发 → 本技能能耗 -2"
+    },
+    {
+      "id": "skill:sk-7070010:transmission",
+      "ownerType": "skill",
+      "ownerId": "sk-7070010",
+      "trigger": "turnStart",
+      "when": [
+        {
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7070010"
+        }
+      ],
+      "effects": [
+        {
+          "type": "rotateLoadout",
+          "slots": 1
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070030:transmission",
+      "ownerType": "skill",
+      "ownerId": "sk-7070030",
+      "trigger": "turnStart",
+      "when": [
+        {
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7070030"
+        }
+      ],
+      "effects": [
+        {
+          "type": "rotateLoadout",
+          "slots": 1
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070040:transmission",
+      "ownerType": "skill",
+      "ownerId": "sk-7070040",
+      "trigger": "turnStart",
+      "when": [
+        {
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7070040"
+        }
+      ],
+      "effects": [
+        {
+          "type": "rotateLoadout",
+          "slots": 2
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070060:transmission",
+      "ownerType": "skill",
+      "ownerId": "sk-7070060",
+      "trigger": "turnStart",
+      "when": [
+        {
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7070060"
+        }
+      ],
+      "effects": [
+        {
+          "type": "rotateLoadout",
+          "slots": 1
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070110:transmission",
+      "ownerType": "skill",
+      "ownerId": "sk-7070110",
+      "trigger": "turnStart",
+      "when": [
+        {
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7070110"
+        }
+      ],
+      "effects": [
+        {
+          "type": "rotateLoadout",
+          "slots": 1
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070120:transmission",
+      "ownerType": "skill",
+      "ownerId": "sk-7070120",
+      "trigger": "turnStart",
+      "when": [
+        {
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7070120"
+        }
+      ],
+      "effects": [
+        {
+          "type": "rotateLoadout",
+          "slots": 1
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070140:transmission",
+      "ownerType": "skill",
+      "ownerId": "sk-7070140",
+      "trigger": "turnStart",
+      "when": [
+        {
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7070140"
+        }
+      ],
+      "effects": [
+        {
+          "type": "rotateLoadout",
+          "slots": 1
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070150:transmission",
+      "ownerType": "skill",
+      "ownerId": "sk-7070150",
+      "trigger": "turnStart",
+      "when": [
+        {
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7070150"
+        }
+      ],
+      "effects": [
+        {
+          "type": "rotateLoadout",
+          "slots": 1
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070170:transmission",
+      "ownerType": "skill",
+      "ownerId": "sk-7070170",
+      "trigger": "turnStart",
+      "when": [
+        {
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7070170"
+        }
+      ],
+      "effects": [
+        {
+          "type": "rotateLoadout",
+          "slots": 1
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070200:transmission",
+      "ownerType": "skill",
+      "ownerId": "sk-7070200",
+      "trigger": "turnStart",
+      "when": [
+        {
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7070200"
+        }
+      ],
+      "effects": [
+        {
+          "type": "rotateLoadout",
+          "slots": 1
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070220:transmission",
+      "ownerType": "skill",
+      "ownerId": "sk-7070220",
+      "trigger": "turnStart",
+      "when": [
+        {
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7070220"
+        }
+      ],
+      "effects": [
+        {
+          "type": "rotateLoadout",
+          "slots": 1
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070250:transmission",
+      "ownerType": "skill",
+      "ownerId": "sk-7070250",
+      "trigger": "turnStart",
+      "when": [
+        {
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7070250"
+        }
+      ],
+      "effects": [
+        {
+          "type": "rotateLoadout",
+          "slots": 1
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070270:transmission",
+      "ownerType": "skill",
+      "ownerId": "sk-7070270",
+      "trigger": "turnStart",
+      "when": [
+        {
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7070270"
+        }
+      ],
+      "effects": [
+        {
+          "type": "rotateLoadout",
+          "slots": 1
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070340:transmission",
+      "ownerType": "skill",
+      "ownerId": "sk-7070340",
+      "trigger": "turnStart",
+      "when": [
+        {
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7070340"
+        }
+      ],
+      "effects": [
+        {
+          "type": "rotateLoadout",
+          "slots": 1
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070010:slot-power",
+      "ownerType": "skill",
+      "ownerId": "sk-7070010",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7070010"
+        },
+        {
+          "path": "event.action.slot",
+          "op": "in",
+          "value": [
+            1
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "addPower",
+          "value": 60
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070040:slot-power",
+      "ownerType": "skill",
+      "ownerId": "sk-7070040",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7070040"
+        },
+        {
+          "path": "event.action.slot",
+          "op": "in",
+          "value": [
+            1
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "addPower",
+          "value": 90
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070110:slot-power",
+      "ownerType": "skill",
+      "ownerId": "sk-7070110",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7070110"
+        },
+        {
+          "path": "event.action.slot",
+          "op": "in",
+          "value": [
+            3
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "addPower",
+          "value": 40
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070140:slot-power",
+      "ownerType": "skill",
+      "ownerId": "sk-7070140",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7070140"
+        },
+        {
+          "path": "event.action.slot",
+          "op": "in",
+          "value": [
+            1,
+            3
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "addPower",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070030",
+      "ownerType": "skill",
+      "ownerId": "sk-7070030",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7070030"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "skillId": "sk-7070030",
+          "power": 33,
+          "powerFrom": {
+            "path": "event.action.neighborPowerSum",
+            "scale": 0.3333333333333333
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070200",
+      "ownerType": "skill",
+      "ownerId": "sk-7070200",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7070200"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "skillId": "sk-7070200",
+          "power": 30,
+          "powerFrom": {
+            "path": "event.action.neighborPowerDiff",
+            "scale": 0.25,
+            "offset": 30
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070120:hits-base",
+      "ownerType": "skill",
+      "ownerId": "sk-7070120",
+      "trigger": "beforeDamage",
+      "priority": 1,
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7070120"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "hits": 2
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070120:hits-slot",
+      "ownerType": "skill",
+      "ownerId": "sk-7070120",
+      "trigger": "beforeDamage",
+      "priority": 0,
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7070120"
+        },
+        {
+          "path": "event.action.slot",
+          "op": "in",
+          "value": [
+            1,
+            3
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "hits": 3
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070170:spd",
+      "ownerType": "skill",
+      "ownerId": "sk-7070170",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7070170"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spd",
+          "mode": "flat",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070170:atk",
+      "ownerType": "skill",
+      "ownerId": "sk-7070170",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7070170"
+        },
+        {
+          "path": "event.action.slot",
+          "op": "in",
+          "value": [
+            1,
+            3
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 80
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070150:cost-slot",
+      "ownerType": "skill",
+      "ownerId": "sk-7070150",
+      "trigger": "turnStart",
+      "when": [
+        {
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7070150"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "skillId": "sk-7070150",
+          "scope": "skill",
+          "slots": [
+            1,
+            3
+          ],
+          "delta": -2,
+          "mode": "set",
+          "duration": "permanent",
+          "key": "cost-slot:sk-7070150",
+          "dispellable": false,
+          "hidden": false
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070270:dr",
+      "ownerType": "skill",
+      "ownerId": "sk-7070270",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7070270"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "self",
+          "percent": 50
+        }
+      ]
+    },
+    {
+      "id": "skill:sk-7070270:dr-slot",
+      "ownerType": "skill",
+      "ownerId": "sk-7070270",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7070270"
+        },
+        {
+          "path": "event.action.slot",
+          "op": "in",
+          "value": [
+            1,
+            3
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "self",
+          "percent": 40
+        }
+      ]
     }
   ]
 }

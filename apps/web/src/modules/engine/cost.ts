@@ -17,6 +17,7 @@ function costModMatches(active: ActiveSprite, skillId: string, bundle: DataBundl
   } else if (mod.scope === "defense") {
     if (skill.actionType !== "Defense") return false;
   }
+  if (mod.slots && !mod.slots.includes(active.loadout.indexOf(skillId) + 1)) return false;
   const element = typeof skill.element === "string" ? skill.element : "";
   if (mod.elements?.length && !mod.elements.includes(element)) return false;
   if (mod.excludeElements?.length && mod.excludeElements.includes(element)) return false;

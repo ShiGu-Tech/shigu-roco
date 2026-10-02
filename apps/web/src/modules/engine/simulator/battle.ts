@@ -94,8 +94,11 @@ export class Simulator {
       events.push(...this.triggerState(st, "battleStart", { event: { turn: st.turn } }));
     }
 
-    const turnStartCommands = this.mechanisms.dispatch({ state: st, trigger: "turnStart", event: { turn: st.turn } });
-    events.push(...this.mechanisms.applyStateCommands(st, turnStartCommands, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+    // 技能栏域 · 传动：turnStart 按侧派发，使 `self.active.loadout` 类条件可取到自身（与 turnEnd 一致）。
+    for (const side of SIDES) {
+      const turnStartCommands = this.mechanisms.dispatch({ state: st, trigger: "turnStart", actorSide: side, targetSide: otherSide(side), event: { turn: st.turn, side } });
+      events.push(...this.mechanisms.applyStateCommands(st, turnStartCommands, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+    }
     events.push(...this.runPendingEffects(st, "turnStart"));
 
     // ① 洛克魔法阶段（愿力）
@@ -139,14 +142,15 @@ export class Simulator {
     for (const side of actorSides) {
       const opponentAction = actions[otherSide(side)];
       const opponentSkill = opponentAction.kind === "skill" && opponentAction.skillId ? getSkill(this.bundle, opponentAction.skillId) : {};
+      const declaredView = this.actionView(st, side, actions[side]);
       const commands = this.mechanisms.dispatch({
         state: st,
         trigger: "actionDeclared",
         actorSide: side,
         targetSide: otherSide(side),
-        action: actions[side],
+        action: declaredView,
         event: {
-          action: actions[side],
+          action: declaredView,
           actionId: actionIds[side],
           reaction: this.reactionOf(actions[side].skillId),
           reacted: reactedBySide[side] === true,
@@ -169,13 +173,15 @@ export class Simulator {
       if (wentFirst) firstResolvedSide = side;
       // 入场域 · 迸发：本次入场后的首次行动。
       const burst = !caster.actedSinceEntry;
+      // 技能栏域 · 位置：暴露行动技能槽位与相邻技能威力（供「位于 N 号位」「两侧威力」类条件）。
+      const actionView = this.actionView(st, side, entry.action);
       const beforeCommands = this.mechanisms.dispatch({
         state: st,
         trigger: "beforeAction",
         actorSide: side,
         targetSide: otherSide(side),
-        action: entry.action,
-        event: { action: entry.action, actionId: entry.id, reacted: reactedBySide[side] === true, wentFirst, burst },
+        action: actionView,
+        event: { action: actionView, actionId: entry.id, reacted: reactedBySide[side] === true, wentFirst, burst },
       });
       events.push(...this.mechanisms.applyActionCommands(queue, beforeCommands, { ...actionIds, [side]: entry.id }, () => `action-${st.turn}-extra-${queue.all().length}`).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
       events.push(...this.mechanisms.applyStateCommands(st, beforeCommands, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
@@ -186,7 +192,7 @@ export class Simulator {
         events.push(...this.applyEnergy(st, side));
         logs.push(`energy: ${side}`);
       } else {
-        events.push(...this.executeSkill(st, side, entry.action, rng, beforeCommands, reactedBySide[side] === true, wentFirst, burst));
+        events.push(...this.executeSkill(st, side, actionView, rng, beforeCommands, reactedBySide[side] === true, wentFirst, burst));
         logs.push(`skill: ${side} -> ${entry.action.skillId ?? ""}`);
       }
       entry.status = "resolved";
@@ -194,7 +200,7 @@ export class Simulator {
       if (entry.action.kind === "skill") {
         if (entry.action.skillId) touched[side].add(entry.action.skillId);
         const usedSkill = entry.action.skillId ? getSkill(this.bundle, entry.action.skillId) : {};
-        events.push(...this.triggerState(st, "skillUsed", { actorSide: side, targetSide: opp, action: entry.action, event: { skillId: entry.action.skillId, actionId: entry.id, element: toStr(usedSkill.element), category: toStr(usedSkill.category), actionType: toStr(usedSkill.actionType), reacted: reactedBySide[side] === true, wentFirst, burst } }));
+        events.push(...this.triggerState(st, "skillUsed", { actorSide: side, targetSide: opp, action: actionView, event: { skillId: entry.action.skillId, actionId: entry.id, element: toStr(usedSkill.element), category: toStr(usedSkill.category), actionType: toStr(usedSkill.actionType), reacted: reactedBySide[side] === true, wentFirst, burst } }));
         const skillId = entry.action.skillId;
         if (skillId && caster.skillOverrides?.[skillId]?.expires === 0) {
           revertSkillOverride(caster, skillId);
@@ -206,8 +212,8 @@ export class Simulator {
         trigger: "actionResolved",
         actorSide: side,
         targetSide: opp,
-        action: entry.action,
-        event: { action: entry.action, actionId: entry.id, reacted: reactedBySide[side] === true, wentFirst, burst },
+        action: actionView,
+        event: { action: actionView, actionId: entry.id, reacted: reactedBySide[side] === true, wentFirst, burst },
       });
       events.push(...this.mechanisms.applyStateCommands(st, afterCommands, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
     });
@@ -258,6 +264,25 @@ export class Simulator {
     const active = this.sideState(st, side).active;
     const spriteDef = getSprite(this.bundle, active.spriteId);
     return effectiveStat(this.bundle, spriteDef, active, "speed");
+  }
+
+  /** 技能栏域 · 行动视图：给行动补 `slot`（1-based）与相邻技能威力（`neighborPowerSum` / `neighborPowerDiff`）。 */
+  private actionView(st: BattleState, side: Side, action: Action): Action {
+    if (action.kind !== "skill" || !action.skillId) return action;
+    const active = this.sideState(st, side).active;
+    const index = active.loadout.indexOf(action.skillId);
+    const count = active.loadout.length;
+    let neighborPowerSum = 0;
+    let neighborPowerDiff = 0;
+    if (index >= 0 && count > 1) {
+      const left = index > 0 ? active.loadout[index - 1] : undefined;
+      const right = index < count - 1 ? active.loadout[index + 1] : undefined;
+      const leftPower = left ? toNum(getSkill(this.bundle, left).power, 0) : 0;
+      const rightPower = right ? toNum(getSkill(this.bundle, right).power, 0) : 0;
+      neighborPowerSum = leftPower + rightPower;
+      neighborPowerDiff = Math.abs(leftPower - rightPower);
+    }
+    return { ...action, slot: index >= 0 ? index + 1 : undefined, neighborPowerSum, neighborPowerDiff } as Action;
   }
 
   private compareOrder(st: BattleState, a: Side, aAction: Action, b: Side, bAction: Action): number {
@@ -464,7 +489,7 @@ export class Simulator {
         event: { action, skillId: action.skillId, damageType: category, reacted, wentFirst, burst },
       });
       events.push(...this.mechanisms.applyStateCommands(st, beforeDamage, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
-      const damageEvents = this.mechanisms.applyDamageCommands(st, this.bundle, damageCommands, { reacted, wentFirst, burst });
+      const damageEvents = this.mechanisms.applyDamageCommands(st, this.bundle, damageCommands, { reacted, wentFirst, burst, action });
       events.push(...damageEvents.map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
       const dealt = damageEvents.reduce((sum, event) => sum + toNum(event.data.value, 0), 0);
       const effectiveness = damageEvents.length ? toNum(damageEvents[damageEvents.length - 1].data.effectiveness, 1) : 1;

@@ -57,5 +57,8 @@
  * - 0.18.0 对象计数：`DynamicValue.countKeys`（路径指向对象时取其键数量，如「每有 1 种减益」）。
  * - 0.19.0 迸发标记：`ActiveSprite.actedSinceEntry` + 本回合行动事件暴露 `burst`（入场首次行动为真，换人重置），
  *          供「迸发：入场首次行动额外效果」类条件。
+ * - 0.20.0 技能栏位置域：`loadout` 升级为有序技能栏；新增 `rotateLoadout`（传动下移）与 `addPower`（条件威力加成）
+ *          效果、`CostMod.slots`（按槽位筛选能耗）；`turnStart` 改为按侧派发，行动事件暴露 `slot` /
+ *          `neighborPowerSum` / `neighborPowerDiff`；命令携带 trigger event 使 `event.action.*` 可取。
  */
-export const ENGINE_VERSION = "0.19.0";
+export const ENGINE_VERSION = "0.20.0";

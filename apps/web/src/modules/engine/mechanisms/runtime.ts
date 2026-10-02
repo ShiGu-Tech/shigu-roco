@@ -14,6 +14,7 @@ interface DamageModifiers {
   defenderMult: number;
   reduction: number;
   hits: number;
+  powerBonus: number;
 }
 
 function actionIdFor(target: string | undefined, actorSide: Side | undefined, actionIds: Record<Side, string>): string | undefined {
@@ -258,6 +259,7 @@ export class MechanismRuntime {
             sourceSpriteId: sourceActive?.spriteId,
             scope,
             skillId: definition.skillId,
+            slots: definition.slots,
             elements: definition.elements,
             excludeElements: definition.excludeElements,
             delta,
@@ -621,6 +623,21 @@ export class MechanismRuntime {
           events.push({ type: "skill-set-swapped", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { from, to, loadout: active.loadout } });
           break;
         }
+        case "rotateLoadout": {
+          if (!active || !targetSide) break;
+          const skillId = definition.skillId ?? command.ownerId;
+          if (!skillId) break;
+          const index = active.loadout.indexOf(skillId);
+          if (index < 0) break;
+          const slots = Math.floor(definition.slots);
+          const next = ((index + slots) % active.loadout.length + active.loadout.length) % active.loadout.length;
+          if (next === index) break;
+          active.loadout = [...active.loadout];
+          active.loadout.splice(index, 1);
+          active.loadout.splice(next, 0, skillId);
+          events.push({ type: "loadout-rotated", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { skillId, from: index, to: next, loadout: active.loadout } });
+          break;
+        }
         default:
           break;
       }
@@ -679,7 +696,8 @@ export class MechanismRuntime {
         const amount = definition.amount ?? definition.power;
         damage = definition.basis === "maxHp" ? Math.floor(target.maxHp * amount) : definition.basis === "currentHp" ? Math.floor(target.hp * amount) : definition.basis === "stack" ? Math.floor(target.maxHp * amount * (target.marks[definition.markId ?? ""] ?? 0)) : Math.floor(amount);
       } else {
-        modifiers = this.damageModifiers(state, attackerSide, targetSide, definition, toStr(skill.element), extraEvent);
+        modifiers = this.damageModifiers(state, attackerSide, targetSide, definition, toStr(skill.element), extraEvent, bundle);
+        if (modifiers.powerBonus) effectiveSkill = { ...effectiveSkill, power: toNum(effectiveSkill.power, 0) + modifiers.powerBonus };
         const result = computeDamage(bundle, attackerDef, targetDef, attacker, target, effectiveSkill, {
           weatherId: state.weather?.id ?? null,
           attackerTraitMult: modifiers.attackerMult,
@@ -699,7 +717,7 @@ export class MechanismRuntime {
   }
 
   /** 结算一次 dealDamage 前，按 `beforeDamage` 收集攻/防伤害修饰（攻方倍率 / 防方倍率 / 减伤 / 连击）。 */
-  private damageModifiers(state: BattleState, attackerSide: Side, targetSide: Side, definition: EffectDefinition, element?: string, extraEvent?: Dict): DamageModifiers {
+  private damageModifiers(state: BattleState, attackerSide: Side, targetSide: Side, definition: EffectDefinition, element?: string, extraEvent?: Dict, bundle?: DataBundle): DamageModifiers {
     const commands = this.dispatch({
       state,
       trigger: "beforeDamage",
@@ -718,11 +736,14 @@ export class MechanismRuntime {
     let attackerMult = 1;
     let defenderMult = 1;
     let reduction = 0;
+    let powerBonus = 0;
     // 记忆域 · 技能永久修正：本技能的基础连击段数。
     let hits = 1 + toNum(skillId ? attacker.skillMods?.[skillId]?.hits : 0, 0);
     for (const command of commands) {
       const d = command.definition;
-      if (d.type === "modifyDamage") {
+      if (d.type === "addPower") {
+        powerBonus += d.valueFrom ? this.dynamicValue(state, command, d.valueFrom, 0, bundle) : d.value;
+      } else if (d.type === "modifyDamage") {
         const outgoing = d.scope ? d.scope === "outgoing" : command.actorSide === attackerSide;
         const factor = d.mode === "add" ? 1 + d.value : d.value;
         if (outgoing) attackerMult *= factor;
@@ -748,7 +769,7 @@ export class MechanismRuntime {
         }
       }
     }
-    return { attackerMult, defenderMult, reduction, hits };
+    return { attackerMult, defenderMult, reduction, hits, powerBonus };
   }
 
   private resolveSide(definition: EffectCommand["definition"], command: EffectCommand): Side | undefined {
