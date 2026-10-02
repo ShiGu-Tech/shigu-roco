@@ -123,6 +123,8 @@ export type EffectSpec =
   | { type: "allowSwitch"; target?: string }
   /** 行动域 · 入场继承：把 `effects` 排入目标侧「下个入场精灵」队列，换人时执行。 */
   | { type: "scheduleEntry"; target?: string; effects: EffectSpec[] }
+  /** 延迟域 · 把 `effects` 排入目标侧队列，于 `delay` 回合后的 `timing` 结算（默认下回合 turnStart）。 */
+  | { type: "scheduleEffect"; target?: string; effects: EffectSpec[]; delay?: number; timing?: "turnStart" | "turnEnd" }
   /** 入场继承 · 继承离场精灵的强化：仅在 `scheduleEntry.effects` 内有效，于换人时由模拟器执行。 */
   | { type: "inheritStat"; polarity?: "buff" | "debuff" | "all" }
   | { type: "modifyMagic"; target?: string; delta: number }
@@ -171,6 +173,15 @@ export interface EffectCommand {
   targetSide?: Side;
   /** 命令级事件负载（供嵌套效果读取，如 consumeMark 暴露的 `consumed`）。 */
   event?: Dict;
+}
+
+/** 延迟效果条目（`SideState.pendingEffects`）。 */
+export interface PendingEffect {
+  dueTurn: number;
+  timing: "turnStart" | "turnEnd";
+  effects: EffectSpec[];
+  actorSide?: Side;
+  targetSide?: Side;
 }
 
 export interface MechanismEvent {

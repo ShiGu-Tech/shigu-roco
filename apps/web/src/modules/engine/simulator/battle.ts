@@ -96,6 +96,7 @@ export class Simulator {
 
     const turnStartCommands = this.mechanisms.dispatch({ state: st, trigger: "turnStart", event: { turn: st.turn } });
     events.push(...this.mechanisms.applyStateCommands(st, turnStartCommands, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+    events.push(...this.runPendingEffects(st, "turnStart"));
 
     // ① 洛克魔法阶段（愿力）
     for (const side of SIDES) {
@@ -212,6 +213,7 @@ export class Simulator {
     for (const side of SIDES) {
       events.push(...this.triggerState(st, "turnEnd", { actorSide: side, targetSide: otherSide(side), event: { turn: st.turn, side } }));
     }
+    events.push(...this.runPendingEffects(st, "turnEnd"));
     for (const event of events) {
       if (event.type === "cooldown-modified" && event.side) {
         const skillId = toStr(event.data.skillId);
@@ -399,6 +401,26 @@ export class Simulator {
       events.push(...this.mechanisms.applyDamageCommands(st, this.bundle, commands).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
     }
     events.push(...this.triggerState(st, "afterSwitch", { actorSide: side, targetSide: otherSide(side), action: { kind: "switch", benchId }, event: { from: old.spriteId, to: target.spriteId, forced } }));
+    return events;
+  }
+
+  /** 延迟域 · 结算到期效果（按 `timing` 派发，保留原施法方视角）。 */
+  private runPendingEffects(st: BattleState, timing: "turnStart" | "turnEnd"): BattleEvent[] {
+    const events: BattleEvent[] = [];
+    for (const side of SIDES) {
+      const s = this.sideState(st, side);
+      const due = (s.pendingEffects ?? []).filter((p) => p.timing === timing && p.dueTurn <= st.turn);
+      if (!due.length) continue;
+      s.pendingEffects = (s.pendingEffects ?? []).filter((p) => !(p.timing === timing && p.dueTurn <= st.turn));
+      const commands: import("../mechanisms").EffectCommand[] = [];
+      for (const p of due) {
+        for (const effect of p.effects) {
+          commands.push({ type: effect.type, definition: effect, mechanismId: "scheduled", trigger: timing, actorSide: p.actorSide, targetSide: p.targetSide });
+        }
+      }
+      events.push(...this.mechanisms.applyStateCommands(st, commands, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+      events.push(...this.mechanisms.applyDamageCommands(st, this.bundle, commands).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+    }
     return events;
   }
 

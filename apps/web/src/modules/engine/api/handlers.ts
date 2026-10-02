@@ -125,6 +125,7 @@ function parseSide(raw: Dict) {
     wishChargesLeft: toNum(raw.wishChargesLeft, 0),
     wishCooldown: toNum(raw.wishCooldown, 0),
     leaderUsed: Boolean(raw.leaderUsed),
+    pendingEffects: Array.isArray(raw.pendingEffects) ? (raw.pendingEffects as import("../mechanisms/types").PendingEffect[]) : undefined,
   };
 }
 

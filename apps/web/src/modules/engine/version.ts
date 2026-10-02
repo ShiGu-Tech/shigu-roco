@@ -50,5 +50,7 @@
  *          使「应对成功 → 连击翻倍」等条件连击可由 `setHits` + `event.reacted` 表达。
  * - 0.15.0 条件派生值 + 行动时序：`Condition.valueFrom` 支持 `DynamicRef`（路径 + `scale`/`offset`/`terms`，
  *          可比较 HP 比例等派生值）；本回合首个结算的行动在 `beforeDamage`/`skillUsed`/`actionResolved` 事件暴露 `wentFirst`。
+ * - 0.16.0 延迟效果：新增 `scheduleEffect`（把 `effects` 排入目标侧 `pendingEffects`，于 `delay` 回合后的
+ *          `turnStart` / `turnEnd` 结算，保留原施法方视角）。
  */
-export const ENGINE_VERSION = "0.15.0";
+export const ENGINE_VERSION = "0.16.0";

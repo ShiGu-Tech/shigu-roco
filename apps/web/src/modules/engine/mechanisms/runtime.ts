@@ -178,6 +178,16 @@ export class MechanismRuntime {
           events.push({ type: "entry-scheduled", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { count: definition.effects.length } });
           break;
         }
+        case "scheduleEffect": {
+          if (!targetSide) break;
+          const side = targetSide === "player" ? state.player : state.enemy;
+          const delay = Math.max(1, Math.floor(definition.delay ?? 1));
+          const timing = definition.timing ?? "turnStart";
+          const dueTurn = state.turn + delay;
+          side.pendingEffects = [...(side.pendingEffects ?? []), { dueTurn, timing, effects: definition.effects, actorSide: command.actorSide, targetSide }];
+          events.push({ type: "effect-scheduled", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { count: definition.effects.length, dueTurn, timing } });
+          break;
+        }
         case "forceSwitch": {
           if (!targetSide) break;
           const side = targetSide === "player" ? state.player : state.enemy;

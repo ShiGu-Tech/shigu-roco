@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.27.0",
+  "version": "0.28.0",
   "updatedAt": "2026-10-01",
   "mechanisms": [
     {
@@ -4155,12 +4155,20 @@
           "delta": 2
         },
         {
-          "type": "unsupported",
-          "effectType": "nextTurnEnergyPenalty",
-          "reason": "入梦「敌方下回合回复能量-5」为延迟效果，待校准"
+          "type": "scheduleEffect",
+          "target": "opponent",
+          "delay": 1,
+          "timing": "turnStart",
+          "effects": [
+            {
+              "type": "modifyEnergy",
+              "target": "opponent",
+              "delta": -5
+            }
+          ]
         }
       ],
-      "note": "入梦：自身冷却 +2（两回合不可用）"
+      "note": "入梦：自身冷却 +2；敌方下回合开始回复的能量 -5（延迟效果，待校准）"
     },
     {
       "ownerType": "skill",

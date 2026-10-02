@@ -1290,3 +1290,53 @@ describe("batch-20 (derived condition / wentFirst)", () => {
     }
   });
 });
+
+describe("batch-21 delayed effects (scheduleEffect)", () => {
+  it("defers effects onto the target side's queue", () => {
+    const runtime = new MechanismRuntime(new MechanismRegistry());
+    const st = makeState(makeSide(makeActive("sp-a", { hp: 100, maxHp: 100 })), makeSide(makeActive("sp-b", { hp: 100, maxHp: 100 })), { turn: 3, seed: 1 });
+    runtime.applyStateCommands(
+      st,
+      [command({ type: "scheduleEffect", target: "opponent", effects: [{ type: "modifyEnergy", target: "opponent", delta: -5 }] })],
+      miniBundle,
+    );
+    expect(st.enemy.pendingEffects).toHaveLength(1);
+    expect(st.enemy.pendingEffects?.[0].dueTurn).toBe(4);
+    expect(st.enemy.pendingEffects?.[0].timing).toBe("turnStart");
+  });
+
+  it("fires scheduled effects at the next turn start", () => {
+    const bundle: DataBundle = {
+      ...miniBundle,
+      mechanisms: [
+        {
+          id: "dream",
+          ownerType: "skill",
+          ownerId: "sk-1",
+          trigger: "skillUsed",
+          when: [{ path: "event.skillId", op: "eq", value: "sk-1" }],
+          effects: [{ type: "scheduleEffect", target: "opponent", delay: 1, timing: "turnStart", effects: [{ type: "modifyEnergy", target: "opponent", delta: -5 }] }],
+        },
+      ],
+    };
+    const sim = new Simulator(bundle);
+    const st = makeState(
+      makeSide(makeActive("sp-a", { hp: 100, maxHp: 100, energy: 5 })),
+      makeSide(makeActive("sp-b", { hp: 100, maxHp: 100, energy: 5 })),
+      { turn: 1, seed: 1 },
+    );
+    st.player.active.loadout = ["sk-1"];
+    const r1 = sim.step(st, { kind: "skill", skillId: "sk-1" }, { kind: "energy" }, new Rng(1));
+    expect(r1.state.enemy.pendingEffects?.[0]?.dueTurn).toBe(2);
+    const r2 = sim.step(r1.state, { kind: "energy" }, { kind: "energy" }, new Rng(1));
+    expect(r2.events.some((e) => e.type === "energy-modified" && e.data.delta === -5)).toBe(true);
+  });
+
+  it("ships the real 入梦 delayed registration", () => {
+    const all = (getBundle().mechanisms ?? []) as MechanismDefinition[];
+    const mech = all.find((m) => m.id === "skill:sk-7170300");
+    expect((mech?.effects ?? []).some((e) => e.type === "unsupported")).toBe(false);
+    const sched = (mech?.effects ?? []).find((e) => e.type === "scheduleEffect") as { delay?: number; timing?: string } | undefined;
+    expect(sched).toMatchObject({ delay: 1, timing: "turnStart" });
+  });
+});

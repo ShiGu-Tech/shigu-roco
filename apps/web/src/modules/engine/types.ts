@@ -104,6 +104,8 @@ export interface SideState {
   forcedSwitch?: boolean;
   /** 行动域 · 下个入场精灵待执行的继承 / 附加效果队列。 */
   pendingEntry?: import("./mechanisms/types").EffectSpec[];
+  /** 延迟域 · 跨回合调度待执行的效果（`scheduleEffect`）。 */
+  pendingEffects?: import("./mechanisms/types").PendingEffect[];
   /** 本回合是否更换过精灵（每回合开始清空）。 */
   switchedThisTurn?: boolean;
   /** 最近一次对本侧造成伤害的来源（供阵亡归属）。 */
