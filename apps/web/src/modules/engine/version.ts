@@ -62,5 +62,7 @@
  *           `neighborPowerSum` / `neighborPowerDiff`；命令携带 trigger event 使 `event.action.*` 可取。
  * - 0.21.0 内省补强（引擎工作台 W0）：事件保留 `trigger`；伤害事件挂 `computeDamage().breakdown`
  *          （威力 / 属性 / STAB / 克制 / 天气 / 增减伤 / 连击）；经 Worker/REST 暴露 `simulate/legal`（`legalActions`）。
+ * - 0.22.0 伤害公式数据化（引擎工作台 P1）：`FormulaSpec`（封闭算子表达式 AST，无 eval）+ `effects/formula.ts`
+ *          求值器；`computeDamage` 与预览 `calc.damageOf` 均读 `rules.formula`（缺省回退 `DEFAULT_FORMULA`），同口径。
  */
-export const ENGINE_VERSION = "0.21.0";
+export const ENGINE_VERSION = "0.22.0";

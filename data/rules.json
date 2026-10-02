@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.2",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "updatedAt": "2026-10-01",
   "status": {
     "clearOnSwitch": true,
@@ -49,6 +49,18 @@
     "balance": 0.9024390244,
     "stab": 1.25,
     "note": "伤害 = floor( (攻 × 战时显示威力 × 37/41) ÷ 防 ) × 减伤 × 连击；攻/防为面板真实数值（不含 buff，buff 走强化差值），本系 1.25。必中、无暴击、无闪避。"
+  },
+  "formula": {
+    "kind": "expr-v1",
+    "inputs": ["power", "atk", "dfn", "typeMult", "stab", "stageMult", "traitMult", "weatherMult", "extraMult", "reduction", "hits", "balance"],
+    "steps": [
+      { "let": "effectivePower", "expr": ["mul", "power", "typeMult", "stab", "stageMult", "traitMult", "weatherMult", "extraMult"] },
+      { "let": "perHit", "expr": ["floor", ["div", ["mul", "atk", "effectivePower", "balance"], "dfn"]] },
+      { "let": "damage", "expr": ["floor", ["mul", "perHit", "reduction", "hits"]] }
+    ],
+    "output": "damage",
+    "breakdown": ["atk", "dfn", "effectivePower", "perHit", "stageMult", "stab", "typeMult", "traitMult", "weatherMult", "extraMult", "reduction", "hits"],
+    "note": "伤害公式数据化（引擎工作台 P1）：封闭算子表达式 AST，无脚本/eval。与 code 默认 DEFAULT_FORMULA 同口径；改此块即改公式。"
   },
   "combat": {
     "stageStep": 0.1,

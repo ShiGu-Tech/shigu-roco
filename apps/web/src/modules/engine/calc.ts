@@ -6,6 +6,7 @@
  * 系数 / 魔法数字不在本文件新增（伤害系数仍在校准，故允许调用方覆盖）。
  */
 
+import { DEFAULT_FORMULA, evaluateFormula, type FormulaSpec } from "./effects/formula";
 import { type StatKey, computeStats, statCoefficients, statWithProfile } from "./stats";
 import type { StatsData, StatProfile } from "./types";
 import { asDict, toNum } from "./types";
@@ -140,6 +141,8 @@ export interface DamageInput extends DamageFactors {
   hits?: number;
   /** 伤害系数，默认 DEFAULT_DAMAGE_BALANCE。 */
   balance?: number;
+  /** 公式 spec（缺省 `DEFAULT_FORMULA`，与引擎 `rules.formula` 同口径）。 */
+  formula?: FormulaSpec;
 }
 
 export interface DamageOutput {
@@ -149,15 +152,29 @@ export interface DamageOutput {
   breakdown: Record<string, number>;
 }
 
-/** 伤害 = floor( 攻 × 有效威力 × balance ÷ 防 ) × (1 − 减伤%) × 连击。 */
+/** 伤害 = floor( 攻 × 有效威力 × balance ÷ 防 ) × (1 − 减伤%) × 连击（走与引擎同一公式 spec）。 */
 export function damageOf(input: DamageInput): DamageOutput {
   const balance = input.balance ?? DEFAULT_DAMAGE_BALANCE;
-  const effectivePower = effectivePowerOf(input.power, input);
   const defense = Math.max(1, input.defense);
-  const perHit = Math.floor((input.atk * effectivePower * balance) / defense);
   const reduction = 1 - Math.max(0, Math.min(99, input.reduction ?? 0)) / 100;
   const hits = Math.max(1, Math.floor(input.hits ?? 1));
-  const damage = Math.max(0, Math.floor(perHit * reduction * hits));
+  const { value, vars } = evaluateFormula(input.formula ?? DEFAULT_FORMULA, {
+    power: input.power,
+    atk: input.atk,
+    dfn: defense,
+    typeMult: input.typeMult ?? 1,
+    stab: input.stab ?? 1,
+    stageMult: input.stage ?? 1,
+    traitMult: input.trait ?? 1,
+    weatherMult: input.weather ?? 1,
+    extraMult: input.extra ?? 1,
+    reduction,
+    hits,
+    balance,
+  });
+  const effectivePower = toNum(vars.effectivePower, effectivePowerOf(input.power, input));
+  const perHit = toNum(vars.perHit, Math.floor((input.atk * effectivePower * balance) / defense));
+  const damage = Math.max(0, Math.floor(value));
   return {
     damage,
     perHit,

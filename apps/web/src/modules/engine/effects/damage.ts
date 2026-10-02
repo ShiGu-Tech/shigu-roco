@@ -9,6 +9,7 @@ import { bundleTypeMultiplier, getWeatherDef } from "../data";
 import { applyProfile, statWithProfile } from "../stats";
 import type { ActiveSprite, DataBundle, Dict } from "../types";
 import { asDict, toNum, toStr } from "../types";
+import { evaluateFormula, resolveFormula } from "./formula";
 
 export interface DamageResult {
   damage: number;
@@ -87,20 +88,34 @@ export function computeDamage(
   const extraMult = options.extraMult ?? 1.0;
   const hits = Math.max(1, Math.floor(options.hits ?? 1));
 
-  const effectivePower = power * typeMult * stab * stageMult * traitMult * weatherMult * extraMult;
-  const perHit = Math.floor((atk * effectivePower * balance) / dfn);
-
   const cap = toNum(asDict(bundle.rules.combat).damageReductionCap, 99);
   const reductionPct = Math.max(0, Math.min(cap, options.damageReduction ?? 0));
   const reduction = 1 - reductionPct / 100;
 
-  const damage = Math.max(0, Math.floor(perHit * reduction * hits));
+  // 公式数据化：spec 来自 `rules.formula`（缺省回退 `DEFAULT_FORMULA`），执行 / 预览共用求值器。
+  const spec = resolveFormula(bundle.rules as Record<string, unknown>);
+  const { value, vars } = evaluateFormula(spec, { power, atk, dfn, typeMult, stab, stageMult, traitMult, weatherMult, extraMult, reduction, hits, balance });
+
+  const damage = Math.max(0, Math.floor(value));
   return {
     damage,
     typeMult,
     stab,
     effective: damage,
-    breakdown: { atk, dfn, effectivePower, perHit, stageMult, stab, typeMult, traitMult, weatherMult, extraMult, reduction, hits },
+    breakdown: {
+      atk,
+      dfn,
+      effectivePower: toNum(vars.effectivePower, 0),
+      perHit: toNum(vars.perHit, 0),
+      stageMult,
+      stab,
+      typeMult,
+      traitMult,
+      weatherMult,
+      extraMult,
+      reduction,
+      hits,
+    },
   };
 }
 
