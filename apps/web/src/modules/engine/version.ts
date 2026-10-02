@@ -64,5 +64,8 @@
  *          （威力 / 属性 / STAB / 克制 / 天气 / 增减伤 / 连击）；经 Worker/REST 暴露 `simulate/legal`（`legalActions`）。
  * - 0.22.0 伤害公式数据化（引擎工作台 P1）：`FormulaSpec`（封闭算子表达式 AST，无 eval）+ `effects/formula.ts`
  *          求值器；`computeDamage` 与预览 `calc.damageOf` 均读 `rules.formula`（缺省回退 `DEFAULT_FORMULA`），同口径。
+ * - 0.23.0 执行图运行时段（G0/G1）：`NodeTypeRegistry`（可插拔原语节点）+ `runProgram` 解释器（控制边 / 数据边）
+ *          + 逐节点 `TraceEntry`（node/type/inputs/outputs/mutations/parent）+ `validateProgram` / `programHash`；
+ *          首批内建节点（事件源 / flow.branch / read / math / logic / cmp / write / query / rng）。
  */
-export const ENGINE_VERSION = "0.22.0";
+export const ENGINE_VERSION = "0.23.0";
