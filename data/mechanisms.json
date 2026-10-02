@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.32.0",
+  "version": "0.33.0",
   "updatedAt": "2026-10-01",
   "mechanisms": [
     {
@@ -9796,7 +9796,7 @@
       "note": "消波块：每携带 1 个水系技能，地系技能能耗 -1"
     },
     {
-      "id": "trait:sp-427-1",
+      "id": "trait:sp-427-1:buff",
       "ownerType": "trait",
       "ownerId": "sp-427-1",
       "trigger": "buffGained",
@@ -9823,7 +9823,7 @@
       "note": "王子的诺言：获得增益 → 全技能能耗 -1（每回合 1 次）"
     },
     {
-      "id": "trait:sp-427-1",
+      "id": "trait:sp-427-1:debuff",
       "ownerType": "trait",
       "ownerId": "sp-427-1",
       "trigger": "debuffGained",
@@ -9850,7 +9850,7 @@
       "note": "王子的诺言：获得减益 → 全技能能耗 +1（每回合 1 次）"
     },
     {
-      "id": "trait:sp-428-1",
+      "id": "trait:sp-428-1:buff",
       "ownerType": "trait",
       "ownerId": "sp-428-1",
       "trigger": "buffGained",
@@ -9877,7 +9877,7 @@
       "note": "王子的诺言：获得增益 → 全技能能耗 -1（每回合 1 次）"
     },
     {
-      "id": "trait:sp-428-1",
+      "id": "trait:sp-428-1:debuff",
       "ownerType": "trait",
       "ownerId": "sp-428-1",
       "trigger": "debuffGained",
@@ -9904,7 +9904,7 @@
       "note": "王子的诺言：获得减益 → 全技能能耗 +1（每回合 1 次）"
     },
     {
-      "id": "trait:sp-429-1",
+      "id": "trait:sp-429-1:buff",
       "ownerType": "trait",
       "ownerId": "sp-429-1",
       "trigger": "buffGained",
@@ -9931,7 +9931,7 @@
       "note": "王子的诺言：获得增益 → 全技能能耗 -1（每回合 1 次）"
     },
     {
-      "id": "trait:sp-429-1",
+      "id": "trait:sp-429-1:debuff",
       "ownerType": "trait",
       "ownerId": "sp-429-1",
       "trigger": "debuffGained",

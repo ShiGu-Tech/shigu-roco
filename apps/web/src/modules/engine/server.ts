@@ -26,8 +26,16 @@ export function getBundle(force = false): DataBundle {
         .filter((mechanism) => mechanism.ownerType === "skill" && toArray<Dict>(mechanism.effects).some((effect) => effect.type === "dealDamage"))
         .map((mechanism) => String(mechanism.ownerId)),
     );
+    // 威力 ≥ 哨兵值（如「消耗能量越高伤害越高」用 2100000 表示变量）不自动生成基础伤害，避免按哨兵值结算。
+    const POWER_SENTINEL = 100000;
     const skillMechanisms = registered.skills
-      .filter((skill) => (skill.category === "Physical" || skill.category === "Magic") && Number(skill.power ?? 0) > 0 && !authoredDamageSkills.has(String(skill.id)))
+      .filter(
+        (skill) =>
+          (skill.category === "Physical" || skill.category === "Magic") &&
+          Number(skill.power ?? 0) > 0 &&
+          Number(skill.power ?? 0) < POWER_SENTINEL &&
+          !authoredDamageSkills.has(String(skill.id)),
+      )
       .map((skill) => ({
         id: `registered:skill:${String(skill.id)}`,
         ownerType: "skill",

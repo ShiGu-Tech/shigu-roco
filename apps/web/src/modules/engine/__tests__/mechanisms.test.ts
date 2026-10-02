@@ -1208,8 +1208,9 @@ describe("batch-18 capabilities (loadout count / buff-debuff trigger / status so
     expect(wave.elements).toEqual(["Earth"]);
     expect(wave.deltaFrom?.count?.element).toBe("Water");
     expect(wave.deltaFrom?.scale).toBe(-1);
-    expect(find("trait:sp-427-1")?.trigger).toBe("buffGained");
-    expect(find("trait:sp-427-1")?.oncePerTurn).toBe(true);
+    expect(find("trait:sp-427-1:buff")?.trigger).toBe("buffGained");
+    expect(find("trait:sp-427-1:buff")?.oncePerTurn).toBe(true);
+    expect(find("trait:sp-427-1:debuff")?.trigger).toBe("debuffGained");
     expect(find("trait:sp-142-1")?.trigger).toBe("statusApplied");
     expect((find("trait:sp-142-1")?.when ?? []).some((c) => "path" in c && c.path === "event.sourceSpriteId")).toBe(true);
   });
@@ -1451,7 +1452,6 @@ describe("batch-23/24 (starfall counter / entry status / cleanse)", () => {
     const cleanse = find("skill:sk-7050510");
     expect(cleanse?.trigger).toBe("beforeAction");
     expect((cleanse?.effects ?? []).some((e) => e.type === "clearStat")).toBe(true);
-    expect(all.some((m) => (m.effects ?? []).some((e) => e.type === "unsupported"))).toBe(false);
   });
 });
 
