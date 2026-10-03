@@ -18,7 +18,7 @@ import { registerEffectNodes } from "./effect-nodes";
 import { NodeTypeRegistry } from "./registry";
 import { runProgram } from "./interpreter";
 import type { Program } from "./types";
-import { mechanismsFromData, type MechanismContext, type EffectCommand, type MechanismSource } from "../mechanisms";
+import { mechanismsFromData, conditionScope, gatePasses, type MechanismContext, type MechanismDefinition, type EffectCommand, type MechanismSource } from "../mechanisms";
 import type { DataBundle, Dict } from "../types";
 
 let sharedRegistry: NodeTypeRegistry | undefined;
@@ -50,23 +50,31 @@ interface EntryPlan {
   trigger: string;
   mechanismId: string;
   priority: number;
+  /** 机制定义（供 AND 脊门控；缺省 = 不门控，仅微型夹具走此分支，语义不受影响）。 */
+  definition?: MechanismDefinition;
 }
 
 export class ProgramCollector implements MechanismSource {
   private readonly plans: EntryPlan[];
+  /** 是否接了定义（门控启用；作用域按批懒建）。 */
+  private readonly gated: boolean;
 
-  constructor(private readonly program: Program, private readonly bundle: DataBundle) {
-    const byId = new Map(program.nodes.map((node) => [node.id, node]));
+  constructor(private readonly program: Program, private readonly bundle: DataBundle, definitions?: MechanismDefinition[]) {
+    const byId = definitions ? new Map(definitions.map((definition) => [definition.id, definition])) : undefined;
+    this.gated = Boolean(byId?.size);
+    const byNode = new Map(program.nodes.map((node) => [node.id, node]));
     this.plans = program.entries
       .map((id) => {
-        const node = byId.get(id);
+        const node = byNode.get(id);
         if (!node) throw new Error(`程序入口不存在: ${id}`);
         const params = (node.params ?? {}) as Dict;
+        const mechanismId = String(params.mechanismId ?? id);
         return {
           id,
           trigger: node.type.startsWith("on.") ? node.type.slice(3) : "",
-          mechanismId: String(params.mechanismId ?? id),
+          mechanismId,
           priority: Number(params.priority ?? 0),
+          definition: byId?.get(mechanismId),
         };
       })
       // 与 collect 同序：priority desc → id asc（不依赖 program.entries 的书写顺序）。
@@ -74,10 +82,16 @@ export class ProgramCollector implements MechanismSource {
   }
 
   collect(context: MechanismContext): EffectCommand[] {
+    // AND 脊门控（G2b-1.5）：脊叶任一为假的机制条件必不成立 → 不进 runProgram，
+    // 省掉其整条链的图行走（程序源相对 DSL ~10x 开销的主源）；与 DSL 源同一门控，A/B 等价保持。
+    const scope = this.gated ? conditionScope(context) : undefined;
     // 命中该触发器的入口（plans 已按 priority desc / id asc 排序 = collect 排序）。
     const entries: string[] = [];
     for (const plan of this.plans) {
-      if (plan.trigger && plan.trigger === context.trigger) entries.push(plan.id);
+      if (plan.trigger && plan.trigger === context.trigger) {
+        if (scope !== undefined && plan.definition && !gatePasses(scope, plan.definition)) continue;
+        entries.push(plan.id);
+      }
     }
     if (!entries.length) return [];
     // 一次 runProgram 跑完全部命中链（逐入口调用的固定开销 ≈ 每条链 2µs × 688，是程序源的主要性能开销）。
@@ -108,7 +122,7 @@ export class ProgramCollector implements MechanismSource {
   }
 }
 
-/** 便捷构造：bundle → 缓存程序 → 收集器（Simulator 默认走此路径）。 */
+/** 便捷构造：bundle → 缓存程序 + 定义（同批对象，WeakMap 门控叶共享）→ 收集器（带门控）。 */
 export function programCollectorFor(bundle: DataBundle): ProgramCollector {
-  return new ProgramCollector(programForBundle(bundle), bundle);
+  return new ProgramCollector(programForBundle(bundle), bundle, mechanismsFromData(bundle.mechanisms));
 }

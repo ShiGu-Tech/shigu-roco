@@ -23,8 +23,9 @@ function sideState(context: MechanismContext, side: Side | undefined): unknown {
   return side === "player" ? context.state.player : context.state.enemy;
 }
 
-/** 条件作用域：self/actor 指触发方，target/opponent 指目标方，event 为事件负载。 */
-function scope(context: MechanismContext): unknown {
+/** 条件作用域：self/actor 指触发方，target/opponent 指目标方，event 为事件负载。
+ *  独立函数：一次 collect 批内建一次、全批复用（叶求值 / 门控 / conditionsMatch 共享同一份）。 */
+export function conditionScope(context: MechanismContext): unknown {
   return {
     ...context,
     event: context.event,
@@ -37,7 +38,7 @@ function scope(context: MechanismContext): unknown {
 
 /** 从上下文取值（供 effect 的动态引用，如 skillIdFrom）。 */
 export function resolveContextPath(context: MechanismContext, path: string): unknown {
-  return readPath(scope(context), path);
+  return readPath(conditionScope(context), path);
 }
 
 /** 解析动态引用（字符串 = 点路径；对象 = 路径 + 系数 / 偏移 / 多项式）。条件里不含 bundle，故不支持 `count`。
@@ -49,13 +50,14 @@ export function resolveRef(root: unknown, ref: DynamicRef): unknown {
   return raw * (ref.scale ?? 1) + (ref.offset ?? 0);
 }
 
-function matches(context: MechanismContext, condition: Condition): boolean {
-  if ("allOf" in condition) return condition.allOf.every((item) => matches(context, item));
-  if ("anyOf" in condition) return condition.anyOf.some((item) => matches(context, item));
-  if ("not" in condition) return !matches(context, condition.not);
+/** 对**预建作用域**求值单条条件——门控（`gatePasses`）与 `conditionsMatch` 共用同一实现，零语义漂移。 */
+export function matchCondition(scope: unknown, condition: Condition): boolean {
+  if ("allOf" in condition) return condition.allOf.every((item) => matchCondition(scope, item));
+  if ("anyOf" in condition) return condition.anyOf.some((item) => matchCondition(scope, item));
+  if ("not" in condition) return !matchCondition(scope, condition.not);
 
-  const actual = readPath(scope(context), condition.path);
-  const expected = condition.valueFrom !== undefined ? resolveRef(scope(context), condition.valueFrom) : condition.value;
+  const actual = readPath(scope, condition.path);
+  const expected = condition.valueFrom !== undefined ? resolveRef(scope, condition.valueFrom) : condition.value;
   switch (condition.op) {
     case "eq":
       return actual === expected;
@@ -83,7 +85,13 @@ function matches(context: MechanismContext, condition: Condition): boolean {
   }
 }
 
+/** 对预建作用域求值完整条件组（顶层合取）。 */
+export function conditionsMatchOn(scope: unknown, conditions: Condition[] | undefined): boolean {
+  if (!conditions?.length) return true;
+  return conditions.every((condition) => matchCondition(scope, condition));
+}
+
 export function conditionsMatch(context: MechanismContext, conditions: Condition[] | undefined): boolean {
   if (!conditions?.length) return true;
-  return conditions.every((condition) => matches(context, condition));
+  return conditionsMatchOn(conditionScope(context), conditions);
 }

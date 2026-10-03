@@ -81,5 +81,12 @@
  *          `EffectCommand.effectIndex` 令 chance 盐粒按机制内原序（与 DSL 源一致，数据零 chance 无行为变化）。
  *          **默认源仍为 DSL**：实测程序源 collect ≈ DSL 15x、step ≈ 6–13x（688 条链节点解释的固有开销），
  *          直接切默认会等比吃掉 MCTS 迭代数——性能达标后再切；等价性由 collect 逐命令 + 整场同种子 A/B 守卫。
+ * - 0.26.1 AND 脊门控 + 默认源切程序（G2b-1.5）：`mechanisms/relevance.ts` 把 `when` 合取链上可判的叶
+ *          （顶层数组 / 嵌套 allOf；anyOf·not 不前置）前置精确求值——任一叶为假 ⇒ 条件树必假，跳过是
+ *          **纯短路提前**（叶求值与 `conditionsMatch` 共用 `matchCondition`，零行为变化；两源同门控保 A/B 等价）。
+ *          数据普查 695 条全部可门控（682 身份叶 + 13 护盾·reacted 脊叶）。收益：beforeAction 503 条
+ *          命中链门控后仅 survivors 进全量求值 / 图行走——程序源 collect 2.4ms→0.19ms、step×4 19.8ms→1.77ms，
+ *          与 DSL 同量级（collect / step 差 <±17%），**Simulator 默认源切程序源**（DSL 经注入保留做对照）。
+ *          回归：`relevance.test`（合成语义 + 全量 soundness + 骨架等价 + 普查守卫）+ `program-collect` A/B 重跑。
  */
-export const ENGINE_VERSION = "0.26.0";
+export const ENGINE_VERSION = "0.26.1";

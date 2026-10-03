@@ -1,5 +1,6 @@
 import type { Dict } from "../types";
-import { conditionsMatch, resolveContextPath } from "./conditions";
+import { conditionScope, conditionsMatchOn, resolveContextPath } from "./conditions";
+import { gatePasses } from "./relevance";
 import type { EffectCommand, EffectDefinition, MechanismContext, MechanismDefinition } from "./types";
 
 /** 解析 effect 的动态引用（skillIdFrom → skillId），未命中则原样返回。 */
@@ -29,8 +30,10 @@ export class MechanismRegistry {
   collect(context: MechanismContext): EffectCommand[] {
     // oncePerTurn：同一回合内同一机制（按侧）只触发一次；`passive` 为按需读取，不计次。
     const fired = context.trigger === "passive" ? undefined : context.state.onceFired;
+    // AND 脊门控（G2b-1.5）：作用域批内建一次，脊叶任一为假即跳过——与 conditionsMatch 同叶求值，纯短路提前。
+    const scope = conditionScope(context);
     return this.definitions
-      .filter((definition) => definition.trigger === context.trigger && conditionsMatch(context, definition.when))
+      .filter((definition) => definition.trigger === context.trigger && gatePasses(scope, definition) && conditionsMatchOn(scope, definition.when))
       .filter((definition) => {
         if (!definition.oncePerTurn || !fired) return true;
         const key = `${context.actorSide ?? "-"}:${definition.id}`;

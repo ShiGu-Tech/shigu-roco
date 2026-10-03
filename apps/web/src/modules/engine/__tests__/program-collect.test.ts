@@ -18,9 +18,9 @@ import { satisfy } from "./support";
  * - collect 等价：同一 MechanismContext（触发器 + 侧 + 事件）下 `MechanismRegistry.collect` vs
  *   `ProgramCollector.collect`——命令逐条深比较（definition / meta / effectIndex）+ 收集后状态（onceFired 标记）等；
  *   样本覆盖全部触发器、oncePerTurn、priority、多条件、无侧调用点（battleStart 语义）。
- * - 战斗等价：同一夹具、同种子逐步 `step`，事件流与终态逐步深比较（默认 DSL 源 vs **注入程序源**）。
- * - 性能参考仅写报告不设断言：程序源 collect ≈ DSL 15x、step ≈ 6–13x（结构解释的固有开销，
- *   见《引擎执行图》G2b 性能边界）——默认源暂留 DSL，性能达标后再切。
+ * - 战斗等价：同一夹具、同种子逐步 `step`，事件流与终态逐步深比较（默认**程序源** vs **注入 DSL 源**）。
+ * - 性能参考仅写报告不设断言：G2b-1.5 AND 脊门控后程序源与 DSL 同量级（collect +17% / step +10%，
+ *   见《引擎执行图》§16），默认源已切程序。
  */
 
 const bundle = getBundle();
@@ -115,8 +115,8 @@ describe("G2b 程序化 collect（ProgramCollector）", () => {
   });
 
   it("同种子整场战斗：程序源（默认）与 DSL 源注入 逐步事件流 + 终态一致", () => {
-    const programSim = new Simulator(bundle, programSource); // 程序源 = 显式注入（默认待性能优化后切换）
-    const dslSim = new Simulator(bundle); // 默认 = DSL 注册表源
+    const programSim = new Simulator(bundle); // 默认 = 程序源
+    const dslSim = new Simulator(bundle, dslSource); // 注入 DSL 对照
     let s1 = fixture();
     let s2 = cloneState(s1);
     const seeds = [7, 11, 13, 17];
@@ -168,7 +168,7 @@ describe("G2b 程序化 collect（ProgramCollector）", () => {
       const state = cloneState(ctx.base);
       tinyCollector.collect({ state, trigger: def.trigger, actorSide: ctx.actorSide, targetSide: ctx.targetSide, event: ctx.event } as MechanismContext);
     });
-    time("编译全量程序", 3, () => {
+    time("编译全量程序", 5, () => {
       compileMechanisms(defs);
     });
     const runSteps = (sim: Simulator) => {
@@ -179,8 +179,14 @@ describe("G2b 程序化 collect（ProgramCollector）", () => {
         s = sim.step(s, p, e, new Rng(5)).state;
       }
     };
-    time("DSL 源 step×4", 3, () => runSteps(new Simulator(bundle)));
-    time("程序源 step×4（注入）", 3, () => runSteps(new Simulator(bundle, programSource)));
+    const dslSim = new Simulator(bundle, dslSource); // 注入 DSL 对照
+    const programSim = new Simulator(bundle); // 默认 = 程序源（门控后）
+    time("DSL 源 step×4（注入）", 30, () => runSteps(dslSim));
+    time("程序源 step×4（默认）", 30, () => runSteps(programSim));
+    // 门控命中参考：beforeAction 全量机制数 vs 身份不匹配事件下实际收集数（G2b-1.5 AND 脊门控）。
+    const gateCtx = { state: cloneState(fixture()), trigger: "beforeAction", actorSide: "player", targetSide: "enemy", event: { action: { kind: "skill", skillId: "sk-none" } } } as MechanismContext;
+    const beforeActionTotal = defs.filter((d) => d.trigger === "beforeAction").length;
+    lines.push(`门控参考：beforeAction 机制 ${beforeActionTotal} 条 → 身份不匹配事件实际收集 ${dslSource.collect(gateCtx).length} 条`);
     writeFileSync(path.join(tmpdir(), "shigu-rock-g2b-perf.txt"), lines.join("\n"), "utf8");
     expect(lines.length).toBeGreaterThan(0);
   });
