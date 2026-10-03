@@ -3,9 +3,10 @@
 export * from "./types";
 export { NodeTypeRegistry } from "./registry";
 export { registerBuiltins } from "./builtins";
-export { registerEffectNodes, ACTION_EFFECT_TYPES } from "./effect-nodes";
+export { registerEffectNodes } from "./effect-nodes";
+export { ACTION_EFFECT_TYPES } from "./action-types";
 export { runProgram, validateProgram, programHash, type RunProgramOptions, type ValidationIssue } from "./interpreter";
-export { compileMechanism, compileMechanisms, type CompiledMechanism } from "./compiler";
+export { compileMechanism, compileMechanisms, type CompiledMechanism, type NodeSource } from "./compiler";
 
 import { registerBuiltins } from "./builtins";
 import { registerEffectNodes } from "./effect-nodes";

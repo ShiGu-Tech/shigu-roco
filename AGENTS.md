@@ -39,7 +39,7 @@ scripts/                      setup / dev / 同步 / 静态包导出
 - 引擎：`pnpm -F web test`（vitest：图鉴归一化、机制注册 / 行动队列 / 事务结算）。
 - 前端：`pnpm -F web lint && pnpm -F web typecheck`。
 - 全量：`pnpm check`（= 前端 lint+typecheck + 引擎测试；由根 `package.json` 代理）。
-- 浏览器交互自验：`pwsh scripts/cdp-smoke.ps1 -Url <url> -WaitText <文案> [-ClickText "按钮,按钮"] -Out <png>`（CDP 真时驱动 headless Edge：等待文本 / 点击 / 横向溢出断言 / 截图）。**注意**：headless `--virtual-time-budget` 不等 Web Worker 回话（Worker 页面会永远停在加载态），验证走 Worker 的页面必须用本脚本真时等待；`--timeout` 在 Edge 上不生效。
+- 浏览器交互自验：`pwsh scripts/cdp-smoke.ps1 -Url <url> -WaitText <文案> [-ClickText "按钮,按钮"] [-Actions "click:文案|edit:输入框匹配=值|check:文案|checkabsent:文案"] -Out <png>`（CDP 真时驱动 headless Edge：等待文本 / 点击按钮或画布节点 / 有序动作回路 / 文本断言（失败退出码 1）/ 横向溢出断言 / 截图）。**注意**：headless `--virtual-time-budget` 不等 Web Worker 回话（Worker 页面会永远停在加载态），验证走 Worker 的页面必须用本脚本真时等待；`--timeout` 在 Edge 上不生效。
 - 数据改动：必须过引擎测试（`catalog.test.ts` 归一化 + `data.ts` 引用校验）；注册后经 `/api/engine/health` 确认 counts 与 warnings。
 - 每次改动完成：跑 `pnpm check`，并在本地 `26900` 冒烟相关页面（引擎内置，无需单独启动）。
 
@@ -58,6 +58,7 @@ scripts/                      setup / dev / 同步 / 静态包导出
 - 弹窗用 `DialogBody` / `DialogForm`；禁止原生 `alert` / `confirm` / `prompt`；交互优先 `components/ui/*`。
 - 图表用 ECharts 6；响应式断点 `min-[520px]:` / `min-[860px]:`。
 - 引擎同构：纯逻辑不依赖 `fs` / DOM；Node 侧 loader（`data-node.ts`）与浏览器 Worker 均复用同一引擎。
+- **`node:fs` 只进服务端叶模块**：写盘逻辑（`api/mechanisms-store.ts`、`catalog/registry.ts`）不得被客户端可达模块引用——页面会复用 `api/handlers` 的纯导出（如 `parseState`），一旦 handlers 依赖 fs 就会把 `node:fs` 打进客户端 chunk（Turbopack 构建直接失败）。客户端与服务端共用的纯逻辑放独立纯模块（如 `api/compile-check.ts`）。
 - 不引入数据库、鉴权、云同步；存档 / 对手库存浏览器 `localStorage`。
 - 凭证 / 密钥不入仓（本项目预期无需凭证）。
 - 不新增依赖前先确认已在用；新增需说明理由。

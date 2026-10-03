@@ -11,20 +11,11 @@
  * - 共享 `ctx.runtime`（注册表与 dispatch 同源）：级联触发 / ruleModifiers 与旧路径行为一致。
  */
 
+import { ACTION_EFFECT_TYPES } from "./action-types";
 import { resolveEffect, type EffectCommand, type EffectDefinition, type MechanismEvent, type MechanismOwnerType } from "../mechanisms";
 import type { Dict, Side } from "../types";
 import type { NodeTypeRegistry } from "./registry";
 import type { NodeContext, NodeExecution, NodeParam, StateMutation } from "./types";
-
-/** 行动域效果类型：只有提供 actions 上下文（actionDeclared / beforeAction 调用点）才经 applyActionCommands 结算。 */
-export const ACTION_EFFECT_TYPES: ReadonlySet<string> = new Set([
-  "cancelAction",
-  "forceFirst",
-  "setPriority",
-  "replaceAction",
-  "insertAction",
-  "unsupported",
-]);
 
 function actorSide(ctx: NodeContext): Side {
   return ctx.actorSide ?? (ctx.event.actorSide as Side | undefined) ?? "player";

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import * as handlers from "@/modules/engine/api/handlers";
 import * as catalogHandlers from "@/modules/engine/catalog/api-node";
+import { workbenchApply } from "@/modules/engine/api/mechanisms-store";
 import { getBundle, reloadBundle } from "@/modules/engine/server";
 import type { Dict } from "@/modules/engine/types";
 
@@ -53,6 +54,13 @@ async function handle(request: Request, ctx: { params: Promise<{ path: string[] 
         return json(handlers.debugLegal(getBundle(), body));
       case "debug/step":
         return json(handlers.debugStep(getBundle(), body));
+      case "workbench/validate":
+        return json(handlers.workbenchValidate(body));
+      case "workbench/apply": {
+        const result = workbenchApply(body);
+        if (result.ok) reloadBundle();
+        return json(result);
+      }
       case "admin/catalog/register": {
         const result = catalogHandlers.registerCatalog(body);
         reloadBundle();

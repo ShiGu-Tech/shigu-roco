@@ -8,6 +8,7 @@
  */
 
 import type { Condition, DynamicValue, EffectDefinition, MechanismDefinition } from "@/modules/engine/mechanisms/types";
+import type { NodeSource } from "@/modules/engine/graph";
 import {
   CONDITION_COMBINATOR_LABELS,
   CONDITION_OP_LABELS,
@@ -41,6 +42,8 @@ export interface ViewNode {
   depth: number;
   params: ParamView[];
   position: { x: number; y: number };
+  /** 程序图（G3b）：该节点源自哪条 DSL 位置，供编辑映射；DSL 投影不填。 */
+  source?: NodeSource;
 }
 
 export interface ViewEdge {
@@ -57,8 +60,8 @@ export interface MechanismGraph {
   payloads: Record<string, unknown>;
 }
 
-const COLUMN_X = 240;
-const ROW_Y = 96;
+export const COLUMN_X = 240;
+export const ROW_Y = 96;
 
 interface Layout {
   depth: number;
@@ -67,7 +70,7 @@ interface Layout {
 
 /** 动态取值判定：对象带 `path`（`DynamicValue`），或路径式字符串（含 `.`，如 `self.active.hp`）。
  *  纯枚举字符串（`target`/`markId`/`scope` 等）不算动态。 */
-function isDynamicRef(value: unknown): boolean {
+export function isDynamicRef(value: unknown): boolean {
   if (typeof value === "object" && value !== null) return "path" in (value as Record<string, unknown>);
   return typeof value === "string" && value.includes(".");
 }
@@ -84,7 +87,7 @@ function describeDynamic(value: unknown): string {
   return parts.filter(Boolean).join(" ");
 }
 
-function valueText(value: unknown): string {
+export function valueText(value: unknown): string {
   if (value === undefined) return "—";
   if (isDynamicRef(value)) return describeDynamic(value);
   if (typeof value === "string") return value;
@@ -106,7 +109,7 @@ function conditionTitle(cond: Condition): string {
   return `${cond.path} ${op} ${rhs}`;
 }
 
-function makeParam(key: string, label: string, value: unknown, dynamic = false, children?: string[]): ParamView {
+export function makeParam(key: string, label: string, value: unknown, dynamic = false, children?: string[]): ParamView {
   return { key, label, value, display: children?.length ? `（${children.length} 个子效果）` : valueText(value), dynamic, children };
 }
 
@@ -131,7 +134,7 @@ function nestedEffectsOf(effect: EffectDefinition): { field: string; list: Effec
   return out;
 }
 
-function effectParams(effect: EffectDefinition, childIds: Record<string, string[]>): ParamView[] {
+export function effectParams(effect: EffectDefinition, childIds: Record<string, string[]>): ParamView[] {
   const vocab = effectVocabularyOf(effect.type);
   const raw = { ...(effect as unknown as Record<string, unknown>) };
   delete raw.type;

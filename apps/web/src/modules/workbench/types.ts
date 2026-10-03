@@ -14,8 +14,17 @@ export interface WorkbenchMechanism {
   def: MechanismDefinition;
 }
 
+/** 节点类型目录项：由 `NodeTypeRegistry.catalog()` 导出（`GET /api/engine/workbench/schema.nodes`），
+ *  类别驱动画布配色与详情渲染——UI 不硬编码节点语义（设计稿 D1）。 */
+export interface WorkbenchNodeCatalogItem {
+  type: string;
+  title: string;
+  category: string;
+}
+
 export interface WorkbenchSchema {
   triggers: { name: string; title: string; phase: string }[];
   effects: { type: string; title: string; domain: string }[];
   domains: Record<string, string>;
+  nodes: WorkbenchNodeCatalogItem[];
 }

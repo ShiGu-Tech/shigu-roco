@@ -1,9 +1,14 @@
-# CDP 真时驱动 headless Edge：navigate → 等条件 → 可选点击 → 截图
+# CDP 真时驱动 headless Edge：navigate → 等条件 → 可选点击 → 可选有序动作 → 断言 → 截图
 # 用法：pwsh scripts/cdp-smoke.ps1 -Url <url> -WaitText "状态编辑" -ClickText "单步" -Out <png>
+# 有序动作（冒烟编辑回路）：-Actions "click:编辑|click:取值（路径）|edit:event.=x|check:未写回改动|checkabsent:✕"
+#   click:<文案>  点击按钮或画布节点（按钮精确匹配优先，其次 .react-flow__node 文本包含）
+#   edit:<匹配>=<值>  定位 value 含 <匹配> 的输入框，赋值并派发 focusout（CommitField 失焦提交）
+#   check:<文案> / checkabsent:<文案>  断言页面文本含 / 不含，失败则退出码 1
 param(
   [Parameter(Mandatory)][string]$Url,
   [string]$WaitText,
   [string]$ClickText,
+  [string]$Actions,
   [Parameter(Mandatory)][string]$Out,
   [int]$TimeoutSec = 60,
   [int]$Width = 1440,
@@ -12,6 +17,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+$script:failed = $false
 $edge = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
 $profile = Join-Path $env:TEMP "opencode\edge-cdp-$Port"
 if (Test-Path $profile) { Remove-Item -Recurse -Force $profile }
@@ -100,12 +106,44 @@ try {
   if ($ClickText) {
     foreach ($label in ($ClickText -split ",")) {
       $trimmed = $label.Trim()
-      $clicked = Eval "(() => { const bs = [...document.querySelectorAll('button')]; const b = bs.find((x) => x.textContent.trim() === '$trimmed') || bs.find((x) => x.textContent.includes('$trimmed')); if (!b) return false; b.click(); return true; })()"
+      $clicked = Eval "(() => { const bs = [...document.querySelectorAll('button')]; const nodes = [...document.querySelectorAll('.react-flow__node')]; const b = bs.find((x) => x.textContent.trim() === '$trimmed') || nodes.find((x) => x.textContent.includes('$trimmed')) || bs.find((x) => x.textContent.includes('$trimmed')); if (!b) return false; b.click(); return true; })()"
       Write-Output "CLICK $trimmed -> $clicked"
       Start-Sleep -Seconds 2
     }
     $text = Eval "document.body.innerText"
     [IO.File]::WriteAllText((Join-Path (Split-Path $Out) "cdp-after-click.txt"), $text)
+  }
+
+  if ($Actions) {
+    foreach ($step in ($Actions -split "\|")) {
+      $s = $step.Trim()
+      if ($s.StartsWith("click:")) {
+        $label = $s.Substring(6)
+        $clicked = Eval "(() => { const bs = [...document.querySelectorAll('button')]; const nodes = [...document.querySelectorAll('.react-flow__node')]; const b = bs.find((x) => x.textContent.trim() === '$label') || nodes.find((x) => x.textContent.includes('$label')) || bs.find((x) => x.textContent.includes('$label')); if (!b) return false; b.click(); return true; })()"
+        Write-Output "CLICK $label -> $clicked"
+        if (-not $clicked) { $script:failed = $true }
+        Start-Sleep -Seconds 2
+      } elseif ($s.StartsWith("edit:")) {
+        $pair = $s.Substring(5)
+        $idx = $pair.IndexOf("=")
+        $match = $pair.Substring(0, $idx)
+        $value = $pair.Substring($idx + 1)
+        $r = Eval "(() => { const i = [...document.querySelectorAll('input')].find((x) => (x.value || '').includes('$match')); if (!i) return 'no-input'; i.focus(); i.value = '$value'; i.dispatchEvent(new FocusEvent('focusout', { bubbles: true })); return 'ok'; })()"
+        Write-Output "EDIT [$match] -> $r"
+        if ($r -ne "ok") { $script:failed = $true }
+        Start-Sleep -Seconds 2
+      } elseif ($s.StartsWith("checkabsent:")) {
+        $t = $s.Substring(12)
+        $ok = Eval "!document.body.innerText.includes(`"$t`")"
+        if ($ok) { Write-Output "CHECK ok(absent): $t" } else { Write-Output "CHECK FAIL(absent): $t"; $script:failed = $true }
+      } elseif ($s.StartsWith("check:")) {
+        $t = $s.Substring(6)
+        $ok = Eval "document.body.innerText.includes(`"$t`")"
+        if ($ok) { Write-Output "CHECK ok: $t" } else { Write-Output "CHECK FAIL: $t"; $script:failed = $true }
+      } else {
+        throw "未知动作: $s"
+      }
+    }
   }
 
   $href = Eval "location.href"
@@ -122,3 +160,5 @@ try {
   if ($ws) { $ws.Dispose() }
   if ($proc -and -not $proc.HasExited) { Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue }
 }
+if ($script:failed) { Write-Output "SMOKE FAILED"; exit 1 }
+Write-Output "SMOKE OK"

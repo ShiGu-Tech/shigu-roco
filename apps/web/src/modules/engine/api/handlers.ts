@@ -3,6 +3,7 @@
 import { counts, getMark, getSkill, getSprite, getWeatherDef } from "../data";
 import { schemaPayload } from "../mechanisms/vocabulary";
 import { MCTS, DEFAULT_MCTS_CONFIG, type RecommendOutput, type TrainingContext } from "../mcts/search";
+import { compileIssues, NODE_REGISTRY } from "./compile-check";
 import { OpponentModel } from "../opponent/bayes";
 import {
   actionCountsFor,
@@ -455,9 +456,21 @@ function countEffects(effects: unknown): number {
   return total;
 }
 
-/** 工作台节点词汇（trigger / 效果命令 / 条件 / 动态取值），UI 不硬编码。 */
+/** 工作台节点词汇（trigger / 效果命令 / 条件 / 动态取值 / 节点目录），UI 不硬编码。 */
 export function workbenchSchema(): Dict {
-  return schemaPayload() as unknown as Dict;
+  return {
+    ...(schemaPayload() as unknown as Dict),
+    nodes: NODE_REGISTRY.catalog() as unknown as Dict[],
+  };
+}
+
+/** 工作台 · 校验：编译单条机制定义（DSL 草稿）→ 程序 → `validateProgram`。 */
+export function workbenchValidate(body: Dict): Dict {
+  const issues = compileIssues(body.def);
+  return {
+    errors: issues.filter((issue) => issue.level === "error"),
+    warnings: issues.filter((issue) => issue.level !== "error"),
+  };
 }
 
 /** 工作台机制列表：摘要 + 完整定义（含归属名解析），供只读投影与筛选。 */
