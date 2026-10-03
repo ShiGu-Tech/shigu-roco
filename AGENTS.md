@@ -63,6 +63,14 @@ scripts/                      setup / dev / 同步 / 静态包导出
 - 凭证 / 密钥不入仓（本项目预期无需凭证）。
 - 不新增依赖前先确认已在用；新增需说明理由。
 
+## 本地 Docker 部署
+
+- **构建**：`docker build -t shigu-rock:<版本> --build-arg APP_VERSION=<版本> --build-arg APP_BUILT_AT=<ISO 时间> .`
+  镜像 tag 与 `APP_VERSION` 同步 `package.json`。多阶段（模式参照 ShiGuZone/main `deploy/docker/Dockerfile`，按本项目裁剪：无 officecli / 无 apt / 公开依赖免 secret）：`node:26-slim` 装 pnpm（仓内 `.npmrc` → npmmirror）→ 清单层装依赖（BuildKit pnpm-store cache mount，lockfile 不变则缓存）→ `pnpm build` 出 Next standalone → 运行层拷 `standalone` + 显式 `@swc/helpers`（Next 16 + pnpm 追踪不全，与 main 同因）+ `.next/static` + `public`，`USER node`、`EXPOSE 3000`、`CMD node apps/web/server.js`。
+- **启动**：先停 dev（**与 `pnpm dev` 共用 26900**）→ 仓根 `docker compose up -d`；就绪看 `/api/engine/health` 或 `docker compose ps`（healthcheck 打该接口）。
+- **data 不入镜像**：`data/registry`（~526MB）被 `.dockerignore` 排除，compose 以 `./data:/app/data` 挂载（`ROCO_DATA_DIR=/app/data`）——同步图鉴、工作台写回 `mechanisms.json` 均无需重建镜像；引擎参数 `data/*.json` 会进镜像作缺省，挂载后以宿主为准。
+- **冒烟**：与 dev 相同（`scripts/cdp-smoke.ps1 -Url http://127.0.0.1:26900/...`）；**停止**：`docker compose down`。镜像版本升级随发布改 `compose.yaml` 的 `image:` 与构建命令两处 tag。
+
 ## 端口
 
 | 服务 | 端口 |

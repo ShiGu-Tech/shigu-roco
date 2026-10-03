@@ -1,0 +1,22 @@
+# 本地 Docker 部署：单服务（Next standalone + 内置 TS 引擎；离线 · 单人 · 无数据库）。
+# 镜像 tag 与 package.json 版本同步；构建：docker build -t shigu-rock:<版本> --build-arg APP_VERSION=<版本> .
+# 注意：与 dev 共用 26900——先停 dev（pnpm dev 的 Next 进程）再 up。
+services:
+  shigu-rock:
+    image: shigu-rock:0.45.1
+    container_name: shigu-rock
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:26900:3000"
+    environment:
+      ROCO_DATA_DIR: /app/data
+    volumes:
+      # 图鉴注册（data/registry，不入镜像）+ 引擎参数走宿主目录：
+      # 同步图鉴、工作台写回 mechanisms.json 都无需重建镜像
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3000/api/engine/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))\""]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3

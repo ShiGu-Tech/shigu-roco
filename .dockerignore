@@ -1,0 +1,19 @@
+# 构建上下文裁剪（data/registry 526MB 运行期挂载、绝不进上下文）
+node_modules
+**/node_modules
+.pnpm-store
+.next
+**/.next
+data/registry
+.env*
+**/.env*
+*.tsbuildinfo
+**/*.tsbuildinfo
+.git
+.gitignore
+.gitattributes
+logs
+tmp
+coverage
+.cache
+docs
