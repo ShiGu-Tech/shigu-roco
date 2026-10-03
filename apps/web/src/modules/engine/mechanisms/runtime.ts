@@ -6,7 +6,6 @@ import type { BattleState, CostMod, DataBundle, Dict, Side } from "../types";
 import { asDict, toArray, toNum, toStr } from "../types";
 import { ActionQueue } from "./action-queue";
 import { resolveContextPath } from "./conditions";
-import { MechanismRegistry } from "./registry";
 import type { DynamicRef, DynamicValue, EffectCommand, EffectDefinition, MechanismContext, MechanismEvent, TriggerName } from "./types";
 
 interface DamageModifiers {
@@ -33,9 +32,15 @@ function hashSeed(state: BattleState, salt: string): number {
   return h >>> 0;
 }
 
+/** 命令收集器接口：`MechanismRegistry`（DSL 路径）与 `ProgramCollector`（程序路径）都实现它——
+ *  运行时只依赖 `collect`，两条路径可互换（G2b 接线与 A/B 同种子等价测试的基础）。 */
+export interface MechanismSource {
+  collect(context: MechanismContext): EffectCommand[];
+}
+
 /** 机制扩展的运行时外壳：负责收集命令和安全地修改行动队列。 */
 export class MechanismRuntime {
-  constructor(readonly registry: MechanismRegistry) {}
+  constructor(readonly registry: MechanismSource) {}
 
   dispatch(context: MechanismContext): EffectCommand[] {
     return this.registry.collect(context);

@@ -75,5 +75,11 @@
  *          路由；节点补齐 `logic.or` / `cmp.has·contains` / `read.ref` / `read.path` 的 `*` 合计 / `flow.gate.withSide`；
  *          `runProgram({ mechanisms, actions })` 共享注册表（级联 / ruleModifiers 与 dispatch 同源）；回归基准：全 480 条
  *          同上下文逐事件 + 终态等价；`cloneState` 保留 `onceFired`（修复中途克隆重置 oncePerTurn 门）。
+ * - 0.26.0 程序化 collect（G2b 接线）：`MechanismSource` 收集器接缝（`MechanismRegistry` 与 `ProgramCollector` 可互换），
+ *          `Simulator(bundle, mechanisms?)` 可注入；程序源 = 一次 `runProgram(entries, mode:"collect")` 跑全部命中机制链
+ *          （shell 上下文复用 + 作用域按调用缓存 + RNG 懒建）；collect 输出按（机制序, effectIndex）复位 DSL 序；
+ *          `EffectCommand.effectIndex` 令 chance 盐粒按机制内原序（与 DSL 源一致，数据零 chance 无行为变化）。
+ *          **默认源仍为 DSL**：实测程序源 collect ≈ DSL 15x、step ≈ 6–13x（688 条链节点解释的固有开销），
+ *          直接切默认会等比吃掉 MCTS 迭代数——性能达标后再切；等价性由 collect 逐命令 + 整场同种子 A/B 守卫。
  */
-export const ENGINE_VERSION = "0.25.0";
+export const ENGINE_VERSION = "0.26.0";

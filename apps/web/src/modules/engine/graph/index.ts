@@ -7,6 +7,7 @@ export { registerEffectNodes } from "./effect-nodes";
 export { ACTION_EFFECT_TYPES } from "./action-types";
 export { runProgram, validateProgram, programHash, type RunProgramOptions, type ValidationIssue } from "./interpreter";
 export { compileMechanism, compileMechanisms, type CompiledMechanism, type NodeSource } from "./compiler";
+export { ProgramCollector, programForBundle, programCollectorFor } from "./collect";
 
 import { registerBuiltins } from "./builtins";
 import { registerEffectNodes } from "./effect-nodes";

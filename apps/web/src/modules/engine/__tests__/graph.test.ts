@@ -134,7 +134,7 @@ describe("engine graph interpreter (G0)", () => {
       ],
       entries: ["ev"],
     };
-    const { state, trace } = runProgram({ program: p, registry, bundle: withMatrix, state: battle(150), entry: "ev" });
+    const { state, trace } = runProgram({ program: p, registry, bundle: withMatrix, state: battle(150), entry: "ev", actorSide: "player" });
     expect(trace.some((t) => t.node === "el")).toBe(true);
     expect(state.player.active.buffs.atk).toBe(1);
   });

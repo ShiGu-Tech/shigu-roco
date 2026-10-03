@@ -42,24 +42,32 @@ function readPath(root: unknown, path: string): unknown {
   }, root);
 }
 
-/** 条件作用域：与 mechanisms/conditions 的 scope 对齐（self/actor/target/opponent + action/trigger/sourceId 根）。 */
+/** 条件作用域：与 mechanisms/conditions 的 scope **逐字段同构**（self/actor/target/opponent 取侧状态、
+ *  缺 side 时为 undefined；trigger / action / sourceId / actorSide / targetSide 根同 conditions 展开）。
+ *  条件子图与 `conditionsMatch` 必须在同一作用域求值，否则等价性破防。
+ *  按 ctx 对象缓存：一次 runProgram 调用内 state/event/侧引用恒定（含 onceFired 原地变更，按引用可见）。 */
+const scopeCache = new WeakMap<object, Record<string, unknown>>();
+
 function scope(ctx: NodeContext): Record<string, unknown> {
-  const actor = actorSide(ctx);
-  const target = ctx.targetSide ?? other(actor);
-  return {
+  const cached = scopeCache.get(ctx as unknown as object);
+  if (cached) return cached;
+  const actor = ctx.actorSide ?? (ctx.event.actorSide as Side | undefined);
+  const target = ctx.targetSide;
+  const built: Record<string, unknown> = {
     state: ctx.state,
     trigger: ctx.trigger,
     sourceId: ctx.sourceId,
+    action: ctx.action,
     actorSide: actor,
     targetSide: target,
-    action: ctx.action,
     event: ctx.event,
-    turn: ctx.state.turn,
-    self: sideOf(ctx.state, actor),
-    actor: sideOf(ctx.state, actor),
-    target: sideOf(ctx.state, target),
-    opponent: sideOf(ctx.state, target),
+    self: actor ? sideOf(ctx.state, actor) : undefined,
+    actor: actor ? sideOf(ctx.state, actor) : undefined,
+    target: target ? sideOf(ctx.state, target) : undefined,
+    opponent: target ? sideOf(ctx.state, target) : undefined,
   };
+  scopeCache.set(ctx as unknown as object, built);
+  return built;
 }
 
 export function registerBuiltins(registry: NodeTypeRegistry): void {

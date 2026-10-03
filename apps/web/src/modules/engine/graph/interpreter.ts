@@ -1,15 +1,19 @@
-/** 执行图解释器（G0）：走程序 → 逐节点执行 → 记 trace。
+/** 执行图解释器（G0/G2b）：走程序 → 逐节点执行 → 记 trace。
  *
  * - 控制流沿 `control` 边游走；数据流沿 `data` 边**拉取**（调用方不感知求值顺序）。
  * - 副作用只来自节点执行器；每次执行记录输入 / 输出 / 状态增量 / 父节点。
  * - 无 `eval`：节点执行器是注册的强类型函数。
+ * - **collect 模式（G2b）**：写入节点只装配命令入缓冲、不结算；不克隆状态（`flow.gate` 的 oncePerTurn 标记
+ *   落在传入状态上，与 `MechanismRegistry.collect` 的分发期标记同点位）；不记 trace（每次 dispatch 只跑
+ *   条件链，量大且无消费者）。供 `ProgramCollector` 实现程序化 dispatch。
  */
 
 import { cloneState } from "../state";
 import { Rng } from "../rng";
-import { MechanismRegistry, MechanismRuntime, type ActionQueue, type TriggerName } from "../mechanisms";
+import { MechanismRuntime, type ActionQueue, type MechanismSource, type TriggerName } from "../mechanisms";
 import type { Action, DataBundle, Dict, Side } from "../types";
 import type { NodeTypeRegistry } from "./registry";
+import type { EffectCommand } from "../mechanisms";
 import type { GraphNode, Program, RunResult, StateMutation, TraceEntry } from "./types";
 
 const MAX_STEPS = 5000;
@@ -19,8 +23,10 @@ export interface RunProgramOptions {
   registry: NodeTypeRegistry;
   bundle: DataBundle;
   state: RunResult["state"];
-  /** 入口事件节点 id。 */
-  entry: string;
+  /** 入口事件节点 id（与 `entries` 二选一，`entries` 优先）。 */
+  entry?: string;
+  /** 多入口：同一次调用按给定顺序逐条执行（程序化 collect 一次 dispatch 跑全部命中机制链）。 */
+  entries?: string[];
   event?: Dict;
   seed?: number;
   /** 机制触发器；缺省从入口节点类型（`on.*`）推导，未识别时回退 beforeAction。 */
@@ -30,22 +36,23 @@ export interface RunProgramOptions {
   targetSide?: Side;
   action?: Action;
   sourceId?: string;
-  /** 共享机制注册表：写入节点的级联触发 / ruleModifiers 与 dispatch 语义同源。 */
-  mechanisms?: MechanismRegistry;
+  /** 共享机制收集器：写入节点的级联触发 / ruleModifiers 与 dispatch 语义同源。 */
+  mechanisms?: MechanismSource;
   /** 行动域上下文；缺省时行动类效果静默跳过（对齐 triggerState 应用协议）。 */
   actions?: { queue: ActionQueue; actionIds: Record<Side, string>; nextActionId: () => string };
   /** dealDamage 附加事件负载（对齐 applyDamageCommands.extraEvent）。 */
   extraEvent?: Dict;
+  /** collect 模式：写入节点装配命令入缓冲不结算、不克隆状态、不记 trace（程序化 dispatch）。 */
+  mode?: "apply" | "collect";
 }
 
-export function runProgram(opts: RunProgramOptions): RunResult {
-  const { program, registry, bundle } = opts;
-  const state = cloneState(opts.state);
-  const byId = new Map<string, GraphNode>(program.nodes.map((n) => [n.id, n]));
-  const entryType = byId.get(opts.entry)?.type ?? "";
-  const trigger: TriggerName = opts.trigger ?? (entryType.startsWith("on.") ? (entryType.slice(3) as TriggerName) : "beforeAction");
-  const runtime = new MechanismRuntime(opts.mechanisms ?? new MechanismRegistry());
+/** 程序结构索引（byId / 控制边 / 数据边）：按 Program 实例缓存——同一程序跨多次 dispatch 复用，避免每次重建。 */
+const structuralCache = new WeakMap<Program, { byId: Map<string, GraphNode>; controlFrom: Map<string, string[]>; dataInto: Map<string, { node: string; port: string }> }>();
 
+function structuralIndex(program: Program) {
+  const cached = structuralCache.get(program);
+  if (cached) return cached;
+  const byId = new Map<string, GraphNode>(program.nodes.map((n) => [n.id, n]));
   const controlFrom = new Map<string, string[]>();
   const dataInto = new Map<string, { node: string; port: string }>();
   for (const edge of program.edges) {
@@ -56,13 +63,53 @@ export function runProgram(opts: RunProgramOptions): RunResult {
       dataInto.set(`${edge.to.node}:${edge.to.port}`, { node: edge.from.node, port: edge.from.port });
     }
   }
+  const index = { byId, controlFrom, dataInto };
+  structuralCache.set(program, index);
+  return index;
+}
+
+export function runProgram(opts: RunProgramOptions): RunResult {
+  const { program, registry, bundle } = opts;
+  const entryList = opts.entries ?? (opts.entry !== undefined ? [opts.entry] : []);
+  if (!entryList.length) throw new Error("runProgram 缺少入口（entry / entries）");
+  const collectMode = opts.mode === "collect";
+  // collect 模式不克隆：gate 标记与 legacy collect 一样落在调用方状态上。
+  const state = collectMode ? opts.state : cloneState(opts.state);
+  const { byId, controlFrom, dataInto } = structuralIndex(program);
+  const entryType = byId.get(entryList[0])?.type ?? "";
+  const trigger: TriggerName = opts.trigger ?? (entryType.startsWith("on.") ? (entryType.slice(3) as TriggerName) : "beforeAction");
+  const runtime = new MechanismRuntime(opts.mechanisms ?? { collect: () => [] });
 
   const trace: TraceEntry[] = [];
-  const rng = new Rng(opts.seed ?? state.seed ?? 0);
+  const commands: EffectCommand[] | undefined = collectMode ? [] : undefined;
+  // RNG 懒建：collect 模式（条件/门/装配命令）从不抽随机数，省去每次调用的 Rng 构造。
+  let rngObj: Rng | undefined;
+  const rng = () => (rngObj ??= new Rng(opts.seed ?? state.seed ?? 0)).next();
   const event = opts.event ?? {};
   let seq = 0;
   let steps = 0;
   let currentParent: string | undefined;
+
+  // shell 上下文：executors 不持有 ctx，故整次调用复用同一对象，仅逐节点切换 params / inputs，
+  // 省去每节点两次闭包分配（大程序 collect 的主要固定开销）。
+  let currentInputs: Dict = {};
+  const shell = {
+    state,
+    bundle,
+    event,
+    params: {} as Dict,
+    input: (port: string) => currentInputs[port],
+    rng,
+    trigger,
+    actorSide: opts.actorSide ?? (event.actorSide as Side | undefined),
+    targetSide: opts.targetSide,
+    action: opts.action,
+    sourceId: opts.sourceId,
+    runtime,
+    actions: opts.actions,
+    extraEvent: opts.extraEvent,
+    collect: commands,
+  };
 
   function typeOf(node: GraphNode) {
     const type = registry.get(node.type);
@@ -71,22 +118,9 @@ export function runProgram(opts: RunProgramOptions): RunResult {
   }
 
   function makeContext(node: GraphNode, inputs: Dict) {
-    return {
-      state,
-      bundle,
-      event,
-      params: node.params ?? {},
-      input: (port: string) => inputs[port],
-      rng: () => rng.next(),
-      trigger,
-      actorSide: opts.actorSide ?? (event.actorSide as Side | undefined),
-      targetSide: opts.targetSide,
-      action: opts.action,
-      sourceId: opts.sourceId,
-      runtime,
-      actions: opts.actions,
-      extraEvent: opts.extraEvent,
-    };
+    shell.params = node.params ?? {};
+    currentInputs = inputs;
+    return shell;
   }
 
   function evaluateDataNode(nodeId: string, visiting: Set<string>): Dict {
@@ -97,8 +131,10 @@ export function runProgram(opts: RunProgramOptions): RunResult {
     const inputs = collectInputs(node, visiting);
     const exec = typeOf(node).executor(makeContext(node, inputs));
     visiting.delete(nodeId);
-    seq += 1;
-    trace.push({ seq, node: nodeId, type: node.type, kind: "data", params: node.params, inputs, outputs: exec.outputs, parent: currentParent });
+    if (!collectMode) {
+      seq += 1;
+      trace.push({ seq, node: nodeId, type: node.type, kind: "data", params: node.params, inputs, outputs: exec.outputs, parent: currentParent });
+    }
     return exec.outputs ?? {};
   }
 
@@ -125,15 +161,21 @@ export function runProgram(opts: RunProgramOptions): RunResult {
     currentParent = nodeId;
     const exec = type.executor(makeContext(node, inputs));
     const mutations: StateMutation[] = exec.mutations ?? [];
-    seq += 1;
-    trace.push({ seq, node: nodeId, type: node.type, kind: "control", params: node.params, inputs, outputs: exec.outputs, mutations: mutations.length ? mutations : undefined, parent });
+    if (!collectMode) {
+      seq += 1;
+      trace.push({ seq, node: nodeId, type: node.type, kind: "control", params: node.params, inputs, outputs: exec.outputs, mutations: mutations.length ? mutations : undefined, parent });
+    }
     for (const port of exec.control ?? type.controlOut ?? []) {
       for (const target of controlFrom.get(`${nodeId}:${port}`) ?? []) runControl(target, nodeId);
     }
   }
 
-  runControl(opts.entry);
-  return { state, trace };
+  // 逐入口执行（每入口独立步数预算，避免大程序多入口共享上限）。
+  for (const entryId of entryList) {
+    steps = 0;
+    runControl(entryId);
+  }
+  return { state, trace, commands };
 }
 
 export interface ValidationIssue {

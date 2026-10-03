@@ -17,11 +17,10 @@ import type { Dict, Side } from "../types";
 import type { NodeTypeRegistry } from "./registry";
 import type { NodeContext, NodeExecution, NodeParam, StateMutation } from "./types";
 
-function actorSide(ctx: NodeContext): Side {
-  return ctx.actorSide ?? (ctx.event.actorSide as Side | undefined) ?? "player";
-}
-function other(side: Side): Side {
-  return side === "player" ? "enemy" : "player";
+/** 派发侧：与 `MechanismContext.actorSide` 同语义——**可能为 undefined**（battleStart 等调用点不传），
+ *  legacy 对 self 目标且无 side 的命令会跳过，这里不做 "player" 兜底以保持等价。 */
+function actorSide(ctx: NodeContext): Side | undefined {
+  return ctx.actorSide ?? (ctx.event.actorSide as Side | undefined);
 }
 
 /** 所有写入节点的公共参数（编译器装配命令元数据 + 完整 spec 透传）。 */
@@ -32,6 +31,9 @@ const COMMON_PARAMS: NodeParam[] = [
   { name: "effectIndex", type: "number" },
   { name: "spec", type: "json" },
 ];
+
+/** 元数据参数：装配进 EffectCommand 字段，不进入 `definition`（definition 必须与 DSL 原文逐字段一致）。 */
+const META_PARAMS: ReadonlySet<string> = new Set(COMMON_PARAMS.map((param) => param.name));
 
 interface WriteSpec {
   suffix: string;
@@ -125,8 +127,10 @@ export function registerEffectNodes(registry: NodeTypeRegistry): void {
         const hasSpec = specJson.type !== undefined;
         const targetPort = ctx.input("target") as Side | undefined;
         // 覆盖序：spec 透传 → 具名参数 → 数据端口；target = 端口 > spec > 手工缺省。
+        // meta 参数（mechanismId/spec 等）只装配命令字段，不入 definition——definition 必须与 DSL 原文一致。
         const definition: Dict = { ...specJson, type: spec.suffix };
         for (const param of spec.params ?? []) {
+          if (META_PARAMS.has(param.name)) continue;
           const value = ctx.params[param.name];
           if (value !== undefined) definition[param.name] = value;
         }
@@ -142,7 +146,7 @@ export function registerEffectNodes(registry: NodeTypeRegistry): void {
             state: ctx.state,
             trigger: ctx.trigger,
             sourceId: ctx.sourceId,
-            actorSide: ctx.actorSide ?? actor,
+            actorSide: actor,
             targetSide: ctx.targetSide,
             action: ctx.action,
             event: ctx.event,
@@ -156,11 +160,16 @@ export function registerEffectNodes(registry: NodeTypeRegistry): void {
           ownerType: ctx.params.ownerType as MechanismOwnerType | undefined,
           ownerId: ctx.params.ownerId as string | undefined,
           trigger: ctx.trigger,
-          actorSide: ctx.actorSide ?? actor,
-          targetSide: ctx.targetSide ?? other(actor),
+          actorSide: actor,
+          targetSide: ctx.targetSide,
           event: ctx.event,
           effectIndex: ctx.params.effectIndex as number | undefined,
         };
+        // collect 模式：只装配命令入缓冲（级联 / ruleModifiers 的应用统一由调用方批量结算）。
+        if (ctx.collect) {
+          ctx.collect.push(command);
+          return { outputs: { events: [] } };
+        }
         const before = snapshotHpEnergy(ctx.state);
         const events: MechanismEvent[] = ACTION_EFFECT_TYPES.has(spec.suffix) && ctx.actions
           ? ctx.runtime.applyActionCommands(ctx.actions.queue, [command], ctx.actions.actionIds, ctx.actions.nextActionId)

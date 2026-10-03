@@ -5,7 +5,7 @@
  */
 
 import type { Action, BattleState, DataBundle, Dict, Side } from "../types";
-import type { ActionQueue, MechanismRuntime, TriggerName } from "../mechanisms";
+import type { ActionQueue, EffectCommand, MechanismRuntime, TriggerName } from "../mechanisms";
 
 export type PortType = "any" | "number" | "string" | "boolean" | "object" | "event" | "side";
 export interface NodePort {
@@ -59,6 +59,8 @@ export interface NodeContext {
   actions?: { queue: ActionQueue; actionIds: Record<Side, string>; nextActionId: () => string };
   /** dealDamage 附加事件负载（对齐 applyDamageCommands 的 extraEvent）。 */
   extraEvent?: Dict;
+  /** collect 模式缓冲：写入节点把装配好的命令推入而非结算（仅 mode=collect 时存在）。 */
+  collect?: EffectCommand[];
 }
 
 export type NodeExecutor = (ctx: NodeContext) => NodeExecution;
@@ -121,4 +123,6 @@ export interface TraceEntry {
 export interface RunResult {
   state: BattleState;
   trace: TraceEntry[];
+  /** collect 模式：装配出的命令（按写入链序；ProgramCollector 按 effectIndex 还原 DSL 序）。 */
+  commands?: EffectCommand[];
 }

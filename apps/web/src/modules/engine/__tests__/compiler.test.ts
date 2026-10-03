@@ -7,14 +7,13 @@ import {
   MechanismRegistry,
   MechanismRuntime,
   mechanismsFromData,
-  resolveRef,
-  type Condition,
   type MechanismDefinition,
   type MechanismEvent,
 } from "../mechanisms";
 import { cloneState, makeActive, makeSide, makeState } from "../state";
 import { getBundle } from "../server";
 import type { BattleState, DataBundle, Dict, Side } from "../types";
+import { satisfy } from "./support";
 
 /** G2 回归基准：每条机制「dispatch + 三段应用」（旧路径） vs 「编译程序 + runProgram」（新路径），
  *  同一状态 / 同一事件上下文下 逐事件 与 终态 深比较；另覆盖全量编译校验、oncePerTurn、确定性与合并程序。
@@ -43,68 +42,7 @@ function fixture(): BattleState {
   return state;
 }
 
-function setPath(root: Dict, path: string, value: unknown): void {
-  const keys = path.split(".");
-  let cur = root;
-  for (let i = 0; i < keys.length - 1; i++) {
-    const key = keys[i];
-    if (!cur[key] || typeof cur[key] !== "object") cur[key] = {};
-    cur = cur[key] as Dict;
-  }
-  cur[keys[keys.length - 1]] = value;
-}
-
-/** 条件满足器：按 conditionsMatch 语义反推可满足值，让效果真正进入执行路径。
- *  冲突时后写覆盖——双方共享同一上下文，等价性不受覆盖影响（覆盖率尽力而为）。 */
-function valueForOp(op: string, expected: unknown, want: boolean): unknown {
-  const num = (v: unknown) => (typeof v === "number" ? v : Number(v));
-  const sentinel = (v: unknown): unknown =>
-    typeof v === "string" ? `${v}\u0000x` : typeof v === "number" ? v + 1 : typeof v === "boolean" ? !v : "\u0000";
-  switch (op) {
-    case "eq":
-      return want ? expected : sentinel(expected);
-    case "neq":
-      return want ? sentinel(expected) : expected;
-    case "gt":
-      return num(expected) + (want ? 1 : -1);
-    case "gte":
-      return want ? expected : num(expected) - 1;
-    case "lt":
-      return num(expected) + (want ? -1 : 1);
-    case "lte":
-      return want ? expected : num(expected) + 1;
-    case "in":
-      return want && Array.isArray(expected) && expected.length ? expected[0] : "\u0000notin";
-    case "has":
-      return want ? { [String(expected)]: 1 } : {};
-    case "contains":
-      return want ? [expected] : [];
-    default:
-      return want ? expected : sentinel(expected);
-  }
-}
-
-function satisfy(cond: Condition, scope: Dict, want: boolean): void {
-  if ("allOf" in cond) {
-    if (want) cond.allOf.forEach((item) => satisfy(item, scope, true));
-    else if (cond.allOf[0]) satisfy(cond.allOf[0], scope, false);
-    return;
-  }
-  if ("anyOf" in cond) {
-    if (want) {
-      if (cond.anyOf[0]) satisfy(cond.anyOf[0], scope, true);
-    } else cond.anyOf.forEach((item) => satisfy(item, scope, false));
-    return;
-  }
-  if ("not" in cond) {
-    satisfy(cond.not, scope, !want);
-    return;
-  }
-  const expected = cond.valueFrom !== undefined ? resolveRef(scope, cond.valueFrom) : cond.value;
-  setPath(scope, cond.path, valueForOp(cond.op, expected, want));
-}
-
-/** 合成上下文：写入 pristine 夹具 + 事件（随后两侧各取自己的克隆）。 */
+/** 合成上下文：对 pristine 夹具 + 事件写入可满足值（随后两侧各取自己的克隆）。 */
 function prepare(def: MechanismDefinition, base: BattleState, event: Dict): void {
   if (!def.when?.length) return;
   const scope: Dict = { state: base, event, turn: base.turn, self: base.player, actor: base.player, target: base.enemy, opponent: base.enemy };

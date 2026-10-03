@@ -154,9 +154,14 @@ export function compileMechanism(def: MechanismDefinition): CompiledMechanism {
     })(),
   };
 
-  // 1) 触发入口
+  // 1) 触发入口（携带机制元数据：ProgramCollector 据此做 priority/id 排序与身份识别）
   const entry = b.nextId("entry");
-  b.nodes.push({ id: entry, type: `on.${def.trigger}`, position: { x: 0, y: 0 } });
+  b.nodes.push({
+    id: entry,
+    type: `on.${def.trigger}`,
+    params: { mechanismId: def.id, ownerType: def.ownerType, ownerId: def.ownerId, priority: def.priority ?? 0 },
+    position: { x: 0, y: 0 },
+  });
   b.sources[entry] = { role: "entry" };
   let head = entry;
   let headPort = "out";

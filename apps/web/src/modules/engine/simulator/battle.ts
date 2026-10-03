@@ -9,7 +9,7 @@ import type { Action, BattleEvent, BattleState, DataBundle, Side, StepResult, Te
 import { asDict, toArray, toNum, toStr } from "../types";
 import { clearMarksOnSwitch } from "./marks";
 import { clearStatusesOnSwitch } from "./status";
-import { ActionQueue, MechanismRegistry, MechanismRuntime, mechanismsFromData } from "../mechanisms";
+import { ActionQueue, MechanismRegistry, MechanismRuntime, mechanismsFromData, type MechanismSource } from "../mechanisms";
 
 const SIDES: Side[] = ["player", "enemy"];
 
@@ -21,9 +21,12 @@ export class Simulator {
   readonly bundle: DataBundle;
   readonly mechanisms: MechanismRuntime;
 
-  constructor(bundle: DataBundle) {
+  /** 默认 = DSL 注册表源（程序源实测 collect ~15x、step ~6–13x，直接切默认会吃掉 MCTS 迭代数——
+   *  性能达标后再切）；程序化收集经 `new Simulator(bundle, programCollectorFor(bundle))` 注入，
+   *  等价性由 `program-collect.test.ts` 的 collect 逐命令 + 整场同种子 A/B 守卫。 */
+  constructor(bundle: DataBundle, mechanisms?: MechanismSource) {
     this.bundle = bundle;
-    this.mechanisms = new MechanismRuntime(new MechanismRegistry(mechanismsFromData(bundle.mechanisms)));
+    this.mechanisms = new MechanismRuntime(mechanisms ?? new MechanismRegistry(mechanismsFromData(bundle.mechanisms)));
   }
 
   private sideState(state: BattleState, who: Side) {

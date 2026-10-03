@@ -40,7 +40,7 @@ export class MechanismRegistry {
       })
       .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0) || a.id.localeCompare(b.id))
       .flatMap((definition) =>
-        definition.effects.map((effect) => ({
+        definition.effects.map((effect, effectIndex) => ({
           type: effect.type,
           definition: resolveEffect(context, effect),
           mechanismId: definition.id,
@@ -50,6 +50,8 @@ export class MechanismRegistry {
           actorSide: context.actorSide,
           targetSide: context.targetSide,
           event: context.event,
+          // 效果在机制内的原序：chance 盐粒与程序化 collect 的命令序对齐（缺省回退批内位置）。
+          effectIndex,
         })),
       );
   }
