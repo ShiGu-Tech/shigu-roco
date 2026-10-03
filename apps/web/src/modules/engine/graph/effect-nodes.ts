@@ -1,32 +1,55 @@
-/** 写入节点库（G1）：把现有 effect 原语逐个暴露成 `write.*` 节点。
+/** 写入节点库（G1/G2）：把现有 effect 原语逐个暴露成 `write.*` 节点。
  *
- * 复用既有语义：节点执行器把输入/参数拼成 `EffectSpec`，交给既有 `MechanismRuntime` 结算，
- * 不重写任何效果逻辑；图（数据流）取代原来的 `powerFrom` / `valueFrom` 动态引用。
+ * 复用既有语义：节点执行器把命令拼好交给既有 `MechanismRuntime` 结算，不重写任何效果逻辑。
+ *
+ * G2 编译器口径：
+ * - `spec` 参数透传完整 EffectDefinition（含 chance / `*From` 动态引用 / 嵌套 effects）——编译程序零字段丢失，
+ *   动态引用仍由 `MechanismRuntime` 在应用期求值（与 dispatch 语义同源）；具名参数 / 数据端口在其上覆盖，留给手工图与 G3b 编辑。
+ * - `mechanismId / ownerType / ownerId / effectIndex` 装配 EffectCommand 元数据（事件、chance 盐粒与 dispatch 对齐）。
+ * - 行动域效果（cancelAction / forceFirst / setPriority / …）仅在提供 `ctx.actions` 时走 `applyActionCommands`，
+ *   否则静默跳过——对齐 triggerState 应用协议（该调用点本就不应用行动域命令）。
+ * - 共享 `ctx.runtime`（注册表与 dispatch 同源）：级联触发 / ruleModifiers 与旧路径行为一致。
  */
 
-import { MechanismRegistry, MechanismRuntime } from "../mechanisms";
-import type { EffectCommand, EffectSpec, MechanismEvent } from "../mechanisms";
-import type { Side } from "../types";
+import { resolveEffect, type EffectCommand, type EffectDefinition, type MechanismEvent, type MechanismOwnerType } from "../mechanisms";
+import type { Dict, Side } from "../types";
 import type { NodeTypeRegistry } from "./registry";
 import type { NodeContext, NodeExecution, NodeParam, StateMutation } from "./types";
 
-const runtime = new MechanismRuntime(new MechanismRegistry());
+/** 行动域效果类型：只有提供 actions 上下文（actionDeclared / beforeAction 调用点）才经 applyActionCommands 结算。 */
+export const ACTION_EFFECT_TYPES: ReadonlySet<string> = new Set([
+  "cancelAction",
+  "forceFirst",
+  "setPriority",
+  "replaceAction",
+  "insertAction",
+  "unsupported",
+]);
 
 function actorSide(ctx: NodeContext): Side {
-  return (ctx.event.actorSide as Side | undefined) ?? "player";
+  return ctx.actorSide ?? (ctx.event.actorSide as Side | undefined) ?? "player";
 }
 function other(side: Side): Side {
   return side === "player" ? "enemy" : "player";
 }
 
+/** 所有写入节点的公共参数（编译器装配命令元数据 + 完整 spec 透传）。 */
+const COMMON_PARAMS: NodeParam[] = [
+  { name: "mechanismId", type: "string" },
+  { name: "ownerType", type: "string" },
+  { name: "ownerId", type: "string" },
+  { name: "effectIndex", type: "number" },
+  { name: "spec", type: "json" },
+];
+
 interface WriteSpec {
   suffix: string;
   title: string;
-  /** 默认目标（无 `target` 连线时）：self / opponent。 */
+  /** 手工图（无 spec）缺省目标：self / opponent。 */
   target: "self" | "opponent";
   /** 需要从数据边动态取值的字段（端口名 = EffectSpec 字段名）。 */
   inputs?: string[];
-  /** 静态参数（名称 = EffectSpec 字段名）。 */
+  /** 具名静态参数（名称 = EffectSpec 字段名），覆盖 spec 同名字段。 */
   params?: NodeParam[];
 }
 
@@ -36,6 +59,7 @@ const WRITE_NODES: WriteSpec[] = [
   { suffix: "modifyStat", title: "写入 · 属性", target: "self", inputs: ["value"], params: [{ name: "stat", type: "string", required: true }, { name: "mode", type: "string" }, { name: "maxStages", type: "number" }] },
   { suffix: "clearStat", title: "写入 · 驱散属性", target: "self", params: [{ name: "stat", type: "string" }, { name: "polarity", type: "string" }, { name: "limit", type: "number" }] },
   { suffix: "modifyDamage", title: "写入 · 伤害修饰", target: "self", params: [{ name: "mode", type: "string" }, { name: "value", type: "number" }, { name: "scope", type: "string" }] },
+  { suffix: "addPower", title: "写入 · 威力加成", target: "self", inputs: ["value"], params: [] },
   { suffix: "setHits", title: "写入 · 连击段数", target: "self", inputs: ["hits"], params: [{ name: "markId", type: "string" }, { name: "base", type: "number" }, { name: "perStack", type: "number" }] },
   { suffix: "setDamageReduction", title: "写入 · 减伤", target: "self", inputs: ["percent"], params: [] },
   { suffix: "applyStatus", title: "写入 · 施加状态", target: "opponent", inputs: ["layers"], params: [{ name: "statusId", type: "string", required: true }] },
@@ -49,6 +73,7 @@ const WRITE_NODES: WriteSpec[] = [
   { suffix: "transferMark", title: "写入 · 转移印记", target: "self", params: [{ name: "markId", type: "string" }, { name: "amount", type: "number" }, { name: "from", type: "string" }, { name: "to", type: "string" }] },
   { suffix: "transformMark", title: "写入 · 收拢印记", target: "opponent", params: [{ name: "toMarkId", type: "string", required: true }, { name: "scope", type: "string" }] },
   { suffix: "removeMark", title: "写入 · 移除印记", target: "opponent", params: [{ name: "markId", type: "string" }, { name: "layers", type: "number" }, { name: "scope", type: "string" }] },
+  { suffix: "settleMark", title: "写入 · 印记结算", target: "opponent", params: [{ name: "markId", type: "string", required: true }, { name: "decayLayers", type: "string" }, { name: "delta", type: "number" }] },
   { suffix: "consumeMark", title: "写入 · 消耗印记", target: "opponent", params: [{ name: "markId", type: "string" }, { name: "scope", type: "string" }, { name: "effectsPerLayer", type: "json" }, { name: "effectsOnConsume", type: "json" }] },
   { suffix: "modifySkillCost", title: "写入 · 技能能耗", target: "self", inputs: ["delta"], params: [{ name: "skillId", type: "string" }, { name: "scope", type: "string" }, { name: "multiply", type: "number" }, { name: "duration", type: "string" }, { name: "key", type: "string" }] },
   { suffix: "clearCostMod", title: "写入 · 驱散能耗", target: "self", params: [{ name: "all", type: "boolean" }] },
@@ -65,16 +90,21 @@ const WRITE_NODES: WriteSpec[] = [
   { suffix: "clearCounter", title: "写入 · 清空计数器", target: "self", params: [{ name: "key", type: "string" }] },
   { suffix: "modifySkill", title: "写入 · 技能永久修正", target: "self", params: [{ name: "skillId", type: "string", required: true }, { name: "power", type: "number" }, { name: "cost", type: "number" }, { name: "hits", type: "number" }, { name: "priority", type: "number" }] },
   { suffix: "changeWeather", title: "写入 · 天气", target: "self", params: [{ name: "weatherId", type: "string", required: true }, { name: "turns", type: "number" }] },
+  { suffix: "setRuleModifier", title: "写入 · 规则覆盖", target: "self", params: [{ name: "key", type: "string", required: true }, { name: "value", type: "json", required: true }] },
   { suffix: "setPriority", title: "写入 · 行动优先级", target: "self", params: [{ name: "value", type: "number", required: true }] },
   { suffix: "forceFirst", title: "写入 · 强制先手", target: "self", params: [] },
   { suffix: "insertAction", title: "写入 · 插入行动", target: "self", params: [{ name: "action", type: "json", required: true }] },
   { suffix: "cancelAction", title: "写入 · 取消行动", target: "self", params: [] },
   { suffix: "replaceAction", title: "写入 · 替换行动", target: "self", params: [{ name: "action", type: "json", required: true }] },
+  { suffix: "unsupported", title: "写入 · 未实现效果", target: "self", params: [{ name: "effectType", type: "string" }, { name: "reason", type: "string" }] },
   { suffix: "learnSkill", title: "写入 · 习得技能", target: "self", params: [{ name: "skillId", type: "string", required: true }, { name: "duration", type: "number" }] },
   { suffix: "forgetSkill", title: "写入 · 遗忘技能", target: "self", params: [{ name: "skillId", type: "string", required: true }] },
   { suffix: "replaceSkill", title: "写入 · 替换技能", target: "self", params: [{ name: "fromSkillId", type: "string", required: true }, { name: "toSkillId", type: "string", required: true }, { name: "duration", type: "number" }] },
   { suffix: "randomizeSkill", title: "写入 · 随机技能", target: "self", params: [{ name: "skillId", type: "string" }, { name: "source", type: "json", required: true }, { name: "duration", type: "number" }] },
   { suffix: "swapSkillSet", title: "写入 · 交换技能", target: "self", params: [{ name: "from", type: "string", required: true }, { name: "to", type: "string", required: true }, { name: "duration", type: "number" }] },
+  { suffix: "scheduleEntry", title: "写入 · 入场队列", target: "self", params: [{ name: "effects", type: "json", required: true }] },
+  { suffix: "scheduleEffect", title: "写入 · 延迟效果", target: "self", params: [{ name: "effects", type: "json", required: true }, { name: "delay", type: "number" }, { name: "timing", type: "string" }] },
+  { suffix: "inheritStat", title: "写入 · 入场继承", target: "self", params: [{ name: "polarity", type: "string" }] },
 ];
 
 function snapshotHpEnergy(state: NodeContext["state"]): Record<string, number> {
@@ -96,12 +126,15 @@ export function registerEffectNodes(registry: NodeTypeRegistry): void {
       outputs: [{ name: "events", type: "object" }],
       controlIn: true,
       controlOut: ["out"],
-      params: spec.params ?? [],
+      params: [...COMMON_PARAMS, ...(spec.params ?? [])],
       effect: true,
       executor: (ctx): NodeExecution => {
         const actor = actorSide(ctx);
+        const specJson = (ctx.params.spec ?? {}) as Dict;
+        const hasSpec = specJson.type !== undefined;
         const targetPort = ctx.input("target") as Side | undefined;
-        const definition: Record<string, unknown> = { type: spec.suffix, target: targetPort ?? spec.target };
+        // 覆盖序：spec 透传 → 具名参数 → 数据端口；target = 端口 > spec > 手工缺省。
+        const definition: Dict = { ...specJson, type: spec.suffix };
         for (const param of spec.params ?? []) {
           const value = ctx.params[param.name];
           if (value !== undefined) definition[param.name] = value;
@@ -110,12 +143,39 @@ export function registerEffectNodes(registry: NodeTypeRegistry): void {
           const value = ctx.input(port);
           if (value !== undefined) definition[port] = value;
         }
-        const command = { type: spec.suffix, definition: definition as EffectSpec, mechanismId: `write.${spec.suffix}`, trigger: "beforeAction" as const, actorSide: actor, targetSide: other(actor) } as unknown as EffectCommand;
+        if (targetPort !== undefined) definition.target = targetPort;
+        else if (!hasSpec && definition.target === undefined) definition.target = spec.target;
+        // 与 dispatch 同源：skillIdFrom 等收集期引用解析。
+        const resolved = resolveEffect(
+          {
+            state: ctx.state,
+            trigger: ctx.trigger,
+            sourceId: ctx.sourceId,
+            actorSide: ctx.actorSide ?? actor,
+            targetSide: ctx.targetSide,
+            action: ctx.action,
+            event: ctx.event,
+          },
+          definition as EffectDefinition,
+        );
+        const command: EffectCommand = {
+          type: spec.suffix as EffectCommand["type"],
+          definition: resolved,
+          mechanismId: (ctx.params.mechanismId as string | undefined) ?? `write.${spec.suffix}`,
+          ownerType: ctx.params.ownerType as MechanismOwnerType | undefined,
+          ownerId: ctx.params.ownerId as string | undefined,
+          trigger: ctx.trigger,
+          actorSide: ctx.actorSide ?? actor,
+          targetSide: ctx.targetSide ?? other(actor),
+          event: ctx.event,
+          effectIndex: ctx.params.effectIndex as number | undefined,
+        };
         const before = snapshotHpEnergy(ctx.state);
-        const events: MechanismEvent[] =
-          spec.suffix === "dealDamage"
-            ? runtime.applyDamageCommands(ctx.state, ctx.bundle, [command])
-            : runtime.applyStateCommands(ctx.state, [command], ctx.bundle);
+        const events: MechanismEvent[] = ACTION_EFFECT_TYPES.has(spec.suffix) && ctx.actions
+          ? ctx.runtime.applyActionCommands(ctx.actions.queue, [command], ctx.actions.actionIds, ctx.actions.nextActionId)
+          : spec.suffix === "dealDamage"
+            ? ctx.runtime.applyDamageCommands(ctx.state, ctx.bundle, [command], ctx.extraEvent)
+            : ctx.runtime.applyStateCommands(ctx.state, [command], ctx.bundle);
         const after = snapshotHpEnergy(ctx.state);
         const mutations: StateMutation[] = [];
         for (const key of Object.keys(before)) if (before[key] !== after[key]) mutations.push({ path: key, before: before[key], after: after[key] });

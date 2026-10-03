@@ -3,7 +3,7 @@ import { conditionsMatch, resolveContextPath } from "./conditions";
 import type { EffectCommand, EffectDefinition, MechanismContext, MechanismDefinition } from "./types";
 
 /** 解析 effect 的动态引用（skillIdFrom → skillId），未命中则原样返回。 */
-function resolveEffect(context: MechanismContext, effect: EffectDefinition): EffectDefinition {
+export function resolveEffect(context: MechanismContext, effect: EffectDefinition): EffectDefinition {
   if (effect.type === "modifyCooldown" && effect.skillIdFrom) {
     const resolved = resolveContextPath(context, effect.skillIdFrom);
     if (typeof resolved === "string" && resolved) return { ...effect, skillId: resolved };

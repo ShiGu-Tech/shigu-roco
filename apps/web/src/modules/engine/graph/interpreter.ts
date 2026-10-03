@@ -7,7 +7,8 @@
 
 import { cloneState } from "../state";
 import { Rng } from "../rng";
-import type { DataBundle, Dict } from "../types";
+import { MechanismRegistry, MechanismRuntime, type ActionQueue, type TriggerName } from "../mechanisms";
+import type { Action, DataBundle, Dict, Side } from "../types";
 import type { NodeTypeRegistry } from "./registry";
 import type { GraphNode, Program, RunResult, StateMutation, TraceEntry } from "./types";
 
@@ -22,12 +23,28 @@ export interface RunProgramOptions {
   entry: string;
   event?: Dict;
   seed?: number;
+  /** 机制触发器；缺省从入口节点类型（`on.*`）推导，未识别时回退 beforeAction。 */
+  trigger?: TriggerName;
+  /** 派发侧 / 目标侧（与 dispatch 上下文一致时，条件作用域与命令装配同源）。 */
+  actorSide?: Side;
+  targetSide?: Side;
+  action?: Action;
+  sourceId?: string;
+  /** 共享机制注册表：写入节点的级联触发 / ruleModifiers 与 dispatch 语义同源。 */
+  mechanisms?: MechanismRegistry;
+  /** 行动域上下文；缺省时行动类效果静默跳过（对齐 triggerState 应用协议）。 */
+  actions?: { queue: ActionQueue; actionIds: Record<Side, string>; nextActionId: () => string };
+  /** dealDamage 附加事件负载（对齐 applyDamageCommands.extraEvent）。 */
+  extraEvent?: Dict;
 }
 
 export function runProgram(opts: RunProgramOptions): RunResult {
   const { program, registry, bundle } = opts;
   const state = cloneState(opts.state);
   const byId = new Map<string, GraphNode>(program.nodes.map((n) => [n.id, n]));
+  const entryType = byId.get(opts.entry)?.type ?? "";
+  const trigger: TriggerName = opts.trigger ?? (entryType.startsWith("on.") ? (entryType.slice(3) as TriggerName) : "beforeAction");
+  const runtime = new MechanismRuntime(opts.mechanisms ?? new MechanismRegistry());
 
   const controlFrom = new Map<string, string[]>();
   const dataInto = new Map<string, { node: string; port: string }>();
@@ -61,6 +78,14 @@ export function runProgram(opts: RunProgramOptions): RunResult {
       params: node.params ?? {},
       input: (port: string) => inputs[port],
       rng: () => rng.next(),
+      trigger,
+      actorSide: opts.actorSide ?? (event.actorSide as Side | undefined),
+      targetSide: opts.targetSide,
+      action: opts.action,
+      sourceId: opts.sourceId,
+      runtime,
+      actions: opts.actions,
+      extraEvent: opts.extraEvent,
     };
   }
 
@@ -128,7 +153,12 @@ export function validateProgram(program: Program, registry: NodeTypeRegistry): V
       continue;
     }
     for (const param of type.params) {
-      if (param.required && (node.params?.[param.name] === undefined || node.params?.[param.name] === "")) {
+      if (!param.required) continue;
+      const direct = node.params?.[param.name];
+      // 编译程序经 `spec`（完整 EffectDefinition）透传必填字段——与具名参数等价满足。
+      const specField = (node.params?.spec as Record<string, unknown> | undefined)?.[param.name];
+      const empty = (value: unknown) => value === undefined || value === "";
+      if (empty(direct) && empty(specField)) {
         issues.push({ level: "error", node: node.id, message: `缺少必填参数: ${param.name}` });
       }
     }

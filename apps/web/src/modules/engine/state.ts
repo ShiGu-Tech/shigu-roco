@@ -92,6 +92,8 @@ export function cloneState(s: BattleState): BattleState {
     enemy: cloneSide(s.enemy),
     weather: s.weather ? ({ ...s.weather } as Weather) : null,
     seed: s.seed,
+    // oncePerTurn 触发记录随克隆保留（战斗中途克隆 / MCTS 快照不得重置门）。
+    onceFired: s.onceFired ? { ...s.onceFired } : undefined,
   };
 }
 

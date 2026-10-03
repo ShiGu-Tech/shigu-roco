@@ -1,9 +1,13 @@
-/** 内建节点库（G1 首批）：事件源 / 流程 / 取值 / 运算 / 比较 / 逻辑 / 写入 / 查询 / 随机。
+/** 内建节点库（G1/G2）：事件源 / 流程 / 取值 / 运算 / 比较 / 逻辑 / 写入 / 查询 / 随机。
  *
  * 每个节点只干一件事；「怎么执行」在此（代码），「用哪些 / 怎么连 / 什么参数」在程序（配置）。
+ * G2 补齐：`on.*` 全触发器、`logic.or`、`cmp.has/contains`、`read.ref`（动态引用）、`read.path` 的 `*` 合计、`flow.gate` 阵营键。
  */
 
 import { evalExpr, type Expr } from "../effects/formula";
+import { resolveRef } from "../mechanisms/conditions";
+import { triggerMetaOf, TRIGGER_NAMES } from "../mechanisms/vocabulary";
+import type { DynamicRef } from "../mechanisms";
 import type { Side } from "../types";
 import type { NodeTypeRegistry } from "./registry";
 import type { NodeContext, NodeExecution, NodePort } from "./types";
@@ -15,25 +19,40 @@ function sideOf(state: NodeContext["state"], side: Side) {
 }
 
 function actorSide(ctx: NodeContext): Side {
-  return (ctx.event.actorSide as Side | undefined) ?? "player";
+  return ctx.actorSide ?? (ctx.event.actorSide as Side | undefined) ?? "player";
 }
 
 function other(side: Side): Side {
   return side === "player" ? "enemy" : "player";
 }
 
+/** 点路径取值；末尾 `*` = 合计该对象全部数值（与 conditions.readPath 同语义，条件子图零漂移）。 */
 function readPath(root: unknown, path: string): unknown {
-  return path.split(".").reduce<unknown>((value, key) => {
+  const keys = path.split(".");
+  if (keys[keys.length - 1] === "*") {
+    const container = readPath(root, keys.slice(0, -1).join("."));
+    if (container && typeof container === "object" && !Array.isArray(container)) {
+      return Object.values(container as Record<string, unknown>).reduce<number>((sum, value) => sum + (Number(value) || 0), 0);
+    }
+    return 0;
+  }
+  return keys.reduce<unknown>((value, key) => {
     if (value && typeof value === "object") return (value as Record<string, unknown>)[key];
     return undefined;
   }, root);
 }
 
+/** 条件作用域：与 mechanisms/conditions 的 scope 对齐（self/actor/target/opponent + action/trigger/sourceId 根）。 */
 function scope(ctx: NodeContext): Record<string, unknown> {
   const actor = actorSide(ctx);
-  const target = other(actor);
+  const target = ctx.targetSide ?? other(actor);
   return {
     state: ctx.state,
+    trigger: ctx.trigger,
+    sourceId: ctx.sourceId,
+    actorSide: actor,
+    targetSide: target,
+    action: ctx.action,
     event: ctx.event,
     turn: ctx.state.turn,
     self: sideOf(ctx.state, actor),
@@ -58,12 +77,10 @@ export function registerBuiltins(registry: NodeTypeRegistry): void {
       executor: (ctx) => ({ outputs: { event: { turn: ctx.state.turn, side: ctx.event.side ?? null } }, control: ["out"] }),
     });
   };
-  eventNode("on.battleStart", "战斗开始");
-  eventNode("on.turnStart", "回合开始");
-  eventNode("on.beforeAction", "行动前");
-  eventNode("on.beforeDamage", "伤害前");
-  eventNode("on.afterDamage", "伤害后");
-  eventNode("on.turnEnd", "回合结束");
+  // ---------------------------------------------------------------- 事件源（全触发器，与 TriggerName/词汇表同源）
+  for (const name of TRIGGER_NAMES) {
+    eventNode(`on.${name}`, triggerMetaOf(name).title);
+  }
 
   // ---------------------------------------------------------------- 流程
   registry.register({
@@ -90,10 +107,15 @@ export function registerBuiltins(registry: NodeTypeRegistry): void {
     outputs: [],
     controlIn: true,
     controlOut: ["out"],
-    params: [{ name: "key", type: "string", required: true }],
+    params: [
+      { name: "key", type: "string", required: true },
+      { name: "withSide", type: "boolean", default: false },
+    ],
     effect: true,
     executor: (ctx): NodeExecution => {
-      const key = String(ctx.params.key);
+      // withSide 对齐 dispatch 的 oncePerTurn 键：`${actorSide ?? "-"}:${机制 id}`。
+      const raw = String(ctx.params.key);
+      const key = ctx.params.withSide ? `${ctx.actorSide ?? "-"}:${raw}` : raw;
       ctx.state.onceFired ??= {};
       if (ctx.state.onceFired[key]) return { control: [] };
       ctx.state.onceFired[key] = true;
@@ -146,6 +168,17 @@ export function registerBuiltins(registry: NodeTypeRegistry): void {
     params: [{ name: "path", type: "path", required: true }],
     pure: true,
     executor: (ctx): NodeExecution => ({ outputs: { value: readPath(scope(ctx), String(ctx.params.path)) } }),
+  });
+  registry.register({
+    type: "read.ref",
+    title: "取值（动态引用）",
+    category: "read",
+    inputs: [],
+    outputs: [{ name: "value", type: "any" }],
+    params: [{ name: "ref", type: "json", required: true }],
+    pure: true,
+    // 复用 conditions.resolveRef（路径 + 系数 / 偏移 / 多项式）——条件 valueFrom 与 conditionsMatch 同一求值。
+    executor: (ctx): NodeExecution => ({ outputs: { value: resolveRef(scope(ctx), ctx.params.ref as DynamicRef) } }),
   });
   registry.register({
     type: "read.countKeys",
@@ -224,6 +257,16 @@ export function registerBuiltins(registry: NodeTypeRegistry): void {
     pure: true,
     executor: (ctx): NodeExecution => ({ outputs: { value: Boolean(ctx.input("a")) && Boolean(ctx.input("b")) } }),
   });
+  registry.register({
+    type: "logic.or",
+    title: "逻辑或",
+    category: "logic",
+    inputs: [anyPort("a"), anyPort("b")],
+    outputs: [{ name: "value", type: "boolean" }],
+    params: [],
+    pure: true,
+    executor: (ctx): NodeExecution => ({ outputs: { value: Boolean(ctx.input("a")) || Boolean(ctx.input("b")) } }),
+  });
   for (const op of ["eq", "neq", "gt", "gte", "lt", "lte"] as const) {
     registry.register({
       type: `cmp.${op}`,
@@ -253,6 +296,38 @@ export function registerBuiltins(registry: NodeTypeRegistry): void {
     executor: (ctx): NodeExecution => {
       const b = ctx.input("b");
       return { outputs: { value: Array.isArray(b) && b.includes(ctx.input("a")) } };
+    },
+  });
+  registry.register({
+    type: "cmp.contains",
+    title: "比较 · contains",
+    category: "cmp",
+    inputs: [anyPort("a"), anyPort("b")],
+    outputs: [{ name: "value", type: "boolean" }],
+    params: [],
+    pure: true,
+    // conditions.contains：actual 数组包含 expected。
+    executor: (ctx): NodeExecution => {
+      const a = ctx.input("a");
+      return { outputs: { value: Array.isArray(a) && a.includes(ctx.input("b")) } };
+    },
+  });
+  registry.register({
+    type: "cmp.has",
+    title: "比较 · has",
+    category: "cmp",
+    inputs: [anyPort("a"), anyPort("b")],
+    outputs: [{ name: "value", type: "boolean" }],
+    params: [],
+    pure: true,
+    // conditions.has：对象键存在性（expected 为键名）。
+    executor: (ctx): NodeExecution => {
+      const a = ctx.input("a");
+      const b = ctx.input("b");
+      const value = Boolean(
+        a && typeof a === "object" && (typeof b === "string" || typeof b === "number" || typeof b === "symbol") && b in (a as object),
+      );
+      return { outputs: { value } };
     },
   });
 

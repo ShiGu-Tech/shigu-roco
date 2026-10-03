@@ -181,6 +181,8 @@ export interface EffectCommand {
   targetSide?: Side;
   /** 命令级事件负载（供嵌套效果读取，如 consumeMark 暴露的 `consumed`）。 */
   event?: Dict;
+  /** 效果在机制内的原序（chance 盐粒用）；编译程序按效果原序携带，缺省回退批内位置。 */
+  effectIndex?: number;
 }
 
 /** 延迟效果条目（`SideState.pendingEffects`）。 */

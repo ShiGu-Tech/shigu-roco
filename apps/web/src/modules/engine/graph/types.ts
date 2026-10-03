@@ -4,7 +4,8 @@
  * 节点类型是强类型执行器；程序（nodes/edges/resources）是唯一可编辑、可版本化的定义。
  */
 
-import type { BattleState, DataBundle, Dict } from "../types";
+import type { Action, BattleState, DataBundle, Dict, Side } from "../types";
+import type { ActionQueue, MechanismRuntime, TriggerName } from "../mechanisms";
 
 export type PortType = "any" | "number" | "string" | "boolean" | "object" | "event" | "side";
 export interface NodePort {
@@ -44,6 +45,20 @@ export interface NodeContext {
   input: (port: string) => unknown;
   /** 确定性随机数 [0,1)。 */
   rng: () => number;
+  /** 当前激活的机制触发器（写入节点据此装配 EffectCommand.trigger）。 */
+  trigger: TriggerName;
+  /** 派发侧 / 目标侧（缺省回退 event.actorSide / 对侧）。 */
+  actorSide?: Side;
+  targetSide?: Side;
+  /** 派发上下文的行动与来源（供 resolveEffect / 条件路径 `action.*` 等精确对齐 dispatch 语义）。 */
+  action?: Action;
+  sourceId?: string;
+  /** 共享机制运行时（级联触发 / ruleModifiers 走同一注册表——与 dispatch+apply 同源）。 */
+  runtime: MechanismRuntime;
+  /** 行动域上下文：缺省时行动类效果按 triggerState 语义静默跳过。 */
+  actions?: { queue: ActionQueue; actionIds: Record<Side, string>; nextActionId: () => string };
+  /** dealDamage 附加事件负载（对齐 applyDamageCommands 的 extraEvent）。 */
+  extraEvent?: Dict;
 }
 
 export type NodeExecutor = (ctx: NodeContext) => NodeExecution;

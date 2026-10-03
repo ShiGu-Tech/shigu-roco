@@ -69,5 +69,11 @@
  *          首批内建节点（事件源 / flow.branch / read / math / logic / cmp / write / query / rng）。
  * - 0.24.0 节点库扩充（G1）：全量 `write.*`（40+ 效果原语，复用 `MechanismRuntime` 结算，图数据流取代 `powerFrom`/
  *          `valueFrom`）、`flow.gate`（每回合一次）、`resource.elements` / `resource.rules`。
+ * - 0.25.0 机制编译器（G2a）：`graph/compiler.ts` 把 `mechanisms.json` DSL 编译为程序图（`on.*` 全触发器 → when 条件
+ *          子图 → `flow.gate` → `write.*` 链，链序按行动→状态→伤害三段对齐 simulate 应用协议）；写入节点 `spec` 透传
+ *          完整 EffectDefinition + 机制元数据（`mechanismId/ownerType/ownerId/effectIndex`），行动域按 `ctx.actions`
+ *          路由；节点补齐 `logic.or` / `cmp.has·contains` / `read.ref` / `read.path` 的 `*` 合计 / `flow.gate.withSide`；
+ *          `runProgram({ mechanisms, actions })` 共享注册表（级联 / ruleModifiers 与 dispatch 同源）；回归基准：全 480 条
+ *          同上下文逐事件 + 终态等价；`cloneState` 保留 `onceFired`（修复中途克隆重置 oncePerTurn 门）。
  */
-export const ENGINE_VERSION = "0.24.0";
+export const ENGINE_VERSION = "0.25.0";

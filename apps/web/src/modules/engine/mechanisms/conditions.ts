@@ -40,8 +40,9 @@ export function resolveContextPath(context: MechanismContext, path: string): unk
   return readPath(scope(context), path);
 }
 
-/** 解析动态引用（字符串 = 点路径；对象 = 路径 + 系数 / 偏移 / 多项式）。条件里不含 bundle，故不支持 `count`。 */
-function resolveRef(root: unknown, ref: DynamicRef): unknown {
+/** 解析动态引用（字符串 = 点路径；对象 = 路径 + 系数 / 偏移 / 多项式）。条件里不含 bundle，故不支持 `count`。
+ *  导出供执行图 `read.ref` 节点复用——条件子图与 `conditionsMatch` 共用同一求值，零语义漂移。 */
+export function resolveRef(root: unknown, ref: DynamicRef): unknown {
   if (typeof ref === "string") return readPath(root, ref);
   const raw = toNum(readPath(root, ref.path), 0);
   if (ref.terms) return ref.terms.reduce((sum, term) => sum + term.coef * Math.pow(raw, term.power), 0) + (ref.offset ?? 0);

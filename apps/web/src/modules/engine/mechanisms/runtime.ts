@@ -41,13 +41,15 @@ export class MechanismRuntime {
     return this.registry.collect(context);
   }
 
-  /** 确定性概率门：无 chance 恒过；chance 以「机制 + 触发 + 序号」派生，保证同状态同种子可复现。 */
+  /** 确定性概率门：无 chance 恒过；chance 以「机制 + 触发 + 序号」派生，保证同状态同种子可复现。
+   *  序号缺省取批内位置；编译程序按效果原序显式携带 `effectIndex`（单命令调用时与批位置等价）。 */
   private chancePass(state: BattleState, command: EffectCommand, index: number): boolean {
     const chance = command.definition.chance;
     if (chance === undefined) return true;
     if (chance <= 0) return false;
     if (chance >= 1) return true;
-    return new Rng(hashSeed(state, `${command.mechanismId}:${command.trigger}:${index}`)).next() < chance;
+    const ordinal = command.effectIndex ?? index;
+    return new Rng(hashSeed(state, `${command.mechanismId}:${command.trigger}:${ordinal}`)).next() < chance;
   }
 
   /** 免疫：目标精灵系别命中 effect 声明的 immuneElements（站点无免疫字段，故由机制数据声明）。 */
