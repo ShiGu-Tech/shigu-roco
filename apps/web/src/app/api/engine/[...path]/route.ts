@@ -30,6 +30,8 @@ async function handle(request: Request, ctx: { params: Promise<{ path: string[] 
     if (method === "GET" && route === "health") return json(handlers.health(getBundle()));
     if (method === "GET" && route === "catalog") return json(handlers.catalog(getBundle()));
     if (method === "GET" && route === "bundle") return json(handlers.bundlePayload(getBundle()));
+    if (method === "GET" && route === "workbench/schema") return json(handlers.workbenchSchema());
+    if (method === "GET" && route === "workbench/mechanisms") return json(handlers.workbenchMechanisms(getBundle()));
     if (method === "GET" && route === "admin/catalog/registry") return json(catalogHandlers.catalogRegistry());
     if (method === "POST" && route === "admin/reload") return json(handlers.health(reloadBundle()));
 
@@ -47,6 +49,10 @@ async function handle(request: Request, ctx: { params: Promise<{ path: string[] 
         return json(handlers.leader(getBundle(), body));
       case "opponent/observe":
         return json(handlers.observe(getBundle(), body));
+      case "debug/legal":
+        return json(handlers.debugLegal(getBundle(), body));
+      case "debug/step":
+        return json(handlers.debugStep(getBundle(), body));
       case "admin/catalog/register": {
         const result = catalogHandlers.registerCatalog(body);
         reloadBundle();

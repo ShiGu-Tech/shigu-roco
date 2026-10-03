@@ -39,6 +39,7 @@ scripts/                      setup / dev / 同步 / 静态包导出
 - 引擎：`pnpm -F web test`（vitest：图鉴归一化、机制注册 / 行动队列 / 事务结算）。
 - 前端：`pnpm -F web lint && pnpm -F web typecheck`。
 - 全量：`pnpm check`（= 前端 lint+typecheck + 引擎测试；由根 `package.json` 代理）。
+- 浏览器交互自验：`pwsh scripts/cdp-smoke.ps1 -Url <url> -WaitText <文案> [-ClickText "按钮,按钮"] -Out <png>`（CDP 真时驱动 headless Edge：等待文本 / 点击 / 横向溢出断言 / 截图）。**注意**：headless `--virtual-time-budget` 不等 Web Worker 回话（Worker 页面会永远停在加载态），验证走 Worker 的页面必须用本脚本真时等待；`--timeout` 在 Edge 上不生效。
 - 数据改动：必须过引擎测试（`catalog.test.ts` 归一化 + `data.ts` 引用校验）；注册后经 `/api/engine/health` 确认 counts 与 warnings。
 - 每次改动完成：跑 `pnpm check`，并在本地 `26900` 冒烟相关页面（引擎内置，无需单独启动）。
 

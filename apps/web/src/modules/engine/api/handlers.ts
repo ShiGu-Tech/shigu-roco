@@ -1,6 +1,7 @@
 /** 引擎 API 逻辑（与旧 FastAPI 契约一致）。 */
 
 import { counts, getMark, getSkill, getSprite, getWeatherDef } from "../data";
+import { schemaPayload } from "../mechanisms/vocabulary";
 import { MCTS, DEFAULT_MCTS_CONFIG, type RecommendOutput, type TrainingContext } from "../mcts/search";
 import { OpponentModel } from "../opponent/bayes";
 import {
@@ -394,6 +395,110 @@ export function bundlePayload(bundle: DataBundle): Dict {
     stats: bundle.stats,
     assets: bundle.assets,
     mechanisms: bundle.mechanisms ?? [],
+  };
+}
+
+/** trait 机制的 ownerId 有两态（精灵基 id `sp-1` / 带形态 `sp-219-1`），图鉴键恒为 `sp-<no>-<formId>`。 */
+function findSpriteEntry(bundle: DataBundle, id: string): Dict {
+  const exact = bundle.sprites[id];
+  if (exact) return asDict(exact);
+  const form1 = bundle.sprites[`${id}-1`];
+  if (form1) return asDict(form1);
+  const prefix = Object.entries(bundle.sprites).find(([key]) => key.startsWith(`${id}-`));
+  return prefix ? asDict(prefix[1]) : {};
+}
+
+/** 机制归属显示名：skill→技能名、trait→精灵名·特性名、status/mark/weather→图鉴名。 */
+function ownerNameOf(bundle: DataBundle, ownerType: unknown, ownerId: unknown): string {
+  const type = toStr(ownerType);
+  const id = toStr(ownerId);
+  switch (type) {
+    case "skill": {
+      const skill = asDict(bundle.skills[id]);
+      return toStr(skill.skillName, toStr(skill.nameZh, id));
+    }
+    case "trait": {
+      const sprite = findSpriteEntry(bundle, id);
+      const spriteName = toStr(sprite.name, id);
+      const traitName = toStr(asDict(sprite.trait).name, "");
+      return traitName ? `${spriteName} · ${traitName}` : spriteName;
+    }
+    case "status":
+      return toStr(asDict(bundle.statuses[id]).name, toStr(asDict(bundle.statuses[id]).nameZh, id));
+    case "mark":
+      return toStr(asDict(bundle.marks[id]).name, toStr(asDict(bundle.marks[id]).nameZh, id));
+    case "weather":
+      return toStr(asDict(bundle.weather[id]).name, toStr(asDict(bundle.weather[id]).nameZh, id));
+    default:
+      return id;
+  }
+}
+
+function hasUnsupported(effects: unknown): boolean {
+  for (const effect of toArray<Dict>(effects)) {
+    if (effect.type === "unsupported") return true;
+    for (const field of ["effects", "effectsPerLayer", "effectsOnConsume"]) {
+      if (hasUnsupported(effect[field])) return true;
+    }
+  }
+  return false;
+}
+
+function countEffects(effects: unknown): number {
+  let total = 0;
+  for (const effect of toArray<Dict>(effects)) {
+    total += 1;
+    for (const field of ["effects", "effectsPerLayer", "effectsOnConsume"]) {
+      total += countEffects(effect[field]);
+    }
+  }
+  return total;
+}
+
+/** 工作台节点词汇（trigger / 效果命令 / 条件 / 动态取值），UI 不硬编码。 */
+export function workbenchSchema(): Dict {
+  return schemaPayload() as unknown as Dict;
+}
+
+/** 工作台机制列表：摘要 + 完整定义（含归属名解析），供只读投影与筛选。 */
+export function workbenchMechanisms(bundle: DataBundle): Dict {
+  const items = (bundle.mechanisms ?? []) as Dict[];
+  return {
+    dataVersion: bundle.dataVersion,
+    mechanisms: items.map((definition) => ({
+      id: toStr(definition.id),
+      ownerType: toStr(definition.ownerType),
+      ownerId: toStr(definition.ownerId),
+      ownerName: ownerNameOf(bundle, definition.ownerType, definition.ownerId),
+      trigger: toStr(definition.trigger),
+      effectCount: countEffects(definition.effects),
+      unsupported: hasUnsupported(definition.effects),
+      registered: toStr(definition.id).startsWith("registered:"),
+      def: definition,
+    })),
+  };
+}
+
+/** 调试沙盒 · 合法行动：一次返回双方在该状态下的全部合法行动（供调试台行动选择）。 */
+export function debugLegal(bundle: DataBundle, body: Dict): Dict {
+  const sim = new Simulator(bundle);
+  const state = parseState(asDict(body.state));
+  return { player: sim.legalActions(state, "player"), enemy: sim.legalActions(state, "enemy") };
+}
+
+/** 调试沙盒 · 单步：真实结算一回合（≠ 回放快照），返回新状态 + 事件（含 trigger / 伤害 breakdown）+ 下一步双方合法行动。 */
+export function debugStep(bundle: DataBundle, body: Dict): Dict {
+  const sim = new Simulator(bundle);
+  const state = parseState(asDict(body.state));
+  const rng = new Rng(toNum(body.seed, state.seed));
+  const result = sim.step(state, parseAction(asDict(body.playerAction)), parseAction(asDict(body.enemyAction)), rng);
+  const term = sim.terminal(result.state);
+  return {
+    state: result.state,
+    log: eventsToDict(result.events),
+    phaseLogs: result.phaseLogs,
+    terminal: { ended: term.ended, winner: term.winner, reason: term.reason },
+    legal: { player: sim.legalActions(result.state, "player"), enemy: sim.legalActions(result.state, "enemy") },
   };
 }
 

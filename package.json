@@ -1,6 +1,6 @@
 {
   "name": "shigu-rock",
-  "version": "0.41.0",
+  "version": "0.42.0",
   "private": true,
   "description": "洛克王国世界 PVP 决策辅助工具（离线 · 非外挂 · 纯 TS 引擎）",
   "scripts": {

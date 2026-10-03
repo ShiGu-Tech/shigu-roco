@@ -36,6 +36,10 @@ function dispatch(current: DataBundle, route: string, body: Dict): unknown {
       return handlers.leader(current, body);
     case "opponent/observe":
       return handlers.observe(current, body);
+    case "debug/legal":
+      return handlers.debugLegal(current, body);
+    case "debug/step":
+      return handlers.debugStep(current, body);
     default:
       throw new Error(`未知路由: ${route}`);
   }
