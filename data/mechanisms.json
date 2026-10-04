@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.46.0",
+  "version": "0.47.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -13783,36 +13783,6 @@
       "note": "禁足：离场锁持续结算（术语 3023：无法离场且不可再获禁足）"
     },
     {
-      "id": "status:wooden-barrel-state",
-      "ownerType": "status",
-      "ownerId": "wooden-barrel-state",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "statusEffect",
-          "reason": "木桶状态：信息隐藏 + 行动/受击解除（术语 3024，展示层为主）【待校准】"
-        }
-      ],
-      "note": "木桶状态：信息隐藏 + 行动/受击解除（术语 3024，展示层为主）"
-    },
-    {
-      "id": "status:moonfall-star-state",
-      "ownerType": "status",
-      "ownerId": "moonfall-star-state",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "statusEffect",
-          "reason": "月陨星状态：信息隐藏 + 行动/受击解除（术语 3025，展示层为主）【待校准】"
-        }
-      ],
-      "note": "月陨星状态：信息隐藏 + 行动/受击解除（术语 3025，展示层为主）"
-    },
-    {
       "id": "skill:sk-7020680",
       "ownerType": "skill",
       "ownerId": "sk-7020680",
@@ -15422,6 +15392,90 @@
         }
       ],
       "note": "过山车：巧变 → 变为随机Mechanicany技能且能耗 −1，用完还原"
+    },
+    {
+      "id": "status:wooden-barrel-state:on-act",
+      "ownerType": "status",
+      "ownerId": "wooden-barrel-state",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "path": "self.active.statuses.wooden-barrel-state",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "wooden-barrel-state"
+        }
+      ],
+      "note": "木桶状态：自己行动后解除（信息隐藏为展示层）"
+    },
+    {
+      "id": "status:wooden-barrel-state:on-hit",
+      "ownerType": "status",
+      "ownerId": "wooden-barrel-state",
+      "trigger": "afterDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.wooden-barrel-state",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "target",
+          "statusId": "wooden-barrel-state"
+        }
+      ],
+      "note": "木桶状态：受到攻击后解除"
+    },
+    {
+      "id": "status:moonfall-star-state:on-act",
+      "ownerType": "status",
+      "ownerId": "moonfall-star-state",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "path": "self.active.statuses.moonfall-star-state",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "moonfall-star-state"
+        }
+      ],
+      "note": "月陨星状态：自己行动后解除（信息隐藏为展示层）"
+    },
+    {
+      "id": "status:moonfall-star-state:on-hit",
+      "ownerType": "status",
+      "ownerId": "moonfall-star-state",
+      "trigger": "afterDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.moonfall-star-state",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "target",
+          "statusId": "moonfall-star-state"
+        }
+      ],
+      "note": "月陨星状态：受到攻击后解除"
     }
   ]
 }
