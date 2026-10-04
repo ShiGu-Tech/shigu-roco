@@ -1135,6 +1135,11 @@ export class MechanismRuntime {
       hits += dedCombo;
       attacker.counters!["ded-combo"] = 0;
     }
+    // 记忆域 · 常驻威力 / 连击加成（`power-add` / `hits-add`，不消耗）：供特性「技能威力 +N / 连击 ±N」。
+    const flatPower = toNum(attacker.counters?.["power-add"], 0);
+    if (flatPower) powerBonus += flatPower;
+    const hitsAdd = toNum(attacker.counters?.["hits-add"], 0);
+    if (hitsAdd) hits = Math.max(1, hits + hitsAdd);
     // 「下一次攻击」一次性加成（消耗后清零）：next-damage-mul（+N% 伤害）/ next-power-add（+N 威力）。
     const nextMul = toNum(attacker.counters?.["next-damage-mul"], 0);
     if (nextMul) {

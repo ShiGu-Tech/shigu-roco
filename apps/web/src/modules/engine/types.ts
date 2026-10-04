@@ -147,6 +147,8 @@ export interface BattleState {
   seed: number;
   /** 本回合已触发过的 `oncePerTurn` 机制（`side:mechanismId`），回合开始清空。 */
   onceFired?: Record<string, boolean>;
+  /** 日期域 · 一周第几天（0=周日…6=周六），未显式提供时由模拟器按当前日期填充（供「周末」类特性）。 */
+  dayOfWeek?: number;
 }
 
 export interface Action {

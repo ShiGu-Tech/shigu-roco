@@ -191,5 +191,9 @@
  *          `cost.slotChangePenalty`（机械变式：回合内位移 → 能耗永久 −1）/ `switch.swapHpRatio`（瞳中倒影）/
  *          `wind.tractionPerMark`（风速仪：累计传动 → 风起印记）/ `power.vsPolluted`（天通地明）。
  *          换人门控读 `statuses.rooted`（禁足）。
+ * - 0.70.0 血脉/日期族：修复 `cloneProfile` 丢失 `bloodline` / `stars`（血脉此前经克隆即失效）；
+ *          常驻威力 / 连击计数器 `counters["power-add"]` / `["hits-add"]`（伤害结算读取、不消耗）；
+ *          `BattleState.dayOfWeek`（未提供时按当前日期填充）+ 规则 `weekend.boost`（张弛有度：周末双攻 +40% /
+ *          其余时间双防 +40%，模拟器按日写入 `pct-*`）。
  */
-export const ENGINE_VERSION = "0.69.0";
+export const ENGINE_VERSION = "0.70.0";

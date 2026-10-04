@@ -178,6 +178,7 @@ export class Simulator {
   // ---------------------------------------------------------------- 结算
   step(state: BattleState, playerAction: Action, enemyAction: Action, rng: Rng): StepResult {
     const st = cloneState(state);
+    if (st.dayOfWeek === undefined) st.dayOfWeek = new Date().getDay();
     const events: BattleEvent[] = [];
     const logs: string[] = [];
     const actions: Record<Side, Action> = { player: playerAction, enemy: enemyAction };
@@ -216,6 +217,24 @@ export class Simulator {
       } else {
         delete act.counters["pct-defense"];
         delete act.counters["pct-spdef"];
+      }
+    }
+    // 规则覆盖 · `weekend.boost`（张弛有度）：周末双攻 +40%，其余时间双防 +40%。
+    for (const side of SIDES) {
+      if (this.mechanisms.ruleModifiers(st, this.bundle, side)["weekend.boost"] !== true) continue;
+      const act = this.sideState(st, side).active;
+      act.counters ??= {};
+      const weekend = st.dayOfWeek === 0 || st.dayOfWeek === 6;
+      if (weekend) {
+        act.counters["pct-atk"] = 0.4;
+        act.counters["pct-spatk"] = 0.4;
+        delete act.counters["pct-defense"];
+        delete act.counters["pct-spdef"];
+      } else {
+        act.counters["pct-defense"] = 0.4;
+        act.counters["pct-spdef"] = 0.4;
+        delete act.counters["pct-atk"];
+        delete act.counters["pct-spatk"];
       }
     }
     // 规则覆盖 · `cost.slotChangePenalty`（机械变式）：回合开始记录技能槽位，回合末比对位移并永久 -1。

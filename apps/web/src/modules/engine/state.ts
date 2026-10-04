@@ -8,6 +8,8 @@ export function cloneProfile(p: StatProfile | undefined): StatProfile | undefine
     level: p.level,
     nature: p.nature,
     iv: p.iv ? { ...p.iv } : undefined,
+    stars: p.stars,
+    bloodline: p.bloodline,
   };
 }
 
@@ -100,6 +102,7 @@ export function cloneState(s: BattleState): BattleState {
     seed: s.seed,
     // oncePerTurn 触发记录随克隆保留（战斗中途克隆 / MCTS 快照不得重置门）。
     onceFired: s.onceFired ? { ...s.onceFired } : undefined,
+    dayOfWeek: s.dayOfWeek,
   };
 }
 

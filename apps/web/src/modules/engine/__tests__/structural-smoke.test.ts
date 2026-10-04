@@ -14,6 +14,11 @@ function spriteWithTrait(name: string): string {
   return hit[0];
 }
 
+function skillBy(pred: (s: Dict) => boolean): string {
+  for (const s of Object.values(bundle.skills as Record<string, Dict>)) if (pred(s)) return String(s.id);
+  throw new Error("no skill");
+}
+
 function wingAttack(): string {
   for (const s of Object.values(bundle.skills as Record<string, Dict>)) {
     if (s.element === "Wing" && (s.category === "Physical" || s.category === "Magic") && Number(s.power) > 0 && Number(s.cost) >= 2) return String(s.id);
@@ -84,6 +89,58 @@ describe("structural: 展翅/异类/游弋/夺目/翻垃圾桶/瞳中倒影/噼�
     const state = makeState(makeSide(makeActive(trait, { hp: 500, maxHp: 500, energy: 1 })), makeSide(makeActive("sp-14-1")));
     const t = new Simulator(bundle).step(state, { kind: "energy" }, { kind: "energy" }, new Rng(1));
     expect(t.state.player.active.energy).toBe(8);
+  });
+
+  it("稀兽花宝：草系血脉入场回复 20% 生命", () => {
+    const trait = spriteWithTrait("稀兽花宝");
+    const state = makeState(
+      makeSide(makeActive(trait, { hp: 100, maxHp: 500, energy: 20, profile: { bloodline: "GRASS" } })),
+      makeSide(makeActive("sp-14-1")),
+    );
+    const t = new Simulator(bundle).step(state, { kind: "energy" }, { kind: "energy" }, new Rng(1));
+    expect(t.state.player.active.hp).toBeGreaterThanOrEqual(200);
+  });
+
+  it("稀兽花宝：幽系血脉入场 → 敌方能量 -2", () => {
+    const trait = spriteWithTrait("稀兽花宝");
+    const foe = skillBy((s) => (s.category === "Physical" || s.category === "Magic") && Number(s.cost) <= 3);
+    const cost = Number((bundle.skills[foe] as Dict).cost);
+    const state = makeState(
+      makeSide(makeActive(trait, { hp: 500, maxHp: 500, energy: 20, profile: { bloodline: "GHOST" } })),
+      makeSide(makeActive("sp-14-1", { hp: 500, maxHp: 500, energy: 10 })),
+    );
+    state.enemy.active.loadout = [foe];
+    const t = new Simulator(bundle).step(state, { kind: "energy" }, { kind: "skill", skillId: foe }, new Rng(1));
+    expect(t.events.some((e) => e.type === "energy-modified" && e.data.delta === -2)).toBe(true);
+    expect(t.state.enemy.active.energy).toBeLessThanOrEqual(10 - 2 - cost + 1);
+  });
+
+  it("泛音列：使用状态技能后敌方攻击技能能耗 +2（3 回合）", () => {
+    const trait = spriteWithTrait("泛音列");
+    const statusSkill = skillBy((s) => s.actionType === "Status");
+    const state = makeState(
+      makeSide(makeActive(trait, { hp: 500, maxHp: 500, energy: 20 })),
+      makeSide(makeActive("sp-14-1", { hp: 500, maxHp: 500, energy: 20 })),
+    );
+    state.player.active.loadout = [statusSkill];
+    const t = new Simulator(bundle).step(state, { kind: "skill", skillId: statusSkill }, { kind: "energy" }, new Rng(1));
+    expect(t.state.enemy.active.costMods?.some((m) => m.scope === "attack" && m.delta === 2)).toBe(true);
+  });
+
+  it("张弛有度：周末加双攻 / 平日加双防", () => {
+    const trait = spriteWithTrait("张弛有度");
+    const base = () => {
+      const state = makeState(makeSide(makeActive(trait, { hp: 500, maxHp: 500, energy: 20 })), makeSide(makeActive("sp-14-1")));
+      return state;
+    };
+    const sat = base();
+    sat.dayOfWeek = 6;
+    const t1 = new Simulator(bundle).step(sat, { kind: "energy" }, { kind: "energy" }, new Rng(1));
+    expect(t1.state.player.active.counters?.["pct-atk"]).toBe(0.4);
+    const wed = base();
+    wed.dayOfWeek = 3;
+    const t2 = new Simulator(bundle).step(wed, { kind: "energy" }, { kind: "energy" }, new Rng(1));
+    expect(t2.state.player.active.counters?.["pct-defense"]).toBe(0.4);
   });
 
   it("禁足：离场锁期间无法换人（legalActions 无 switch）", () => {
