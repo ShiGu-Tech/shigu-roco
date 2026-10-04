@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.63.0",
+  "version": "0.64.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -20329,6 +20329,119 @@
         }
       ],
       "note": "特性「安可」：使用光系后回合末返场（近似立即）"
+    },
+    {
+      "id": "trait:sp-313-1#2",
+      "ownerType": "trait",
+      "ownerId": "sp-313-1",
+      "trigger": "statusApplied",
+      "when": [
+        {
+          "path": "event.statusId",
+          "op": "eq",
+          "value": "parasite"
+        },
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-313-1",
+            "sp-314-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "parasite"
+        }
+      ],
+      "note": "特性「茶多酚」：免疫parasite"
+    },
+    {
+      "id": "trait:sp-316-1#2",
+      "ownerType": "trait",
+      "ownerId": "sp-316-1",
+      "trigger": "statusApplied",
+      "when": [
+        {
+          "path": "event.statusId",
+          "op": "eq",
+          "value": "burn"
+        },
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-316-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "burn"
+        }
+      ],
+      "note": "特性「美拉德反应」：免疫burn"
+    },
+    {
+      "id": "trait:sp-315-1#2",
+      "ownerType": "trait",
+      "ownerId": "sp-315-1",
+      "trigger": "statusApplied",
+      "when": [
+        {
+          "path": "event.statusId",
+          "op": "eq",
+          "value": "freeze"
+        },
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-315-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "freeze"
+        }
+      ],
+      "note": "特性「吉利丁片」：免疫freeze"
+    },
+    {
+      "id": "trait:sp-220-1",
+      "ownerType": "trait",
+      "ownerId": "sp-220-1",
+      "trigger": "afterSwitch",
+      "when": [
+        {
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-220-1",
+            "sp-220-2",
+            "sp-220-3",
+            "sp-220-4"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "opponent",
+          "scope": "all",
+          "delta": -3,
+          "mode": "add"
+        }
+      ],
+      "note": "特性「珊瑚骨」：敌方离场 → 自己全技能能耗 −3"
     }
   ]
 }
