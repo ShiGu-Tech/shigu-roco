@@ -177,5 +177,7 @@
  * - 0.64.0 迅捷族续：`quick.first`（起飞加速 / 相争：本场首次使用技能永久迅捷，模拟器记 `firstQuick.<skill>`）+
  *          `quick.sharedWing`（飓风：队友翼系携带相同技能 → 迅捷）。
  * - 0.65.0 印记规则：`mark.consumeHalf`（守望星：触发星陨印记仅消耗一半层数，`consumed` 仍按满层结算伤害）。
+ * - 0.66.0 蓄力 / 打断 / 元素链：`counters.noCharge`（免蓄力：跳过蓄力直接释放）+ 规则 `charge.any`（蓄力中可任选技能）；
+ *          新触发器 `interrupt`（取消对手行动时派发，供威慑）；模拟器记元素链计数 `elChainIce` / `elChainFire`（大雪球 / 大火球）。
  */
-export const ENGINE_VERSION = "0.65.0";
+export const ENGINE_VERSION = "0.66.0";

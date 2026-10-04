@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.104.0",
+  "version": "0.105.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -13330,9 +13330,10 @@
           "layers": 1
         },
         {
-          "type": "unsupported",
-          "effectType": "defenseCounter",
-          "reason": "龙血：下次技能无需蓄力【待校准】"
+          "type": "addCounter",
+          "target": "self",
+          "key": "noCharge",
+          "delta": 1
         }
       ],
       "note": "龙血：应对攻击成功 → 必定先手 + 本回合承伤 −70%；下次技能无需蓄力"
@@ -21938,16 +21939,40 @@
       "id": "trait:sp-163-1",
       "ownerType": "trait",
       "ownerId": "sp-163-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "interrupt",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "威慑：打断敌方时，自己获得双攻+30%，被打断的技能进入2回合冷却。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-163-1",
+            "sp-164-1"
+          ]
         }
       ],
-      "note": "特性「威慑」：待实现"
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 30
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 30
+        },
+        {
+          "type": "modifyCooldown",
+          "target": "opponent",
+          "skillIdFrom": "event.skillId",
+          "delta": 2
+        }
+      ],
+      "note": "特性「威慑」：打断敌方时双攻 +30%，被打断技能冷却 +2"
     },
     {
       "id": "trait:sp-174-1",
@@ -22321,30 +22346,54 @@
       "ownerType": "trait",
       "ownerId": "sp-203-1",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "嫉妒：蓄力状态下，可以使用任一携带技能。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-203-1",
+            "sp-204-1"
+          ]
         }
       ],
-      "note": "特性「嫉妒」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "charge.any",
+          "value": true
+        }
+      ],
+      "note": "特性「嫉妒」：蓄力状态下可使用任一携带技能"
     },
     {
       "id": "trait:sp-204-2",
       "ownerType": "trait",
       "ownerId": "sp-204-2",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "游弋：蓄力时可以使用任一携带技能，且获得双防+100%。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-204-2"
+          ]
         }
       ],
-      "note": "特性「游弋」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "charge.any",
+          "value": true
+        },
+        {
+          "type": "unsupported",
+          "effectType": "chargeBuff",
+          "reason": "蓄力时双防 +100% 待实现【待校准】"
+        }
+      ],
+      "note": "特性「游弋」：蓄力状态下可使用任一携带技能（蓄力双防 +100% 待实现）"
     },
     {
       "id": "trait:sp-205-1",
@@ -23647,31 +23696,84 @@
       "id": "trait:sp-354-1",
       "ownerType": "trait",
       "ownerId": "sp-354-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "skillUsed",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "大雪球：自己使用2次不同的冰系技能后，敌方获得4层冻结，随后特性重置。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-354-1",
+            "sp-355-1"
+          ]
+        },
+        {
+          "path": "self.active.counters.elChainIce",
+          "op": "gte",
+          "value": 2
         }
       ],
-      "note": "特性「大雪球」：待实现"
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "freeze",
+          "layers": 4,
+          "immuneElements": [
+            "Ice"
+          ]
+        },
+        {
+          "type": "clearCounter",
+          "target": "self",
+          "key": "elChainIce"
+        },
+        {
+          "type": "clearCounter",
+          "target": "self",
+          "key": "lastElIdxIce"
+        }
+      ],
+      "note": "特性「大雪球」：使用 2 次不同的冰系技能 → 敌方 4 层冻结，随后重置"
     },
     {
       "id": "trait:sp-356-1",
       "ownerType": "trait",
       "ownerId": "sp-356-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "skillUsed",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "大火球：自己使用2次不同的火系技能后，下次技能无需蓄力，随后特性重置。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-356-1",
+            "sp-357-1"
+          ]
+        },
+        {
+          "path": "self.active.counters.elChainFire",
+          "op": "gte",
+          "value": 2
         }
       ],
-      "note": "特性「大火球」：待实现"
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "noCharge",
+          "delta": 1
+        },
+        {
+          "type": "clearCounter",
+          "target": "self",
+          "key": "elChainFire"
+        },
+        {
+          "type": "clearCounter",
+          "target": "self",
+          "key": "lastElIdxFire"
+        }
+      ],
+      "note": "特性「大火球」：使用 2 次不同的火系技能 → 下次技能无需蓄力，随后重置"
     },
     {
       "id": "trait:sp-358-1",
@@ -25418,11 +25520,11 @@
       "effects": [
         {
           "type": "unsupported",
-          "effectType": "chargeSkip",
-          "reason": "下次技能无需蓄力 / 蓄力中可释放 待实现【待校准】"
+          "effectType": "chargeWhileCast",
+          "reason": "蓄力状态下使用本技能 待实现【待校准】"
         }
       ],
-      "note": "龙守望：蓄力交互待实现"
+      "note": "龙守望：蓄力中可释放待实现"
     },
     {
       "id": "trait:sp-190-1#guard",
@@ -25527,6 +25629,28 @@
         }
       ],
       "note": "特性「复方汤剂」：在场时双方中毒额外触发 1 次（敌方）"
+    },
+    {
+      "id": "skill:sk-7100300",
+      "ownerType": "skill",
+      "ownerId": "sk-7100300",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7100300"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "noCharge",
+          "delta": 1
+        }
+      ],
+      "note": "龙守望：下一次技能无需蓄力"
     }
   ]
 }

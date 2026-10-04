@@ -50,6 +50,7 @@ export const TRIGGER_VOCABULARY: readonly TriggerMeta[] = [
   { name: "actionOrderResolved", title: "行动排序后", phase: "action" },
   { name: "beforeAction", title: "行动执行前", phase: "action" },
   { name: "actionResolved", title: "行动结算后", phase: "action" },
+  { name: "interrupt", title: "打断", phase: "action" },
   { name: "skillUsed", title: "技能使用", phase: "action" },
   { name: "beforeDamage", title: "伤害计算前", phase: "damage" },
   { name: "onHit", title: "命中时", phase: "damage" },

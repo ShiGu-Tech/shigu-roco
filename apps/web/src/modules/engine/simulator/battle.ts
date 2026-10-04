@@ -186,8 +186,20 @@ export class Simulator {
       const s = this.sideState(st, side);
       const pending = s.active.pendingSkill;
       if (!pending) continue;
+      // 规则覆盖 · `charge.any`（嫉妒 / 游弋）：蓄力状态下可改选任一携带技能。
+      if (this.mechanisms.ruleModifiers(st, this.bundle, side)["charge.any"] === true) continue;
       if (s.active.hp > 0) actions[side] = { kind: "skill", skillId: pending.skillId, choice: pending.choice, released: true, label: "蓄力释放" };
       else s.active.pendingSkill = undefined;
+    }
+    // 蓄力域 · 免蓄力（`counters.noCharge`）：本次技能跳过蓄力直接释放。
+    for (const side of SIDES) {
+      const s = this.sideState(st, side);
+      const act = actions[side];
+      if (act.kind !== "skill" || !act.skillId || act.released) continue;
+      if (toNum(s.active.counters?.noCharge, 0) <= 0) continue;
+      if (!toArray<string>(getSkill(this.bundle, act.skillId).tags).includes("charge")) continue;
+      s.active.counters!.noCharge = Math.max(0, toNum(s.active.counters!.noCharge, 0) - 1);
+      actions[side] = { ...act, released: true, label: "免蓄力释放" };
     }
     const rules = this.bundle.rules;
     /** 本回合被置/改/使用的技能，冷却结算时跳过（净 ±N，避免刚置就被 tick）。 */
@@ -324,6 +336,11 @@ export class Simulator {
       });
       const mechanismEvents = this.mechanisms.applyActionCommands(queue, commands, { ...actionIds, [side]: id }, () => `action-${st.turn}-extra-${queue.all().length}`);
       events.push(...mechanismEvents.map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+      // 打断派发（威慑）：本侧成功取消对手行动 → 触发 `interrupt`。
+      const cancelled = mechanismEvents.some((event) => event.type === "action-cancelled");
+      if (cancelled && opponentAction.skillId) {
+        events.push(...this.triggerState(st, "interrupt", { actorSide: side, targetSide: otherSide(side), action, event: { skillId: opponentAction.skillId, actionType: toStr(opponentSkill.actionType) } }));
+      }
       const stateEvents = this.mechanisms.applyStateCommands(st, commands, this.bundle);
       events.push(...stateEvents.map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
     }
@@ -400,6 +417,18 @@ export class Simulator {
           caster.counters ??= {};
           caster.counters.firstQuickSet = 1;
           caster.counters[`firstQuick.${entry.action.skillId}`] = 1;
+        }
+        // 元素链（大雪球 / 大火球）：使用与上一次不同的冰 / 火系技能时链长 +1。
+        if (entry.action.skillId) {
+          const el = toStr(usedSkill.element);
+          if (el === "Ice" || el === "Fire") {
+            const idx = caster.loadout.indexOf(entry.action.skillId) + 1;
+            caster.counters ??= {};
+            if (idx !== toNum(caster.counters[`lastElIdx${el}`], 0)) {
+              caster.counters[`elChain${el}`] = toNum(caster.counters[`elChain${el}`], 0) + 1;
+              caster.counters[`lastElIdx${el}`] = idx;
+            }
+          }
         }
         // 已使用过的不同系别种数（供「每使用过 1 个不同系别」类）。
         {

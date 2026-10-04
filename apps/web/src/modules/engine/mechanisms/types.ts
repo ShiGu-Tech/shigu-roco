@@ -8,6 +8,7 @@ export type TriggerName =
   | "actionOrderResolved"
   | "beforeAction"
   | "actionResolved"
+  | "interrupt"
   | "beforeDamage"
   | "afterDamage"
   | "beforeEffect"
