@@ -120,7 +120,7 @@ export class Simulator {
       if (slotMask && !(slotMask & (1 << slot))) continue;
       const skillId = loadout[slot];
       const skill = getSkill(this.bundle, skillId);
-      if (effectiveCost(state, this.bundle, who, skillId) <= active.energy && toNum(active.cooldowns?.[skillId], 0) <= 0) {
+      if (effectiveCost(state, this.bundle, who, skillId, ruleMods) <= active.energy && toNum(active.cooldowns?.[skillId], 0) <= 0) {
         const name = toStr(skill.skillName, skillId);
         // 选择技（描述含「选择：」）：列出「明 / 暗」两个分支。
         if (/选择/.test(toStr(skill.description, ""))) {
@@ -317,7 +317,7 @@ export class Simulator {
           const c = this.sideState(st, side).counters!;
           c.usedElementKinds = Object.keys(c).filter((k) => k.startsWith("used") && !k.startsWith("usedType") && toNum(c[k], 0) > 0).length;
         }
-        events.push(...this.triggerState(st, "skillUsed", { actorSide: side, targetSide: opp, action: actionView, event: { skillId: entry.action.skillId, actionId: entry.id, element: toStr(usedSkill.element), category: toStr(usedSkill.category), actionType: toStr(usedSkill.actionType), cost: entry.action.skillId ? effectiveCost(st, this.bundle, side, entry.action.skillId) : 0, reacted: reactedBySide[side] === true, wentFirst, burst } }));
+        events.push(...this.triggerState(st, "skillUsed", { actorSide: side, targetSide: opp, action: actionView, event: { skillId: entry.action.skillId, actionId: entry.id, element: toStr(usedSkill.element), category: toStr(usedSkill.category), actionType: toStr(usedSkill.actionType), cost: entry.action.skillId ? effectiveCost(st, this.bundle, side, entry.action.skillId, this.mechanisms.ruleModifiers(st, this.bundle, side)) : 0, reacted: reactedBySide[side] === true, wentFirst, burst } }));
         const skillId = entry.action.skillId;
         if (skillId && caster.skillOverrides?.[skillId]?.expires === 0) {
           revertSkillOverride(caster, skillId);
@@ -368,7 +368,7 @@ export class Simulator {
       const s = this.sideState(st, side);
       if (action.kind === "skill" && action.skillId) {
         const used = getSkill(this.bundle, action.skillId);
-        s.lastTurn = { skillId: action.skillId, category: toStr(used.category), actionType: toStr(used.actionType), element: toStr(used.element), reacted: reactedBySide[side] === true, cost: effectiveCost(st, this.bundle, side, action.skillId) };
+        s.lastTurn = { skillId: action.skillId, category: toStr(used.category), actionType: toStr(used.actionType), element: toStr(used.element), reacted: reactedBySide[side] === true, cost: effectiveCost(st, this.bundle, side, action.skillId, this.mechanisms.ruleModifiers(st, this.bundle, side)) };
       } else if (action.kind === "energy") {
         s.lastTurn = { actionType: "Energy", cost: 0 };
       } else {
@@ -413,7 +413,7 @@ export class Simulator {
       neighborPowerDiff = Math.abs(leftPower - rightPower);
     }
     const skill = getSkill(this.bundle, action.skillId);
-    const cost = effectiveCost(st, this.bundle, side, action.skillId);
+    const cost = effectiveCost(st, this.bundle, side, action.skillId, this.mechanisms.ruleModifiers(st, this.bundle, side));
     const neighborIds: string[] = [];
     if (index >= 0 && count > 1) {
       if (index > 0) neighborIds.push(active.loadout[index - 1]);
@@ -622,7 +622,7 @@ export class Simulator {
   ): BattleEvent[] {
     const skill = action.skillId ? getSkill(this.bundle, action.skillId) : {};
     const caster = this.sideState(st, side).active;
-    const cost = action.skillId ? effectiveCost(st, this.bundle, side, action.skillId) : Math.floor(toNum(skill.cost, 0));
+    const cost = action.skillId ? effectiveCost(st, this.bundle, side, action.skillId, this.mechanisms.ruleModifiers(st, this.bundle, side)) : Math.floor(toNum(skill.cost, 0));
     caster.energy = Math.max(0, caster.energy - Math.max(0, cost));
     // 队伍域 · 历史计数：本队累计消耗能量（供「累计消耗恰好为 N」类，如整点报时）。
     this.bump(st, side, "energySpent", Math.max(0, cost));

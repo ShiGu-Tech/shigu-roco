@@ -24,8 +24,9 @@ function costModMatches(active: ActiveSprite, skillId: string, bundle: DataBundl
   return true;
 }
 
-/** 单个技能的当次有效能耗（已 clamp ≥0、已取整）。 */
-export function effectiveCost(state: BattleState, bundle: DataBundle, side: Side, skillId: string): number {
+/** 单个技能的当次有效能耗（已 clamp ≥0、已取整）。
+ *  `rules` 为 passive 声明的规则覆盖：`cost.signFlip`（对流：增减反转）/ `cost.changeMul`（倾轧：变化幅度倍率）。 */
+export function effectiveCost(state: BattleState, bundle: DataBundle, side: Side, skillId: string, rules?: Record<string, number | boolean>): number {
   const active = side === "player" ? state.player.active : state.enemy.active;
   const base = toNum(getSkill(bundle, skillId).cost, 0);
   const mods = active.costMods ?? [];
@@ -40,7 +41,10 @@ export function effectiveCost(state: BattleState, bundle: DataBundle, side: Side
   added += toNum(active.skillMods?.[skillId]?.cost, 0);
   // 巧变：临时技能（skillOverrides）自带的能耗修正。
   added += toNum(active.skillOverrides?.[skillId]?.cost, 0);
-  return Math.max(0, Math.floor(multiplied + added));
+  let value = multiplied + added;
+  if (rules?.["cost.signFlip"] === true) value = base - (value - base);
+  if (typeof rules?.["cost.changeMul"] === "number") value = base + (value - base) * (rules["cost.changeMul"] as number);
+  return Math.max(0, Math.floor(value));
 }
 
 /** 该精灵当前可见的能耗修正明细（供 UI hover / 对手侧）。 */

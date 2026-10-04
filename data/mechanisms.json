@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.84.0",
+  "version": "0.85.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -22799,15 +22799,24 @@
       "ownerType": "trait",
       "ownerId": "sp-273-1",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "倾轧：携带的技能受能耗变化效果的影响翻倍。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-273-1"
+          ]
         }
       ],
-      "note": "特性「倾轧」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "cost.changeMul",
+          "value": 2
+        }
+      ],
+      "note": "特性「倾轧」：携带的技能受能耗变化效果影响翻倍"
     },
     {
       "id": "trait:sp-280-1",
@@ -23072,15 +23081,25 @@
       "ownerType": "trait",
       "ownerId": "sp-320-1",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "对流：自己的能耗增加变为能耗降低；能耗降低变为能耗增加。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-320-1",
+            "sp-321-1"
+          ]
         }
       ],
-      "note": "特性「对流」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "cost.signFlip",
+          "value": true
+        }
+      ],
+      "note": "特性「对流」：自己的能耗增加变为降低、降低变为增加"
     },
     {
       "id": "trait:sp-322-1",

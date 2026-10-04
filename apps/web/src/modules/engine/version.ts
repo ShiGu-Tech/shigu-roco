@@ -145,5 +145,7 @@
  *          `addPower.valueFrom` / `setHits` / `afterDamage` 组合（魔能爆 / 极寒领域 / 拆礼物 / 冰捆缚 / 打喷嚏…）。
  * - 0.51.0 增量长尾：`modifySkill.skillIdFrom`（技能 id 取自上下文，如相邻技能）；`spreadEnergy.deltaFrom`；
  *          行动视图 `action.neighborIds`（相邻技能 id）。服务联动装置 / 友谊之果 / 系统发育 / 重金属粉尘。
+ * - 0.52.0 能耗域规则：`effectiveCost` 增可选 `rules` 参数，支持 `cost.signFlip`（对流：增减反转）/
+ *          `cost.changeMul`（倾轧：变化幅度倍率）；`battle.ts` 各调用点传入 `ruleModifiers`。
  */
-export const ENGINE_VERSION = "0.51.0";
+export const ENGINE_VERSION = "0.52.0";
