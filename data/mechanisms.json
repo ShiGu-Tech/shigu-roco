@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.37.0",
+  "version": "0.38.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -14368,6 +14368,376 @@
         }
       ],
       "note": "远程访问"
+    },
+    {
+      "id": "skill:sk-7140290",
+      "ownerType": "skill",
+      "ownerId": "sk-7140290",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7140290"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 80
+        }
+      ],
+      "note": "预备势"
+    },
+    {
+      "id": "skill:sk-7140290:counter",
+      "ownerType": "skill",
+      "ownerId": "sk-7140290",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7140290"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Defense"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "modifyStat",
+          "target": "opponent",
+          "stat": "defense",
+          "mode": "percent",
+          "value": -80
+        }
+      ],
+      "note": "预备势：应对防御成功 → 必定先手"
+    },
+    {
+      "id": "skill:sk-7140170",
+      "ownerType": "skill",
+      "ownerId": "sk-7140170",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7140170"
+        }
+      ],
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": 0.6,
+          "basis": "maxHp"
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 130
+        }
+      ],
+      "note": "气沉丹田"
+    },
+    {
+      "id": "skill:sk-7140150",
+      "ownerType": "skill",
+      "ownerId": "sk-7140150",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7140150"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "opponent",
+          "stat": "defense",
+          "mode": "percent",
+          "value": -70
+        },
+        {
+          "type": "modifyStat",
+          "target": "opponent",
+          "stat": "spdef",
+          "mode": "percent",
+          "value": -70
+        }
+      ],
+      "note": "破绽"
+    },
+    {
+      "id": "skill:sk-7140150:counter",
+      "ownerType": "skill",
+      "ownerId": "sk-7140150",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7140150"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Defense"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 70
+        }
+      ],
+      "note": "破绽：应对防御成功 → 必定先手"
+    },
+    {
+      "id": "skill:sk-7170280",
+      "ownerType": "skill",
+      "ownerId": "sk-7170280",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7170280"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "opponent",
+          "stat": "spdef",
+          "mode": "percent",
+          "value": -50
+        },
+        {
+          "type": "modifyEnergy",
+          "target": "opponent",
+          "delta": -3
+        }
+      ],
+      "note": "魔镜"
+    },
+    {
+      "id": "skill:sk-7050230",
+      "ownerType": "skill",
+      "ownerId": "sk-7050230",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7050230"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -6,
+          "mode": "add",
+          "duration": "nextAction"
+        }
+      ],
+      "note": "蓄水"
+    },
+    {
+      "id": "skill:sk-7021160",
+      "ownerType": "skill",
+      "ownerId": "sk-7021160",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7021160"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "opponent",
+          "scope": "all",
+          "delta": 3,
+          "mode": "add"
+        }
+      ],
+      "note": "摇篮曲：应对防御分支（打断+眩晕）待 C0"
+    },
+    {
+      "id": "skill:sk-7020730",
+      "ownerType": "skill",
+      "ownerId": "sk-7020730",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020730"
+        }
+      ],
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": 0.25,
+          "basis": "maxHp"
+        }
+      ],
+      "note": "应激反应：应对防御额外回复，等效 50%"
+    },
+    {
+      "id": "skill:sk-7020730:counter",
+      "ownerType": "skill",
+      "ownerId": "sk-7020730",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7020730"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Defense"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": 0.25,
+          "basis": "maxHp"
+        }
+      ],
+      "note": "应激反应：应对防御成功 → 必定先手"
+    },
+    {
+      "id": "skill:sk-7040280",
+      "ownerType": "skill",
+      "ownerId": "sk-7040280",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040280"
+        }
+      ],
+      "effects": [
+        {
+          "type": "scaleStatus",
+          "target": "opponent",
+          "statusId": "burn",
+          "factor": 2
+        },
+        {
+          "type": "dealDamage",
+          "target": "opponent",
+          "category": "Passive",
+          "power": 0,
+          "basis": "maxHp",
+          "amount": 0.02,
+          "element": "Fire"
+        }
+      ],
+      "note": "充分燃烧"
+    },
+    {
+      "id": "skill:sk-7021080",
+      "ownerType": "skill",
+      "ownerId": "sk-7021080",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7021080"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 30
+        }
+      ],
+      "note": "三连破：3 连击（能量技连击语义）待校准"
+    },
+    {
+      "id": "skill:sk-7110410",
+      "ownerType": "skill",
+      "ownerId": "sk-7110410",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7110410"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "opponent",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": -20
+        },
+        {
+          "type": "modifyStat",
+          "target": "opponent",
+          "stat": "speed",
+          "mode": "flat",
+          "value": -20
+        }
+      ],
+      "note": "电离爆破：2 连击待校准"
     }
   ]
 }
