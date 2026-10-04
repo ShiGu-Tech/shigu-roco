@@ -337,10 +337,20 @@ export class Simulator {
     this.refreshDerivedCounters(st);
 
     // ④ 结算阶段：按侧状态 / 印记结算（DoT、衰减）→ 环境衰减 → 阵亡
-    for (const side of SIDES) {
-      events.push(...this.triggerState(st, "turnEnd", { actorSide: side, targetSide: otherSide(side), event: { turn: st.turn, side } }));
+    // 规则覆盖 · 回合末增删（陨落 `turnEnd.skip` / 双向光速 `turnEnd.extra`，任一侧声明即对双方生效）。
+    const teModPlayer = this.mechanisms.ruleModifiers(st, this.bundle, "player");
+    const teModEnemy = this.mechanisms.ruleModifiers(st, this.bundle, "enemy");
+    const turnEndSkip = teModPlayer["turnEnd.skip"] === true || teModEnemy["turnEnd.skip"] === true;
+    const turnEndExtra = teModPlayer["turnEnd.extra"] === true || teModEnemy["turnEnd.extra"] === true;
+    if (!turnEndSkip) {
+      const times = turnEndExtra ? 2 : 1;
+      for (let i = 0; i < times; i++) {
+        for (const side of SIDES) {
+          events.push(...this.triggerState(st, "turnEnd", { actorSide: side, targetSide: otherSide(side), event: { turn: st.turn, side } }));
+        }
+        events.push(...this.runPendingEffects(st, "turnEnd"));
+      }
     }
-    events.push(...this.runPendingEffects(st, "turnEnd"));
     for (const event of events) {
       if (event.type === "cooldown-modified" && event.side) {
         const skillId = toStr(event.data.skillId);

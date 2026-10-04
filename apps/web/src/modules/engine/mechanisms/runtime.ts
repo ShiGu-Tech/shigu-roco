@@ -156,8 +156,18 @@ export class MechanismRuntime {
           if (!active || !targetSide) break;
           const before = active.hp;
           const base = definition.amountFrom ? this.dynamicValue(state, command, definition.amountFrom, definition.amount, bundle) : definition.amount;
-          const amount = definition.basis === "maxHp" ? active.maxHp * base : definition.basis === "currentHp" ? active.hp * base : base;
-          active.hp = Math.min(active.maxHp, active.hp + Math.floor(amount));
+          const amount = Math.floor(definition.basis === "maxHp" ? active.maxHp * base : definition.basis === "currentHp" ? active.hp * base : base);
+          // 规则覆盖 · `heal.redirectToDamage`（戏耍）：回复改为对敌方造成等量伤害。
+          const healMods = this.ruleModifiers(state, bundle, targetSide);
+          if (healMods["heal.redirectToDamage"] === true) {
+            const otherSide: Side = targetSide === "player" ? "enemy" : "player";
+            const opp = otherSide === "player" ? state.player.active : state.enemy.active;
+            const dealt = Math.min(opp.hp, Math.max(0, amount));
+            opp.hp = Math.max(0, opp.hp - dealt);
+            events.push({ type: "damage", trigger: command.trigger, mechanismId: command.mechanismId, effectType: "heal", side: otherSide, data: { value: dealt, redirectedFromHeal: true } });
+            break;
+          }
+          active.hp = Math.min(active.maxHp, active.hp + amount);
           events.push({ type: "healed", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { before, after: active.hp, value: active.hp - before } });
           break;
         }
@@ -619,7 +629,16 @@ export class MechanismRuntime {
           const before = active.statuses[definition.statusId] ?? 0;
           if (before <= 0) break;
           let after = before;
-          if (typeof definition.delta === "number") after = Math.max(0, before - definition.delta);
+          // 规则覆盖按**双方**合并（「在场时所有灼烧」类不受受影响侧限制）。
+          const statusMods = { ...this.ruleModifiers(state, bundle, "player"), ...this.ruleModifiers(state, bundle, "enemy") };
+          const decayed = definition.decayLayers === "half" ? Math.floor(before / 2) : typeof definition.delta === "number" ? Math.min(before, definition.delta) : definition.decayLayers === "clear" ? before : 0;
+          // 规则覆盖 · 灼烧衰减改写（煤渣草 `status.burnGrow` / 焰色反应 `status.burnToPoison`）。
+          if (definition.statusId === "burn" && statusMods["status.burnGrow"] === true) {
+            after = before + Math.ceil(before / 2);
+          } else if (definition.statusId === "burn" && statusMods["status.burnToPoison"] === true) {
+            after = Math.max(0, before - decayed);
+            if (decayed > 0) active.statuses.poison = (active.statuses.poison ?? 0) + decayed;
+          } else if (typeof definition.delta === "number") after = Math.max(0, before - definition.delta);
           else if (definition.decayLayers === "half") after = Math.floor(before / 2);
           else if (definition.decayLayers === "clear") after = 0;
           if (after === 0) delete active.statuses[definition.statusId];

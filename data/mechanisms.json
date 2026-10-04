@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.79.0",
+  "version": "0.80.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -22911,15 +22911,25 @@
       "ownerType": "trait",
       "ownerId": "sp-325-1",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "煤渣草：在场时，所有灼烧的衰减变为增长。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-325-1",
+            "sp-326-1"
+          ]
         }
       ],
-      "note": "特性「煤渣草」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "status.burnGrow",
+          "value": true
+        }
+      ],
+      "note": "特性「煤渣草」：在场时所有灼烧的衰减变为增长"
     },
     {
       "id": "trait:sp-327-1",
@@ -23058,30 +23068,49 @@
       "ownerType": "trait",
       "ownerId": "sp-335-1",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "双向光速：在场时，双方回合结束时的效果会额外触发1次。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-335-1",
+            "sp-336-1"
+          ]
         }
       ],
-      "note": "特性「双向光速」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "turnEnd.extra",
+          "value": true
+        }
+      ],
+      "note": "特性「双向光速」：在场时双方回合结束效果额外触发 1 次"
     },
     {
       "id": "trait:sp-337-1",
       "ownerType": "trait",
       "ownerId": "sp-337-1",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "陨落：在场时，双方回合结束时的效果不会触发。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-337-1"
+          ]
         }
       ],
-      "note": "特性「陨落」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "turnEnd.skip",
+          "value": true
+        }
+      ],
+      "note": "特性「陨落」：在场时双方回合结束效果不触发"
     },
     {
       "id": "trait:sp-338-1",
@@ -23223,30 +23252,51 @@
       "ownerType": "trait",
       "ownerId": "sp-362-1",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "戏耍：自己无法回复生命，而是将回复生命变为敌方扣除等量生命。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-362-1",
+            "sp-363-1",
+            "sp-364-1"
+          ]
         }
       ],
-      "note": "特性「戏耍」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "heal.redirectToDamage",
+          "value": true
+        }
+      ],
+      "note": "特性「戏耍」：自己无法回复生命，回复改为敌方等量扣血"
     },
     {
       "id": "trait:sp-365-1",
       "ownerType": "trait",
       "ownerId": "sp-365-1",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "焰色反应：在场时，衰减的灼烧变为相同层数的中毒。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-365-1",
+            "sp-366-1"
+          ]
         }
       ],
-      "note": "特性「焰色反应」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "status.burnToPoison",
+          "value": true
+        }
+      ],
+      "note": "特性「焰色反应」：在场时衰减的灼烧转为等量中毒"
     },
     {
       "id": "trait:sp-367-1",

@@ -135,5 +135,7 @@
  * - 0.46.0 内容补齐第四期 D1：触发器 `heal`（`healed` 级联）/ `statusDamage`（`applyDamageCommands` 中
  *          状态来源 `dealDamage` 派发）；伤害事件带 `ownerType` / `ownerId`；派生计数 `hpLostQuarters`
  *          （受伤段）/ `teamMoe` / `fieldMarkKinds` / `fieldBuffKinds`（`refreshDerivedCounters`）。
+ * - 0.47.0 内容补齐第四期 D2：规则键 `status.burnGrow` / `status.burnToPoison`（`settleStatus`，双方合并读）/
+ *          `turnEnd.extra` / `turnEnd.skip`（`step` 回合末，任一侧声明对双方生效）/ `heal.redirectToDamage`（`heal`）。
  */
-export const ENGINE_VERSION = "0.46.0";
+export const ENGINE_VERSION = "0.47.0";
