@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.54.0",
+  "version": "0.55.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -18451,6 +18451,194 @@
         }
       ],
       "note": "特性「指挥家」"
+    },
+    {
+      "id": "trait:sp-113-1",
+      "ownerType": "trait",
+      "ownerId": "sp-113-1",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-113-1",
+            "sp-114-1",
+            "sp-115-1"
+          ]
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Earth"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addPower",
+          "value": 0,
+          "valueFrom": {
+            "path": "target.active.marks.starfall-mark",
+            "scale": 20
+          }
+        }
+      ],
+      "note": "特性「观星」：敌方每层星陨 +20%"
+    },
+    {
+      "id": "trait:sp-115-2",
+      "ownerType": "trait",
+      "ownerId": "sp-115-2",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-115-2"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "addPower",
+          "value": 0,
+          "valueFrom": {
+            "path": "target.active.marks.starfall-mark",
+            "scale": 20
+          }
+        }
+      ],
+      "note": "特性「坠星」：敌方每层星陨 +20%"
+    },
+    {
+      "id": "trait:sp-427-1",
+      "ownerType": "trait",
+      "ownerId": "sp-427-1",
+      "trigger": "buffGained",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-427-1",
+            "sp-428-1",
+            "sp-429-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -1,
+          "mode": "add"
+        }
+      ],
+      "note": "特性「王子的诺言」：获得增益 → 全技能能耗 −1"
+    },
+    {
+      "id": "trait:sp-427-1#2",
+      "ownerType": "trait",
+      "ownerId": "sp-427-1",
+      "trigger": "debuffGained",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-427-1",
+            "sp-428-1",
+            "sp-429-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": 1,
+          "mode": "add"
+        }
+      ],
+      "note": "特性「王子的诺言」：获得减益 → 全技能能耗 +1"
+    },
+    {
+      "id": "trait:sp-99-1",
+      "ownerType": "trait",
+      "ownerId": "sp-99-1",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-99-1",
+            "sp-100-1",
+            "sp-101-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "grantDedication",
+          "target": "self"
+        }
+      ],
+      "note": "特性「花精灵」"
+    },
+    {
+      "id": "trait:sp-283-1",
+      "ownerType": "trait",
+      "ownerId": "sp-283-1",
+      "trigger": "afterDamage",
+      "when": [
+        {
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-283-1",
+            "sp-284-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "grantDedication",
+          "target": "self"
+        }
+      ],
+      "note": "特性「坚韧铠甲」：受击 → 队伍 1 次随机奉献（self=攻击方，target 侧）"
+    },
+    {
+      "id": "trait:sp-296-1",
+      "ownerType": "trait",
+      "ownerId": "sp-296-1",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-296-1",
+            "sp-297-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeMark",
+          "target": "opponent",
+          "layers": 1
+        },
+        {
+          "type": "grantDedication",
+          "target": "self"
+        }
+      ],
+      "note": "特性「扫拖一体」"
     }
   ]
 }
