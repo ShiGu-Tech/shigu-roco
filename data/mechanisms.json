@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.93.0",
+  "version": "0.94.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -16797,51 +16797,6 @@
       "note": "疾风连袭：释放过的迅捷技能汇总 + 动态能耗"
     },
     {
-      "id": "skill:sk-7160170",
-      "ownerType": "skill",
-      "ownerId": "sk-7160170",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "示弱：萌化退化模型 + 永久速度（结构性）【待校准】"
-        }
-      ],
-      "note": "示弱：萌化退化模型 + 永久速度（结构性）"
-    },
-    {
-      "id": "skill:sk-7160180",
-      "ownerType": "skill",
-      "ownerId": "sk-7160180",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "赤子之心：萌化退化模型 + 永久能耗（结构性）【待校准】"
-        }
-      ],
-      "note": "赤子之心：萌化退化模型 + 永久能耗（结构性）"
-    },
-    {
-      "id": "skill:sk-7160190",
-      "ownerType": "skill",
-      "ownerId": "sk-7160190",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "反弹：萌化状态转移（结构性）【待校准】"
-        }
-      ],
-      "note": "反弹：萌化状态转移（结构性）"
-    },
-    {
       "id": "skill:sk-7180350",
       "ownerType": "skill",
       "ownerId": "sk-7180350",
@@ -24996,6 +24951,95 @@
         }
       ],
       "note": "排气：敌方攻击威力 −20 × 层数"
+    },
+    {
+      "id": "skill:sk-7160170",
+      "ownerType": "skill",
+      "ownerId": "sk-7160170",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7160170"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "moe",
+          "layers": 1
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "flat-speed",
+          "delta": 130
+        }
+      ],
+      "note": "示弱：自己获得萌化（退化一阶）；速度永久 +130"
+    },
+    {
+      "id": "skill:sk-7160180",
+      "ownerType": "skill",
+      "ownerId": "sk-7160180",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7160180"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "moe",
+          "layers": 1
+        },
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -2,
+          "duration": "permanent",
+          "key": "cherub:7160180",
+          "dispellable": false,
+          "hidden": false
+        }
+      ],
+      "note": "赤子之心：自己获得萌化（退化一阶）；全技能能耗永久 −2"
+    },
+    {
+      "id": "skill:sk-7160190",
+      "ownerType": "skill",
+      "ownerId": "sk-7160190",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7160190"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "moe",
+          "layersFrom": {
+            "path": "self.active.statuses.moe"
+          }
+        },
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "moe"
+        }
+      ],
+      "note": "反弹：把自己的萌化转移给敌方（近似：自身形态不回溯）"
     }
   ]
 }

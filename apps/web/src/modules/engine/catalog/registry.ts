@@ -4,7 +4,7 @@ import type { ExternalSnapshot, RegisteredCatalog, RegistryIndex } from "./types
 import { normalizeSnapshot } from "./normalize";
 import { resolveDataDir } from "../data-node";
 
-const NORMALIZER_VERSION = "n7";
+const NORMALIZER_VERSION = "n8";
 
 function registryDir(): string {
   const root = process.env.ROCO_CATALOG_REGISTRY_DIR ?? path.join(resolveDataDir(), "registry", "catalogs");

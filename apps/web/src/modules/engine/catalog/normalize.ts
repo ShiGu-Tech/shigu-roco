@@ -1,5 +1,5 @@
 import type { Dict } from "../types";
-import type { ExternalSnapshot, RegisteredCatalog } from "./types";
+import type { ExternalSnapshot, ExternalSpirit, RegisteredCatalog } from "./types";
 
 const CATEGORY: Record<string, string> = { 物理: "Physical", 魔法: "Magic", 状态: "Status", 防御: "Defense" };
 const ELEMENT: Record<string, string> = {
@@ -41,9 +41,23 @@ function skillReaction(value: unknown): string | null {
   return match ? REACTION_TAG[match[1]] : null;
 }
 
+/** 萌化退化目标：从原始快照的 `family_members` 取「上一阶」形态 id（`sp-<handbook>-<form>`），须已注册。 */
+function prevStageOf(spirit: ExternalSpirit, spriteIds: Set<string>): string | null {
+  const stage = spirit.stage ?? 1;
+  if (stage <= 1) return null;
+  const raw = (spirit as unknown as Dict).sourceData;
+  const family = raw && typeof raw === "object" ? (raw as Dict).family_members : undefined;
+  if (!Array.isArray(family)) return null;
+  const prev = (family as Dict[]).find((member) => Number(member.evolution_stage) === stage - 1);
+  if (!prev) return null;
+  const id = `sp-${prev.handbook_id}-${prev.form_id}`;
+  return spriteIds.has(id) ? id : null;
+}
+
 export function normalizeSnapshot(snapshot: ExternalSnapshot, registrationId: string, registeredAt: string): RegisteredCatalog {
   const warnings: string[] = [];
   const skillIds = new Set(snapshot.skills.map((skill) => String(skill.id).startsWith("sk-") ? String(skill.id) : `sk-${skill.id}`));
+  const spriteIds = new Set(snapshot.spirits.map((spirit) => `sp-${spirit.id}-${spirit.formId}`));
   const sprites: Dict[] = snapshot.spirits.map((spirit) => {
     const key = `${spirit.id}:${spirit.formId}`;
     const learned = snapshot.spiritSkills[key] ?? [];
@@ -62,6 +76,8 @@ export function normalizeSnapshot(snapshot: ExternalSnapshot, registrationId: st
       nameZh: spirit.name,
       form: spirit.form ?? null,
       stage: spirit.stage ?? 1,
+      /** 萌化退化目标（null = 不可退化，即已是最低阶 / 目标未注册）。 */
+      prev: prevStageOf(spirit, spriteIds),
       elements: spirit.types.map((id) => elementName(snapshot.meta.types?.find((type) => type.id === id)?.name ?? String(id), snapshot.meta)),
       race: {
         hp: spirit.stats.hp,

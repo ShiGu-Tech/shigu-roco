@@ -97,6 +97,8 @@ export function describeEvent(e: BattleEvent, catalog: Catalog): string {
       return `${side}清除计数器 ${d.key ?? "全部"}`;
     case "entry-scheduled":
       return `预约了入场效果（${n(d.count)} 条）`;
+    case "transform":
+      return `${side}退化 / 形态变化`;
     case "switch":
     case "stat-inherited":
     case "faint":
@@ -150,6 +152,7 @@ const NARRATIVE_TYPES = new Set<string>([
   "entry-scheduled",
   "switch",
   "stat-inherited",
+  "transform",
   "faint",
 ]);
 

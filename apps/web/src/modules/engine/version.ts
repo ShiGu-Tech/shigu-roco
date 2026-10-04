@@ -157,5 +157,8 @@
  *          `bloodlineElement` 注入（系别名或 `leader` / `polluted` / `strange`）；`parseProfile` / `profileFromSetup` 透传。
  * - 0.57.0 防御共享冷却（术语 1016「应对攻击」）：使用防御技能后，携带的全部防御技能进入 1 回合冷却
  *          （本回合标记 touched，跨过回合末衰减，下一回合才恢复；壁垒 -1 / 火焰护盾 +1 等 modifyCooldown 叠加其上）。
+ * - 0.58.0 萌化退化（D8）：图鉴精灵携带 `prev`（上一阶形态 id，`NORMALIZER_VERSION` n7→n8）；`applyStatus` 首次
+ *          获得 `moe` → 换成 `prev` 并 `applyProfile` 重算 maxHp / hp 比例；`effectiveStat` 增加永久平铺加成
+ *          `counters.flat-<stat>`（供「示弱」永久速度）。
  */
-export const ENGINE_VERSION = "0.57.0";
+export const ENGINE_VERSION = "0.58.0";

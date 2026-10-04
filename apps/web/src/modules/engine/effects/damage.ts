@@ -34,11 +34,13 @@ export interface ComputeDamageOptions {
   hits?: number;
 }
 
-/** 基础值（含养成）× (1 + 增益 + 减益)。用于速度 / 展示（buff 为分数，一层 = 0.1）。 */
+/** 基础值（含养成）× (1 + 增益 + 减益) + 永久平铺加成（`counters.flat-<stat>`）。
+ *  用于速度 / 展示（buff 为分数，一层 = 0.1）；`flat-speed` 供「示弱」等永久速度。 */
 export function effectiveStat(bundle: DataBundle, spriteDef: Dict, active: ActiveSprite, stat: string): number {
   const base = statWithProfile(bundle.stats, spriteDef, active.profile, stat);
   const bonus = toNum(active.buffs[stat], 0) + toNum(active.debuffs[stat], 0);
-  return base * (1 + bonus);
+  const flat = toNum(active.counters?.[`flat-${stat}`], 0);
+  return base * (1 + bonus) + flat;
 }
 
 /** 强化差值 = 1 + 攻方层 − 防方层（层以分数存于 buffs/debuffs，一层 = 0.1）。 */

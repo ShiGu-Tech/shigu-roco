@@ -2,7 +2,8 @@ import { getSkill, getSprite } from "../data";
 import { computeDamage } from "../effects/damage";
 import { Rng } from "../rng";
 import { recordSkillOverride } from "../state";
-import type { BattleState, CostMod, DataBundle, Dict, Side } from "../types";
+import { applyProfile } from "../stats";
+import type { ActiveSprite, BattleState, CostMod, DataBundle, Dict, Side } from "../types";
 import { asDict, toArray, toNum, toStr } from "../types";
 import { ActionQueue } from "./action-queue";
 import { resolveContextPath } from "./conditions";
@@ -62,6 +63,17 @@ export class MechanismRuntime {
     if (!bundle || !immuneElements?.length) return false;
     const elements = toArray<string>(getSprite(bundle, spriteId).elements);
     return elements.some((element) => immuneElements.includes(element));
+  }
+
+  /** 萌化退化：把在场精灵换成图鉴登记的上一阶形态，并按原血量比例重算 maxHp / hp；不可退化返回 null。 */
+  private degrade(active: ActiveSprite, bundle: DataBundle | undefined): string | null {
+    if (!bundle) return null;
+    const prev = toStr(getSprite(bundle, active.spriteId).prev);
+    if (!prev || !bundle.sprites[prev]) return null;
+    const from = active.spriteId;
+    active.spriteId = prev;
+    applyProfile(bundle.stats, getSprite(bundle, prev), active, active.profile);
+    return from;
   }
 
   /** 规则覆盖通道：收集 `passive` 触发器声明的 `setRuleModifier`（按传入 side 的在场精灵），供结算读「有效规则」。 */
@@ -623,6 +635,11 @@ export class MechanismRuntime {
           active.statuses[definition.statusId] = before + delta;
           const sourceActive = command.actorSide === "player" ? state.player.active : command.actorSide === "enemy" ? state.enemy.active : undefined;
           events.push({ type: "status-applied", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { statusId: definition.statusId, before, after: active.statuses[definition.statusId], layers: delta, sourceSide: command.actorSide ?? null, sourceSpriteId: sourceActive?.spriteId ?? null } });
+          // 萌化：首次获得时退化到上一阶（重算资质 / maxHp，按原比例调 hp）。近似：不因驱散回溯。
+          if (definition.statusId === "moe" && before === 0) {
+            const from = this.degrade(active, bundle);
+            if (from) events.push({ type: "transform", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { from, to: active.spriteId } });
+          }
           break;
         }
         case "setStatus": {
