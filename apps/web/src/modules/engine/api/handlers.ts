@@ -39,6 +39,7 @@ function parseProfile(raw: unknown): StatProfile | undefined {
     nature: p.nature === undefined || p.nature === null ? (p.nature as null | undefined) : toStr(p.nature),
     iv: p.iv ? intDict(p.iv) : undefined,
     stars: p.stars === undefined ? undefined : toNum(p.stars, 0),
+    bloodline: p.bloodline === undefined || p.bloodline === null ? undefined : toStr(p.bloodline),
   };
 }
 

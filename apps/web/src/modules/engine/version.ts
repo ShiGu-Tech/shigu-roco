@@ -153,5 +153,7 @@
  *          取念）；规则 `cost.payWithHp`（盛宴 / 石头大餐：能量不足以 5% 最大生命代 1 点能耗，`legalActions` 同步放行）。
  * - 0.55.0 预警域：回合开始按对手携带攻击技能估算 `SideState.counters.incomingLethal`（`computeDamage` 取最大值
  *          对比自身生命，0/1，近似）；供预警 / 先知 / 哨兵。
+ * - 0.56.0 血脉域（D9）：`StatProfile.bloodline`（培养资质输入，UI 已有选择器）→ `ActiveSprite.bloodline` /
+ *          `bloodlineElement` 注入（系别名或 `leader` / `polluted` / `strange`）；`parseProfile` / `profileFromSetup` 透传。
  */
-export const ENGINE_VERSION = "0.55.0";
+export const ENGINE_VERSION = "0.56.0";

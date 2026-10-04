@@ -195,11 +195,18 @@ export class Simulator {
     // 回合开始清空「本回合是否换人」标记与 `oncePerTurn` 计数。
     for (const side of SIDES) this.sideState(st, side).switchedThisTurn = false;
     st.onceFired = {};
-    // 图鉴域 · 系别注入：从图鉴取系别写入运行时精灵（供「非本系」类条件）。
+    // 图鉴域 · 系别 / 血脉注入：从图鉴取系别、从培养资质取血脉写入运行时精灵。
+    // 血脉取值为「系别名（如 Grass）」或固定项「leader / polluted / strange」（UI 约定）。
     for (const side of SIDES) {
       const s = this.sideState(st, side);
       for (const sprite of [s.active, ...s.bench]) {
-        if (!sprite.element) sprite.element = toArray<string>(getSprite(this.bundle, sprite.spriteId).elements);
+        const def = getSprite(this.bundle, sprite.spriteId);
+        if (!sprite.element) sprite.element = toArray<string>(def.elements);
+        const key = toStr(sprite.profile?.bloodline);
+        if (key) {
+          sprite.bloodline = key;
+          sprite.bloodlineElement = key === "leader" || key === "polluted" || key === "strange" ? "" : key;
+        }
       }
     }
 

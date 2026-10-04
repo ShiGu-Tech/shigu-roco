@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.89.0",
+  "version": "0.91.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -20674,16 +20674,36 @@
       "id": "trait:sp-11-7",
       "ownerType": "trait",
       "ownerId": "sp-11-7",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "“国王”的威严：鸭吉吉国王的种族资质大幅增加，能耗为1的技能威力+50%。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-11-7",
+            "sp-11-8",
+            "sp-11-9",
+            "sp-11-10",
+            "sp-11-11",
+            "sp-11-12"
+          ]
+        },
+        {
+          "path": "action.cost",
+          "op": "eq",
+          "value": 1
         }
       ],
-      "note": "特性「“国王”的威严」：待实现"
+      "effects": [
+        {
+          "type": "modifyDamage",
+          "target": "self",
+          "mode": "multiply",
+          "value": 1.5,
+          "scope": "outgoing"
+        }
+      ],
+      "note": "特性「“国王”的威严」：能耗为 1 的技能威力 +50%（种族资质增加略）"
     },
     {
       "id": "trait:sp-24-1",
@@ -23073,31 +23093,54 @@
       "id": "trait:sp-307-1",
       "ownerType": "trait",
       "ownerId": "sp-307-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "绒粉星光：攻击时，若敌方血脉是非本系的系别血脉，技能威力+100%。【待校准】"
+          "path": "target.active.bloodlineElement",
+          "op": "neq",
+          "value": ""
+        },
+        {
+          "not": {
+            "path": "target.active.element",
+            "op": "contains",
+            "valueFrom": "target.active.bloodlineElement"
+          }
         }
       ],
-      "note": "特性「绒粉星光」：待实现"
+      "effects": [
+        {
+          "type": "modifyDamage",
+          "target": "self",
+          "mode": "multiply",
+          "value": 2,
+          "scope": "outgoing"
+        }
+      ],
+      "note": "特性「绒粉星光」：攻击时若敌方血脉是非本系的系别血脉，威力 +100%"
     },
     {
       "id": "trait:sp-310-1",
       "ownerType": "trait",
       "ownerId": "sp-310-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "月光审判：攻击时，若敌方血脉是首领血脉，技能威力+100%。【待校准】"
+          "path": "target.active.bloodline",
+          "op": "eq",
+          "value": "leader"
         }
       ],
-      "note": "特性「月光审判」：待实现"
+      "effects": [
+        {
+          "type": "modifyDamage",
+          "target": "self",
+          "mode": "multiply",
+          "value": 2,
+          "scope": "outgoing"
+        }
+      ],
+      "note": "特性「月光审判」：攻击时若敌方血脉是首领血脉，威力 +100%"
     },
     {
       "id": "trait:sp-317-1",

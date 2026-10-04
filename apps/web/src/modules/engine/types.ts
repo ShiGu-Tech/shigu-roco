@@ -19,6 +19,8 @@ export interface StatProfile {
   iv?: Record<string, number>;
   /** 星级 0~5（>=1 时性格正向系数随之抬高：1.10 + 0.02×星级）。 */
   stars?: number;
+  /** 血脉（培养资质的一部分）：血脉 key（如 COMMON / LEADER / GRASS…），可替换。 */
+  bloodline?: string;
 }
 
 // ---------------------------------------------------------------- 运行时模型
@@ -55,6 +57,10 @@ export interface ActiveSprite {
   element?: string[];
   /** 图鉴域 · 携带技能的系别集合（开局注入，供「受到自己携带技能系别」类条件）。 */
   carryElements?: string[];
+  /** 血脉域 · 当前血脉 key（培养资质，来自 `profile.bloodline` ?? 图鉴首选项）。 */
+  bloodline?: string;
+  /** 血脉域 · 血脉对应的系别名（系别血脉；首领等无系别为 ""）。 */
+  bloodlineElement?: string;
 }
 
 /** 能耗修正条目：挂在精灵身上、由技能 / 特性 / 状态登记，读时按作用域求和。 */

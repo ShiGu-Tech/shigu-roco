@@ -54,5 +54,5 @@ export function profileFromSetup(setup?: PetSetup): StatProfile | undefined {
     const talent = setup.talent[key];
     if (talent != null) iv[key] = Math.round(talent * (1 + stars));
   }
-  return { level: setup.level, stars, nature: setup.nature ?? null, iv };
+  return { level: setup.level, stars, nature: setup.nature ?? null, iv, bloodline: setup.bloodline };
 }
