@@ -783,12 +783,12 @@ export function BattleBoard() {
                 return (
                   <div key={i} className="flex items-start gap-2 border-b px-3 py-1.5 text-[12px] last:border-0">
                     <span
-                      className="mt-[4px] shrink-0 text-[10px] leading-none"
+                      className="mt-[1px] w-[26px] shrink-0 text-[10px] font-semibold leading-tight"
                       style={{
                         color: row.side === "player" ? PLAYER_COLOR : row.side === "enemy" ? ENEMY_COLOR : "var(--muted-foreground)",
                       }}
                     >
-                      ●
+                      {row.side === "player" ? "我方" : row.side === "enemy" ? "敌方" : "·"}
                     </span>
                     <span className="w-[42px] shrink-0">
                       {row.kind ? <Badge variant="outline" className="px-1 py-0 text-[10px]">{row.kind}</Badge> : null}

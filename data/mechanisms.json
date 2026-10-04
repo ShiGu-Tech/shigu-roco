@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.91.0",
+  "version": "0.92.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -5577,6 +5577,11 @@
           "path": "event.element",
           "op": "eq",
           "value": "Normal"
+        },
+        {
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7020600"
         }
       ],
       "effects": [
@@ -6012,6 +6017,11 @@
           "path": "event.reacted",
           "op": "eq",
           "value": true
+        },
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020570"
         }
       ],
       "effects": [

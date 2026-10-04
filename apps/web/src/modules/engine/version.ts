@@ -155,5 +155,7 @@
  *          对比自身生命，0/1，近似）；供预警 / 先知 / 哨兵。
  * - 0.56.0 血脉域（D9）：`StatProfile.bloodline`（培养资质输入，UI 已有选择器）→ `ActiveSprite.bloodline` /
  *          `bloodlineElement` 注入（系别名或 `leader` / `polluted` / `strange`）；`parseProfile` / `profileFromSetup` 透传。
+ * - 0.57.0 防御共享冷却（术语 1016「应对攻击」）：使用防御技能后，携带的全部防御技能进入 1 回合冷却
+ *          （本回合标记 touched，跨过回合末衰减，下一回合才恢复；壁垒 -1 / 火焰护盾 +1 等 modifyCooldown 叠加其上）。
  */
-export const ENGINE_VERSION = "0.56.0";
+export const ENGINE_VERSION = "0.57.0";

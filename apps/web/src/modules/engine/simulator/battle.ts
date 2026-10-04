@@ -260,6 +260,23 @@ export class Simulator {
     // 应对成功：本技能有「应对 X」且敌方本回合使用 X 类行动 → 必定先手（优先级抬升）。
     const reactedBySide: Partial<Record<Side, boolean>> = {};
     for (const side of actorSides) reactedBySide[side] = this.reactSuccess(actions[side].skillId, actions[otherSide(side)]);
+    // 技能栏域 · 防御共享冷却（术语 1016「应对攻击」）：使用防御技能后，携带的全部防御技能进入 1 回合冷却。
+    for (const side of actorSides) {
+      const declared = actions[side];
+      if (declared.kind !== "skill" || !declared.skillId) continue;
+      if (toStr(getSkill(this.bundle, declared.skillId).actionType) !== "Defense") continue;
+      const active = this.sideState(st, side).active;
+      active.cooldowns ??= {};
+      let count = 0;
+      for (const id of active.loadout) {
+        if (toStr(getSkill(this.bundle, id).actionType) !== "Defense") continue;
+        const before = toNum(active.cooldowns[id], 0);
+        active.cooldowns[id] = Math.max(before, 1);
+        touched[side].add(id);
+        if (active.cooldowns[id] > before) count += 1;
+      }
+      if (count > 0) events.push({ type: "defense-cooldown", side, text: `${side} 携带的防御技能进入 1 回合冷却`, data: { count } });
+    }
     actorSides.forEach((side, index) => {
       const [basePriority, speed] = this.orderKey(st, side, actions[side]);
       const priority = reactedBySide[side] ? basePriority + 100 : basePriority;
