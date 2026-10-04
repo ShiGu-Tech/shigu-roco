@@ -177,6 +177,17 @@ describe("structural: 展翅/异类/游弋/夺目/翻垃圾桶/瞳中倒影/噼�
     expect(r.state.player.active.hp).toBe(500);
   });
 
+  it("猫精灵的礼物：队伍选择技完整次数 → 入场物攻 +40%", () => {
+    const trait = spriteWithTrait("猫精灵的礼物");
+    const state = makeState(
+      makeSide(makeActive(trait, { hp: 500, maxHp: 500, energy: 20 })),
+      makeSide(makeActive("sp-14-1")),
+    );
+    state.player.counters = { choiceFull: 1 };
+    const t = new Simulator(bundle).step(state, { kind: "energy" }, { kind: "energy" }, new Rng(1));
+    expect(t.state.player.active.buffs.atk).toBe(0.4);
+  });
+
   it("禁足：离场锁期间无法换人（legalActions 无 switch）", () => {
     const state = makeState(
       makeSide(makeActive("sp-14-1", { hp: 500, maxHp: 500, energy: 20 }), { bench: [makeActive("sp-15-1", { hp: 100, maxHp: 100 })] }),

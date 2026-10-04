@@ -463,6 +463,16 @@ export class Simulator {
         this.bump(st, side, `usedType${toStr(usedSkill.actionType)}`);
         this.bump(st, side, "skillUsed");
         if (reactedBySide[side] === true) this.bump(st, side, "reacts");
+        // 选择域 · 队伍记录：某「选择」技能「明」「暗」各用过 1 次即记一次完整（供猫精灵的礼物）。
+        if (entry.action.skillId && this.skillHasChoice(entry.action.skillId)) {
+          const c = this.sideState(st, side).counters!;
+          const branchKey = `choice${entry.action.choice === 1 ? 1 : 0}.${entry.action.skillId}`;
+          this.bump(st, side, branchKey, 1);
+          if (toNum(c[`choice0.${entry.action.skillId}`], 0) > 0 && toNum(c[`choice1.${entry.action.skillId}`], 0) > 0 && toNum(c[`choiceFull.${entry.action.skillId}`], 0) === 0) {
+            c[`choiceFull.${entry.action.skillId}`] = 1;
+            this.bump(st, side, "choiceFull", 1);
+          }
+        }
         // 迅捷域 · 已使用迅捷技能的能耗累计（供「疾风连袭」动态能耗）。
         const usedCost = entry.action.skillId ? effectiveCost(st, this.bundle, side, entry.action.skillId, this.mechanisms.ruleModifiers(st, this.bundle, side)) : 0;
         if (toArray<string>(usedSkill.tags).includes("quick") || this.skillIsQuick(st, side, caster, entry.action.skillId ?? "", this.mechanisms.ruleModifiers(st, this.bundle, side))) {

@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.113.0",
+  "version": "0.114.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -24037,21 +24037,6 @@
       "note": "特性「和弦共振」：双方场上每有 1 种不同印记，魔攻 +50%（近似为固定 +50 威力/种）"
     },
     {
-      "id": "trait:sp-422-1",
-      "ownerType": "trait",
-      "ownerId": "sp-422-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "猫精灵的礼物：己方精灵每完整使用1次「选择」技能（「明」和「暗」各1次），自己入场时获得物攻+40%。【待校准】"
-        }
-      ],
-      "note": "特性「猫精灵的礼物」：待实现"
-    },
-    {
       "id": "trait:sp-432-1",
       "ownerType": "trait",
       "ownerId": "sp-432-1",
@@ -26584,6 +26569,52 @@
         }
       ],
       "note": "特性「不朽」：力竭 4 回合后复活"
+    },
+    {
+      "id": "trait:sp-422-1",
+      "ownerType": "trait",
+      "ownerId": "sp-422-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-422-1",
+            "sp-423-1",
+            "sp-424-1"
+          ]
+        },
+        {
+          "not": {
+            "path": "self.active.counters.giftApplied",
+            "op": "gte",
+            "value": 1
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "setCounter",
+          "target": "self",
+          "key": "giftApplied",
+          "valueFrom": {
+            "path": "self.counters.choiceFull"
+          }
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.choiceFull",
+            "scale": 40
+          }
+        }
+      ],
+      "note": "特性「猫精灵的礼物」：己方每完整使用 1 次选择技（明+暗），自己入场时物攻 +40%"
     }
   ]
 }

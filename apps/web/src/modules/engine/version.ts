@@ -200,5 +200,6 @@
  *          并结算其状态 / 伤害（不重复耗能）。
  * - 0.72.0 复生域 + 规则值类型：`setRuleModifier` 允许字符串值（`RuleModifiers`）；`ActiveSprite.reviveDue` /
  *          `reviveAs` + 规则 `revive.afterTurns`（不朽：力竭 N 回合后于回合开始恢复满血重新可用）。
+ * - 0.73.0 选择计数：队伍记录某「选择」技能「明」「暗」各用 1 次 → 侧计数器 `choiceFull`（供猫精灵的礼物）。
  */
-export const ENGINE_VERSION = "0.72.0";
+export const ENGINE_VERSION = "0.73.0";
