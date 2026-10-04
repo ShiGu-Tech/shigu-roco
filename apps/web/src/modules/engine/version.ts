@@ -183,5 +183,13 @@
  *          `harmony`（合拍）；伤害规则 `power.nonLight`（夺目：非光系威力 +N）。
  * - 0.68.0 能量 / 能耗规则：新增 `setEnergy`（盗魂铃初始 0）；规则 `cost.lastTurnSum`（基因编辑：基础能耗 = 上回合双方和）
  *          + `energy.gainReduce`（盗魂铃：回能 −N，作用于聚能与机制回能）。
+ * - 0.69.0 结构族批量：`skillIdFrom` 扩展到 `learnSkill` / `rotateLoadout` / `modifySkillCost`；
+ *          新增 `learnRandomSkills`（随机习得未携带技能）；`rotateLoadout` 记传动累计 `tractionTrack`。
+ *          伤害结算应用 `pct-<stat>` / `flat-<stat>`（与 `effectiveStat` 同口径，修复合拍物防未入伤）。
+ *          规则：`element.normalToWing`（展翅）/ `cost.wingAttack` + `lifesteal.wingAttack`（异类）/
+ *          `charge.defenseMul`（游弋）/ `charge.skill.<id>`（龙守望：蓄力中可释放指定技能）/
+ *          `cost.slotChangePenalty`（机械变式：回合内位移 → 能耗永久 −1）/ `switch.swapHpRatio`（瞳中倒影）/
+ *          `wind.tractionPerMark`（风速仪：累计传动 → 风起印记）/ `power.vsPolluted`（天通地明）。
+ *          换人门控读 `statuses.rooted`（禁足）。
  */
-export const ENGINE_VERSION = "0.68.0";
+export const ENGINE_VERSION = "0.69.0";

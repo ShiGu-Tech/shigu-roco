@@ -5,9 +5,10 @@ import type { EffectCommand, EffectDefinition, MechanismContext, MechanismDefini
 
 /** 解析 effect 的动态引用（skillIdFrom → skillId），未命中则原样返回。 */
 export function resolveEffect(context: MechanismContext, effect: EffectDefinition): EffectDefinition {
-  if (effect.type === "modifyCooldown" && effect.skillIdFrom) {
-    const resolved = resolveContextPath(context, effect.skillIdFrom);
-    if (typeof resolved === "string" && resolved) return { ...effect, skillId: resolved };
+  const withSkillId = effect as EffectDefinition & { skillId?: string; skillIdFrom?: string };
+  if (withSkillId.skillIdFrom && !withSkillId.skillId) {
+    const resolved = resolveContextPath(context, withSkillId.skillIdFrom);
+    if (typeof resolved === "string" && resolved) return { ...effect, skillId: resolved } as EffectDefinition;
   }
   return effect;
 }

@@ -114,7 +114,7 @@ export const EFFECT_VOCABULARY: readonly EffectVocabulary[] = [
   { type: "consumeMark", title: "消耗印记", domain: "mark", params: { target: "目标", markId: "印记", scope: "载体", effectsPerLayer: "每层效果", effectsOnConsume: "消耗后效果" } },
   { type: "removeMark", title: "移除印记", domain: "mark", params: { target: "目标", markId: "印记", layers: "层数", scope: "载体" } },
   // 能耗 / 冷却
-  { type: "modifySkillCost", title: "能耗修正", domain: "cost", params: { target: "目标", skillId: "技能", scope: "作用域", slots: "槽位", elements: "系别", excludeElements: "排除系别", delta: "增减", deltaFrom: "增减取值", multiply: "倍率", mode: "方式", key: "条目键", duration: "时效", turns: "回合数", oncePerTurn: "每回一次", hidden: "隐藏", dispellable: "可驱散" } },
+  { type: "modifySkillCost", title: "能耗修正", domain: "cost", params: { target: "目标", skillId: "技能", skillIdFrom: "技能取值", scope: "作用域", slots: "槽位", elements: "系别", excludeElements: "排除系别", delta: "增减", deltaFrom: "增减取值", multiply: "倍率", mode: "方式", key: "条目键", duration: "时效", turns: "回合数", oncePerTurn: "每回一次", hidden: "隐藏", dispellable: "可驱散" } },
   { type: "clearCostMod", title: "驱散能耗修正", domain: "cost", params: { target: "目标", all: "全部" } },
   { type: "modifyCooldown", title: "冷却修正", domain: "cooldown", params: { target: "目标", skillId: "技能", skillIdFrom: "技能取值", scope: "作用域", delta: "增减", minimum: "下限" } },
   // 能量 / 魔力
@@ -136,8 +136,9 @@ export const EFFECT_VOCABULARY: readonly EffectVocabulary[] = [
   { type: "modifySwitchLock", title: "换人锁修正", domain: "action", params: { target: "目标", delta: "增减" } },
   // 技能栏
   { type: "addPower", title: "条件威力加成", domain: "skill", params: { target: "目标", value: "加成", valueFrom: "加成取值" } },
-  { type: "rotateLoadout", title: "技能栏轮转", domain: "skill", params: { target: "目标", skillId: "技能", slots: "位移" } },
-  { type: "learnSkill", title: "学习技能", domain: "skill", params: { target: "目标", skillId: "技能", source: "来源", duration: "时效" } },
+  { type: "rotateLoadout", title: "技能栏轮转", domain: "skill", params: { target: "目标", skillId: "技能", skillIdFrom: "技能取值", slots: "位移" } },
+  { type: "learnSkill", title: "学习技能", domain: "skill", params: { target: "目标", skillId: "技能", skillIdFrom: "技能取值", source: "来源", duration: "时效" } },
+  { type: "learnRandomSkills", title: "随机习得技能", domain: "skill", params: { target: "目标", count: "数量", sourceFrom: "候选池取值", duration: "时效" } },
   { type: "forgetSkill", title: "遗忘技能", domain: "skill", params: { target: "目标", skillId: "技能" } },
   { type: "replaceSkill", title: "替换技能", domain: "skill", params: { target: "目标", fromSkillId: "原技能", toSkillId: "新技能", duration: "时效" } },
   { type: "randomizeSkill", title: "随机技能", domain: "skill", params: { target: "目标", skillId: "目标技能", source: "候选池", sourceFrom: "候选池取值", duration: "时效" } },

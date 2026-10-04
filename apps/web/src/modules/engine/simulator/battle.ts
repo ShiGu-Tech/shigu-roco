@@ -157,7 +157,7 @@ export class Simulator {
       }
     }
 
-    if (side.switchLock <= 0) {
+    if (side.switchLock <= 0 && !active.statuses.rooted) {
       for (const bench of side.bench) {
         if (bench.hp > 0 && bench.spriteId !== active.spriteId) {
           actions.push({ kind: "switch", benchId: bench.spriteId, label: `换 ${bench.spriteId}` });
@@ -187,7 +187,11 @@ export class Simulator {
       const pending = s.active.pendingSkill;
       if (!pending) continue;
       // 规则覆盖 · `charge.any`（嫉妒 / 游弋）：蓄力状态下可改选任一携带技能。
-      if (this.mechanisms.ruleModifiers(st, this.bundle, side)["charge.any"] === true) continue;
+      const chargeMods = this.mechanisms.ruleModifiers(st, this.bundle, side);
+      if (chargeMods["charge.any"] === true) continue;
+      // 规则覆盖 · `charge.skill.<id>`（龙守望）：蓄力状态下可使用指定技能。
+      const declaredSkill = actions[side].kind === "skill" ? actions[side].skillId : undefined;
+      if (declaredSkill && chargeMods[`charge.skill.${declaredSkill}`] === true) continue;
       if (s.active.hp > 0) actions[side] = { kind: "skill", skillId: pending.skillId, choice: pending.choice, released: true, label: "蓄力释放" };
       else s.active.pendingSkill = undefined;
     }
@@ -200,6 +204,27 @@ export class Simulator {
       if (!toArray<string>(getSkill(this.bundle, act.skillId).tags).includes("charge")) continue;
       s.active.counters!.noCharge = Math.max(0, toNum(s.active.counters!.noCharge, 0) - 1);
       actions[side] = { ...act, released: true, label: "免蓄力释放" };
+    }
+    // 规则覆盖 · `charge.defenseMul`（游弋）：蓄力状态下双防 +100%（pct 计数器参与伤害与显示）。
+    for (const side of SIDES) {
+      if (this.mechanisms.ruleModifiers(st, this.bundle, side)["charge.defenseMul"] !== true) continue;
+      const act = this.sideState(st, side).active;
+      act.counters ??= {};
+      if (act.pendingSkill) {
+        act.counters["pct-defense"] = 1;
+        act.counters["pct-spdef"] = 1;
+      } else {
+        delete act.counters["pct-defense"];
+        delete act.counters["pct-spdef"];
+      }
+    }
+    // 规则覆盖 · `cost.slotChangePenalty`（机械变式）：回合开始记录技能槽位，回合末比对位移并永久 -1。
+    const slotChangeSides = SIDES.filter((side) => this.mechanisms.ruleModifiers(st, this.bundle, side)["cost.slotChangePenalty"] === true);
+    for (const side of slotChangeSides) {
+      const act = this.sideState(st, side).active;
+      act.counters ??= {};
+      for (const key of Object.keys(act.counters)) if (key.startsWith("slotSnap:")) delete act.counters[key];
+      act.loadout.forEach((id, i) => { if (id) act.counters![`slotSnap:${id}`] = i + 1; });
     }
     const rules = this.bundle.rules;
     /** 本回合被置/改/使用的技能，冷却结算时跳过（净 ±N，避免刚置就被 tick）。 */
@@ -471,6 +496,32 @@ export class Simulator {
         events.push(...this.runPendingEffects(st, "turnEnd"));
       }
     }
+    // 规则覆盖 · `cost.slotChangePenalty`（机械变式）：本回合技能位移 → 该技能能耗永久 -1。
+    for (const side of slotChangeSides) {
+      const act = this.sideState(st, side).active;
+      if (act.hp <= 0) continue;
+      act.costMods ??= [];
+      act.loadout.forEach((id, i) => {
+        const snap = toNum(act.counters?.[`slotSnap:${id}`], 0);
+        if (!id || !snap || snap === i + 1) return;
+        const key = `slotpen:${id}:${st.turn}`;
+        if (act.costMods!.some((m) => m.key === key)) return;
+        act.costMods!.push({ key, source: "trait", scope: "skill", skillId: id, delta: -1, duration: "permanent", dispellable: false, hidden: false });
+        events.push({ type: "skill-cost-modified", side, text: "", data: { skillId: id, delta: -1, source: "trait", key } });
+      });
+    }
+    // 规则覆盖 · `wind.tractionPerMark`（风速仪）：携带技能每累计传动 N 层做一次判定 → 获得风起印记。
+    for (const side of SIDES) {
+      const per = toNum(this.mechanisms.ruleModifiers(st, this.bundle, side)["wind.tractionPerMark"], 0);
+      if (per <= 0) continue;
+      const act = this.sideState(st, side).active;
+      const track = toNum(act.counters?.tractionTrack, 0);
+      const granted = Math.floor(track / per);
+      if (granted <= 0) continue;
+      act.counters = { ...(act.counters ?? {}), tractionTrack: track - granted * per };
+      const commands: import("../mechanisms").EffectCommand[] = [{ type: "applyMark", definition: { type: "applyMark", target: "self", markId: "wind-mark", layers: granted }, mechanismId: "trait:wind-mark", trigger: "turnEnd", actorSide: side, targetSide: side }];
+      events.push(...this.mechanisms.applyStateCommands(st, commands, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+    }
     // 规则覆盖 · 回合对比（石天平 能耗差扣能量 / 合拍 同项永久加成），按本回合双方动作结算。
     for (const side of SIDES) {
       const mods = this.mechanisms.ruleModifiers(st, this.bundle, side);
@@ -728,7 +779,7 @@ export class Simulator {
   doSwitch(st: BattleState, side: Side, benchId?: string, forced = false): BattleEvent[] {
     const events: BattleEvent[] = [];
     const s = this.sideState(st, side);
-    if (!forced && s.switchLock > 0) return events;
+    if (!forced && (s.switchLock > 0 || s.active.statuses.rooted)) return events;
     const target = s.bench.find((b) => b.spriteId === benchId && b.hp > 0);
     if (!target) return events;
     const old = s.active;
@@ -763,6 +814,21 @@ export class Simulator {
       events.push(...this.mechanisms.applyDamageCommands(st, this.bundle, commands).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
     }
     events.push(...this.triggerState(st, "afterSwitch", { actorSide: side, targetSide: otherSide(side), action: { kind: "switch", benchId }, event: { from: old.spriteId, to: target.spriteId, forced } }));
+    // 规则覆盖 · `switch.swapHpRatio`（瞳中倒影）：对侧拥有该特性时，其在场精灵与本次换入者交换血量百分比。
+    {
+      const opp = otherSide(side);
+      if (this.mechanisms.ruleModifiers(st, this.bundle, opp)["switch.swapHpRatio"] === true) {
+        const a = this.sideState(st, opp).active;
+        const b = target;
+        if (a.hp > 0 && b.hp > 0) {
+          const ar = a.maxHp > 0 ? a.hp / a.maxHp : 0;
+          const br = b.maxHp > 0 ? b.hp / b.maxHp : 0;
+          a.hp = Math.max(0, Math.min(a.maxHp, Math.floor(a.maxHp * br)));
+          b.hp = Math.max(0, Math.min(b.maxHp, Math.floor(b.maxHp * ar)));
+          events.push({ type: "hp-ratio-swapped", side: opp, text: "瞳中倒影：交换血量百分比", data: { from: a.spriteId, to: b.spriteId } });
+        }
+      }
+    }
     // 队伍域 · 历史计数：本方换人次数（供「敌方每更换 1 次」类）。
     this.bump(st, side, "switches");
     this.refreshDerivedCounters(st);

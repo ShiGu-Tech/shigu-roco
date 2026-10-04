@@ -44,6 +44,12 @@ export function effectiveCost(state: BattleState, bundle: DataBundle, side: Side
   added += toNum(active.skillMods?.[skillId]?.cost, 0);
   // 巧变：临时技能（skillOverrides）自带的能耗修正。
   added += toNum(active.skillOverrides?.[skillId]?.cost, 0);
+  // 规则覆盖 · `cost.wingAttack`（异类）：翼系攻击技能能耗 +1。
+  if (rules?.["cost.wingAttack"] === true) {
+    const skill = getSkill(bundle, skillId);
+    const element = typeof skill.element === "string" ? skill.element : "";
+    if (element === "Wing" && (skill.category === "Physical" || skill.category === "Magic")) added += 1;
+  }
   let value = multiplied + added;
   if (rules?.["cost.signFlip"] === true) value = base - (value - base);
   if (typeof rules?.["cost.changeMul"] === "number") value = base + (value - base) * (rules["cost.changeMul"] as number);

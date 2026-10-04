@@ -71,8 +71,11 @@ export function computeDamage(
   const magical = category === "Magic";
   const atkStat = magical ? "spatk" : "atk";
   const defStat = magical ? "spdef" : "defense";
-  const atk = statWithProfile(bundle.stats, attackerDef, attacker.profile, atkStat);
-  const dfn = Math.max(1, statWithProfile(bundle.stats, defenderDef, defender.profile, defStat));
+  // 永久平铺 / 百分比计数器（`flat-<stat>` / `pct-<stat>`）同样作用于实战攻防（与 `effectiveStat` 同口径）。
+  const atkBase = statWithProfile(bundle.stats, attackerDef, attacker.profile, atkStat);
+  const atk = atkBase * (1 + toNum(attacker.counters?.[`pct-${atkStat}`], 0)) + toNum(attacker.counters?.[`flat-${atkStat}`], 0);
+  const dfnBase = Math.max(1, statWithProfile(bundle.stats, defenderDef, defender.profile, defStat));
+  const dfn = Math.max(1, dfnBase * (1 + toNum(defender.counters?.[`pct-${defStat}`], 0)) + toNum(defender.counters?.[`flat-${defStat}`], 0));
 
   const element = toStr(skill.element);
   const attackerElements = (attackerDef.elements as string[] | undefined) ?? [];

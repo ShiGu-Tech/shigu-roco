@@ -360,7 +360,8 @@ export class MechanismRuntime {
         case "modifySkillCost": {
           if (!active || !targetSide) break;
           const scope = definition.scope ?? "skill";
-          const key = definition.key ?? `${command.mechanismId}:${scope}:${definition.skillId ?? "*"}`;
+          const costSkillId = definition.skillId ?? (definition.skillIdFrom ? toStr(resolveContextPath({ state, trigger: command.trigger, actorSide: command.actorSide, targetSide: command.targetSide, event: command.event ?? {} }, definition.skillIdFrom)) || undefined : undefined);
+          const key = definition.key ?? `${command.mechanismId}:${scope}:${costSkillId ?? "*"}`;
           let delta = definition.delta ?? 0;
           if (definition.deltaFrom) delta += this.dynamicValue(state, command, definition.deltaFrom, 0, bundle);
           const sourceActive = command.actorSide === "player" ? state.player.active : command.actorSide === "enemy" ? state.enemy.active : undefined;
@@ -373,7 +374,7 @@ export class MechanismRuntime {
             sourceSide: command.actorSide,
             sourceSpriteId: sourceActive?.spriteId,
             scope,
-            skillId: definition.skillId,
+            skillId: costSkillId,
             slots: definition.slots,
             elements: definition.elements,
             excludeElements: definition.excludeElements,
@@ -398,7 +399,7 @@ export class MechanismRuntime {
           } else {
             active.costMods.push(entry);
           }
-          events.push({ type: "skill-cost-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { scope, skillId: definition.skillId ?? null, delta, multiply: definition.multiply ?? 1, duration: entry.duration, source, sourceId: entry.sourceId ?? null, dispellable: entry.dispellable, hidden: entry.hidden, key } });
+          events.push({ type: "skill-cost-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { scope, skillId: costSkillId ?? null, delta, multiply: definition.multiply ?? 1, duration: entry.duration, source, sourceId: entry.sourceId ?? null, dispellable: entry.dispellable, hidden: entry.hidden, key } });
           break;
         }
         case "clearCostMod": {
@@ -849,11 +850,35 @@ export class MechanismRuntime {
         }
         case "learnSkill": {
           if (!active || !targetSide) break;
-          const { skillId } = definition;
+          const learnedFrom = definition.skillIdFrom ? toStr(resolveContextPath({ state, trigger: command.trigger, actorSide: command.actorSide, targetSide: command.targetSide, event: command.event ?? {} }, definition.skillIdFrom)) : "";
+          const skillId = definition.skillId ?? learnedFrom;
           if (!skillId || active.loadout.includes(skillId)) break;
           active.loadout = [...active.loadout, skillId];
-          if (definition.duration) recordSkillOverride(active, skillId, "", definition.duration < 0 ? -1 : state.turn + definition.duration);
+          if (definition.duration || definition.costDelta !== undefined) {
+            const expires = definition.duration === undefined ? -1 : definition.duration < 0 ? -1 : state.turn + definition.duration;
+            recordSkillOverride(active, skillId, "", expires, definition.costDelta);
+          }
           events.push({ type: "skill-learned", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { skillId, loadout: active.loadout } });
+          break;
+        }
+        case "learnRandomSkills": {
+          if (!active || !targetSide || !bundle) break;
+          const count = Math.max(0, Math.floor(definition.count));
+          if (!count) break;
+          let source: string[];
+          if (definition.sourceFrom === "uncarried" || !definition.sourceFrom) source = Object.keys(bundle.skills);
+          else source = toArray<string>(resolveContextPath({ state, trigger: command.trigger, actorSide: command.actorSide, targetSide: command.targetSide, event: command.event ?? {} }, definition.sourceFrom));
+          const pool = source.filter((id) => id && !active.loadout.includes(id));
+          if (!pool.length) break;
+          const rng = new Rng(hashSeed(state, `${command.mechanismId}:${state.turn}:learn`));
+          const learned: string[] = [];
+          for (let i = 0; i < count && pool.length; i++) {
+            const picked = pool.splice(rng.int(pool.length), 1)[0];
+            active.loadout = [...active.loadout, picked];
+            if (definition.duration) recordSkillOverride(active, picked, "", definition.duration < 0 ? -1 : state.turn + definition.duration);
+            learned.push(picked);
+          }
+          if (learned.length) events.push({ type: "skill-learned", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { skillId: learned[learned.length - 1], learned, loadout: active.loadout } });
           break;
         }
         case "forgetSkill": {
@@ -915,7 +940,8 @@ export class MechanismRuntime {
         }
         case "rotateLoadout": {
           if (!active || !targetSide) break;
-          const skillId = definition.skillId ?? command.ownerId;
+          const rotatedFrom = definition.skillIdFrom ? toStr(resolveContextPath({ state, trigger: command.trigger, actorSide: command.actorSide, targetSide: command.targetSide, event: command.event ?? {} }, definition.skillIdFrom)) : "";
+          const skillId = definition.skillId ?? (rotatedFrom || undefined) ?? command.ownerId;
           if (!skillId) break;
           const index = active.loadout.indexOf(skillId);
           if (index < 0) break;
@@ -925,6 +951,11 @@ export class MechanismRuntime {
           active.loadout = [...active.loadout];
           active.loadout.splice(index, 1);
           active.loadout.splice(next, 0, skillId);
+          // 传动累计（风速仪：每累计 N 获得风起印记）。
+          if (toNum(active.counters?.tractionTrack, 0) >= 0) {
+            active.counters ??= {};
+            active.counters.tractionTrack = toNum(active.counters.tractionTrack, 0) + Math.abs(slots);
+          }
           events.push({ type: "loadout-rotated", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { skillId, from: index, to: next, loadout: active.loadout } });
           break;
         }
@@ -983,6 +1014,13 @@ export class MechanismRuntime {
       // 动态威力：`powerFrom` 按当前状态求值（如「能耗每 +1 威力 +50」= offset 450 + scale 50×能耗）。
       // 路径缺失按 0 计，基线由 offset 提供，避免把 fallback 也乘上 scale。
       if (definition.powerFrom) effectiveSkill = { ...effectiveSkill, power: this.dynamicValue(state, command, definition.powerFrom, 0, bundle) };
+      // 规则覆盖 · `element.normalToWing`（展翅）：普通系技能视为翼系（STAB / 克制 / 天气随之改变）。
+      const attackerRules = this.ruleModifiers(state, bundle, attackerSide);
+      if (attackerRules["element.normalToWing"] === true && toStr(effectiveSkill.element) === "Normal") {
+        effectiveSkill = { ...effectiveSkill, element: "Wing" };
+      }
+      const effectiveCategory = toStr(effectiveSkill.category);
+      const wingAttack = toStr(effectiveSkill.element) === "Wing" && (effectiveCategory === "Physical" || effectiveCategory === "Magic");
       let damage: number;
       let effectiveness = 1;
       let modifiers: DamageModifiers | null = null;
@@ -1014,8 +1052,10 @@ export class MechanismRuntime {
       events.push({ type: "damage", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { value: damage, attackerSide, skillId: definition.skillId, damageType: definition.category, effectiveness, modifiers, breakdown, ownerType: command.ownerType ?? null, ownerId: command.ownerId ?? null } });
       // 吸血：攻击方 counters["lifesteal"]（比例）按本次伤害回复自身生命。
       const attackerState = attackerSide === "player" ? state.player : state.enemy;
-      const lifesteal = toNum(attackerState.active.counters?.lifesteal, 0) + toNum(attackerState.active.counters?.["ded-lifesteal"], 0);
+      let lifesteal = toNum(attackerState.active.counters?.lifesteal, 0) + toNum(attackerState.active.counters?.["ded-lifesteal"], 0);
       if (attackerState.active.counters?.["ded-lifesteal"]) attackerState.active.counters["ded-lifesteal"] = 0;
+      // 规则覆盖 · `lifesteal.wingAttack`（异类）：翼系攻击技能吸血 50%。
+      if (wingAttack && attackerRules["lifesteal.wingAttack"] === true) lifesteal += 0.5;
       if (lifesteal > 0 && damage > 0) {
         const before = attackerState.active.hp;
         attackerState.active.hp = Math.min(attackerState.active.maxHp, attackerState.active.hp + Math.floor(damage * lifesteal));
@@ -1120,6 +1160,12 @@ export class MechanismRuntime {
       // 规则覆盖 · `power.nonLight`（夺目）：非光系技能威力提升。
       if (typeof mods["power.nonLight"] === "number" && toStr(getSkill(bundle, skillId).element) !== "Light") {
         attackerMult *= 1 + (mods["power.nonLight"] as number);
+      }
+      // 规则覆盖 · `power.vsPolluted`（天通地明）：敌方血脉为污染血脉时威力 +100%。
+      if (mods["power.vsPolluted"] === true) {
+        const oppSide: Side = attackerSide === "player" ? "enemy" : "player";
+        const opp = oppSide === "player" ? state.player.active : state.enemy.active;
+        if (opp.bloodline === "polluted") attackerMult *= 2;
       }
     }
     return { attackerMult, defenderMult, reduction, hits, powerBonus };

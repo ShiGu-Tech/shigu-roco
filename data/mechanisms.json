@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.109.0",
+  "version": "0.110.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -13727,21 +13727,6 @@
       "note": "暗涌印记：换入的精灵获得随机 5 层属性减益（术语 3020；分布口径待校准）"
     },
     {
-      "id": "status:rooted",
-      "ownerType": "status",
-      "ownerId": "rooted",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "statusEffect",
-          "reason": "禁足：离场锁持续结算（术语 3023：无法离场且不可再获禁足）【待校准】"
-        }
-      ],
-      "note": "禁足：离场锁持续结算（术语 3023：无法离场且不可再获禁足）"
-    },
-    {
       "id": "skill:sk-7020680",
       "ownerType": "skill",
       "ownerId": "sk-7020680",
@@ -21567,35 +21552,6 @@
       "note": "特性「石天平」：使用技能能耗高于敌方时，回合结束敌方失去能耗之差的能量"
     },
     {
-      "id": "trait:sp-117-2",
-      "ownerType": "trait",
-      "ownerId": "sp-117-2",
-      "trigger": "passive",
-      "when": [
-        {
-          "path": "self.active.spriteId",
-          "op": "in",
-          "value": [
-            "sp-117-2"
-          ]
-        }
-      ],
-      "effects": [
-        {
-          "type": "setRuleModifier",
-          "target": "self",
-          "key": "power.nonLight",
-          "value": 0.25
-        },
-        {
-          "type": "unsupported",
-          "effectType": "extraRandomSkills",
-          "reason": "额外获得三个未携带随机技能 待实现【待校准】"
-        }
-      ],
-      "note": "特性「夺目」：非光系技能威力 +25%（额外随机技能待实现）"
-    },
-    {
       "id": "trait:sp-118-1",
       "ownerType": "trait",
       "ownerId": "sp-118-1",
@@ -21889,21 +21845,6 @@
         }
       ],
       "note": "特性「抓到你了」：入场时敌方获 2 层冻结"
-    },
-    {
-      "id": "trait:sp-145-1",
-      "ownerType": "trait",
-      "ownerId": "sp-145-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "机械变式：若回合内自己携带的技能位置发生变化，该技能能耗永久-1。【待校准】"
-        }
-      ],
-      "note": "特性「机械变式」：待实现"
     },
     {
       "id": "trait:sp-150-1",
@@ -22391,35 +22332,6 @@
       "note": "特性「嫉妒」：蓄力状态下可使用任一携带技能"
     },
     {
-      "id": "trait:sp-204-2",
-      "ownerType": "trait",
-      "ownerId": "sp-204-2",
-      "trigger": "passive",
-      "when": [
-        {
-          "path": "self.active.spriteId",
-          "op": "in",
-          "value": [
-            "sp-204-2"
-          ]
-        }
-      ],
-      "effects": [
-        {
-          "type": "setRuleModifier",
-          "target": "self",
-          "key": "charge.any",
-          "value": true
-        },
-        {
-          "type": "unsupported",
-          "effectType": "chargeBuff",
-          "reason": "蓄力时双防 +100% 待实现【待校准】"
-        }
-      ],
-      "note": "特性「游弋」：蓄力状态下可使用任一携带技能（蓄力双防 +100% 待实现）"
-    },
-    {
       "id": "trait:sp-205-1",
       "ownerType": "trait",
       "ownerId": "sp-205-1",
@@ -22443,35 +22355,6 @@
         }
       ],
       "note": "特性「噼啪！」：入场后首次行动，所选技能使用次数 +1"
-    },
-    {
-      "id": "trait:sp-206-2",
-      "ownerType": "trait",
-      "ownerId": "sp-206-2",
-      "trigger": "onEntry",
-      "when": [
-        {
-          "path": "self.active.spriteId",
-          "op": "in",
-          "value": [
-            "sp-206-2"
-          ]
-        }
-      ],
-      "effects": [
-        {
-          "type": "addCounter",
-          "target": "self",
-          "key": "extraUses",
-          "delta": 1
-        },
-        {
-          "type": "unsupported",
-          "effectType": "actionRegen",
-          "reason": "该回合每次行动后回复 2 能量 待实现【待校准】"
-        }
-      ],
-      "note": "特性「噼啪噼啪！」：入场后首次行动，所选技能使用次数 +1（行动后回能待实现）"
     },
     {
       "id": "trait:sp-212-1",
@@ -22906,36 +22789,6 @@
         }
       ],
       "note": "特性「仁心」：敌方受到灼烧伤害时，自己回复等量生命"
-    },
-    {
-      "id": "trait:sp-261-1",
-      "ownerType": "trait",
-      "ownerId": "sp-261-1",
-      "trigger": "passive",
-      "when": [
-        {
-          "path": "self.active.spriteId",
-          "op": "in",
-          "value": [
-            "sp-261-1",
-            "sp-262-1"
-          ]
-        }
-      ],
-      "effects": [
-        {
-          "type": "setRuleModifier",
-          "target": "self",
-          "key": "quick.slot1",
-          "value": true
-        },
-        {
-          "type": "unsupported",
-          "effectType": "shift1",
-          "reason": "1 号位传动 1 待实现【待校准】"
-        }
-      ],
-      "note": "特性「翼轴」：1 号位技能获得迅捷（传动 1 待实现）"
     },
     {
       "id": "trait:sp-270-1",
@@ -23595,21 +23448,6 @@
       "note": "特性「张弛有度」：待实现"
     },
     {
-      "id": "trait:sp-340-1",
-      "ownerType": "trait",
-      "ownerId": "sp-340-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "天通地明：攻击时，若敌方血脉是污染血脉，技能威力+100%。【待校准】"
-        }
-      ],
-      "note": "特性「天通地明」：待实现"
-    },
-    {
       "id": "trait:sp-342-1",
       "ownerType": "trait",
       "ownerId": "sp-342-1",
@@ -23678,43 +23516,6 @@
         }
       ],
       "note": "特性「狂欢开始」：待实现"
-    },
-    {
-      "id": "trait:sp-351-1",
-      "ownerType": "trait",
-      "ownerId": "sp-351-1",
-      "trigger": "beforeDamage",
-      "when": [
-        {
-          "path": "target.active.spriteId",
-          "op": "in",
-          "value": [
-            "sp-351-1",
-            "sp-352-1",
-            "sp-353-1"
-          ]
-        },
-        {
-          "path": "event.wentFirst",
-          "op": "eq",
-          "value": true
-        }
-      ],
-      "effects": [
-        {
-          "type": "modifyDamage",
-          "target": "self",
-          "mode": "add",
-          "value": 0.25,
-          "scope": "incoming"
-        },
-        {
-          "type": "unsupported",
-          "effectType": "elementChange",
-          "reason": "普通系技能变翼系 待实现【待校准】"
-        }
-      ],
-      "note": "特性「展翅」：后于敌方行动时受伤 +25%（普通→翼系待实现）"
     },
     {
       "id": "trait:sp-354-1",
@@ -24133,36 +23934,6 @@
       "note": "特性「友谊之果」：回合结束时双方所有精灵回复 1 能量"
     },
     {
-      "id": "trait:sp-400-1",
-      "ownerType": "trait",
-      "ownerId": "sp-400-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "瞳中倒影：自己或其他精灵离场时，自己与更换入场的精灵交换血量百分比。【待校准】"
-        }
-      ],
-      "note": "特性「瞳中倒影」：待实现"
-    },
-    {
-      "id": "trait:sp-403-1",
-      "ownerType": "trait",
-      "ownerId": "sp-403-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "异类：携带的翼系攻击技能获得选择：能耗+1，攻击时吸血50%。【待校准】"
-        }
-      ],
-      "note": "特性「异类」：待实现"
-    },
-    {
       "id": "trait:sp-409-1#2",
       "ownerType": "trait",
       "ownerId": "sp-409-1",
@@ -24416,21 +24187,6 @@
       "note": "特性「博物」：待实现"
     },
     {
-      "id": "trait:sp-443-1",
-      "ownerType": "trait",
-      "ownerId": "sp-443-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "铭记于月亮：获得自己击败的精灵的特性，每次攻击后自己失去5%生命。【待校准】"
-        }
-      ],
-      "note": "特性「铭记于月亮」：待实现"
-    },
-    {
       "id": "trait:sp-454-1",
       "ownerType": "trait",
       "ownerId": "sp-454-1",
@@ -24444,36 +24200,6 @@
         }
       ],
       "note": "特性「正模标本」：待实现"
-    },
-    {
-      "id": "trait:sp-457-1",
-      "ownerType": "trait",
-      "ownerId": "sp-457-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "风速仪：携带的技能每累计传动8，自己获得1层风起印记。【待校准】"
-        }
-      ],
-      "note": "特性「风速仪」：待实现"
-    },
-    {
-      "id": "trait:sp-459-1",
-      "ownerType": "trait",
-      "ownerId": "sp-459-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "翻垃圾桶：入场时自己未携带的技能位置会变为敌方最近使用过的技能，且能耗-2。【待校准】"
-        }
-      ],
-      "note": "特性「翻垃圾桶」：待实现"
     },
     {
       "id": "trait:sp-464-1",
@@ -25516,21 +25242,6 @@
       "note": "龙守望：选择·暗（应对防御 → 打断 + 敌方下回合眩晕）"
     },
     {
-      "id": "skill:sk-7100300:charge",
-      "ownerType": "skill",
-      "ownerId": "sk-7100300",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "chargeWhileCast",
-          "reason": "蓄力状态下使用本技能 待实现【待校准】"
-        }
-      ],
-      "note": "龙守望：蓄力中可释放待实现"
-    },
-    {
       "id": "trait:sp-190-1#guard",
       "ownerType": "trait",
       "ownerId": "sp-190-1",
@@ -25751,6 +25462,493 @@
         }
       ],
       "note": "特性「盗魂铃」：在场时自己回复的能量 −4"
+    },
+    {
+      "id": "trait:sp-351-1#wing",
+      "ownerType": "trait",
+      "ownerId": "sp-351-1",
+      "trigger": "passive",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-351-1",
+            "sp-352-1",
+            "sp-353-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "element.normalToWing",
+          "value": true
+        }
+      ],
+      "note": "特性「展翅」：普通系技能视为翼系"
+    },
+    {
+      "id": "trait:sp-351-1#wing-hurt",
+      "ownerType": "trait",
+      "ownerId": "sp-351-1",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-351-1",
+            "sp-352-1",
+            "sp-353-1"
+          ]
+        },
+        {
+          "path": "event.wentFirst",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyDamage",
+          "target": "self",
+          "mode": "add",
+          "value": 0.25,
+          "scope": "incoming"
+        }
+      ],
+      "note": "特性「展翅」：后于敌方行动时受伤 +25%"
+    },
+    {
+      "id": "trait:sp-403-1",
+      "ownerType": "trait",
+      "ownerId": "sp-403-1",
+      "trigger": "passive",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-403-1",
+            "sp-404-1",
+            "sp-405-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "cost.wingAttack",
+          "value": true
+        },
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "lifesteal.wingAttack",
+          "value": true
+        }
+      ],
+      "note": "特性「异类」：携带的翼系攻击技能能耗 +1，攻击时吸血 50%"
+    },
+    {
+      "id": "trait:sp-204-2",
+      "ownerType": "trait",
+      "ownerId": "sp-204-2",
+      "trigger": "passive",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-204-2"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "charge.any",
+          "value": true
+        },
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "charge.defenseMul",
+          "value": true
+        }
+      ],
+      "note": "特性「游弋」：蓄力状态下可使用任一携带技能，蓄力时双防 +100%"
+    },
+    {
+      "id": "trait:sp-206-2#entry",
+      "ownerType": "trait",
+      "ownerId": "sp-206-2",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-206-2"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "extraUses",
+          "delta": 1
+        },
+        {
+          "type": "setCounter",
+          "target": "self",
+          "key": "pxregen",
+          "value": 1
+        }
+      ],
+      "note": "特性「噼啪噼啪！」：入场后首次行动所选技能使用次数 +1"
+    },
+    {
+      "id": "trait:sp-206-2#regen",
+      "ownerType": "trait",
+      "ownerId": "sp-206-2",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-206-2"
+          ]
+        },
+        {
+          "path": "self.active.counters.pxregen",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 2
+        }
+      ],
+      "note": "特性「噼啪噼啪！」：入场回合每次行动后回复 2 能量"
+    },
+    {
+      "id": "trait:sp-206-2#regen-end",
+      "ownerType": "trait",
+      "ownerId": "sp-206-2",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-206-2"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setCounter",
+          "target": "self",
+          "key": "pxregen",
+          "value": 0
+        }
+      ],
+      "note": "特性「噼啪噼啪！」：回合末清空回能窗口"
+    },
+    {
+      "id": "trait:sp-261-1#quick",
+      "ownerType": "trait",
+      "ownerId": "sp-261-1",
+      "trigger": "passive",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-261-1",
+            "sp-262-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "quick.slot1",
+          "value": true
+        }
+      ],
+      "note": "特性「翼轴」：1 号位技能获得迅捷"
+    },
+    {
+      "id": "trait:sp-261-1#shift",
+      "ownerType": "trait",
+      "ownerId": "sp-261-1",
+      "trigger": "turnStart",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-261-1",
+            "sp-262-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "rotateLoadout",
+          "target": "self",
+          "skillIdFrom": "self.active.loadout.0",
+          "slots": 1
+        }
+      ],
+      "note": "特性「翼轴」：1 号位传动 1"
+    },
+    {
+      "id": "trait:sp-459-1",
+      "ownerType": "trait",
+      "ownerId": "sp-459-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-459-1",
+            "sp-460-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "learnSkill",
+          "target": "self",
+          "skillIdFrom": "opponent.lastTurn.skillId",
+          "costDelta": -2
+        }
+      ],
+      "note": "特性「翻垃圾桶」：入场时未携带的技能位置变为敌方最近使用的技能且能耗 -2"
+    },
+    {
+      "id": "trait:sp-145-1",
+      "ownerType": "trait",
+      "ownerId": "sp-145-1",
+      "trigger": "passive",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-145-1",
+            "sp-146-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "cost.slotChangePenalty",
+          "value": true
+        }
+      ],
+      "note": "特性「机械变式」：回合内技能位置变化则该技能能耗永久 -1"
+    },
+    {
+      "id": "trait:sp-400-1",
+      "ownerType": "trait",
+      "ownerId": "sp-400-1",
+      "trigger": "passive",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-400-1",
+            "sp-401-1",
+            "sp-402-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "switch.swapHpRatio",
+          "value": true
+        }
+      ],
+      "note": "特性「瞳中倒影」：己方或其他精灵离场时自己与换入者交换血量百分比"
+    },
+    {
+      "id": "trait:sp-117-2#power",
+      "ownerType": "trait",
+      "ownerId": "sp-117-2",
+      "trigger": "passive",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-117-2"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "power.nonLight",
+          "value": 0.25
+        }
+      ],
+      "note": "特性「夺目」：非光系技能威力 +25%"
+    },
+    {
+      "id": "trait:sp-117-2#extra",
+      "ownerType": "trait",
+      "ownerId": "sp-117-2",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-117-2"
+          ]
+        },
+        {
+          "path": "event.first",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "learnRandomSkills",
+          "target": "self",
+          "count": 3,
+          "sourceFrom": "uncarried",
+          "duration": -1
+        }
+      ],
+      "note": "特性「夺目」：额外获得三个未携带随机技能"
+    },
+    {
+      "id": "trait:sp-457-1",
+      "ownerType": "trait",
+      "ownerId": "sp-457-1",
+      "trigger": "passive",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-457-1",
+            "sp-458-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "wind.tractionPerMark",
+          "value": 8
+        }
+      ],
+      "note": "特性「风速仪」：携带的技能每累计传动 8 获得 1 层风起印记"
+    },
+    {
+      "id": "trait:sp-443-1#recoil",
+      "ownerType": "trait",
+      "ownerId": "sp-443-1",
+      "trigger": "afterDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-443-1",
+            "sp-444-1",
+            "sp-445-1"
+          ]
+        },
+        {
+          "anyOf": [
+            {
+              "path": "event.damageType",
+              "op": "eq",
+              "value": "Physical"
+            },
+            {
+              "path": "event.damageType",
+              "op": "eq",
+              "value": "Magic"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": -0.05,
+          "basis": "maxHp"
+        }
+      ],
+      "note": "特性「铭记于月亮」：每次攻击后失去 5% 生命"
+    },
+    {
+      "id": "trait:sp-443-1#inherit",
+      "ownerType": "trait",
+      "ownerId": "sp-443-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "inheritTrait",
+          "reason": "铭记于月亮：获得自己击败的精灵的特性【待校准】"
+        }
+      ],
+      "note": "特性「铭记于月亮」：待实现（继承特性）"
+    },
+    {
+      "id": "trait:sp-340-1",
+      "ownerType": "trait",
+      "ownerId": "sp-340-1",
+      "trigger": "passive",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-340-1",
+            "sp-341-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "power.vsPolluted",
+          "value": true
+        }
+      ],
+      "note": "特性「天通地明」：攻击时若敌方血脉是污染血脉，技能威力 +100%"
     }
   ]
 }
