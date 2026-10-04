@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.72.0",
+  "version": "0.73.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -22261,31 +22261,64 @@
       "id": "trait:sp-280-1",
       "ownerType": "trait",
       "ownerId": "sp-280-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "涂鸦：使用非本系技能时威力+50%。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-280-1",
+            "sp-281-1"
+          ]
+        },
+        {
+          "not": {
+            "path": "self.active.element",
+            "op": "contains",
+            "valueFrom": "action.element"
+          }
         }
       ],
-      "note": "特性「涂鸦」：待实现"
+      "effects": [
+        {
+          "type": "modifyDamage",
+          "target": "self",
+          "mode": "multiply",
+          "value": 1.5,
+          "scope": "outgoing"
+        }
+      ],
+      "note": "特性「涂鸦」：使用非本系技能时威力 +50%"
     },
     {
       "id": "trait:sp-282-1",
       "ownerType": "trait",
       "ownerId": "sp-282-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "绝对秩序：受到非敌方系别的技能攻击时伤害-50%。【待校准】"
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-282-1"
+          ]
+        },
+        {
+          "not": {
+            "path": "opponent.active.element",
+            "op": "contains",
+            "valueFrom": "action.element"
+          }
         }
       ],
-      "note": "特性「绝对秩序」：待实现"
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 50
+        }
+      ],
+      "note": "特性「绝对秩序」：受到非敌方系别技能攻击时伤害 −50%"
     },
     {
       "id": "trait:sp-285-1",
@@ -22872,16 +22905,33 @@
       "id": "trait:sp-381-1",
       "ownerType": "trait",
       "ownerId": "sp-381-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "流沙统治者：天气为沙暴时，自己获得速度+50。【待校准】"
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-381-1",
+            "sp-382-1",
+            "sp-383-1"
+          ]
+        },
+        {
+          "path": "state.weather.id",
+          "op": "eq",
+          "value": "sandstorm"
         }
       ],
-      "note": "特性「流沙统治者」：待实现"
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "speed",
+          "mode": "percent",
+          "value": 50
+        }
+      ],
+      "note": "特性「流沙统治者」：沙暴天气下入场获速度 +50%"
     },
     {
       "id": "trait:sp-384-1",

@@ -124,5 +124,7 @@
  * - 0.40.0 `skillUsed` 事件补 `cost`（实际能耗，供「释放 N 能耗技能」类印记 / 特性，如龙噬印记）。
  * - 0.41.0 强化域 · 属性层数缩放 / 增益转状态原语：`scaleStat`（按极性缩放 buff/debuff 层数）、
  *          `convertBuffToStatus`（把目标全部增益转为等量状态层数并清空增益）；供落井下毒 / 灰色肖像 / 毒雾。
+ * - 0.42.0 图鉴域 · 系别注入：`ActiveSprite.element`（从图鉴 `elements` 注入运行时精灵），
+ *          供「非本系技能」「非敌方系别」类条件（涂鸦 / 绝对秩序 / 流沙统治者）。
  */
-export const ENGINE_VERSION = "0.41.0";
+export const ENGINE_VERSION = "0.42.0";

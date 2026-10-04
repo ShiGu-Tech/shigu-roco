@@ -51,6 +51,8 @@ export interface ActiveSprite {
   costMods?: CostMod[];
   /** 入场域 · 本局是否已入场过（供「首次入场」类机制判断 `event.first`）。 */
   entered?: boolean;
+  /** 图鉴域 · 系别（运行时从图鉴注入，供「非本系」「携带系别」类条件）。 */
+  element?: string[];
 }
 
 /** 能耗修正条目：挂在精灵身上、由技能 / 特性 / 状态登记，读时按作用域求和。 */

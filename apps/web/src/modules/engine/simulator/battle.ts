@@ -139,6 +139,13 @@ export class Simulator {
     // 回合开始清空「本回合是否换人」标记与 `oncePerTurn` 计数。
     for (const side of SIDES) this.sideState(st, side).switchedThisTurn = false;
     st.onceFired = {};
+    // 图鉴域 · 系别注入：从图鉴取系别写入运行时精灵（供「非本系」类条件）。
+    for (const side of SIDES) {
+      const s = this.sideState(st, side);
+      for (const sprite of [s.active, ...s.bench]) {
+        if (!sprite.element) sprite.element = toArray<string>(getSprite(this.bundle, sprite.spriteId).elements);
+      }
+    }
 
     if (st.turn === 1) {
       // 入场域：开局在场精灵各自「入场」一次（供「首次入场」类特性）。
