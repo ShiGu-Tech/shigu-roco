@@ -121,5 +121,6 @@
  *          `applyStatus` 支持 `layersFrom`（动态层数）。供「每使用过 1 次 X 系 / 每应对 / 每聚能 / 每力竭」类特性。
  * - 0.39.0 致命域 · 致命拦截（`simulator/battle.ts` + `触发 beforeFatal`）：`handleFaints` 在结算阵亡前派发
  *          `beforeFatal`，机制把生命拉回 >0 即免于阵亡（不死鸟 / 化茧 / 不朽）。
+ * - 0.40.0 `skillUsed` 事件补 `cost`（实际能耗，供「释放 N 能耗技能」类印记 / 特性，如龙噬印记）。
  */
-export const ENGINE_VERSION = "0.39.0";
+export const ENGINE_VERSION = "0.40.0";

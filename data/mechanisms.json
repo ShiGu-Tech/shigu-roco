@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.70.0",
+  "version": "0.71.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -13690,16 +13690,36 @@
       "id": "mark:dragon-devour-mark",
       "ownerType": "mark",
       "ownerId": "dragon-devour-mark",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "skillUsed",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "markEffect",
-          "reason": "龙噬印记：技能能耗阈值触发（skillUsed 事件不带 cost，术语 1031）【待校准】"
+          "path": "self.active.marks.dragon-devour-mark",
+          "op": "gte",
+          "value": 1
+        },
+        {
+          "path": "event.cost",
+          "op": "gte",
+          "value": 3
         }
       ],
-      "note": "龙噬印记：技能能耗阈值触发（skillUsed 事件不带 cost，术语 1031）"
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 40
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 40
+        }
+      ],
+      "note": "龙噬印记：释放 ≥3 能耗技能后获得双攻 +40%"
     },
     {
       "id": "mark:slow-mark",
@@ -13728,16 +13748,23 @@
       "id": "mark:sprout-mark",
       "ownerType": "mark",
       "ownerId": "sprout-mark",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "buffGained",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "markEffect",
-          "reason": "萌芽印记：获得增益时 +1 层（buffGained hook，术语 3012）【待校准】"
+          "path": "self.active.marks.sprout-mark",
+          "op": "gte",
+          "value": 1
         }
       ],
-      "note": "萌芽印记：获得增益时 +1 层（buffGained hook，术语 3012）"
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "self",
+          "markId": "sprout-mark",
+          "layers": 1
+        }
+      ],
+      "note": "萌芽印记：获得增益时额外 +1 层"
     },
     {
       "id": "mark:undertow-mark",
@@ -22079,16 +22106,35 @@
       "id": "trait:sp-246-1",
       "ownerType": "trait",
       "ownerId": "sp-246-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "turnEnd",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "蚀刻：回合结束时，敌方每2层中毒转化为1层中毒印记。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-246-1",
+            "sp-247-1",
+            "sp-248-1"
+          ]
         }
       ],
-      "note": "特性「蚀刻」：待实现"
+      "effects": [
+        {
+          "type": "setMark",
+          "target": "opponent",
+          "markId": "poison-mark",
+          "layersFrom": {
+            "path": "opponent.active.statuses.poison",
+            "terms": [
+              {
+                "coef": 0.5,
+                "power": 1
+              }
+            ]
+          }
+        }
+      ],
+      "note": "特性「蚀刻」：回合末敌方每 2 层中毒转为 1 层中毒印记"
     },
     {
       "id": "trait:sp-249-1",
@@ -22393,16 +22439,33 @@
       "id": "trait:sp-322-1",
       "ownerType": "trait",
       "ownerId": "sp-322-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "月牙雪糕：使用攻击技能时，敌方每有1层冻结，在攻击前使其获得1层星陨印记。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-322-1"
+          ]
+        },
+        {
+          "path": "target.active.statuses.freeze",
+          "op": "gte",
+          "value": 1
         }
       ],
-      "note": "特性「月牙雪糕」：待实现"
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "starfall-mark",
+          "layersFrom": {
+            "path": "target.active.statuses.freeze",
+            "scale": 1
+          }
+        }
+      ],
+      "note": "特性「月牙雪糕」：攻击前敌方每层冻结使其获 1 层星陨印记"
     },
     {
       "id": "trait:sp-323-1",
@@ -22919,16 +22982,25 @@
       "id": "trait:sp-409-1#2",
       "ownerType": "trait",
       "ownerId": "sp-409-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "与星星同行：攻击时，将敌方所有印记变为相同层数的星陨印记。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-409-1"
+          ]
         }
       ],
-      "note": "特性「与星星同行」：待实现"
+      "effects": [
+        {
+          "type": "transformMark",
+          "target": "opponent",
+          "toMarkId": "starfall-mark",
+          "scope": "sprite"
+        }
+      ],
+      "note": "特性「与星星同行」：攻击时将敌方所有印记收拢为相同层数的星陨印记"
     },
     {
       "id": "trait:sp-410-1",

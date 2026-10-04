@@ -273,7 +273,7 @@ export class Simulator {
         this.bump(st, side, `usedType${toStr(usedSkill.actionType)}`);
         this.bump(st, side, "skillUsed");
         if (reactedBySide[side] === true) this.bump(st, side, "reacts");
-        events.push(...this.triggerState(st, "skillUsed", { actorSide: side, targetSide: opp, action: actionView, event: { skillId: entry.action.skillId, actionId: entry.id, element: toStr(usedSkill.element), category: toStr(usedSkill.category), actionType: toStr(usedSkill.actionType), reacted: reactedBySide[side] === true, wentFirst, burst } }));
+        events.push(...this.triggerState(st, "skillUsed", { actorSide: side, targetSide: opp, action: actionView, event: { skillId: entry.action.skillId, actionId: entry.id, element: toStr(usedSkill.element), category: toStr(usedSkill.category), actionType: toStr(usedSkill.actionType), cost: entry.action.skillId ? effectiveCost(st, this.bundle, side, entry.action.skillId) : 0, reacted: reactedBySide[side] === true, wentFirst, burst } }));
         const skillId = entry.action.skillId;
         if (skillId && caster.skillOverrides?.[skillId]?.expires === 0) {
           revertSkillOverride(caster, skillId);
