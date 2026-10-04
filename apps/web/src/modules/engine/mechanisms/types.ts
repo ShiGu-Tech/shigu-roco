@@ -140,6 +140,8 @@ export type EffectSpec =
   | { type: "forceSwitch"; target?: string }
   /** 行动域 · 脱离（强制换人 + 解除离场锁）。 */
   | { type: "escape"; target?: string }
+  /** 行动域 · 返场：回合末重新入场（重置 `actedSinceEntry` 触发迸发 + 派发 onEntry；本回合入场者免疫）。 */
+  | { type: "returnField"; target?: string }
   /** 行动域 · 允许被限制的换人（清除离场锁）。 */
   | { type: "allowSwitch"; target?: string }
   /** 交换域 · 自身与对手交换 `hpRatio`（生命比例）/ `skills`（技能栏）/ `stats`（增益与减益）。 */

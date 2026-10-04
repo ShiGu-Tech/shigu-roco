@@ -128,6 +128,7 @@ export const EFFECT_VOCABULARY: readonly EffectVocabulary[] = [
   { type: "replaceAction", title: "替换行动", domain: "action", params: { target: "目标", action: "行动" } },
   { type: "forceSwitch", title: "强制换人", domain: "action", params: { target: "目标" } },
   { type: "escape", title: "脱离", domain: "action", params: { target: "目标" } },
+  { type: "returnField", title: "返场", domain: "action", params: { target: "目标" } },
   { type: "allowSwitch", title: "解除换人限制", domain: "action", params: { target: "目标" } },
   { type: "modifySwitchLock", title: "换人锁修正", domain: "action", params: { target: "目标", delta: "增减" } },
   // 技能栏

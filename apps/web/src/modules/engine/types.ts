@@ -45,6 +45,8 @@ export interface ActiveSprite {
   pendingSkill?: { skillId: string; choice?: 0 | 1 };
   /** 入场域 · 本次入场后是否已行动过（供「迸发：入场首次行动」类条件）。 */
   actedSinceEntry?: boolean;
+  /** 入场域 · 本回合结算后被「返场」标记（回合末重置 `actedSinceEntry` 并触发 onEntry，由模拟器处理）。 */
+  returnedThisTurn?: boolean;
   /** 记忆域 · 计数器：任意 key → 值（如每使用/累计类）。 */
   counters?: Record<string, number>;
   /** 记忆域 · 技能永久修正：skillId → 威力 / 能耗 / 连击 / 先手的持久 delta。 */

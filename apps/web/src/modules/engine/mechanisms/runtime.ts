@@ -17,9 +17,10 @@ interface DamageModifiers {
   powerBonus: number;
 }
 
-function actionIdFor(target: string | undefined, actorSide: Side | undefined, actionIds: Record<Side, string>): string | undefined {
+function actionIdFor(target: string | undefined, actorSide: Side | undefined, targetSide: Side | undefined, actionIds: Record<Side, string>): string | undefined {
   if (target?.startsWith("action:")) return target.slice("action:".length);
   if (target === "player" || target === "enemy") return actionIds[target];
+  if (target === "opponent" || target === "target") return targetSide ? actionIds[targetSide] : undefined;
   return actorSide ? actionIds[actorSide] : undefined;
 }
 
@@ -235,7 +236,7 @@ export class MechanismRuntime {
         case "scheduleEffect": {
           if (!targetSide) break;
           const side = targetSide === "player" ? state.player : state.enemy;
-          const delay = Math.max(1, Math.floor(definition.delay ?? 1));
+          const delay = Math.max(0, Math.floor(definition.delay ?? 1));
           const timing = definition.timing ?? "turnStart";
           const dueTurn = state.turn + delay;
           side.pendingEffects = [...(side.pendingEffects ?? []), { dueTurn, timing, effects: definition.effects, actorSide: command.actorSide, targetSide }];
@@ -255,6 +256,15 @@ export class MechanismRuntime {
           side.forcedSwitch = true;
           side.switchLock = 0;
           events.push({ type: "escaped", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: {} });
+          break;
+        }
+        case "returnField": {
+          if (!targetSide) break;
+          const side = targetSide === "player" ? state.player : state.enemy;
+          // 本回合入场的精灵免疫返场。
+          if (side.switchedThisTurn) break;
+          side.active.returnedThisTurn = true;
+          events.push({ type: "returned", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: {} });
           break;
         }
         case "allowSwitch": {
@@ -1096,7 +1106,7 @@ export class MechanismRuntime {
     for (const command of commands) {
       const definition = command.definition;
       const target = "target" in definition ? definition.target : undefined;
-      const actionId = actionIdFor(target, command.actorSide, actionIds);
+      const actionId = actionIdFor(target, command.actorSide, command.targetSide, actionIds);
 
       switch (definition.type) {
         case "cancelAction":

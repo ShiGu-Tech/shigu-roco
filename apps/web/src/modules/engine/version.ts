@@ -164,5 +164,9 @@
  *          入队（照常拼速 + 参与 `actionDeclared` 应对判定）；技能 tag 派生抽为 `deriveSkillTags` 并在服务端装配注册
  *          图鉴后补跑（注册图鉴本身不含 tag）。模拟器另记侧计数器 `quickCostSum`（已用迅捷技能能耗累计），供
  *          「疾风连袭」动态能耗。
+ * - 0.60.0 返场（术语 1024，D6）：新增 `returnField` 效果——回合末重新入场（重置 `actedSinceEntry` 触发迸发 +
+ *          派发 `onEntry`；本回合入场者免疫）；`scheduleEffect.delay` 允许 0（当回合结算）。修复 `actionIdFor`
+ *          忽略 `targetSide` 的缺陷（`cancelAction`/`forceFirst` 等 `target=opponent/target` 此前会错作用于自身，
+ *          连带修正 硬门 / 摇篮曲 等打断类）。
  */
-export const ENGINE_VERSION = "0.59.0";
+export const ENGINE_VERSION = "0.60.0";

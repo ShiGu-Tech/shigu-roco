@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.96.0",
+  "version": "0.98.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -16745,21 +16745,6 @@
       "note": "拆礼物：敌方有萌化时威力 +100"
     },
     {
-      "id": "skill:sk-7110460",
-      "ownerType": "skill",
-      "ownerId": "sk-7110460",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "踏雷：回合末返场 + 迸发效果复制【待校准】"
-        }
-      ],
-      "note": "踏雷：回合末返场 + 迸发效果复制"
-    },
-    {
       "id": "skill:sk-7120290",
       "ownerType": "skill",
       "ownerId": "sk-7120290",
@@ -16823,36 +16808,6 @@
         }
       ],
       "note": "掉包：敌方属性增益转为等量减益"
-    },
-    {
-      "id": "skill:sk-7110360",
-      "ownerType": "skill",
-      "ownerId": "sk-7110360",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "过载回路：下回合使用次数 +1（无原语）【待校准】"
-        }
-      ],
-      "note": "过载回路：下回合使用次数 +1（无原语）"
-    },
-    {
-      "id": "skill:sk-7100300",
-      "ownerType": "skill",
-      "ownerId": "sk-7100300",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "龙守望：蓄力 + 选择 组合 + 打断眩晕【待校准】"
-        }
-      ],
-      "note": "龙守望：蓄力 + 选择 组合 + 打断眩晕"
     },
     {
       "id": "skill:sk-7020840",
@@ -25073,6 +25028,156 @@
         }
       ],
       "note": "疾风连袭：能耗 = 已用迅捷技能能耗之和的一半 + 使用次数（释放迅捷技能待实现）"
+    },
+    {
+      "id": "skill:sk-7110460",
+      "ownerType": "skill",
+      "ownerId": "sk-7110460",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7110460"
+        }
+      ],
+      "effects": [
+        {
+          "type": "scheduleEffect",
+          "target": "self",
+          "delay": 0,
+          "timing": "turnEnd",
+          "effects": [
+            {
+              "type": "returnField",
+              "target": "self"
+            }
+          ]
+        },
+        {
+          "type": "unsupported",
+          "effectType": "burstCopy",
+          "reason": "携带攻击技能复制已触发迸发效果 待实现【待校准】"
+        }
+      ],
+      "note": "踏雷：回合结束时返场（迸发效果复制待实现）"
+    },
+    {
+      "id": "skill:sk-7110360",
+      "ownerType": "skill",
+      "ownerId": "sk-7110360",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7110360"
+        }
+      ],
+      "effects": [
+        {
+          "type": "scheduleEffect",
+          "target": "self",
+          "delay": 0,
+          "timing": "turnEnd",
+          "effects": [
+            {
+              "type": "returnField",
+              "target": "self"
+            }
+          ]
+        },
+        {
+          "type": "unsupported",
+          "effectType": "extraUses",
+          "reason": "下回合所选技能使用次数 +1 待实现【待校准】"
+        }
+      ],
+      "note": "过载回路：回合结束时返场（使用次数 +1 待实现）"
+    },
+    {
+      "id": "skill:sk-7100300:light",
+      "ownerType": "skill",
+      "ownerId": "sk-7100300",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7100300"
+        },
+        {
+          "path": "event.action.choice",
+          "op": "neq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "skillId": "sk-7100300",
+          "delta": -1,
+          "duration": "nextAction",
+          "key": "dragonwatch:light"
+        }
+      ],
+      "note": "龙守望：选择·明（本次能耗 −1）"
+    },
+    {
+      "id": "skill:sk-7100300:dark",
+      "ownerType": "skill",
+      "ownerId": "sk-7100300",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7100300"
+        },
+        {
+          "path": "event.action.choice",
+          "op": "eq",
+          "value": 1
+        },
+        {
+          "path": "event.opponentAction.actionType",
+          "op": "eq",
+          "value": "Defense"
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "cancelAction",
+          "target": "opponent"
+        },
+        {
+          "type": "addCounter",
+          "target": "opponent",
+          "key": "stun",
+          "delta": 1
+        }
+      ],
+      "note": "龙守望：选择·暗（应对防御 → 打断 + 敌方下回合眩晕）"
+    },
+    {
+      "id": "skill:sk-7100300:charge",
+      "ownerType": "skill",
+      "ownerId": "sk-7100300",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "chargeSkip",
+          "reason": "下次技能无需蓄力 / 蓄力中可释放 待实现【待校准】"
+        }
+      ],
+      "note": "龙守望：蓄力交互待实现"
     }
   ]
 }

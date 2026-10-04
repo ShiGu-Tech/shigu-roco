@@ -431,6 +431,14 @@ export class Simulator {
         events.push(...this.runPendingEffects(st, "turnEnd"));
       }
     }
+    // 行动域 · 返场：回合末结算后重新入场（重置迸发标记 + 派发 onEntry）。
+    for (const side of SIDES) {
+      const act = this.sideState(st, side).active;
+      if (!act.returnedThisTurn) continue;
+      act.returnedThisTurn = false;
+      act.actedSinceEntry = false;
+      events.push(...this.triggerState(st, "onEntry", { actorSide: side, targetSide: otherSide(side), event: { enteredSpriteId: act.spriteId, returned: true } }));
+    }
     for (const event of events) {
       if (event.type === "cooldown-modified" && event.side) {
         const skillId = toStr(event.data.skillId);
