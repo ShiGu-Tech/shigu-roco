@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.98.0",
+  "version": "0.99.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -13725,21 +13725,6 @@
       "note": "暗涌印记：换入的精灵获得随机 5 层属性减益（术语 3020；分布口径待校准）"
     },
     {
-      "id": "status:moe",
-      "ownerType": "status",
-      "ownerId": "moe",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "statusEffect",
-          "reason": "萌化：萌化退化模型（进化链 / 前阶 + 资质重算 + 下场不消失，术语 1006）【待校准】"
-        }
-      ],
-      "note": "萌化：萌化退化模型（进化链 / 前阶 + 资质重算 + 下场不消失，术语 1006）"
-    },
-    {
       "id": "status:rooted",
       "ownerType": "status",
       "ownerId": "rooted",
@@ -21313,15 +21298,24 @@
       "ownerType": "trait",
       "ownerId": "sp-92-1",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "快锤：携带的能耗小于3的技能，获得迅捷。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-92-1"
+          ]
         }
       ],
-      "note": "特性「快锤」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "quick.costBelow",
+          "value": 3
+        }
+      ],
+      "note": "特性「快锤」：携带的能耗小于 3 的技能获得迅捷"
     },
     {
       "id": "trait:sp-93-1",
@@ -22376,15 +22370,25 @@
       "ownerType": "trait",
       "ownerId": "sp-224-1",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "暴食：携带的龙系技能获得迅捷。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-224-1",
+            "sp-225-1"
+          ]
         }
       ],
-      "note": "特性「暴食」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "quick.element.Dragon",
+          "value": true
+        }
+      ],
+      "note": "特性「暴食」：携带的龙系技能获得迅捷"
     },
     {
       "id": "trait:sp-231-1",
@@ -22406,15 +22410,29 @@
       "ownerType": "trait",
       "ownerId": "sp-233-2",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "相争：本场战斗首次使用的技能获得迅捷。拥有迅捷效果的技能先手+1。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-233-2"
+          ]
         }
       ],
-      "note": "特性「相争」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "quick.priorityBonus",
+          "value": 1
+        },
+        {
+          "type": "unsupported",
+          "effectType": "firstQuick",
+          "reason": "本场首次使用技能获得迅捷 待实现【待校准】"
+        }
+      ],
+      "note": "特性「相争」：拥有迅捷效果的技能先手 +1（首次技能迅捷待实现）"
     },
     {
       "id": "trait:sp-237-1",
@@ -22643,15 +22661,30 @@
       "ownerType": "trait",
       "ownerId": "sp-261-1",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "翼轴：1号位技能获得迅捷和传动1。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-261-1",
+            "sp-262-1"
+          ]
         }
       ],
-      "note": "特性「翼轴」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "quick.slot1",
+          "value": true
+        },
+        {
+          "type": "unsupported",
+          "effectType": "shift1",
+          "reason": "1 号位传动 1 待实现【待校准】"
+        }
+      ],
+      "note": "特性「翼轴」：1 号位技能获得迅捷（传动 1 待实现）"
     },
     {
       "id": "trait:sp-270-1",

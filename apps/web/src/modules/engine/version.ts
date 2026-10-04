@@ -168,5 +168,7 @@
  *          派发 `onEntry`；本回合入场者免疫）；`scheduleEffect.delay` 允许 0（当回合结算）。修复 `actionIdFor`
  *          忽略 `targetSide` 的缺陷（`cancelAction`/`forceFirst` 等 `target=opponent/target` 此前会错作用于自身，
  *          连带修正 硬门 / 摇篮曲 等打断类）。
+ * - 0.61.0 迅捷族特性：迅捷判定支持规则覆盖授予（`quick.costBelow` / `quick.element.<系>` / `quick.slot1`），
+ *          `orderKey` 支持 `quick.priorityBonus`（相争：迅捷技能先手 +N）。
  */
-export const ENGINE_VERSION = "0.60.0";
+export const ENGINE_VERSION = "0.61.0";

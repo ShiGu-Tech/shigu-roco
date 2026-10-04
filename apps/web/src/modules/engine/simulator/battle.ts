@@ -5,7 +5,7 @@ import { getSkill, getSprite } from "../data";
 import { computeDamage, effectiveStat } from "../effects/damage";
 import type { Rng } from "../rng";
 import { cloneState, expireSkillOverrides, revertSkillOverride } from "../state";
-import type { Action, BattleEvent, BattleState, DataBundle, Side, StepResult, Terminal } from "../types";
+import type { Action, ActiveSprite, BattleEvent, BattleState, DataBundle, Side, StepResult, Terminal } from "../types";
 import { asDict, toArray, toNum, toStr } from "../types";
 import { clearMarksOnSwitch } from "./marks";
 import { clearStatusesOnSwitch } from "./status";
@@ -258,8 +258,7 @@ export class Simulator {
       const active = this.sideState(st, side).active;
       const ruleMods = this.mechanisms.ruleModifiers(st, this.bundle, side);
       for (const skillId of active.loadout) {
-        const skill = getSkill(this.bundle, skillId);
-        if (!toArray<string>(skill.tags).includes("quick")) continue;
+        if (!this.skillIsQuick(active, skillId, ruleMods)) continue;
         if (effectiveCost(st, this.bundle, side, skillId, ruleMods) > active.energy) continue;
         quickActions[side] = { kind: "skill", skillId, label: "迅捷" };
         break;
@@ -529,8 +528,23 @@ export class Simulator {
     let priority = 0;
     if (action.kind === "skill" && action.skillId) {
       priority = Math.floor(toNum(getSkill(this.bundle, action.skillId).priority, 0));
+      // 规则覆盖 · 「相争」：拥有迅捷效果的技能先手 +N。
+      const mods = this.mechanisms.ruleModifiers(st, this.bundle, side);
+      const bonus = toNum(mods["quick.priorityBonus"], 0);
+      if (bonus && this.skillIsQuick(this.sideState(st, side).active, action.skillId, mods)) priority += bonus;
     }
     return [priority, this.speedOf(st, side)];
+  }
+
+  /** 某技能是否「迅捷」：静态 tag，或规则覆盖授予（快锤 能耗< N / 暴食 某系 / 翼轴 1 号位）。 */
+  private skillIsQuick(active: ActiveSprite, skillId: string, mods: Record<string, number | boolean>): boolean {
+    const skill = getSkill(this.bundle, skillId);
+    if (toArray<string>(skill.tags).includes("quick")) return true;
+    const below = toNum(mods["quick.costBelow"], 0);
+    if (below > 0 && toNum(skill.cost, 0) < below) return true;
+    if (mods[`quick.element.${toStr(skill.element)}`] === true) return true;
+    if (mods["quick.slot1"] === true && active.loadout.indexOf(skillId) === 0) return true;
+    return false;
   }
 
   /** 技能的行动类型（用于「应对」判定）。 */
