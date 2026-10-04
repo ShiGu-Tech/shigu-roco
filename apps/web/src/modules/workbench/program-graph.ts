@@ -13,6 +13,7 @@ import type { GraphNode } from "@/modules/engine/graph/types";
 import { EFFECT_DOMAIN_LABELS, effectVocabularyOf, triggerMetaOf } from "@/modules/engine/mechanisms/vocabulary";
 import type { EffectDefinition } from "@/modules/engine/mechanisms/types";
 
+import { EDGE_PORT_LABELS, PREFIX_LABELS, localizeNodeTitle } from "./labels";
 import { COLUMN_X, ROW_Y, effectParams, valueText, type MechanismGraph, type ParamView, type ViewEdge, type ViewNode, type ViewNodeKind } from "./dsl-graph";
 
 /** 节点类型目录项（由 `GET /api/engine/workbench/schema` 的 `nodes` 暴露，UI 不硬编码语义）。 */
@@ -46,6 +47,7 @@ const PARAM_LABELS: Record<string, string> = {
   max: "上限",
   expr: "表达式",
   from: "阵营",
+  priority: "优先级",
 };
 
 function nodeParams(node: GraphNode): ParamView[] {
@@ -60,7 +62,7 @@ function nodeParams(node: GraphNode): ParamView[] {
       key,
       label: PARAM_LABELS[key] ?? key,
       value,
-      display: valueText(value),
+      display: valueText(value, key),
       dynamic: false,
     }));
 }
@@ -114,17 +116,18 @@ export function toProgramGraph(
     const row = rows.get(depth) ?? 0;
     rows.set(depth, row + 1);
     const raw = (node.params ?? {}) as Record<string, unknown>;
-    let title = meta?.title ?? node.type;
-    let subtitle: string | undefined = node.type;
+    // 标题：schema 目录（含英文算子汉化）；副标题：结构节点给中文分类词，写入节点给 DSL 位置（编辑定位依据），触发器不重复标题。
+    let title = localizeNodeTitle(meta?.title ?? node.type);
+    let subtitle: string | undefined = PREFIX_LABELS[node.type.split(".")[0]];
     let domain: ViewNode["domain"];
     if (node.type.startsWith("on.")) {
       const trigger = node.type.slice(3);
-      subtitle = trigger;
+      subtitle = undefined;
       title = triggerMetaOf(trigger).title;
     } else if (node.type.startsWith("write.") && raw.spec && typeof raw.spec === "object") {
       const spec = raw.spec as EffectDefinition;
       domain = effectVocabularyOf(spec.type).domain;
-      subtitle = spec.type;
+      subtitle = raw.effectIndex !== undefined ? `effects[${raw.effectIndex}]` : undefined;
     }
     nodes.push({
       id: node.id,
@@ -145,7 +148,7 @@ export function toProgramGraph(
     id: `${edge.from.node}:${edge.from.port}->${edge.to.node}:${edge.to.port}`,
     from: edge.from.node,
     to: edge.to.node,
-    label: edge.kind === "data" ? edge.from.port : undefined,
+    label: edge.kind === "data" ? (EDGE_PORT_LABELS[edge.from.port] ?? edge.from.port) : undefined,
   }));
 
   return { nodes, edges, payloads };

@@ -4,6 +4,7 @@
 #   click:<文案>  点击按钮或画布节点（按钮精确匹配优先，其次 .react-flow__node 文本包含）
 #   edit:<匹配>=<值>  定位 value 含 <匹配> 的输入框，赋值并派发 focusout（CommitField 失焦提交）
 #   check:<文案> / checkabsent:<文案>  断言页面文本含 / 不含，失败则退出码 1
+#   eval:<js>  求值并回显（调试用，如 eval:localStorage.getItem('roco.atlasTrace')）
 param(
   [Parameter(Mandatory)][string]$Url,
   [string]$WaitText,
@@ -106,7 +107,7 @@ try {
   if ($ClickText) {
     foreach ($label in ($ClickText -split ",")) {
       $trimmed = $label.Trim()
-      $clicked = Eval "(() => { const bs = [...document.querySelectorAll('button')]; const nodes = [...document.querySelectorAll('.react-flow__node')]; const b = bs.find((x) => x.textContent.trim() === '$trimmed') || nodes.find((x) => x.textContent.includes('$trimmed')) || bs.find((x) => x.textContent.includes('$trimmed')); if (!b) return false; b.click(); return true; })()"
+      $clicked = Eval "(() => { const bs = [...document.querySelectorAll('button')]; const as = [...document.querySelectorAll('a')]; const nodes = [...document.querySelectorAll('.react-flow__node')]; const b = bs.find((x) => x.textContent.trim() === '$trimmed') || as.find((x) => x.textContent.trim() === '$trimmed') || nodes.find((x) => x.textContent.includes('$trimmed')) || bs.find((x) => x.textContent.includes('$trimmed')) || as.find((x) => x.textContent.includes('$trimmed')); if (!b) return false; b.click(); return true; })()"
       Write-Output "CLICK $trimmed -> $clicked"
       Start-Sleep -Seconds 2
     }
@@ -119,7 +120,7 @@ try {
       $s = $step.Trim()
       if ($s.StartsWith("click:")) {
         $label = $s.Substring(6)
-        $clicked = Eval "(() => { const bs = [...document.querySelectorAll('button')]; const nodes = [...document.querySelectorAll('.react-flow__node')]; const b = bs.find((x) => x.textContent.trim() === '$label') || nodes.find((x) => x.textContent.includes('$label')) || bs.find((x) => x.textContent.includes('$label')); if (!b) return false; b.click(); return true; })()"
+        $clicked = Eval "(() => { const bs = [...document.querySelectorAll('button')]; const as = [...document.querySelectorAll('a')]; const nodes = [...document.querySelectorAll('.react-flow__node')]; const b = bs.find((x) => x.textContent.trim() === '$label') || as.find((x) => x.textContent.trim() === '$label') || nodes.find((x) => x.textContent.includes('$label')) || bs.find((x) => x.textContent.includes('$label')) || as.find((x) => x.textContent.includes('$label')); if (!b) return false; b.click(); return true; })()"
         Write-Output "CLICK $label -> $clicked"
         if (-not $clicked) { $script:failed = $true }
         Start-Sleep -Seconds 2
@@ -132,8 +133,18 @@ try {
         Write-Output "EDIT [$match] -> $r"
         if ($r -ne "ok") { $script:failed = $true }
         Start-Sleep -Seconds 2
-      } elseif ($s.StartsWith("checkabsent:")) {
-        $t = $s.Substring(12)
+      } elseif ($s.StartsWith("wait:")) {
+        $t = $s.Substring(5)
+        $ok = $false
+        foreach ($i in 1..40) {
+          Start-Sleep -Milliseconds 750
+          if (Eval "document.body.innerText.includes(`"$t`")") { $ok = $true; break }
+        }
+        if ($ok) { Write-Output "WAIT ok: $t" } else { Write-Output "WAIT FAIL: $t"; $script:failed = $true }
+      } elseif ($s.StartsWith("eval:")) {
+        $js = $s.Substring(5)
+        Write-Output ("EVAL " + $js + " -> " + (Eval $js))
+      } elseif ($s.StartsWith("checkabsent:")) {        $t = $s.Substring(12)
         $ok = Eval "!document.body.innerText.includes(`"$t`")"
         if ($ok) { Write-Output "CHECK ok(absent): $t" } else { Write-Output "CHECK FAIL(absent): $t"; $script:failed = $true }
       } elseif ($s.StartsWith("check:")) {

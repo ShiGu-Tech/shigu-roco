@@ -18,6 +18,8 @@ import {
   type EffectDomain,
 } from "@/modules/engine/mechanisms/vocabulary";
 
+import { labelParamValue } from "./labels";
+
 export type ViewNodeKind = "trigger" | "condition" | "combinator" | "effect";
 
 export interface ParamView {
@@ -87,11 +89,14 @@ function describeDynamic(value: unknown): string {
   return parts.filter(Boolean).join(" ");
 }
 
-export function valueText(value: unknown): string {
+/** 展示文本：动态取值展开为 `路径 ×系数 +偏移 …`；普通枚举值经 `labelParamValue` 汉化，
+ *  含 `.` 的路径与未登记字符串（技能 id / 状态 id / 计数键…）原样保留。`key` 为参数名（值域歧义时按键特判）。 */
+export function valueText(value: unknown, key?: string): string {
   if (value === undefined) return "—";
   if (isDynamicRef(value)) return describeDynamic(value);
-  if (typeof value === "string") return value;
-  if (Array.isArray(value)) return value.map((v) => valueText(v)).join(" / ");
+  if (typeof value === "boolean") return labelParamValue(key ?? "", String(value));
+  if (typeof value === "string") return labelParamValue(key ?? "", value);
+  if (Array.isArray(value)) return value.map((v) => valueText(v, key)).join(" / ");
   if (typeof value === "object" && value !== null) {
     const entries = Object.entries(value as Record<string, unknown>);
     if (entries.length === 1 && entries[0][0] === "path") return String(entries[0][1]);
@@ -110,7 +115,7 @@ function conditionTitle(cond: Condition): string {
 }
 
 export function makeParam(key: string, label: string, value: unknown, dynamic = false, children?: string[]): ParamView {
-  return { key, label, value, display: children?.length ? `（${children.length} 个子效果）` : valueText(value), dynamic, children };
+  return { key, label, value, display: children?.length ? `（${children.length} 个子效果）` : valueText(value, key), dynamic, children };
 }
 
 function conditionParams(cond: Condition): ParamView[] {

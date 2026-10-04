@@ -19,6 +19,10 @@ import { Input } from "@/components/ui/input";
 
 import { forcedSwitch, getCatalog, recommend, requestLeader, simulateTurn } from "@/modules/battle/client";
 import { loadOpponentLibrary } from "@/modules/battle/storage";
+import { collectAtlasStep } from "@/modules/atlas/collect";
+import { recordAtlasStep } from "@/modules/atlas/storage";
+import { BoardAtlas } from "@/modules/atlas/board-atlas";
+import type { AtlasStep } from "@/modules/atlas/types";
 import { saveReplay } from "@/modules/replays/storage";
 import { ENEMY_COLOR, PLAYER_COLOR } from "@/lib/chart-theme";
 import { describeEvent } from "./log";
@@ -104,6 +108,10 @@ export function BattleBoard() {
   const [saveOpen, setSaveOpen] = useState(false);
   const [saveName, setSaveName] = useState("");
 
+  /** 引擎流程回放：本局各回合的轨迹步 + 新开局重置键。 */
+  const [atlasSteps, setAtlasSteps] = useState<AtlasStep[]>([]);
+  const [atlasResetKey, setAtlasResetKey] = useState(0);
+
   function refreshLineups() {
     setPlayerLineups(listLineups("player"));
   }
@@ -159,6 +167,8 @@ export function BattleBoard() {
     const st = buildState(catalog, playerArg, enemyArg);
     setPendingP(null);
     setPendingE(null);
+    setAtlasSteps([]);
+    setAtlasResetKey((key) => key + 1);
     setPhase("battle");
     setBusy(true);
     try {
@@ -180,6 +190,17 @@ export function BattleBoard() {
       const res = await simulateTurn(base.state, pP.action, pE.action, base.state.seed);
       setPendingP(null);
       setPendingE(null);
+      // 全景图轨迹埋点（P3）：本回合双方操作 + 事件流，/engine 回来点亮 + 本页内嵌回放。
+      const step = collectAtlasStep({
+        turn: base.state.turn,
+        actions: [
+          { side: "player", kind: pP.action.kind, skillId: pP.action.skillId, benchId: pP.action.benchId, label: pP.label },
+          { side: "enemy", kind: pE.action.kind, skillId: pE.action.skillId, benchId: pE.action.benchId, label: pE.label },
+        ],
+        log: res.log,
+      });
+      recordAtlasStep("board", step);
+      setAtlasSteps((prev) => [...prev, step]);
       let frame: Frame;
       if (res.terminal.ended) {
         setRec(null);
@@ -228,6 +249,13 @@ export function BattleBoard() {
     setBusy(true);
     try {
       const res = await forcedSwitch(base.state, who, benchId);
+      const step = collectAtlasStep({
+        turn: base.state.turn,
+        actions: [{ side: who, kind: "switch", benchId, label: `${who === "player" ? "我方" : "敌方"}阵亡换人` }],
+        log: res.log,
+      });
+      recordAtlasStep("board", step);
+      setAtlasSteps((prev) => [...prev, step]);
       const frame: Frame = {
         turn: res.state.turn,
         state: res.state,
@@ -292,6 +320,9 @@ export function BattleBoard() {
     setPendingE(null);
     setFrames(frames.slice(0, index + 1));
     setCursor(index);
+    // 回退帧 → 回放轨迹一并回退到对应回合并重播。
+    setAtlasSteps((prev) => prev.slice(0, index));
+    setAtlasResetKey((key) => key + 1);
     setBusy(true);
     try {
       const target = frames[index];
@@ -675,6 +706,17 @@ export function BattleBoard() {
           />
         </div>
       </div>
+
+      <Panel
+        title="引擎流程回放"
+        actions={
+          <span className="text-[12px] font-normal text-muted-foreground">
+            每回合按发生顺序逐个点亮对应时机（小号全景图，完整版见「引擎」页）
+          </span>
+        }
+      >
+        <BoardAtlas key={atlasResetKey} steps={atlasSteps} />
+      </Panel>
 
       <Dialog open={saveOpen} onOpenChange={setSaveOpen}>
         <DialogContent className="max-w-[460px]">

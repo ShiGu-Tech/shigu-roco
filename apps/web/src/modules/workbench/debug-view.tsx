@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
+import { collectAtlasStep } from "@/modules/atlas/collect";
+import { recordAtlasStep } from "@/modules/atlas/storage";
 import { describeEvent } from "@/modules/board/log";
 import { getCatalog } from "@/modules/battle/client";
 import type { BattleEvent, Catalog, CatalogSprite } from "@/modules/battle/types";
@@ -261,10 +263,12 @@ export function DebugView() {
     if (!catalog || !debug || busy) return;
     setBusy(true);
     try {
+      const playerAction = pickAction(legal.player, playerIndex);
+      const enemyAction = pickAction(legal.enemy, enemyIndex);
       const result = await workerRequest<StepResult>("debug/step", {
         state: toBattleState(debug),
-        playerAction: pickAction(legal.player, playerIndex),
-        enemyAction: pickAction(legal.enemy, enemyIndex),
+        playerAction,
+        enemyAction,
         seed: debug.seed,
       });
       const rows = rowsFromLog(result.log, catalog);
@@ -275,6 +279,18 @@ export function DebugView() {
       setPlayerIndex(0);
       setEnemyIndex(0);
       setTerminal(result.terminal);
+      // 全景图轨迹埋点（P2）：本步操作 + 事件流聚合后写 localStorage，/engine 全景回来点亮。
+      recordAtlasStep(
+        "debug",
+        collectAtlasStep({
+          turn: debug.turn,
+          actions: [
+            { side: "player", kind: playerAction.kind, skillId: playerAction.skillId, benchId: playerAction.benchId, label: actionLabel(playerAction, catalog) },
+            { side: "enemy", kind: enemyAction.kind, skillId: enemyAction.skillId, benchId: enemyAction.benchId, label: actionLabel(enemyAction, catalog) },
+          ],
+          log: result.log,
+        }),
+      );
     } catch (err) {
       toast.error((err as Error).message);
     } finally {

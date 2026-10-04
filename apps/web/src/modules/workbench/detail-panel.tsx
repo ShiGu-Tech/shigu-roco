@@ -9,7 +9,9 @@ import type { Condition, MechanismDefinition } from "@/modules/engine/mechanisms
 import { CONDITION_OP_LABELS, EFFECT_VOCABULARY, effectVocabularyOf, triggerMetaOf } from "@/modules/engine/mechanisms/vocabulary";
 
 import type { ViewNode } from "./dsl-graph";
+import { valueText } from "./dsl-graph";
 import { coerceFieldValue, getCondition, type ConditionField, type ConditionRef } from "./edit-ops";
+import { KIND_LABELS, OWNER_TYPE_LABELS, labelParamValue } from "./labels";
 import type { WorkbenchMechanism } from "./types";
 
 function JsonBlock({ value }: { value: unknown }) {
@@ -88,6 +90,13 @@ function CommitField({
 function scalarDisplay(value: unknown): string {
   if (value === undefined) return "";
   if (typeof value === "object") return JSON.stringify(value);
+  return String(value);
+}
+
+/** 只读展示文本：枚举值汉化（编辑输入框仍用原文，保证写回正确）。 */
+function readDisplay(key: string, value: unknown): string {
+  if (value === undefined) return "—";
+  if (typeof value === "boolean" || typeof value === "string") return labelParamValue(key, String(value));
   return String(value);
 }
 
@@ -218,7 +227,7 @@ function ConditionForm({
                   onCommit={(value) => edit.conditionField(conditionRef, "value", value)} onError={fail}
                 />
               ) : (
-                <span className="break-all tnum">{leaf.value === undefined ? "—" : String(leaf.value)}</span>
+                <span className="break-all tnum">{leaf.value === undefined ? "—" : valueText(leaf.value)}</span>
               )}
             </td>
           </tr>
@@ -262,8 +271,8 @@ function EffectForm({
       </p>
       <table className="w-full text-[11px]">
         <tbody>
-          <ReadRow label="type">
-            <span className="tnum">{effect.type}</span>
+          <ReadRow label="类型">
+            <span className="tnum">{vocab.title}（{effect.type}）</span>
           </ReadRow>
           {keys.map((key) => {
             const original = key === "chance" ? raw.chance : raw[key];
@@ -280,7 +289,7 @@ function EffectForm({
                       onCommit={(value) => edit.effectField(effectIndex, key, value)} onError={fail}
                     />
                   ) : (
-                    <span className="break-all tnum">{original === undefined ? "—" : String(original)}</span>
+                    <span className="break-all tnum">{readDisplay(key, original)}</span>
                   )}
                 </td>
               </tr>
@@ -324,7 +333,7 @@ export function DetailPanel({
     <div className="space-y-1">
       <div className="flex flex-wrap items-center gap-1.5">
         <span className="text-[13px] font-semibold">{mechanism.ownerName}</span>
-        <Badge variant="outline">{mechanism.ownerType}</Badge>
+        <Badge variant="outline">{OWNER_TYPE_LABELS[mechanism.ownerType] ?? mechanism.ownerType}</Badge>
         {mechanism.unsupported ? <Badge variant="destructive" className="px-1 py-0 text-[10px]">含未支持</Badge> : null}
         {registered ? <Badge variant="outline" className="px-1 py-0 text-[10px]">自动生成</Badge> : null}
         {def.oncePerTurn ? <Badge variant="secondary" className="px-1 py-0 text-[10px]">每回合一次</Badge> : null}
@@ -386,7 +395,7 @@ export function DetailPanel({
       <div className="space-y-1.5">
         <div className="flex items-center gap-1.5">
           <span className="text-[12px] font-semibold">{node.title}</span>
-          <Badge variant="outline" className="text-[10px]">{node.kind}</Badge>
+          <Badge variant="outline" className="text-[10px]">{KIND_LABELS[node.kind] ?? node.kind}</Badge>
         </div>
         <JsonBlock value={payload} />
       </div>

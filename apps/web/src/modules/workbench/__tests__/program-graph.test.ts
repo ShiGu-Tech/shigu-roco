@@ -66,13 +66,17 @@ describe("G3b 程序视图画（program-graph + sources）", () => {
 
     const effects = graph.nodes.filter((node) => node.source?.role === "effect");
     expect(effects).toHaveLength(3);
-    // 效果链按 域 分段重排（状态在前、伤害在后），source 必须仍指 DSL 原序
+    // 效果链按 域 分段重排（状态在前、伤害在后），副标题 = DSL 位置且 source 仍指 DSL 原序
     const byIndex = new Map(effects.map((node) => [node.source?.effect, node.subtitle]));
-    expect(byIndex.get(0)).toBe("dealDamage");
-    expect(byIndex.get(1)).toBe("modifyEnergy");
-    expect(byIndex.get(2)).toBe("modifyStat");
+    expect(byIndex.get(0)).toBe("effects[0]");
+    expect(byIndex.get(1)).toBe("effects[1]");
+    expect(byIndex.get(2)).toBe("effects[2]");
     const types = effects.map((node) => node.subtitle);
-    expect(types[0]).toBe("modifyEnergy"); // 链序：状态 → 伤害
+    expect(types[0]).toBe("effects[1]"); // 链序：状态 → 伤害
+
+    // 触发器节点不重复显示英文触发器名
+    const entryNode = graph.nodes.find((node) => node.source?.role === "entry");
+    expect(entryNode?.subtitle).toBeUndefined();
 
     // 条件叶子带 when 下标 + 字段
     const pathNode = graph.nodes.find((node) => node.source?.field === "path");
