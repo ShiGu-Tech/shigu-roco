@@ -59,7 +59,7 @@ scripts/                      setup / dev / 同步 / 静态包导出
 - 图表用 ECharts 6；响应式断点 `min-[520px]:` / `min-[860px]:`。
 - 引擎同构：纯逻辑不依赖 `fs` / DOM；Node 侧 loader（`data-node.ts`）与浏览器 Worker 均复用同一引擎。
 - **`node:fs` 只进服务端叶模块**：写盘逻辑（`api/mechanisms-store.ts`、`catalog/registry.ts`）不得被客户端可达模块引用——页面会复用 `api/handlers` 的纯导出（如 `parseState`），一旦 handlers 依赖 fs 就会把 `node:fs` 打进客户端 chunk（Turbopack 构建直接失败）。客户端与服务端共用的纯逻辑放独立纯模块（如 `api/compile-check.ts`）。
-- 不引入数据库与账号体系；本地存档 / 对手库存浏览器 `localStorage`。**允许轻量「观战房间」**：只读、URL 即密钥、无账号、无持久库（内存房间，进程重启即清），见 [`docs/architecture/引擎观战-设计-v0.1.md`](docs/architecture/引擎观战-设计-v0.1.md)。
+- 不引入数据库与账号体系；本地存档 / 对手库存浏览器 `localStorage`。**允许轻量「观战房间」**：只读、URL 即密钥、无账号、**无外部数据库**（内存房间 + 本地 JSON 文件落盘，见 [`docs/architecture/引擎观战-设计-v0.1.md`](docs/architecture/引擎观战-设计-v0.1.md)）。
 - 凭证 / 密钥不入仓（本项目预期无需凭证）。
 - 不新增依赖前先确认已在用；新增需说明理由。
 

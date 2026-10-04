@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 
 import { forcedSwitch, getCatalog, recommend, requestLeader, simulateTurn } from "@/modules/battle/client";
 import { loadOpponentLibrary } from "@/modules/battle/storage";
-import { collectAtlasStep } from "@/modules/atlas/collect";
+import { collectAtlasStep, flattenFirings } from "@/modules/atlas/collect";
 import { recordAtlasStep } from "@/modules/atlas/storage";
 import { ENGINE_VERSION } from "@/modules/engine/version";
 import { createWatchRoom, pushWatchRoom, watchUrl } from "@/modules/watch/client";
@@ -112,6 +112,8 @@ export function BattleBoard() {
   /** 观战房间：本局建房后逐回合推快照（只读观战，见《引擎观战》设计稿）。 */
   const [watchId, setWatchId] = useState<string | null>(null);
   const watchRoomRef = useRef<WatchRoom | null>(null);
+  /** 披露世代号：新回合 / 回退 / 重开局时自增，用于中止在途的逐触发器披露。 */
+  const revealGenRef = useRef(0);
 
   /** 阵容展示信息（观战大屏标题用）。 */
   function roomSide(label: string, side: BattleState["player"]): RoomSide {
@@ -124,17 +126,39 @@ export function BattleBoard() {
     };
   }
 
-  /** 追加一条观战记录并推全量快照（尽力而为，失败不阻断对战）。 */
+  /** 追加一条观战记录并按发生顺序逐触发器披露（尽力而为，失败不阻断对战）。 */
   function pushWatch(entry: WatchEntry, turn: number, terminal: Terminal | null) {
     const room = watchRoomRef.current;
     if (!room) return;
+    revealGenRef.current += 1; // 中止在途披露：以本次最新快照为准
     room.entries = [...room.entries, entry];
     room.turn = turn;
+    const total = flattenFirings(room.entries.map((e) => e.step)).length;
+    void revealRoom(room, total - entry.step.fired.length, terminal);
+  }
+
+  /** 逐触发器把 `head` 推到当前总长，每条 PUT 广播一次；被世代号 / 房间替换中止。 */
+  async function revealRoom(room: WatchRoom, from: number, terminal: Terminal | null) {
+    const gen = revealGenRef.current;
+    room.head = from;
+    await pushWatchRoom(room);
+    const total = flattenFirings(room.entries.map((e) => e.step)).length;
+    const n = total - from;
+    if (n > 0) {
+      const pace = Math.max(120, Math.min(320, Math.floor(2000 / n)));
+      for (let head = from + 1; head <= total; head++) {
+        await new Promise((resolve) => setTimeout(resolve, pace));
+        if (revealGenRef.current !== gen || watchRoomRef.current !== room) return;
+        room.head = head;
+        await pushWatchRoom(room);
+      }
+    }
+    if (revealGenRef.current !== gen || watchRoomRef.current !== room) return;
     if (terminal?.ended) {
       room.status = "ended";
       room.terminal = { winner: terminal.winner, reason: terminal.reason };
+      await pushWatchRoom(room);
     }
-    void pushWatchRoom(room);
   }
 
   function refreshLineups() {
@@ -193,6 +217,7 @@ export function BattleBoard() {
     setPendingP(null);
     setPendingE(null);
     watchRoomRef.current = null;
+    revealGenRef.current += 1;
     setWatchId(null);
     setPhase("battle");
     setBusy(true);
@@ -213,6 +238,7 @@ export function BattleBoard() {
         turn: st.turn,
         terminal: null,
         entries: [],
+        head: 0,
         dataVersion,
         engineVersion: ENGINE_VERSION,
       };
@@ -396,8 +422,10 @@ export function BattleBoard() {
     // 回退帧 → 观战房间记录一并回退。
     const room = watchRoomRef.current;
     if (room) {
+      revealGenRef.current += 1; // 中止在途披露
       room.entries = room.entries.slice(0, index);
       room.turn = frames[index].turn;
+      room.head = flattenFirings(room.entries.map((e) => e.step)).length;
       void pushWatchRoom(room);
     }
     setBusy(true);

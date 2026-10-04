@@ -12,6 +12,7 @@ logs/
 .cache/
 tmp/
 data/registry/
+data/watch/
 
 # --- 本地环境 ---
 .env

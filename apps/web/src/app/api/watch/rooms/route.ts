@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { createRoom, type CreateRoomInput } from "@/modules/watch/store";
+import { createRoom, ensureLoaded, type CreateRoomInput } from "@/modules/watch/store";
+import { persistRoom } from "@/modules/watch/persistence";
 import type { RoomSide } from "@/modules/watch/types";
 
 export const runtime = "nodejs";
@@ -16,6 +17,7 @@ function asSide(value: unknown): RoomSide {
 
 /** 建房：宿主（对战台）开战时调用。 */
 export async function POST(request: Request) {
+  await ensureLoaded();
   let body: Record<string, unknown> = {};
   try {
     body = ((await request.json()) ?? {}) as Record<string, unknown>;
@@ -29,5 +31,6 @@ export async function POST(request: Request) {
     dataVersion: typeof body.dataVersion === "string" ? body.dataVersion : "",
     engineVersion: typeof body.engineVersion === "string" ? body.engineVersion : "",
   } satisfies CreateRoomInput);
+  persistRoom(room);
   return NextResponse.json({ id: room.id });
 }

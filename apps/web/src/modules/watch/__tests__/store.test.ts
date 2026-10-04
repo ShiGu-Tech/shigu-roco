@@ -91,4 +91,23 @@ describe("watch store（内存房间）", () => {
     putRoom(room as WatchRoom);
     expect(getRoom(room.id)?.updatedAt).toBe(5000);
   });
+
+  it("head 归一：缺失按全披露、越界夹紧、0 保留", () => {
+    const room = createRoom(input());
+    const step = {
+      turn: 1,
+      actions: [],
+      fired: [
+        { trigger: "turnStart", mechanisms: [], effects: [] },
+        { trigger: "beforeAction", mechanisms: [], effects: [] },
+      ],
+    };
+    const entry: WatchEntry = { turn: 1, label: "回合 1", actions: [], step, log: [] };
+    putRoom({ ...room, entries: [entry], head: undefined as unknown as number });
+    expect(getRoom(room.id)?.head).toBe(2);
+    putRoom({ ...room, entries: [entry], head: 99 });
+    expect(getRoom(room.id)?.head).toBe(2);
+    putRoom({ ...room, entries: [entry], head: 0 });
+    expect(getRoom(room.id)?.head).toBe(0);
+  });
 });

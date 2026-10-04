@@ -1,4 +1,4 @@
-import { getRoom, subscribe } from "@/modules/watch/store";
+import { ensureLoaded, getRoom, subscribe } from "@/modules/watch/store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -7,6 +7,7 @@ type Ctx = { params: Promise<{ id: string }> };
 
 /** SSE：连线即推最新快照，此后每次 PUT 广播；15s 心跳。 */
 export async function GET(request: Request, ctx: Ctx) {
+  await ensureLoaded();
   const { id } = await ctx.params;
   if (!getRoom(id)) {
     return new Response("房间不存在或已过期", { status: 404 });

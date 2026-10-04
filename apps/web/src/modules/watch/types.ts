@@ -36,6 +36,8 @@ export interface WatchRoom {
   turn: number;
   terminal: { winner: "player" | "enemy" | null; reason: string } | null;
   entries: WatchEntry[];
+  /** 已披露的 firing 数（`flattenFirings(entries.map(e => e.step))` 前缀）；主机逐触发器递增。 */
+  head: number;
   dataVersion: string;
   engineVersion: string;
 }
