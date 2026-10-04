@@ -2,7 +2,7 @@
 
 import { effectiveCost } from "../cost";
 import { getSkill, getSprite } from "../data";
-import { effectiveStat } from "../effects/damage";
+import { computeDamage, effectiveStat } from "../effects/damage";
 import type { Rng } from "../rng";
 import { cloneState, expireSkillOverrides, revertSkillOverride } from "../state";
 import type { Action, BattleEvent, BattleState, DataBundle, Side, StepResult, Terminal } from "../types";
@@ -63,6 +63,29 @@ export class Simulator {
       c.fieldMarkKinds = markKinds.size;
       c.fieldBuffKinds = buffKinds.size;
     }
+  }
+
+  /** 预警域 · 估算对手当前是否能一击带走自己（用对手携带的攻击技能最大伤害对比自身生命），
+   *  写 `counters.incomingLethal`（0/1）。口径为近似，供「若敌方技能足够击败自己」类（预警 / 先知 / 哨兵）。 */
+  private estimateIncomingLethal(st: BattleState, side: Side): void {
+    const self = this.sideState(st, side).active;
+    const opp = this.sideState(st, otherSide(side)).active;
+    const selfDef = getSprite(this.bundle, self.spriteId);
+    const oppDef = getSprite(this.bundle, opp.spriteId);
+    const oppLoadout = opp.loadout.length
+      ? opp.loadout
+      : (toArray<string>(oppDef.loadout).length ? toArray<string>(oppDef.loadout) : toArray<string>(oppDef.skillList));
+    let max = 0;
+    for (const skillId of oppLoadout) {
+      const skill = getSkill(this.bundle, skillId);
+      if (skill.category !== "Physical" && skill.category !== "Magic") continue;
+      if (!(toNum(skill.power, 0) > 0)) continue;
+      const res = computeDamage(this.bundle, oppDef, selfDef, opp, self, skill, { weatherId: st.weather?.id ?? null });
+      if (res.damage > max) max = res.damage;
+    }
+    const s = this.sideState(st, side);
+    s.counters ??= {};
+    s.counters.incomingLethal = max >= self.hp ? 1 : 0;
   }
 
   /** 队伍域 · 开局按图鉴预计算：队伍各系只数 `team<Element>`、携带各系技能数 `loadout<Element>`、
@@ -195,6 +218,7 @@ export class Simulator {
     }
     events.push(...this.runPendingEffects(st, "turnStart"));
     this.refreshDerivedCounters(st);
+    for (const side of SIDES) this.estimateIncomingLethal(st, side);
 
     // ① 洛克魔法阶段（愿力）
     for (const side of SIDES) {

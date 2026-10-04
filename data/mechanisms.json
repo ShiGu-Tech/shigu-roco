@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.88.0",
+  "version": "0.89.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -21728,31 +21728,76 @@
       "id": "trait:sp-121-1",
       "ownerType": "trait",
       "ownerId": "sp-121-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "turnStart",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "预警：若敌方技能足够击败自己，回合开始时自己获得速度+50。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-121-1",
+            "sp-122-1"
+          ]
+        },
+        {
+          "path": "self.counters.incomingLethal",
+          "op": "gte",
+          "value": 1
         }
       ],
-      "note": "特性「预警」：待实现"
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "speed",
+          "mode": "percent",
+          "value": 50
+        }
+      ],
+      "note": "特性「预警」：若敌方技能足够击败自己，回合开始速度 +50"
     },
     {
       "id": "trait:sp-122-2",
       "ownerType": "trait",
       "ownerId": "sp-122-2",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "turnStart",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "先知：若敌方技能足够击败自己，回合开始时自己获得速度+50，双攻+50%。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-122-2"
+          ]
+        },
+        {
+          "path": "self.counters.incomingLethal",
+          "op": "gte",
+          "value": 1
         }
       ],
-      "note": "特性「先知」：待实现"
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "speed",
+          "mode": "percent",
+          "value": 50
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 50
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 50
+        }
+      ],
+      "note": "特性「先知」：若敌方技能足够击败自己，回合开始速度 +50、双攻 +50%"
     },
     {
       "id": "trait:sp-123-1",
@@ -22745,16 +22790,32 @@
       "id": "trait:sp-270-1",
       "ownerType": "trait",
       "ownerId": "sp-270-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "turnStart",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "哨兵：回合开始时若敌方技能足够击败自己，自己获得速度+50，行动后脱离。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-270-1",
+            "sp-271-1"
+          ]
+        },
+        {
+          "path": "self.counters.incomingLethal",
+          "op": "gte",
+          "value": 1
         }
       ],
-      "note": "特性「哨兵」：待实现"
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "speed",
+          "mode": "percent",
+          "value": 50
+        }
+      ],
+      "note": "特性「哨兵」：若敌方技能足够击败自己，回合开始速度 +50"
     },
     {
       "id": "trait:sp-272-1",
@@ -24695,6 +24756,120 @@
         }
       ],
       "note": "听桥：造成威力等于被应对技能能耗的武系物伤"
+    },
+    {
+      "id": "trait:sp-121-1#2",
+      "ownerType": "trait",
+      "ownerId": "sp-121-1",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-121-1",
+            "sp-122-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "clearStat",
+          "target": "self",
+          "stat": "speed",
+          "polarity": "buff"
+        }
+      ],
+      "note": "特性「预警」：回合末清除速度加成"
+    },
+    {
+      "id": "trait:sp-122-2#2",
+      "ownerType": "trait",
+      "ownerId": "sp-122-2",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-122-2"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "clearStat",
+          "target": "self",
+          "stat": "speed",
+          "polarity": "buff"
+        },
+        {
+          "type": "clearStat",
+          "target": "self",
+          "stat": "atk",
+          "polarity": "buff"
+        },
+        {
+          "type": "clearStat",
+          "target": "self",
+          "stat": "spatk",
+          "polarity": "buff"
+        }
+      ],
+      "note": "特性「先知」：回合末清除加成"
+    },
+    {
+      "id": "trait:sp-270-1#2",
+      "ownerType": "trait",
+      "ownerId": "sp-270-1",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-270-1",
+            "sp-271-1"
+          ]
+        },
+        {
+          "path": "self.counters.incomingLethal",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceSwitch",
+          "target": "self"
+        }
+      ],
+      "note": "特性「哨兵」：行动后脱离"
+    },
+    {
+      "id": "trait:sp-270-1#3",
+      "ownerType": "trait",
+      "ownerId": "sp-270-1",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-270-1",
+            "sp-271-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "clearStat",
+          "target": "self",
+          "stat": "speed",
+          "polarity": "buff"
+        }
+      ],
+      "note": "特性「哨兵」：回合末清除速度加成"
     }
   ]
 }

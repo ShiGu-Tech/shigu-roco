@@ -151,5 +151,7 @@
  *          含溢出、回合末清除）；`actionDeclared` 的 `opponentAction` 补 `cost`（雪替身 / 听桥 / 冰天雪地）。
  * - 0.54.0 增量长尾：`randomizeSkill.sourceFrom` 增具名来源 `uncarried` / `team` / `opponent`（复写 / 借用 /
  *          取念）；规则 `cost.payWithHp`（盛宴 / 石头大餐：能量不足以 5% 最大生命代 1 点能耗，`legalActions` 同步放行）。
+ * - 0.55.0 预警域：回合开始按对手携带攻击技能估算 `SideState.counters.incomingLethal`（`computeDamage` 取最大值
+ *          对比自身生命，0/1，近似）；供预警 / 先知 / 哨兵。
  */
-export const ENGINE_VERSION = "0.54.0";
+export const ENGINE_VERSION = "0.55.0";
