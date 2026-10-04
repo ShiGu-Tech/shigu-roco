@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.52.0",
+  "version": "0.53.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -17101,6 +17101,933 @@
         }
       ],
       "note": "重组：下次攻击附加幻系伤害（条件）"
+    },
+    {
+      "id": "trait:sp-228-2",
+      "ownerType": "trait",
+      "ownerId": "sp-228-2",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-228-2"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 40
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 40
+        }
+      ],
+      "note": "特性「超级电池」"
+    },
+    {
+      "id": "trait:sp-226-1",
+      "ownerType": "trait",
+      "ownerId": "sp-226-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-226-1",
+            "sp-227-1",
+            "sp-228-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 30
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 30
+        }
+      ],
+      "note": "特性「蓄电池」"
+    },
+    {
+      "id": "trait:sp-47-1",
+      "ownerType": "trait",
+      "ownerId": "sp-47-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-47-1",
+            "sp-48-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 100
+        }
+      ],
+      "note": "特性「专注力」：仅首回合（衰减待校准）"
+    },
+    {
+      "id": "trait:sp-48-2",
+      "ownerType": "trait",
+      "ownerId": "sp-48-2",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-48-2"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 100
+        }
+      ],
+      "note": "特性「全神贯注」：每次行动 −20% 待校准"
+    },
+    {
+      "id": "trait:sp-35-2",
+      "ownerType": "trait",
+      "ownerId": "sp-35-2",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-35-2"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "opponent",
+          "delta": -3
+        }
+      ],
+      "note": "特性「大捞一笔」"
+    },
+    {
+      "id": "trait:sp-35-1",
+      "ownerType": "trait",
+      "ownerId": "sp-35-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-35-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "opponent",
+          "delta": -2
+        }
+      ],
+      "note": "特性「小偷小摸」"
+    },
+    {
+      "id": "trait:sp-313-1",
+      "ownerType": "trait",
+      "ownerId": "sp-313-1",
+      "trigger": "afterSwitch",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-313-1",
+            "sp-314-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": 0.2,
+          "basis": "maxHp"
+        }
+      ],
+      "note": "特性「茶多酚」"
+    },
+    {
+      "id": "trait:sp-316-1",
+      "ownerType": "trait",
+      "ownerId": "sp-316-1",
+      "trigger": "afterSwitch",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-316-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 20
+        }
+      ],
+      "note": "特性「美拉德反应」"
+    },
+    {
+      "id": "trait:sp-315-1",
+      "ownerType": "trait",
+      "ownerId": "sp-315-1",
+      "trigger": "afterSwitch",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-315-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "defense",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spdef",
+          "mode": "percent",
+          "value": 20
+        }
+      ],
+      "note": "特性「吉利丁片」"
+    },
+    {
+      "id": "trait:sp-274-1",
+      "ownerType": "trait",
+      "ownerId": "sp-274-1",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-274-1",
+            "sp-275-1",
+            "sp-276-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": 0.12,
+          "basis": "maxHp"
+        }
+      ],
+      "note": "特性「生长」"
+    },
+    {
+      "id": "trait:sp-43-2",
+      "ownerType": "trait",
+      "ownerId": "sp-43-2",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-43-2"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 6
+        }
+      ],
+      "note": "特性「养分内循环」"
+    },
+    {
+      "id": "trait:sp-41-1",
+      "ownerType": "trait",
+      "ownerId": "sp-41-1",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-41-1",
+            "sp-42-1",
+            "sp-43-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 3
+        }
+      ],
+      "note": "特性「养分重吸收」"
+    },
+    {
+      "id": "trait:sp-21-1",
+      "ownerType": "trait",
+      "ownerId": "sp-21-1",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-21-1",
+            "sp-22-1",
+            "sp-23-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "opponent",
+          "delta": -1
+        }
+      ],
+      "note": "特性「毒蘑菇」"
+    },
+    {
+      "id": "trait:sp-128-1",
+      "ownerType": "trait",
+      "ownerId": "sp-128-1",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-128-1",
+            "sp-129-1",
+            "sp-130-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "starfall-mark",
+          "layers": 2
+        }
+      ],
+      "note": "特性「吸积盘」"
+    },
+    {
+      "id": "trait:sp-5-1",
+      "ownerType": "trait",
+      "ownerId": "sp-5-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-5-1",
+            "sp-6-1",
+            "sp-7-1"
+          ]
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Fire"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 20
+        }
+      ],
+      "note": "特性「助燃」"
+    },
+    {
+      "id": "trait:sp-7-2",
+      "ownerType": "trait",
+      "ownerId": "sp-7-2",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-7-2"
+          ]
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Fire"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 30
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 30
+        }
+      ],
+      "note": "特性「爆燃」"
+    },
+    {
+      "id": "trait:sp-8-1#2",
+      "ownerType": "trait",
+      "ownerId": "sp-8-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-8-1",
+            "sp-9-1",
+            "sp-10-1"
+          ]
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Water"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -1,
+          "mode": "add",
+          "duration": "turns",
+          "turns": 1
+        }
+      ],
+      "note": "特性「浸润」"
+    },
+    {
+      "id": "trait:sp-10-2#2",
+      "ownerType": "trait",
+      "ownerId": "sp-10-2",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-10-2"
+          ]
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Water"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -2,
+          "mode": "add",
+          "duration": "turns",
+          "turns": 1
+        }
+      ],
+      "note": "特性「浪潮」"
+    },
+    {
+      "id": "trait:sp-165-1",
+      "ownerType": "trait",
+      "ownerId": "sp-165-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-165-1",
+            "sp-165-2",
+            "sp-166-1",
+            "sp-166-2",
+            "sp-167-1",
+            "sp-167-2"
+          ]
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Wing"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "combo-add",
+          "delta": 1
+        }
+      ],
+      "note": "特性「乘风连击」"
+    },
+    {
+      "id": "trait:sp-63-1",
+      "ownerType": "trait",
+      "ownerId": "sp-63-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-63-1",
+            "sp-63-2",
+            "sp-63-3",
+            "sp-63-4",
+            "sp-64-1",
+            "sp-64-2",
+            "sp-64-3",
+            "sp-64-4",
+            "sp-65-1",
+            "sp-65-2",
+            "sp-65-3",
+            "sp-65-4"
+          ]
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Grass"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "poison",
+          "layers": 2,
+          "immuneElements": [
+            "Grass"
+          ]
+        }
+      ],
+      "note": "特性「生物碱」"
+    },
+    {
+      "id": "trait:sp-65-5",
+      "ownerType": "trait",
+      "ownerId": "sp-65-5",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-65-5",
+            "sp-65-6",
+            "sp-65-7",
+            "sp-65-8"
+          ]
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Grass"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "poison",
+          "layers": 3,
+          "immuneElements": [
+            "Grass"
+          ]
+        }
+      ],
+      "note": "特性「高浓生物碱」"
+    },
+    {
+      "id": "trait:sp-2-1",
+      "ownerType": "trait",
+      "ownerId": "sp-2-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-2-1",
+            "sp-3-1",
+            "sp-4-1"
+          ]
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Grass"
+        }
+      ],
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": 0.1,
+          "basis": "maxHp"
+        }
+      ],
+      "note": "特性「氧循环」"
+    },
+    {
+      "id": "trait:sp-4-2",
+      "ownerType": "trait",
+      "ownerId": "sp-4-2",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-4-2"
+          ]
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Grass"
+        }
+      ],
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": 0.15,
+          "basis": "maxHp"
+        }
+      ],
+      "note": "特性「深层氧循环」"
+    },
+    {
+      "id": "trait:sp-15-1",
+      "ownerType": "trait",
+      "ownerId": "sp-15-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-15-1",
+            "sp-16-1",
+            "sp-17-1"
+          ]
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Dark"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "opponent",
+          "delta": -2
+        }
+      ],
+      "note": "特性「碰瓷」"
+    },
+    {
+      "id": "trait:sp-18-1",
+      "ownerType": "trait",
+      "ownerId": "sp-18-1",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-18-1",
+            "sp-18-2",
+            "sp-18-3",
+            "sp-18-4",
+            "sp-19-1",
+            "sp-19-2",
+            "sp-19-3",
+            "sp-19-4",
+            "sp-20-1",
+            "sp-20-2",
+            "sp-20-3",
+            "sp-20-4"
+          ]
+        },
+        {
+          "path": "event.wentFirst",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyDamage",
+          "mode": "multiply",
+          "value": 1.5,
+          "scope": "outgoing"
+        }
+      ],
+      "note": "特性「顺风」"
+    },
+    {
+      "id": "trait:sp-20-5",
+      "ownerType": "trait",
+      "ownerId": "sp-20-5",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-20-5",
+            "sp-20-6",
+            "sp-20-7",
+            "sp-20-8"
+          ]
+        },
+        {
+          "path": "event.wentFirst",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyDamage",
+          "mode": "multiply",
+          "value": 1.75,
+          "scope": "outgoing"
+        }
+      ],
+      "note": "特性「破空」"
+    },
+    {
+      "id": "trait:sp-116-1",
+      "ownerType": "trait",
+      "ownerId": "sp-116-1",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-116-1",
+            "sp-117-1"
+          ]
+        },
+        {
+          "path": "event.element",
+          "op": "neq",
+          "value": "Light"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyDamage",
+          "mode": "multiply",
+          "value": 1.25,
+          "scope": "outgoing"
+        }
+      ],
+      "note": "特性「目空」"
+    },
+    {
+      "id": "trait:sp-455-1",
+      "ownerType": "trait",
+      "ownerId": "sp-455-1",
+      "trigger": "afterDamage",
+      "when": [
+        {
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-455-1",
+            "sp-456-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "self",
+          "markId": "starfall-mark",
+          "layers": 3
+        }
+      ],
+      "note": "特性「乌龟塔理论」：持有者受击 → 攻击方获得层数（target 侧）"
+    },
+    {
+      "id": "trait:sp-438-1",
+      "ownerType": "trait",
+      "ownerId": "sp-438-1",
+      "trigger": "afterDamage",
+      "when": [
+        {
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-438-1",
+            "sp-439-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "self",
+          "markId": "thorn-mark",
+          "layers": 1
+        }
+      ],
+      "note": "特性「扎手」"
+    },
+    {
+      "id": "trait:sp-430-1",
+      "ownerType": "trait",
+      "ownerId": "sp-430-1",
+      "trigger": "afterDamage",
+      "when": [
+        {
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-430-1",
+            "sp-431-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "self",
+          "markId": "undertow-mark",
+          "layers": 1
+        }
+      ],
+      "note": "特性「诅咒」"
+    },
+    {
+      "id": "trait:sp-139-1#2",
+      "ownerType": "trait",
+      "ownerId": "sp-139-1",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-139-1",
+            "sp-140-1",
+            "sp-141-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "opponent",
+          "scope": "all",
+          "delta": 1,
+          "mode": "add",
+          "duration": "turns",
+          "turns": 1
+        }
+      ],
+      "note": "特性「冰封」"
     }
   ]
 }
