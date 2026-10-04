@@ -7,6 +7,8 @@ export interface EngineAction {
   skillId?: string;
   benchId?: string;
   label?: string;
+  /** 选择技（明 / 暗）：0 = 明，1 = 暗；省略等价 0。 */
+  choice?: 0 | 1;
 }
 
 /** 养成档案：等级 / 性格 / 个体值（天分 × 星级系数）/ 星级，与引擎口径一致。 */

@@ -36,8 +36,8 @@ export interface ActionOption {
   priority?: number;
 }
 
-export function actionKey(a: { kind?: string; skillId?: string; benchId?: string }): string {
-  return `${a.kind ?? ""}:${a.skillId ?? a.benchId ?? ""}`;
+export function actionKey(a: { kind?: string; skillId?: string; benchId?: string; choice?: number }): string {
+  return `${a.kind ?? ""}:${a.skillId ?? a.benchId ?? ""}:${a.choice ?? ""}`;
 }
 
 export function energyRule(catalog: Catalog): { recover: number; max: number } {
@@ -99,10 +99,11 @@ export function previewSkillCost(sk: CatalogSkill, active: ActiveSpriteState): n
   return Math.max(0, Math.floor(multiplied + added));
 }
 
-export function optionFromSkill(catalog: Catalog, sk: CatalogSkill): ActionOption {
+export function optionFromSkill(catalog: Catalog, sk: CatalogSkill, choice?: 0 | 1): ActionOption {
+  const label = choice === undefined ? sk.name : `${sk.name} · ${choice === 0 ? "明" : "暗"}`;
   return {
-    action: { kind: "skill", skillId: sk.id, label: sk.name },
-    label: sk.name,
+    action: { kind: "skill", skillId: sk.id, label, ...(choice === undefined ? {} : { choice }) },
+    label,
     kindLabel: sk.category,
     element: sk.element,
     elementZh: elementZh(catalog, sk.element),

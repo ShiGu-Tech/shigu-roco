@@ -57,7 +57,14 @@ export class Simulator {
     for (const skillId of loadout) {
       const skill = getSkill(this.bundle, skillId);
       if (effectiveCost(state, this.bundle, who, skillId) <= active.energy && toNum(active.cooldowns?.[skillId], 0) <= 0) {
-        actions.push({ kind: "skill", skillId, label: toStr(skill.skillName, skillId) });
+        const name = toStr(skill.skillName, skillId);
+        // 选择技（描述含「选择：」）：列出「明 / 暗」两个分支。
+        if (/选择/.test(toStr(skill.description, ""))) {
+          actions.push({ kind: "skill", skillId, choice: 0, label: `${name} · 明` });
+          actions.push({ kind: "skill", skillId, choice: 1, label: `${name} · 暗` });
+        } else {
+          actions.push({ kind: "skill", skillId, label: name });
+        }
       }
     }
 

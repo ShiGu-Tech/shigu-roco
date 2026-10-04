@@ -102,5 +102,7 @@
  *          `turnsLeft`）；供 汇流「雨天延长 4 / 8 回合」登记。
  * - 0.32.0 巧变能耗（`cost.ts` + `state.ts`）：`skillOverrides` 条目可带 `cost`（临时技能能耗修正），
  *          `randomizeSkill` 新增 `costDelta`；`effectiveCost` 计入——供「巧变：变为随机技能且能耗 −1」登记。
+ * - 0.33.0 选择（行动模型）：`Action.choice`（0 明 / 1 暗，省略 = 明）；`legalActions` 对描述含「选择」的技能
+ *          列出两条；事件 `event.action.choice` 暴露当前选择，供数据用 `choice neq 1 / eq 1` 分叉。
  */
-export const ENGINE_VERSION = "0.32.0";
+export const ENGINE_VERSION = "0.33.0";

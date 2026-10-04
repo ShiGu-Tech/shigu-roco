@@ -136,6 +136,8 @@ export interface Action {
   skillId?: string;
   benchId?: string;
   label?: string;
+  /** 选择技（明 / 暗）：0 = 明，1 = 暗；省略等价 0。 */
+  choice?: 0 | 1;
 }
 
 export interface BattleEvent {

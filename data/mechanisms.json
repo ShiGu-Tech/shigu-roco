@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.47.0",
+  "version": "0.48.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -15476,6 +15476,323 @@
         }
       ],
       "note": "月陨星状态：受到攻击后解除"
+    },
+    {
+      "id": "skill:sk-7040660:light",
+      "ownerType": "skill",
+      "ownerId": "sk-7040660",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040660"
+        },
+        {
+          "path": "event.action.choice",
+          "op": "neq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "burn",
+          "layers": 7,
+          "immuneElements": [
+            "Fire"
+          ]
+        }
+      ],
+      "note": "野火：选择·明"
+    },
+    {
+      "id": "skill:sk-7040660:dark",
+      "ownerType": "skill",
+      "ownerId": "sk-7040660",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040660"
+        },
+        {
+          "path": "event.action.choice",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "opponent",
+          "stat": "defense",
+          "mode": "percent",
+          "value": -90
+        }
+      ],
+      "note": "野火：选择·暗"
+    },
+    {
+      "id": "skill:sk-7030600:light",
+      "ownerType": "skill",
+      "ownerId": "sk-7030600",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030600"
+        },
+        {
+          "path": "event.action.choice",
+          "op": "neq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": 0.25,
+          "basis": "maxHp"
+        }
+      ],
+      "note": "补觉：选择·明"
+    },
+    {
+      "id": "skill:sk-7030600:dark",
+      "ownerType": "skill",
+      "ownerId": "sk-7030600",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030600"
+        },
+        {
+          "path": "event.action.choice",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 8
+        }
+      ],
+      "note": "补觉：选择·暗"
+    },
+    {
+      "id": "skill:sk-7070210:light",
+      "ownerType": "skill",
+      "ownerId": "sk-7070210",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7070210"
+        },
+        {
+          "path": "event.action.choice",
+          "op": "neq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "speed",
+          "mode": "flat",
+          "value": 60
+        }
+      ],
+      "note": "蒸汽进行曲：选择·明"
+    },
+    {
+      "id": "skill:sk-7070210:dark",
+      "ownerType": "skill",
+      "ownerId": "sk-7070210",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7070210"
+        },
+        {
+          "path": "event.action.choice",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 90
+        }
+      ],
+      "note": "蒸汽进行曲：选择·暗"
+    },
+    {
+      "id": "skill:sk-7080460",
+      "ownerType": "skill",
+      "ownerId": "sk-7080460",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080460"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "speed",
+          "mode": "flat",
+          "value": -20
+        }
+      ],
+      "note": "沙石阵：常驻效果"
+    },
+    {
+      "id": "skill:sk-7080460:light",
+      "ownerType": "skill",
+      "ownerId": "sk-7080460",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080460"
+        },
+        {
+          "path": "event.action.choice",
+          "op": "neq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "defense",
+          "mode": "percent",
+          "value": 90
+        }
+      ],
+      "note": "沙石阵：选择·明"
+    },
+    {
+      "id": "skill:sk-7080460:dark",
+      "ownerType": "skill",
+      "ownerId": "sk-7080460",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080460"
+        },
+        {
+          "path": "event.action.choice",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spdef",
+          "mode": "percent",
+          "value": 90
+        }
+      ],
+      "note": "沙石阵：选择·暗"
+    },
+    {
+      "id": "skill:sk-7140330:light",
+      "ownerType": "skill",
+      "ownerId": "sk-7140330",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7140330"
+        },
+        {
+          "path": "event.action.choice",
+          "op": "neq",
+          "value": 1
+        },
+        {
+          "path": "self.active.hp",
+          "op": "lt",
+          "valueFrom": {
+            "path": "self.active.maxHp",
+            "scale": 0.2
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": 0.6,
+          "basis": "maxHp"
+        }
+      ],
+      "note": "马步：选择·明"
+    },
+    {
+      "id": "skill:sk-7140330:dark",
+      "ownerType": "skill",
+      "ownerId": "sk-7140330",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7140330"
+        },
+        {
+          "path": "event.action.choice",
+          "op": "eq",
+          "value": 1
+        },
+        {
+          "path": "self.active.hp",
+          "op": "gt",
+          "valueFrom": {
+            "path": "self.active.maxHp",
+            "scale": 0.8
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 150
+        }
+      ],
+      "note": "马步：选择·暗"
     }
   ]
 }

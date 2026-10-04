@@ -105,6 +105,7 @@ export function BattleBoard() {
   const [enemyRec, setEnemyRec] = useState<RecommendResult | null>(null);
   const [pendingP, setPendingP] = useState<ActionOption | null>(null);
   const [pendingE, setPendingE] = useState<ActionOption | null>(null);
+  const [choicePick, setChoicePick] = useState<{ who: "player" | "enemy"; skillId: string; name: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [saveOpen, setSaveOpen] = useState(false);
   const [saveName, setSaveName] = useState("");
@@ -473,7 +474,23 @@ export function BattleBoard() {
     if (!catalog) return;
     const sk = skillById(catalog, skillId);
     if (!sk) return;
+    // 选择技：先让玩家选「明 / 暗」。
+    if (/选择/.test(sk.description ?? "")) {
+      setChoicePick({ who, skillId, name: sk.name });
+      return;
+    }
     const option = optionFromSkill(catalog, sk);
+    if (who === "player") choosePlayer(option);
+    else chooseEnemy(option);
+  }
+
+  function commitChoice(choice: 0 | 1) {
+    if (!catalog || !choicePick) return;
+    const sk = skillById(catalog, choicePick.skillId);
+    if (!sk) return;
+    const option = optionFromSkill(catalog, sk, choice);
+    const who = choicePick.who;
+    setChoicePick(null);
     if (who === "player") choosePlayer(option);
     else chooseEnemy(option);
   }
@@ -803,6 +820,22 @@ export function BattleBoard() {
                   {pendingP && pendingE ? " · " : ""}
                   {pendingE ? `敌方已选：${pendingE.label}` : ""}
                 </span>
+              </div>
+            )}
+            {choicePick && (
+              <div className="flex flex-wrap items-center gap-2 border-t px-3 py-2">
+                <span className="text-[12px] font-medium">
+                  {choicePick.who === "player" ? "我方" : "敌方"} · {choicePick.name}：请选择
+                </span>
+                <Button type="button" size="sm" disabled={busy} onClick={() => commitChoice(0)}>
+                  明
+                </Button>
+                <Button type="button" size="sm" variant="outline" disabled={busy} onClick={() => commitChoice(1)}>
+                  暗
+                </Button>
+                <Button type="button" size="sm" variant="ghost" onClick={() => setChoicePick(null)}>
+                  取消
+                </Button>
               </div>
             )}
           </Panel>
