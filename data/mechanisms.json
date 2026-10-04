@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.86.0",
+  "version": "0.88.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -16964,11 +16964,11 @@
           "type": "randomizeSkill",
           "target": "self",
           "skillId": "sk-7020840",
-          "sourceFrom": "self.bench.0.loadout",
+          "sourceFrom": "team",
           "duration": 0
         }
       ],
-      "note": "借用：每回合随机变为队友技能（取场下首只）"
+      "note": "借用：每回合随机变为队友技能"
     },
     {
       "id": "skill:sk-7020850",
@@ -16997,13 +16997,21 @@
       "id": "skill:sk-7020860",
       "ownerType": "skill",
       "ownerId": "sk-7020860",
-      "trigger": "passive",
-      "when": [],
+      "trigger": "turnStart",
+      "when": [
+        {
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7020860"
+        }
+      ],
       "effects": [
         {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "复写：每回合随机变为未携带技能【待校准】"
+          "type": "randomizeSkill",
+          "target": "self",
+          "skillId": "sk-7020860",
+          "sourceFrom": "uncarried",
+          "duration": 0
         }
       ],
       "note": "复写：每回合随机变为未携带技能"
@@ -21517,30 +21525,50 @@
       "ownerType": "trait",
       "ownerId": "sp-105-1",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "石头大餐：能量不足时，消耗5%生命，代替1能量。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-105-1",
+            "sp-106-1",
+            "sp-107-1"
+          ]
         }
       ],
-      "note": "特性「石头大餐」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "cost.payWithHp",
+          "value": true
+        }
+      ],
+      "note": "特性「石头大餐」：能量不足时以 5% 生命代替 1 点能耗"
     },
     {
       "id": "trait:sp-107-2",
       "ownerType": "trait",
       "ownerId": "sp-107-2",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "盛宴：能量不足时，消耗5%最大生命，代替1能量。生命低于50%时，获得吸血100%。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-107-2"
+          ]
         }
       ],
-      "note": "特性「盛宴」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "cost.payWithHp",
+          "value": true
+        }
+      ],
+      "note": "特性「盛宴」：能量不足时以 5% 最大生命代替 1 点能耗"
     },
     {
       "id": "trait:sp-108-1",
@@ -23551,15 +23579,30 @@
       "ownerType": "trait",
       "ownerId": "sp-373-1",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "盲从：可以携带多个复写/借用/取念技能，非幻系技能能耗-2。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-373-1",
+            "sp-374-1"
+          ]
         }
       ],
-      "note": "特性「盲从」：待实现"
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "excludeElements": [
+            "Psychic"
+          ],
+          "delta": -2,
+          "duration": "permanent",
+          "key": "blind"
+        }
+      ],
+      "note": "特性「盲从」：非幻系技能能耗 −2"
     },
     {
       "id": "trait:sp-376-1",

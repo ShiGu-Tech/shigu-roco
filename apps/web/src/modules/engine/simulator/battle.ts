@@ -120,7 +120,9 @@ export class Simulator {
       if (slotMask && !(slotMask & (1 << slot))) continue;
       const skillId = loadout[slot];
       const skill = getSkill(this.bundle, skillId);
-      if (effectiveCost(state, this.bundle, who, skillId, ruleMods) <= active.energy && toNum(active.cooldowns?.[skillId], 0) <= 0) {
+      const skillCost = effectiveCost(state, this.bundle, who, skillId, ruleMods);
+      const affordable = skillCost <= active.energy || (ruleMods["cost.payWithHp"] === true && active.hp > 0);
+      if (affordable && toNum(active.cooldowns?.[skillId], 0) <= 0) {
         const name = toStr(skill.skillName, skillId);
         // 选择技（描述含「选择：」）：列出「明 / 暗」两个分支。
         if (/选择/.test(toStr(skill.description, ""))) {
@@ -622,8 +624,16 @@ export class Simulator {
   ): BattleEvent[] {
     const skill = action.skillId ? getSkill(this.bundle, action.skillId) : {};
     const caster = this.sideState(st, side).active;
-    const cost = action.skillId ? effectiveCost(st, this.bundle, side, action.skillId, this.mechanisms.ruleModifiers(st, this.bundle, side)) : Math.floor(toNum(skill.cost, 0));
-    caster.energy = Math.max(0, caster.energy - Math.max(0, cost));
+    const ruleMods = this.mechanisms.ruleModifiers(st, this.bundle, side);
+    const cost = action.skillId ? effectiveCost(st, this.bundle, side, action.skillId, ruleMods) : Math.floor(toNum(skill.cost, 0));
+    // 规则覆盖 · `cost.payWithHp`（盛宴 / 石头大餐）：能量不足时以 5% 最大生命代替 1 点能耗。
+    if (ruleMods["cost.payWithHp"] === true && cost > caster.energy) {
+      const deficit = cost - caster.energy;
+      caster.energy = 0;
+      caster.hp = Math.max(0, caster.hp - Math.round(caster.maxHp * 0.05 * deficit));
+    } else {
+      caster.energy = Math.max(0, caster.energy - Math.max(0, cost));
+    }
     // 队伍域 · 历史计数：本队累计消耗能量（供「累计消耗恰好为 N」类，如整点报时）。
     this.bump(st, side, "energySpent", Math.max(0, cost));
     // 单次（nextAction）能耗条目：本次行动结算后移除。

@@ -815,9 +815,16 @@ export class MechanismRuntime {
         case "randomizeSkill": {
           if (!active || !targetSide) break;
           const current = definition.skillId ?? active.loadout[active.loadout.length - 1];
-          const source = definition.sourceFrom
-            ? toArray<string>(resolveContextPath({ state, trigger: command.trigger, actorSide: command.actorSide, targetSide: command.targetSide, event: command.event ?? {} }, definition.sourceFrom))
-            : (definition.source ?? []);
+          const ownSide = targetSide === "player" ? state.player : state.enemy;
+          const oppSide = targetSide === "player" ? state.enemy : state.player;
+          const teamSkills = () => [...new Set([ownSide.active, ...ownSide.bench].flatMap((s) => s.loadout))];
+          const oppSkills = () => [...new Set([oppSide.active, ...oppSide.bench].flatMap((s) => s.loadout))];
+          let source: string[];
+          if (definition.sourceFrom === "uncarried") source = Object.keys(bundle?.skills ?? {}).filter((id) => !active.loadout.includes(id));
+          else if (definition.sourceFrom === "team") source = teamSkills();
+          else if (definition.sourceFrom === "opponent") source = oppSkills();
+          else if (definition.sourceFrom) source = toArray<string>(resolveContextPath({ state, trigger: command.trigger, actorSide: command.actorSide, targetSide: command.targetSide, event: command.event ?? {} }, definition.sourceFrom));
+          else source = definition.source ?? [];
           const pool = source.filter((id) => id && id !== current);
           if (!current || !pool.length) break;
           const rng = new Rng(hashSeed(state, `${command.mechanismId}:${state.turn}`));

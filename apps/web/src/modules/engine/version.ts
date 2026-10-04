@@ -149,5 +149,7 @@
  *          `cost.changeMul`（倾轧：变化幅度倍率）；`battle.ts` 各调用点传入 `ruleModifiers`。
  * - 0.53.0 增量长尾：`convertStatPolarity`（增益↔减益互转，掉包）；`healRedirect` 计数治疗改道（伪造账单，
  *          含溢出、回合末清除）；`actionDeclared` 的 `opponentAction` 补 `cost`（雪替身 / 听桥 / 冰天雪地）。
+ * - 0.54.0 增量长尾：`randomizeSkill.sourceFrom` 增具名来源 `uncarried` / `team` / `opponent`（复写 / 借用 /
+ *          取念）；规则 `cost.payWithHp`（盛宴 / 石头大餐：能量不足以 5% 最大生命代 1 点能耗，`legalActions` 同步放行）。
  */
-export const ENGINE_VERSION = "0.53.0";
+export const ENGINE_VERSION = "0.54.0";
