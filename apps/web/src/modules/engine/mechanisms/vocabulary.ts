@@ -91,7 +91,8 @@ export const EFFECT_VOCABULARY: readonly EffectVocabulary[] = [
   { type: "setDamageReduction", title: "减伤", domain: "damage", params: { target: "目标", percent: "减伤%", percentFrom: "减伤取值" } },
   { type: "heal", title: "治疗", domain: "heal", params: { target: "目标", amount: "数值", amountFrom: "数值取值", basis: "基准" } },
   // 强化
-  { type: "modifyStat", title: "属性增减益", domain: "stat", params: { target: "目标", stat: "属性", mode: "方式", value: "数值", valueFrom: "数值取值", maxStages: "层数上限" } },
+  { type: "modifyStat", title: "属性增减益", domain: "stat", params: { target: "目标", stat: "属性", statFrom: "属性取值", mode: "方式", value: "数值", valueFrom: "数值取值", maxStages: "层数上限" } },
+  { type: "copyStat", title: "复制属性", domain: "stat", params: { target: "目标", from: "来源", polarity: "极性" } },
   { type: "clearStat", title: "驱散增减益", domain: "stat", params: { target: "目标", stat: "属性", layers: "层数", polarity: "极性", limit: "种类上限" } },
   { type: "scaleStat", title: "缩放增减益层数", domain: "stat", params: { target: "目标", polarity: "极性", stat: "属性", factor: "倍率", delta: "增减" } },
   { type: "convertBuffToStatus", title: "增益转状态", domain: "stat", params: { target: "目标", statusId: "状态", factor: "倍率" } },

@@ -671,13 +671,15 @@ export class MechanismRuntime {
         }
         case "modifyStat": {
           if (!active || !targetSide) break;
+          const stat = definition.statFrom ? toStr(resolveContextPath({ state, trigger: command.trigger, actorSide: command.actorSide, targetSide: command.targetSide, event: command.event ?? {} }, definition.statFrom)) : definition.stat;
+          if (!stat) break;
           const raw = definition.valueFrom ? this.dynamicValue(state, command, definition.valueFrom, definition.value, bundle) : definition.value;
           const value = definition.mode === "percent" && Math.abs(raw) > 1 ? raw / 100 : raw;
           const bucket = value >= 0 ? active.buffs : active.debuffs;
           const cap = definition.maxStages ?? toNum(asDict(bundle?.rules.stage).cap, Number.POSITIVE_INFINITY);
-          const before = bucket[definition.stat] ?? 0;
-          bucket[definition.stat] = Math.max(-cap, Math.min(cap, before + value));
-          events.push({ type: "stat-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { stat: definition.stat, before, after: bucket[definition.stat], mode: definition.mode } });
+          const before = bucket[stat] ?? 0;
+          bucket[stat] = Math.max(-cap, Math.min(cap, before + value));
+          events.push({ type: "stat-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { stat, before, after: bucket[stat], mode: definition.mode } });
           // 增益 / 减益获得：作为领域事件再次派发（供「获得增益/减益时」类特性）。
           if (value !== 0) {
             events.push({
@@ -686,9 +688,31 @@ export class MechanismRuntime {
               mechanismId: command.mechanismId,
               effectType: definition.type,
               side: targetSide,
-              data: { stat: definition.stat, value, before, after: bucket[definition.stat], mode: definition.mode, sourceSide: command.actorSide ?? null },
+              data: { stat, value, before, after: bucket[stat], mode: definition.mode, sourceSide: command.actorSide ?? null },
             });
           }
+          break;
+        }
+        case "copyStat": {
+          if (!targetSide) break;
+          const otherSide = definition.from === "opponent" || !definition.from ? (targetSide === "player" ? "enemy" : "player") : targetSide;
+          const from = otherSide === "player" ? state.player.active : state.enemy.active;
+          const to = targetSide === "player" ? state.player.active : state.enemy.active;
+          const polarity = definition.polarity ?? "all";
+          if (polarity !== "debuff") for (const [stat, value] of Object.entries(from.buffs)) if (value > 0) to.buffs[stat] = (to.buffs[stat] ?? 0) + value;
+          if (polarity !== "buff") for (const [stat, value] of Object.entries(from.debuffs)) if (value < 0) to.debuffs[stat] = (to.debuffs[stat] ?? 0) + value;
+          events.push({ type: "stat-copied", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { from: otherSide } });
+          break;
+        }
+        case "inheritStat": {
+          if (!targetSide) break;
+          const side = targetSide === "player" ? state.player : state.enemy;
+          const old = side.bench[side.bench.length - 1];
+          if (!old) break;
+          const polarity = definition.polarity ?? "all";
+          if (polarity !== "debuff") for (const [stat, value] of Object.entries(old.buffs)) side.active.buffs[stat] = (side.active.buffs[stat] ?? 0) + value;
+          if (polarity !== "buff") for (const [stat, value] of Object.entries(old.debuffs)) side.active.debuffs[stat] = (side.active.debuffs[stat] ?? 0) + value;
+          events.push({ type: "stat-inherited", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { polarity } });
           break;
         }
         case "scaleStat": {

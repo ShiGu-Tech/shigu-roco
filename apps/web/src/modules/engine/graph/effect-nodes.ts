@@ -49,7 +49,8 @@ interface WriteSpec {
 const WRITE_NODES: WriteSpec[] = [
   { suffix: "dealDamage", title: "写入 · 造成伤害", target: "opponent", inputs: ["power"], params: [{ name: "category", type: "string", required: true }, { name: "skillId", type: "string" }, { name: "element", type: "string" }] },
   { suffix: "heal", title: "写入 · 治疗", target: "self", inputs: ["amount"], params: [{ name: "basis", type: "string" }] },
-  { suffix: "modifyStat", title: "写入 · 属性", target: "self", inputs: ["value"], params: [{ name: "stat", type: "string", required: true }, { name: "mode", type: "string" }, { name: "maxStages", type: "number" }] },
+  { suffix: "modifyStat", title: "写入 · 属性", target: "self", inputs: ["value"], params: [{ name: "stat", type: "string" }, { name: "statFrom", type: "string" }, { name: "mode", type: "string" }, { name: "maxStages", type: "number" }] },
+  { suffix: "copyStat", title: "写入 · 复制属性", target: "self", params: [{ name: "from", type: "string" }, { name: "polarity", type: "string" }] },
   { suffix: "clearStat", title: "写入 · 驱散属性", target: "self", params: [{ name: "stat", type: "string" }, { name: "polarity", type: "string" }, { name: "limit", type: "number" }] },
   { suffix: "scaleStat", title: "写入 · 缩放属性", target: "self", params: [{ name: "polarity", type: "string" }, { name: "stat", type: "string" }, { name: "factor", type: "number" }, { name: "delta", type: "number" }] },
   { suffix: "convertBuffToStatus", title: "写入 · 增益转状态", target: "opponent", params: [{ name: "statusId", type: "string", required: true }, { name: "factor", type: "number" }] },

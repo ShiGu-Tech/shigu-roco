@@ -139,5 +139,7 @@
  *          `turnEnd.extra` / `turnEnd.skip`（`step` 回合末，任一侧声明对双方生效）/ `heal.redirectToDamage`（`heal`）。
  * - 0.48.0 内容补齐第四期 D3：`ActiveSprite.carryElements`（开局注入携带系别集合）；技能 `simple` tag
  *          （`buildBundle` 派生：无额外效果的攻击技能）；规则 `simple.powerMul`（`damageModifiers` 读取）。
+ * - 0.49.0 内容补齐第四期 D4：`modifyStat.statFrom`（属性名取自上下文）；`copyStat`（复制对方增益 / 减益）；
+ *          `inheritStat` 作为普通效果（`afterSwitch` 时把场下末位精灵的强化复制给换入精灵）。
  */
-export const ENGINE_VERSION = "0.48.0";
+export const ENGINE_VERSION = "0.49.0";

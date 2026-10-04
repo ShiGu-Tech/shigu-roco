@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.81.0",
+  "version": "0.82.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -21349,31 +21349,49 @@
       "id": "trait:sp-88-1",
       "ownerType": "trait",
       "ownerId": "sp-88-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "afterSwitch",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "洁癖：离场后，自己的增益和减益会被更换入场的精灵继承。【待校准】"
+          "path": "event.from",
+          "op": "in",
+          "value": [
+            "sp-88-1",
+            "sp-89-1",
+            "sp-90-1"
+          ]
         }
       ],
-      "note": "特性「洁癖」：待实现"
+      "effects": [
+        {
+          "type": "inheritStat",
+          "target": "self",
+          "polarity": "all"
+        }
+      ],
+      "note": "特性「洁癖」：离场后增益 / 减益由换入精灵继承"
     },
     {
       "id": "trait:sp-91-1",
       "ownerType": "trait",
       "ownerId": "sp-91-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "afterSwitch",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "孤傲：敌方精灵离场后，其增益和减益会被更换入场的精灵继承。【待校准】"
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-91-1"
+          ]
         }
       ],
-      "note": "特性「孤傲」：待实现"
+      "effects": [
+        {
+          "type": "inheritStat",
+          "target": "self",
+          "polarity": "all"
+        }
+      ],
+      "note": "特性「孤傲」：敌方精灵离场后其增益 / 减益由换入精灵继承"
     },
     {
       "id": "trait:sp-92-1",
@@ -21580,31 +21598,63 @@
       "id": "trait:sp-118-1",
       "ownerType": "trait",
       "ownerId": "sp-118-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "共鸣：携带的「虫鸣」技能威力+20。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-118-1",
+            "sp-118-2",
+            "sp-119-1",
+            "sp-119-2",
+            "sp-120-1",
+            "sp-120-2"
+          ]
+        },
+        {
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7130160"
         }
       ],
-      "note": "特性「共鸣」：待实现"
+      "effects": [
+        {
+          "type": "addPower",
+          "target": "self",
+          "value": 20
+        }
+      ],
+      "note": "特性「共鸣」：携带的「虫鸣」技能威力 +20"
     },
     {
       "id": "trait:sp-120-3",
       "ownerType": "trait",
       "ownerId": "sp-120-3",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "齐鸣：自己携带的「虫鸣」技能威力+20，己方精灵携带的虫系技能获得巧变：虫鸣。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-120-3",
+            "sp-120-4"
+          ]
+        },
+        {
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7130160"
         }
       ],
-      "note": "特性「齐鸣」：待实现"
+      "effects": [
+        {
+          "type": "addPower",
+          "target": "self",
+          "value": 20
+        }
+      ],
+      "note": "特性「齐鸣」：虫鸣威力 +20（队友巧变：虫鸣略）"
     },
     {
       "id": "trait:sp-121-1",
@@ -21819,16 +21869,29 @@
       "id": "trait:sp-162-1",
       "ownerType": "trait",
       "ownerId": "sp-162-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "buffGained",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "衡量：入场时，复制敌方的增益。在场时，若敌方获得增益自己也会获得。【待校准】"
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-162-1"
+          ]
         }
       ],
-      "note": "特性「衡量」：待实现"
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "target",
+          "stat": "",
+          "statFrom": "event.stat",
+          "mode": "flat",
+          "value": 0,
+          "valueFrom": "event.value"
+        }
+      ],
+      "note": "特性「衡量」：在场时敌方获得增益自己也获得",
+      "oncePerTurn": true
     },
     {
       "id": "trait:sp-163-1",
@@ -22103,16 +22166,30 @@
       "id": "trait:sp-195-1",
       "ownerType": "trait",
       "ownerId": "sp-195-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "buffGained",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "营养液泡：获得增益时，额外获得层数+2。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-195-1",
+            "sp-196-1",
+            "sp-197-1"
+          ]
         }
       ],
-      "note": "特性「营养液泡」：待实现"
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "",
+          "statFrom": "event.stat",
+          "mode": "flat",
+          "value": 0.2
+        }
+      ],
+      "note": "特性「营养液泡」：获得增益时额外获得 2 层",
+      "oncePerTurn": true
     },
     {
       "id": "trait:sp-203-1",
@@ -22763,16 +22840,29 @@
       "id": "trait:sp-291-1",
       "ownerType": "trait",
       "ownerId": "sp-291-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "侵蚀：敌方每有1层中毒效果，自己获得连击数+1。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-291-1",
+            "sp-292-1"
+          ]
         }
       ],
-      "note": "特性「侵蚀」：待实现"
+      "effects": [
+        {
+          "type": "setCounter",
+          "target": "self",
+          "key": "combo-add",
+          "valueFrom": {
+            "path": "target.active.statuses.poison",
+            "scale": 1
+          }
+        }
+      ],
+      "note": "特性「侵蚀」：敌方每有 1 层中毒，连击数 +1"
     },
     {
       "id": "trait:sp-299-1",
@@ -24123,6 +24213,30 @@
         }
       ],
       "note": "特性「草木苏醒时」：攻击后重置双攻加成"
+    },
+    {
+      "id": "trait:sp-162-1#2",
+      "ownerType": "trait",
+      "ownerId": "sp-162-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-162-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "copyStat",
+          "target": "self",
+          "from": "opponent",
+          "polarity": "buff"
+        }
+      ],
+      "note": "特性「衡量」：入场时复制敌方增益"
     }
   ]
 }
