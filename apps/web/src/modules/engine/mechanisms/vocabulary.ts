@@ -72,6 +72,8 @@ export const TRIGGER_VOCABULARY: readonly TriggerMeta[] = [
   { name: "skillCooldownReduced", title: "冷却减少", phase: "other" },
   { name: "energyGained", title: "获得能量", phase: "entity" },
   { name: "charged", title: "进入蓄力", phase: "action" },
+  { name: "heal", title: "治疗结算", phase: "damage" },
+  { name: "statusDamage", title: "状态伤害", phase: "damage" },
   { name: "passive", title: "被动常驻", phase: "other" },
 ] as const;
 

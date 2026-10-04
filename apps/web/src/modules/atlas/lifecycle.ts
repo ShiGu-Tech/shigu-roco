@@ -19,7 +19,7 @@ export const ATLAS_STAGES: readonly AtlasStage[] = [
   { id: "switch", title: "换人", note: "换出 → 入场 → 换入完成", triggers: ["beforeSwitch", "onEntry", "afterSwitch"] },
   { id: "declare", title: "行动宣告与排序", note: "扩展层可修改行动队列", triggers: ["actionDeclared"] },
   { id: "resolve", title: "行动结算", note: "队列按优先级 / 速度逐条", triggers: ["beforeAction", "skillUsed", "actionResolved", "charged"] },
-  { id: "damage", title: "伤害结算", note: "技能伤害链", triggers: ["beforeDamage", "onHit", "afterDamage"] },
+  { id: "damage", title: "伤害结算", note: "技能伤害链", triggers: ["beforeDamage", "onHit", "afterDamage", "heal", "statusDamage"] },
   { id: "turn-end", title: "回合结束", note: "按侧结算 + 延迟效果（turnEnd）+ 环境衰减", triggers: ["turnEnd"] },
   { id: "death", title: "阵亡", note: "生命归零后", triggers: ["beforeFatal", "beforeDeath", "afterDeath"] },
   { id: "cascade", title: "实体级联", note: "任意效果之后随时派发", triggers: ["statusApplied", "statusReached", "markApplied", "markReached", "buffGained", "debuffGained", "energyGained"] },

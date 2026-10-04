@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.78.0",
+  "version": "0.79.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -21283,16 +21283,30 @@
       "id": "trait:sp-85-1",
       "ownerType": "trait",
       "ownerId": "sp-85-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "嫁祸：自己每失去25%生命，连击数+2。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-85-1",
+            "sp-86-1",
+            "sp-87-1"
+          ]
         }
       ],
-      "note": "特性「嫁祸」：待实现"
+      "effects": [
+        {
+          "type": "setCounter",
+          "target": "self",
+          "key": "combo-add",
+          "valueFrom": {
+            "path": "self.counters.hpLostQuarters",
+            "scale": 2
+          }
+        }
+      ],
+      "note": "特性「嫁祸」：自己每失去 25% 生命，连击数 +2"
     },
     {
       "id": "trait:sp-88-1",
@@ -21903,16 +21917,33 @@
       "id": "trait:sp-185-1",
       "ownerType": "trait",
       "ownerId": "sp-185-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "守护者：己方其他精灵每有1层萌化，自己入场时全技能能耗-1。【待校准】"
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-185-1",
+            "sp-186-1",
+            "sp-187-1"
+          ]
         }
       ],
-      "note": "特性「守护者」：待实现"
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": 0,
+          "deltaFrom": {
+            "path": "self.counters.teamMoe",
+            "scale": -1
+          },
+          "duration": "permanent",
+          "key": "guardian"
+        }
+      ],
+      "note": "特性「守护者」：己方每有 1 层萌化，入场时全技能能耗 −1"
     },
     {
       "id": "trait:sp-188-1",
@@ -22277,31 +22308,69 @@
       "id": "trait:sp-237-1",
       "ownerType": "trait",
       "ownerId": "sp-237-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "statusDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "耐活王：敌方受到中毒效果伤害时，自己回复等量生命。【待校准】"
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-237-1",
+            "sp-237-2",
+            "sp-238-1",
+            "sp-238-2"
+          ]
+        },
+        {
+          "path": "event.ownerId",
+          "op": "eq",
+          "value": "poison"
         }
       ],
-      "note": "特性「耐活王」：待实现"
+      "effects": [
+        {
+          "type": "heal",
+          "target": "target",
+          "amount": 0,
+          "amountFrom": {
+            "path": "event.value",
+            "round": "none"
+          }
+        }
+      ],
+      "note": "特性「耐活王」：敌方受到中毒伤害时，自己回复等量生命"
     },
     {
       "id": "trait:sp-238-3",
       "ownerType": "trait",
       "ownerId": "sp-238-3",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "statusDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "月相：敌方受到中毒效果伤害时，自己回复等量生命。每过量回复10%生命敌方获得1层中毒。【待校准】"
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-238-3",
+            "sp-238-4"
+          ]
+        },
+        {
+          "path": "event.ownerId",
+          "op": "eq",
+          "value": "poison"
         }
       ],
-      "note": "特性「月相」：待实现"
+      "effects": [
+        {
+          "type": "heal",
+          "target": "target",
+          "amount": 0,
+          "amountFrom": {
+            "path": "event.value",
+            "round": "none"
+          }
+        }
+      ],
+      "note": "特性「月相」：敌方受到中毒伤害时回复等量生命（过量转中毒略）"
     },
     {
       "id": "trait:sp-239-1",
@@ -22427,16 +22496,35 @@
       "id": "trait:sp-255-1",
       "ownerType": "trait",
       "ownerId": "sp-255-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "statusDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "仁心：敌方受到灼烧伤害时，自己回复等量生命。【待校准】"
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-255-1",
+            "sp-256-1",
+            "sp-257-1"
+          ]
+        },
+        {
+          "path": "event.ownerId",
+          "op": "eq",
+          "value": "burn"
         }
       ],
-      "note": "特性「仁心」：待实现"
+      "effects": [
+        {
+          "type": "heal",
+          "target": "target",
+          "amount": 0,
+          "amountFrom": {
+            "path": "event.value",
+            "round": "none"
+          }
+        }
+      ],
+      "note": "特性「仁心」：敌方受到灼烧伤害时，自己回复等量生命"
     },
     {
       "id": "trait:sp-261-1",
@@ -23549,31 +23637,57 @@
       "id": "trait:sp-418-1",
       "ownerType": "trait",
       "ownerId": "sp-418-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "守护之心：双方场上每有1种不同的增益，自己获得物防+20%。【待校准】"
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-418-1",
+            "sp-419-1"
+          ]
         }
       ],
-      "note": "特性「守护之心」：待实现"
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 0,
+          "percentFrom": {
+            "path": "target.counters.fieldBuffKinds",
+            "scale": 20
+          }
+        }
+      ],
+      "note": "特性「守护之心」：双方场上每有 1 种不同增益，自己物防 +20%（近似为减伤）"
     },
     {
       "id": "trait:sp-420-1",
       "ownerType": "trait",
       "ownerId": "sp-420-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "和弦共振：双方场上每有1种不同的印记，自己获得魔攻+50%。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-420-1",
+            "sp-421-1"
+          ]
         }
       ],
-      "note": "特性「和弦共振」：待实现"
+      "effects": [
+        {
+          "type": "addPower",
+          "target": "self",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.fieldMarkKinds",
+            "scale": 50
+          }
+        }
+      ],
+      "note": "特性「和弦共振」：双方场上每有 1 种不同印记，魔攻 +50%（近似为固定 +50 威力/种）"
     },
     {
       "id": "trait:sp-422-1",

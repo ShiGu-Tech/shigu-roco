@@ -797,6 +797,8 @@ export class MechanismRuntime {
           : event.type === "debuff-gained" ? ["debuffGained"]
           : event.type === "energy-modified" && toNum(event.data.delta, 0) > 0 ? ["energyGained"]
           : event.type === "skill-charged" ? ["charged"]
+          : event.type === "healed" ? ["heal"]
+          : event.type === "damage" && event.data.ownerType === "status" ? ["statusDamage"]
           : [];
         if (!triggers.length) continue;
         const actorSide = event.side;
@@ -860,7 +862,10 @@ export class MechanismRuntime {
       target.hp = Math.max(0, target.hp - damage);
       const targetState = targetSide === "player" ? state.player : state.enemy;
       targetState.lastHit = { side: attackerSide, skillId: definition.skillId };
-      events.push({ type: "damage", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { value: damage, attackerSide, skillId: definition.skillId, damageType: definition.category, effectiveness, modifiers, breakdown } });
+      // 队伍域 · 已失去生命（按 25% 分段，供「每失去 25% 生命」类，如嫁祸）。
+      targetState.counters ??= {};
+      targetState.counters.hpLostQuarters = Math.floor(((target.maxHp - target.hp) / Math.max(1, target.maxHp)) * 4);
+      events.push({ type: "damage", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { value: damage, attackerSide, skillId: definition.skillId, damageType: definition.category, effectiveness, modifiers, breakdown, ownerType: command.ownerType ?? null, ownerId: command.ownerId ?? null } });
       // 吸血：攻击方 counters["lifesteal"]（比例）按本次伤害回复自身生命。
       const attackerState = attackerSide === "player" ? state.player : state.enemy;
       const lifesteal = toNum(attackerState.active.counters?.lifesteal, 0) + toNum(attackerState.active.counters?.["ded-lifesteal"], 0);
@@ -869,6 +874,12 @@ export class MechanismRuntime {
         const before = attackerState.active.hp;
         attackerState.active.hp = Math.min(attackerState.active.maxHp, attackerState.active.hp + Math.floor(damage * lifesteal));
         events.push({ type: "lifesteal", trigger: command.trigger, mechanismId: command.mechanismId, effectType: "lifesteal", side: attackerSide, data: { value: attackerState.active.hp - before, damage } });
+      }
+      // 状态域 · 状态 DoT 伤害 → 派发 `statusDamage`（供「敌方受中毒/灼烧伤害时」类，如耐活王 / 月相 / 仁心）。
+      if (command.ownerType === "status" && damage > 0) {
+        const other: Side = targetSide === "player" ? "enemy" : "player";
+        const statusCommands = this.dispatch({ state, trigger: "statusDamage", actorSide: targetSide, targetSide: other, event: { value: damage, ownerId: command.ownerId ?? null, sourceSide: attackerSide } });
+        events.push(...this.applyStateCommands(state, statusCommands, bundle));
       }
     }
     return events;

@@ -41,6 +41,30 @@ export class Simulator {
     s.counters[key] = toNum(s.counters[key], 0) + delta;
   }
 
+  /** 队伍/全场域 · 派生计数刷新：`teamMoe`（队伍萌化合计）、`fieldMarkKinds` / `fieldBuffKinds`（双方场上印记 / 增益种类）。
+   *  在这些值变化后调用（回合开始 / 换人 / 行动段结束）。 */
+  private refreshDerivedCounters(st: BattleState): void {
+    for (const side of SIDES) {
+      const s = this.sideState(st, side);
+      s.counters ??= {};
+      let moe = 0;
+      for (const sprite of [s.active, ...s.bench]) moe += toNum(sprite.statuses.moe, 0);
+      s.counters.teamMoe = moe;
+    }
+    const markKinds = new Set<string>();
+    const buffKinds = new Set<string>();
+    for (const side of SIDES) {
+      const a = this.sideState(st, side).active;
+      for (const [k, v] of Object.entries(a.marks)) if (toNum(v, 0) > 0) markKinds.add(k);
+      for (const [k, v] of Object.entries(a.buffs)) if (toNum(v, 0) > 0) buffKinds.add(k);
+    }
+    for (const side of SIDES) {
+      const c = this.sideState(st, side).counters!;
+      c.fieldMarkKinds = markKinds.size;
+      c.fieldBuffKinds = buffKinds.size;
+    }
+  }
+
   /** 队伍域 · 开局按图鉴预计算：队伍各系只数 `team<Element>`、携带各系技能数 `loadout<Element>`、
    *  携带技能总能耗 `loadoutCost`、携带系别种数 `loadoutElements`。 */
   private seedSideCounters(st: BattleState, side: Side): void {
@@ -166,6 +190,7 @@ export class Simulator {
       events.push(...this.mechanisms.applyStateCommands(st, turnStartCommands, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
     }
     events.push(...this.runPendingEffects(st, "turnStart"));
+    this.refreshDerivedCounters(st);
 
     // ① 洛克魔法阶段（愿力）
     for (const side of SIDES) {
@@ -307,6 +332,9 @@ export class Simulator {
       });
       events.push(...this.mechanisms.applyStateCommands(st, afterCommands, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
     });
+
+    // 行动段结束：刷新派生计数（供回合末 / 下文读取）。
+    this.refreshDerivedCounters(st);
 
     // ④ 结算阶段：按侧状态 / 印记结算（DoT、衰减）→ 环境衰减 → 阵亡
     for (const side of SIDES) {
@@ -540,6 +568,7 @@ export class Simulator {
     events.push(...this.triggerState(st, "afterSwitch", { actorSide: side, targetSide: otherSide(side), action: { kind: "switch", benchId }, event: { from: old.spriteId, to: target.spriteId, forced } }));
     // 队伍域 · 历史计数：本方换人次数（供「敌方每更换 1 次」类）。
     this.bump(st, side, "switches");
+    this.refreshDerivedCounters(st);
     return events;
   }
 

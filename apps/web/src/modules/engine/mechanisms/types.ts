@@ -32,7 +32,9 @@ export type TriggerName =
   | "weatherChanged"
   | "skillCooldownReduced"
   | "energyGained"
-  | "charged";
+  | "charged"
+  | "heal"
+  | "statusDamage";
 
 export type MechanismOwnerType = "skill" | "trait" | "status" | "mark" | "weather" | "system";
 

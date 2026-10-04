@@ -132,5 +132,8 @@
  * - 0.45.0 长尾能力：`randomizeSkill.sourceFrom`（候选池改为上下文点路径，如 `opponent.active.loadout`）；
  *          触发器 `energyGained`（`energy-modified` 增益级联 + 聚能派发）/ `charged`（`skill-charged` 级联）；
  *          计数 `bothFaints` / `usedElementKinds`（不同系别种数）；规则 `energy.noCap`（聚能不设上限）。
+ * - 0.46.0 内容补齐第四期 D1：触发器 `heal`（`healed` 级联）/ `statusDamage`（`applyDamageCommands` 中
+ *          状态来源 `dealDamage` 派发）；伤害事件带 `ownerType` / `ownerId`；派生计数 `hpLostQuarters`
+ *          （受伤段）/ `teamMoe` / `fieldMarkKinds` / `fieldBuffKinds`（`refreshDerivedCounters`）。
  */
-export const ENGINE_VERSION = "0.45.0";
+export const ENGINE_VERSION = "0.46.0";
