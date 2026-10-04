@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.38.0",
+  "version": "0.39.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -14738,6 +14738,183 @@
         }
       ],
       "note": "电离爆破：2 连击待校准"
+    },
+    {
+      "id": "skill:sk-7140140",
+      "ownerType": "skill",
+      "ownerId": "sk-7140140",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7140140"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "power-7140140",
+          "delta": 1
+        }
+      ],
+      "note": "化劲：获得全技能威力 +40（永久，计数器）"
+    },
+    {
+      "id": "skill:sk-7140140:bonus",
+      "ownerType": "skill",
+      "ownerId": "sk-7140140",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.active.counters.power-7140140",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "addPower",
+          "value": 40
+        }
+      ],
+      "note": "化劲：全技能威力 +40"
+    },
+    {
+      "id": "skill:sk-7140280",
+      "ownerType": "skill",
+      "ownerId": "sk-7140280",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7140280"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "power-7140280",
+          "delta": 1
+        }
+      ],
+      "note": "提气：获得全技能威力 +40（永久，计数器）"
+    },
+    {
+      "id": "skill:sk-7140280:bonus",
+      "ownerType": "skill",
+      "ownerId": "sk-7140280",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.active.counters.power-7140280",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "addPower",
+          "value": 40
+        }
+      ],
+      "note": "提气：全技能威力 +40"
+    },
+    {
+      "id": "skill:sk-7140280:power-7140280-switch",
+      "ownerType": "skill",
+      "ownerId": "sk-7140280",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7140280"
+            },
+            {
+              "path": "opponent.switchedThisTurn",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "power-7140280-switch",
+          "delta": 1
+        }
+      ],
+      "note": "提气：额外全技能威力 +50"
+    },
+    {
+      "id": "skill:sk-7140280:power-7140280-switch:bonus",
+      "ownerType": "skill",
+      "ownerId": "sk-7140280",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.active.counters.power-7140280-switch",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "addPower",
+          "value": 50
+        }
+      ],
+      "note": "提气：额外全技能威力 +50"
+    },
+    {
+      "id": "skill:sk-7150370",
+      "ownerType": "skill",
+      "ownerId": "sk-7150370",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7150370"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "power-7150370",
+          "delta": 1
+        }
+      ],
+      "note": "超声波：获得全技能威力 +20（永久，计数器）"
+    },
+    {
+      "id": "skill:sk-7150370:bonus",
+      "ownerType": "skill",
+      "ownerId": "sk-7150370",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.active.counters.power-7150370",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "addPower",
+          "value": 20
+        }
+      ],
+      "note": "超声波：全技能威力 +20"
     }
   ]
 }
