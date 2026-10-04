@@ -176,5 +176,6 @@
  *          （回满能量）。
  * - 0.64.0 迅捷族续：`quick.first`（起飞加速 / 相争：本场首次使用技能永久迅捷，模拟器记 `firstQuick.<skill>`）+
  *          `quick.sharedWing`（飓风：队友翼系携带相同技能 → 迅捷）。
+ * - 0.65.0 印记规则：`mark.consumeHalf`（守望星：触发星陨印记仅消耗一半层数，`consumed` 仍按满层结算伤害）。
  */
-export const ENGINE_VERSION = "0.64.0";
+export const ENGINE_VERSION = "0.65.0";

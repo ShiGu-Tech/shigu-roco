@@ -526,13 +526,21 @@ export class MechanismRuntime {
         case "consumeMark": {
           if (!active || !targetSide) break;
           const ids = definition.markId ? [definition.markId] : this.allMarkIds(state, targetSide);
+          // 规则覆盖 · `mark.consumeHalf`（守望星）：消耗一半层数，但 `consumed` 仍按满层结算。
+          const halfConsume = this.ruleModifiers(state, bundle, command.actorSide ?? null)["mark.consumeHalf"] === true;
           let total = 0;
           for (const markId of ids) {
             const { store } = this.markStore(state, bundle, targetSide, markId, definition.scope);
             const layers = store[markId] ?? 0;
             if (layers <= 0) continue;
             total += layers;
-            delete store[markId];
+            if (halfConsume) {
+              const keep = layers - Math.ceil(layers / 2);
+              if (keep > 0) store[markId] = keep;
+              else delete store[markId];
+            } else {
+              delete store[markId];
+            }
           }
           // 嵌套效果沿用「施法者视角」：self = 施法方，target/opponent = 施法方的对手；event 暴露 `consumed`。
           const opposite: Side | undefined = command.actorSide === "player" ? "enemy" : command.actorSide === "enemy" ? "player" : command.targetSide;

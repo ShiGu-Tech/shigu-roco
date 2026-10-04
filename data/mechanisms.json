@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.102.0",
+  "version": "0.104.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -20782,16 +20782,34 @@
       "id": "trait:sp-52-1",
       "ownerType": "trait",
       "ownerId": "sp-52-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "turnEnd",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "复方汤剂：在场时，双方回合结束时的中毒效果会额外触发1次。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-52-1",
+            "sp-53-1"
+          ]
+        },
+        {
+          "path": "self.active.statuses.poison",
+          "op": "gte",
+          "value": 1
         }
       ],
-      "note": "特性「复方汤剂」：待实现"
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "self",
+          "category": "Passive",
+          "power": 0,
+          "basis": "maxHp",
+          "amount": 0.03,
+          "element": "Poison"
+        }
+      ],
+      "note": "特性「复方汤剂」：在场时双方中毒额外触发 1 次（自身）"
     },
     {
       "id": "trait:sp-54-1",
@@ -23552,15 +23570,26 @@
       "ownerType": "trait",
       "ownerId": "sp-345-1",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "守望星：触发星陨印记时仅消耗一半层数，仍造成满层伤害。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-345-1",
+            "sp-346-1",
+            "sp-347-1"
+          ]
         }
       ],
-      "note": "特性「守望星」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "mark.consumeHalf",
+          "value": true
+        }
+      ],
+      "note": "特性「守望星」：触发星陨印记时仅消耗一半层数，仍按满层结算伤害"
     },
     {
       "id": "trait:sp-348-1",
@@ -23581,16 +23610,38 @@
       "id": "trait:sp-351-1",
       "ownerType": "trait",
       "ownerId": "sp-351-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "展翅：在场时，自己携带的普通系技能变为翼系技能，若后于敌方行动，自己受到的伤害+25%。【待校准】"
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-351-1",
+            "sp-352-1",
+            "sp-353-1"
+          ]
+        },
+        {
+          "path": "event.wentFirst",
+          "op": "eq",
+          "value": true
         }
       ],
-      "note": "特性「展翅」：待实现"
+      "effects": [
+        {
+          "type": "modifyDamage",
+          "target": "self",
+          "mode": "add",
+          "value": 0.25,
+          "scope": "incoming"
+        },
+        {
+          "type": "unsupported",
+          "effectType": "elementChange",
+          "reason": "普通系技能变翼系 待实现【待校准】"
+        }
+      ],
+      "note": "特性「展翅」：后于敌方行动时受伤 +25%（普通→翼系待实现）"
     },
     {
       "id": "trait:sp-354-1",
@@ -25443,6 +25494,39 @@
         }
       ],
       "note": "特性「飓风」：被击败时额外损失 1 点魔力"
+    },
+    {
+      "id": "trait:sp-52-1#foe",
+      "ownerType": "trait",
+      "ownerId": "sp-52-1",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-52-1",
+            "sp-53-1"
+          ]
+        },
+        {
+          "path": "opponent.active.statuses.poison",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "opponent",
+          "category": "Passive",
+          "power": 0,
+          "basis": "maxHp",
+          "amount": 0.03,
+          "element": "Poison"
+        }
+      ],
+      "note": "特性「复方汤剂」：在场时双方中毒额外触发 1 次（敌方）"
     }
   ]
 }
