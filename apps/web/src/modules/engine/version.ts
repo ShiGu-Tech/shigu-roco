@@ -160,5 +160,8 @@
  * - 0.58.0 萌化退化（D8）：图鉴精灵携带 `prev`（上一阶形态 id，`NORMALIZER_VERSION` n7→n8）；`applyStatus` 首次
  *          获得 `moe` → 换成 `prev` 并 `applyProfile` 重算 maxHp / hp 比例；`effectiveStat` 增加永久平铺加成
  *          `counters.flat-<stat>`（供「示弱」永久速度）。
+ * - 0.59.0 迅捷（术语 1005，D6）：主动换人入场后，把换入精灵第一个能量足够且带 `quick` tag 的技能作为额外行动
+ *          入队（照常拼速 + 参与 `actionDeclared` 应对判定）；技能 tag 派生抽为 `deriveSkillTags` 并在服务端装配注册
+ *          图鉴后补跑（注册图鉴本身不含 tag）。
  */
-export const ENGINE_VERSION = "0.58.0";
+export const ENGINE_VERSION = "0.59.0";

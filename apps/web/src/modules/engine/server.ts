@@ -5,7 +5,7 @@
  * 不做静态兜底。
  */
 
-import { DataError } from "./data";
+import { DataError, deriveSkillTags } from "./data";
 import { loadData } from "./data-node";
 import { getActiveCatalog } from "./catalog";
 import { toArray } from "./types";
@@ -45,10 +45,12 @@ export function getBundle(force = false): DataBundle {
         when: [{ path: "event.action.skillId", op: "eq", value: String(skill.id) }],
         effects: [{ type: "dealDamage", target: "target", category: String(skill.category), power: Number(skill.power), skillId: String(skill.id) }],
       }));
+    const skillsById = Object.fromEntries(registered.skills.map((skill) => [String(skill.id), skill])) as Record<string, Dict>;
+    deriveSkillTags(skillsById);
     cached = {
       ...base,
       sprites: Object.fromEntries(registered.sprites.map((sprite) => [String(sprite.id), sprite])),
-      skills: Object.fromEntries(registered.skills.map((skill) => [String(skill.id), skill])),
+      skills: skillsById,
       statuses: Object.fromEntries(registered.statuses.map((item) => [String(item.id), item])),
       marks: Object.fromEntries(registered.marks.map((mark) => [String(mark.id), mark])),
       weather: Object.fromEntries(registered.weather.map((item) => [String(item.id), item])),

@@ -252,6 +252,19 @@ export class Simulator {
       this.sideState(st, side).switchedThisTurn = true;
       logs.push(`switch: ${side} -> ${actions[side].benchId ?? ""}`);
     }
+    // 迅捷（术语 1005）：主动换人入场 → 立刻使用第一个能量足够、带「迅捷」tag 的技能（照常入队拼速）。
+    const quickActions: Partial<Record<Side, Action>> = {};
+    for (const side of switchSides) {
+      const active = this.sideState(st, side).active;
+      const ruleMods = this.mechanisms.ruleModifiers(st, this.bundle, side);
+      for (const skillId of active.loadout) {
+        const skill = getSkill(this.bundle, skillId);
+        if (!toArray<string>(skill.tags).includes("quick")) continue;
+        if (effectiveCost(st, this.bundle, side, skillId, ruleMods) > active.energy) continue;
+        quickActions[side] = { kind: "skill", skillId, label: "迅捷" };
+        break;
+      }
+    }
 
     // ③ 精灵技能阶段（含聚能）：先发布 actionDeclared，再由扩展层修改行动队列。
     const queue = new ActionQueue();
@@ -282,10 +295,20 @@ export class Simulator {
       const priority = reactedBySide[side] ? basePriority + 100 : basePriority;
       queue.enqueue({ id: actionIds[side], actorSide: side, action: actions[side], declaredAt: index, priority, speedSnapshot: speed, status: "queued" });
     });
-    for (const side of actorSides) {
+    const quickSides = SIDES.filter((s) => quickActions[s]);
+    const declaredActions: { side: Side; action: Action; id: string }[] = actorSides.map((side) => ({ side, action: actions[side], id: actionIds[side] }));
+    for (const [i, side] of quickSides.entries()) {
+      const action = quickActions[side]!;
+      reactedBySide[side] = this.reactSuccess(action.skillId, actions[otherSide(side)]);
+      const [basePriority, speed] = this.orderKey(st, side, action);
+      const id = `action-${st.turn}-quick-${side}`;
+      declaredActions.push({ side, action, id });
+      queue.enqueue({ id, actorSide: side, action, declaredAt: actorSides.length + i, priority: reactedBySide[side] ? basePriority + 100 : basePriority, speedSnapshot: speed, status: "queued" });
+    }
+    for (const { side, action, id } of declaredActions) {
       const opponentAction = actions[otherSide(side)];
       const opponentSkill = opponentAction.kind === "skill" && opponentAction.skillId ? getSkill(this.bundle, opponentAction.skillId) : {};
-      const declaredView = this.actionView(st, side, actions[side]);
+      const declaredView = this.actionView(st, side, action);
       const commands = this.mechanisms.dispatch({
         state: st,
         trigger: "actionDeclared",
@@ -294,13 +317,13 @@ export class Simulator {
         action: declaredView,
         event: {
           action: declaredView,
-          actionId: actionIds[side],
-          reaction: this.reactionOf(actions[side].skillId),
+          actionId: id,
+          reaction: this.reactionOf(action.skillId),
           reacted: reactedBySide[side] === true,
           opponentAction: { kind: opponentAction.kind, skillId: opponentAction.skillId, actionType: toStr(opponentSkill.actionType), category: toStr(opponentSkill.category), cost: opponentAction.skillId ? effectiveCost(st, this.bundle, otherSide(side), opponentAction.skillId, this.mechanisms.ruleModifiers(st, this.bundle, otherSide(side))) : 0 },
         },
       });
-      const mechanismEvents = this.mechanisms.applyActionCommands(queue, commands, actionIds, () => `action-${st.turn}-extra-${queue.all().length}`);
+      const mechanismEvents = this.mechanisms.applyActionCommands(queue, commands, { ...actionIds, [side]: id }, () => `action-${st.turn}-extra-${queue.all().length}`);
       events.push(...mechanismEvents.map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
       const stateEvents = this.mechanisms.applyStateCommands(st, commands, this.bundle);
       events.push(...stateEvents.map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
