@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.55.0",
+  "version": "0.57.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -18639,6 +18639,467 @@
         }
       ],
       "note": "特性「扫拖一体」"
+    },
+    {
+      "id": "trait:sp-229-1",
+      "ownerType": "trait",
+      "ownerId": "sp-229-1",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-229-1",
+            "sp-230-1"
+          ]
+        },
+        {
+          "path": "action.slot",
+          "op": "in",
+          "value": [
+            1,
+            2
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "addPower",
+          "value": 30
+        }
+      ],
+      "note": "特性「向心力」：1/2 号位威力 +30（传动待校准）"
+    },
+    {
+      "id": "trait:sp-332-1",
+      "ownerType": "trait",
+      "ownerId": "sp-332-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-332-1",
+            "sp-333-1",
+            "sp-334-1"
+          ]
+        },
+        {
+          "path": "action.slot",
+          "op": "in",
+          "value": [
+            1
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "burn",
+          "layers": 6,
+          "immuneElements": [
+            "Fire"
+          ]
+        }
+      ],
+      "note": "特性「贪心算法」：1 号位使用后敌方 6 层灼烧（传动待校准）"
+    },
+    {
+      "id": "trait:sp-263-1",
+      "ownerType": "trait",
+      "ownerId": "sp-263-1",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-263-1",
+            "sp-264-1",
+            "sp-265-1"
+          ]
+        },
+        {
+          "path": "action.slot",
+          "op": "in",
+          "value": [
+            4
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -4,
+          "mode": "add",
+          "duration": "nextAction"
+        }
+      ],
+      "note": "特性「盲拧」：4 号位能耗 −4（打乱顺序待校准）"
+    },
+    {
+      "id": "trait:sp-446-1",
+      "ownerType": "trait",
+      "ownerId": "sp-446-1",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-446-1",
+            "sp-447-1",
+            "sp-448-1"
+          ]
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Ice"
+        },
+        {
+          "anyOf": [
+            {
+              "path": "self.lastTurn.element",
+              "op": "eq",
+              "value": "Wing"
+            },
+            {
+              "path": "opponent.lastTurn.element",
+              "op": "eq",
+              "value": "Wing"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyDamage",
+          "mode": "multiply",
+          "value": 2,
+          "scope": "outgoing"
+        }
+      ],
+      "note": "特性「冷光源」"
+    },
+    {
+      "id": "trait:sp-449-1",
+      "ownerType": "trait",
+      "ownerId": "sp-449-1",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-449-1",
+            "sp-450-1",
+            "sp-451-1"
+          ]
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Insect"
+        },
+        {
+          "anyOf": [
+            {
+              "path": "self.lastTurn.element",
+              "op": "eq",
+              "value": "Fire"
+            },
+            {
+              "path": "opponent.lastTurn.element",
+              "op": "eq",
+              "value": "Fire"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyDamage",
+          "mode": "multiply",
+          "value": 2,
+          "scope": "outgoing"
+        }
+      ],
+      "note": "特性「热成像」"
+    },
+    {
+      "id": "trait:sp-258-1",
+      "ownerType": "trait",
+      "ownerId": "sp-258-1",
+      "trigger": "afterDeath",
+      "when": [
+        {
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-258-1",
+            "sp-258-2",
+            "sp-259-1",
+            "sp-259-2",
+            "sp-260-1",
+            "sp-260-2"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "opponent",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 50
+        },
+        {
+          "type": "modifyStat",
+          "target": "opponent",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 50
+        }
+      ],
+      "note": "特性「恶魔的晚宴」：主动击败（killer=target 侧）永久双攻 +50%"
+    },
+    {
+      "id": "trait:sp-159-1#2",
+      "ownerType": "trait",
+      "ownerId": "sp-159-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-159-1",
+            "sp-160-1",
+            "sp-161-1"
+          ]
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -5,
+          "mode": "add",
+          "duration": "nextAction"
+        }
+      ],
+      "note": "特性「思维之盾」"
+    },
+    {
+      "id": "trait:sp-293-1",
+      "ownerType": "trait",
+      "ownerId": "sp-293-1",
+      "trigger": "afterDeath",
+      "when": [
+        {
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-293-1",
+            "sp-294-1",
+            "sp-295-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyMagic",
+          "target": "opponent",
+          "delta": -1
+        }
+      ],
+      "note": "特性「付给恶魔的赎价」：击败敌方 → 敌方额外 −1 魔力"
+    },
+    {
+      "id": "trait:sp-293-1#2",
+      "ownerType": "trait",
+      "ownerId": "sp-293-1",
+      "trigger": "afterDeath",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-293-1",
+            "sp-294-1",
+            "sp-295-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyMagic",
+          "target": "self",
+          "delta": -1
+        }
+      ],
+      "note": "特性「付给恶魔的赎价」：被击败 → 自己额外 −1 魔力"
+    },
+    {
+      "id": "trait:sp-210-1",
+      "ownerType": "trait",
+      "ownerId": "sp-210-1",
+      "trigger": "afterDeath",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-210-1",
+            "sp-211-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "opponent",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyStat",
+          "target": "opponent",
+          "stat": "defense",
+          "mode": "percent",
+          "value": 20
+        }
+      ],
+      "note": "特性「虚假宝箱」：自己力竭 → 敌方攻防 +20%"
+    },
+    {
+      "id": "trait:sp-379-1",
+      "ownerType": "trait",
+      "ownerId": "sp-379-1",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-379-1",
+            "sp-380-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyCooldown",
+          "target": "opponent",
+          "skillIdFrom": "event.opponentAction.skillId",
+          "delta": 1
+        }
+      ],
+      "note": "特性「上锁」"
+    },
+    {
+      "id": "trait:sp-277-1",
+      "ownerType": "trait",
+      "ownerId": "sp-277-1",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-277-1",
+            "sp-277-2",
+            "sp-278-1",
+            "sp-278-2",
+            "sp-279-1",
+            "sp-279-2"
+          ]
+        },
+        {
+          "path": "self.active.energy",
+          "op": "lte",
+          "value": 0
+        }
+      ],
+      "effects": [
+        {
+          "type": "escape",
+          "target": "self"
+        }
+      ],
+      "note": "特性「警惕」"
+    },
+    {
+      "id": "trait:sp-398-1",
+      "ownerType": "trait",
+      "ownerId": "sp-398-1",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-398-1",
+            "sp-399-1"
+          ]
+        },
+        {
+          "path": "self.active.energy",
+          "op": "lte",
+          "value": 0
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 10
+        }
+      ],
+      "note": "特性「莫比乌斯」"
+    },
+    {
+      "id": "trait:sp-436-1",
+      "ownerType": "trait",
+      "ownerId": "sp-436-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-436-1",
+            "sp-437-1"
+          ]
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "moe",
+          "layers": 1
+        }
+      ],
+      "note": "特性「守望者」：防御应对成功分支待校准"
     }
   ]
 }
