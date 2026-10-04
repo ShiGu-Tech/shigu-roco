@@ -85,11 +85,14 @@ function BallPicker({ value, onChange }: { value: string; onChange: (id: string)
             aria-pressed={active}
             onClick={() => onChange(o.id)}
             className={cn(
-              "inline-flex h-7 items-center rounded px-2 text-[11px] transition-colors",
+              "inline-flex h-8 items-center gap-1 rounded px-1.5 text-[11px] transition-colors",
               active ? "bg-primary text-primary-foreground" : "hover:bg-accent",
               !o.effective && !active ? "text-muted-foreground" : "",
             )}
           >
+            <span className="inline-flex h-[22px] w-[22px] shrink-0 overflow-hidden rounded-full ring-1 ring-black/10">
+              <Image src={o.icon} alt="" width={22} height={22} className="h-[22px] w-[22px] object-contain" />
+            </span>
             {o.label}
           </button>
         );

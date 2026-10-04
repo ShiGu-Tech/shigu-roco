@@ -9,28 +9,30 @@ export interface BallOption {
   label: string;
   /** 是否有实际效果（无效果球种仅占位，便于与官方清单对齐）。 */
   effective: boolean;
-  /** 无图鉴图标，暂用首字色块（留待接入官方球图标 URL）。 */
-  icon?: string | null;
+  /** 球图标 public 路径（`/images/balls/<id>.png`，取自官方特性详解海报）。 */
+  icon: string;
 }
 
+const ball = (id: string, label: string, effective: boolean): BallOption => ({ id, label, effective, icon: `/images/balls/${id}.png` });
+
 export const BALL_OPTIONS: BallOption[] = [
-  { id: "normal", label: "普通球", effective: true },
-  { id: "advanced", label: "高级球", effective: true },
-  { id: "king", label: "国王球", effective: true },
-  { id: "photosynthesis", label: "光合球", effective: true },
-  { id: "net", label: "网兜球", effective: true },
-  { id: "thermostat", label: "调温球", effective: true },
-  { id: "sand", label: "淘沙球", effective: true },
-  { id: "insulation", label: "绝缘球", effective: true },
-  { id: "wonderful", label: "美妙球", effective: true },
-  { id: "warlike", label: "好战球", effective: true },
-  { id: "darkstar", label: "暗星球", effective: true },
-  { id: "transform", label: "变幻球", effective: true },
-  { id: "capture-light", label: "捕光球", effective: false },
-  { id: "dream-prism", label: "织梦棱镜", effective: false },
-  { id: "odd", label: "奇趣球", effective: false },
-  { id: "carnival-prism", label: "狂欢棱镜", effective: false },
-  { id: "prism", label: "棱镜球", effective: true },
+  ball("normal", "普通球", true),
+  ball("advanced", "高级球", true),
+  ball("king", "国王球", true),
+  ball("photosynthesis", "光合球", true),
+  ball("net", "网兜球", true),
+  ball("thermostat", "调温球", true),
+  ball("sand", "淘沙球", true),
+  ball("insulation", "绝缘球", true),
+  ball("wonderful", "美妙球", true),
+  ball("warlike", "好战球", true),
+  ball("darkstar", "暗星球", true),
+  ball("transform", "变幻球", true),
+  ball("capture-light", "捕光球", false),
+  ball("dream-prism", "织梦棱镜", false),
+  ball("odd", "奇趣球", false),
+  ball("carnival-prism", "狂欢棱镜", false),
+  ball("prism", "棱镜球", true),
 ];
 
 export const DEFAULT_BALL = "king";
