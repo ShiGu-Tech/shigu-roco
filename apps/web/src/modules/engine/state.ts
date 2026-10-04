@@ -47,6 +47,7 @@ export function cloneActive(a: ActiveSprite): ActiveSprite {
     ruleOverrides: a.ruleOverrides ? { ...a.ruleOverrides } : undefined,
     disguise: a.disguise,
     summonedBy: a.summonedBy,
+    inheritedFrom: a.inheritedFrom ? [...a.inheritedFrom] : undefined,
   };
 }
 

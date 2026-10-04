@@ -48,12 +48,62 @@ export interface MechanismSource {
   collect(context: MechanismContext): EffectCommand[];
 }
 
+/** 继承域 · 把事件里等于 `from` 的精灵 id 值替换为 `to`（浅层标量 + 数组元素），供「身份别名」条件求值。 */
+function aliasEvent(event: Dict, from: string, to: string): Dict {
+  const out: Dict = {};
+  for (const key of Object.keys(event)) {
+    const value = event[key];
+    if (value === from) out[key] = to;
+    else if (Array.isArray(value) && value.includes(from)) out[key] = value.map((item) => (item === from ? to : item));
+    else out[key] = value;
+  }
+  return out;
+}
+
+/** 继承域 · 把某侧 active 的 `spriteId` 由 `from` 换成 `to`（仅条件求值用，浅克隆、不落真实状态）。 */
+function aliasActiveSide(side: BattleState["player"], from: string, to: string): BattleState["player"] {
+  return side.active.spriteId === from ? { ...side, active: { ...side.active, spriteId: to } } : side;
+}
+
+function aliasStateFor(state: BattleState, from: string, to: string): BattleState {
+  const player = aliasActiveSide(state.player, from, to);
+  const enemy = aliasActiveSide(state.enemy, from, to);
+  return player === state.player && enemy === state.enemy ? state : { ...state, player, enemy };
+}
+
 /** 机制扩展的运行时外壳：负责收集命令和安全地修改行动队列。 */
 export class MechanismRuntime {
   constructor(readonly registry: MechanismSource) {}
 
   dispatch(context: MechanismContext): EffectCommand[] {
-    return this.registry.collect(context);
+    const base = this.registry.collect(context);
+    // 继承域 · 动态归属（铭记于月亮）：把「已继承特性」的精灵按其继承来的原精灵身份再派发一次，
+    // 使其**触发型**机制（onEntry / beforeDamage / afterDeath …）照常结算（被动规则已并入 `ruleOverrides`，此处跳过）。
+    if (context.trigger === "passive") return base;
+    const inherited = this.inheritedOwners(context.state);
+    if (!inherited.length) return base;
+    const out = [...base];
+    for (const { owner, spriteId } of inherited) {
+      const aliased = this.registry.collect({
+        ...context,
+        state: aliasStateFor(context.state, spriteId, owner),
+        event: aliasEvent(context.event, spriteId, owner),
+      });
+      for (const command of aliased) {
+        if (command.mechanismId.startsWith(`trait:${owner}`)) out.push(command);
+      }
+    }
+    return out;
+  }
+
+  /** 继承域 · 当前两侧在场且带继承特性的精灵（owner 为被继承的原精灵 id）。 */
+  private inheritedOwners(state: BattleState): { owner: string; spriteId: string }[] {
+    const out: { owner: string; spriteId: string }[] = [];
+    for (const side of ["player", "enemy"] as Side[]) {
+      const active = side === "player" ? state?.player?.active : state?.enemy?.active;
+      for (const owner of active?.inheritedFrom ?? []) out.push({ owner, spriteId: active!.spriteId });
+    }
+    return out;
   }
 
   /** 确定性概率门：无 chance 恒过；chance 以「机制 + 触发 + 序号」派生，保证同状态同种子可复现。
@@ -330,10 +380,12 @@ export class MechanismRuntime {
           if (!targetSide) break;
           const fromSide: Side = definition.from === "opponent" || !definition.from ? (targetSide === "player" ? "enemy" : "player") : targetSide;
           const inherited = this.ruleModifiers(state, bundle, fromSide);
-          if (!Object.keys(inherited).length) break;
+          const defeated = fromSide === "player" ? state.player.active.spriteId : state.enemy.active.spriteId;
           const to = targetSide === "player" ? state.player.active : state.enemy.active;
-          to.ruleOverrides = { ...(to.ruleOverrides ?? {}), ...inherited };
-          events.push({ type: "trait-inherited", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { from: fromSide, keys: Object.keys(inherited) } });
+          if (Object.keys(inherited).length) to.ruleOverrides = { ...(to.ruleOverrides ?? {}), ...inherited };
+          // 触发型继承：登记原精灵 id → 之后按其身份别名派发（动态归属通道）。
+          to.inheritedFrom = [...new Set([...(to.inheritedFrom ?? []), defeated])];
+          events.push({ type: "trait-inherited", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { from: fromSide, defeated, keys: Object.keys(inherited) } });
           break;
         }
         case "returnField": {
