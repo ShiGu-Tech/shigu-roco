@@ -4,7 +4,7 @@
 
 ## 定位红线（任何改动都不得违反）
 
-- **非外挂**：不读取游戏画面、不读内存、不抓包、不自动操作游戏、不联网（运行时）。
+- **非外挂**：不读取游戏画面、不读内存、不抓包、不自动操作游戏、不联网（运行时）。（**观战**为工具自建站内后端，不连游戏 / 第三方，见 [`docs/architecture/引擎观战-设计-v0.1.md`](docs/architecture/引擎观战-设计-v0.1.md)。）
 - **数据与代码解耦**：精灵 / 技能 / 印记 / 天气 / 属性全部来自 `roco.world/zh/` 同步注册的图鉴（`data/registry/catalogs/`，现查）；引擎参数（规则 / 养成 / 资产 / 机制）在 `data/*.json`。版本更新只改数据，不改代码。
 - **唯一外部数据源**：`https://roco.world/zh/` 中文站。不得把临时导出包、`dist-share` 或其他镜像作为后续数据源；中文名称、说明、机制词条和图片优先保留中文站原始字段。
 - **模拟器是固定规则，MCTS 是搜索模型**：不在 MCTS 里写游戏策略硬编码。
@@ -59,7 +59,7 @@ scripts/                      setup / dev / 同步 / 静态包导出
 - 图表用 ECharts 6；响应式断点 `min-[520px]:` / `min-[860px]:`。
 - 引擎同构：纯逻辑不依赖 `fs` / DOM；Node 侧 loader（`data-node.ts`）与浏览器 Worker 均复用同一引擎。
 - **`node:fs` 只进服务端叶模块**：写盘逻辑（`api/mechanisms-store.ts`、`catalog/registry.ts`）不得被客户端可达模块引用——页面会复用 `api/handlers` 的纯导出（如 `parseState`），一旦 handlers 依赖 fs 就会把 `node:fs` 打进客户端 chunk（Turbopack 构建直接失败）。客户端与服务端共用的纯逻辑放独立纯模块（如 `api/compile-check.ts`）。
-- 不引入数据库、鉴权、云同步；存档 / 对手库存浏览器 `localStorage`。
+- 不引入数据库与账号体系；本地存档 / 对手库存浏览器 `localStorage`。**允许轻量「观战房间」**：只读、URL 即密钥、无账号、无持久库（内存房间，进程重启即清），见 [`docs/architecture/引擎观战-设计-v0.1.md`](docs/architecture/引擎观战-设计-v0.1.md)。
 - 凭证 / 密钥不入仓（本项目预期无需凭证）。
 - 不新增依赖前先确认已在用；新增需说明理由。
 

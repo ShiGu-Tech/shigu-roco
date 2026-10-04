@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -21,8 +21,9 @@ import { forcedSwitch, getCatalog, recommend, requestLeader, simulateTurn } from
 import { loadOpponentLibrary } from "@/modules/battle/storage";
 import { collectAtlasStep } from "@/modules/atlas/collect";
 import { recordAtlasStep } from "@/modules/atlas/storage";
-import { BoardAtlas } from "@/modules/atlas/board-atlas";
-import type { AtlasStep } from "@/modules/atlas/types";
+import { ENGINE_VERSION } from "@/modules/engine/version";
+import { createWatchRoom, pushWatchRoom, watchUrl } from "@/modules/watch/client";
+import type { RoomSide, WatchEntry, WatchRoom } from "@/modules/watch/types";
 import { saveReplay } from "@/modules/replays/storage";
 import { ENEMY_COLOR, PLAYER_COLOR } from "@/lib/chart-theme";
 import { describeEvent } from "./log";
@@ -108,9 +109,33 @@ export function BattleBoard() {
   const [saveOpen, setSaveOpen] = useState(false);
   const [saveName, setSaveName] = useState("");
 
-  /** 引擎流程回放：本局各回合的轨迹步 + 新开局重置键。 */
-  const [atlasSteps, setAtlasSteps] = useState<AtlasStep[]>([]);
-  const [atlasResetKey, setAtlasResetKey] = useState(0);
+  /** 观战房间：本局建房后逐回合推快照（只读观战，见《引擎观战》设计稿）。 */
+  const [watchId, setWatchId] = useState<string | null>(null);
+  const watchRoomRef = useRef<WatchRoom | null>(null);
+
+  /** 阵容展示信息（观战大屏标题用）。 */
+  function roomSide(label: string, side: BattleState["player"]): RoomSide {
+    return {
+      label,
+      sprites: [side.active, ...side.bench].map((active) => {
+        const sprite = spriteOf(catalog!, active.spriteId);
+        return { id: active.spriteId, name: sprite?.nameZh ?? sprite?.name ?? active.spriteId };
+      }),
+    };
+  }
+
+  /** 追加一条观战记录并推全量快照（尽力而为，失败不阻断对战）。 */
+  function pushWatch(entry: WatchEntry, turn: number, terminal: Terminal | null) {
+    const room = watchRoomRef.current;
+    if (!room) return;
+    room.entries = [...room.entries, entry];
+    room.turn = turn;
+    if (terminal?.ended) {
+      room.status = "ended";
+      room.terminal = { winner: terminal.winner, reason: terminal.reason };
+    }
+    void pushWatchRoom(room);
+  }
 
   function refreshLineups() {
     setPlayerLineups(listLineups("player"));
@@ -167,10 +192,34 @@ export function BattleBoard() {
     const st = buildState(catalog, playerArg, enemyArg);
     setPendingP(null);
     setPendingE(null);
-    setAtlasSteps([]);
-    setAtlasResetKey((key) => key + 1);
+    watchRoomRef.current = null;
+    setWatchId(null);
     setPhase("battle");
     setBusy(true);
+    // 建房（观战可选，失败不阻断对战）。
+    const player = roomSide("我方", st.player);
+    const enemy = roomSide("敌方", st.enemy);
+    const dataVersion = (catalog as { dataVersion?: string }).dataVersion ?? "";
+    try {
+      const id = await createWatchRoom({ seed: st.seed, player, enemy, dataVersion, engineVersion: ENGINE_VERSION });
+      watchRoomRef.current = {
+        id,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        status: "live",
+        seed: st.seed,
+        player,
+        enemy,
+        turn: st.turn,
+        terminal: null,
+        entries: [],
+        dataVersion,
+        engineVersion: ENGINE_VERSION,
+      };
+      setWatchId(id);
+    } catch {
+      /* 观战不可用则忽略 */
+    }
     try {
       const w = await refresh(st);
       setFrames([{ turn: st.turn, state: st, log: [], history: [{ turn: st.turn, ...w }], terminal: null, label: `回合 ${st.turn}` }]);
@@ -200,7 +249,21 @@ export function BattleBoard() {
         log: res.log,
       });
       recordAtlasStep("board", step);
-      setAtlasSteps((prev) => [...prev, step]);
+      // 观战房间：追加本回合条目 + 事件文本。
+      pushWatch(
+        {
+          turn: base.state.turn,
+          label: `回合 ${base.state.turn}`,
+          actions: [
+            { side: "player", label: pP.label },
+            { side: "enemy", label: pE.label },
+          ],
+          step,
+          log: catalog ? res.log.map((event) => ({ side: event.side === "player" || event.side === "enemy" ? event.side : "system", text: describeEvent(event, catalog) })) : [],
+        },
+        res.state.turn,
+        res.terminal,
+      );
       let frame: Frame;
       if (res.terminal.ended) {
         setRec(null);
@@ -255,7 +318,17 @@ export function BattleBoard() {
         log: res.log,
       });
       recordAtlasStep("board", step);
-      setAtlasSteps((prev) => [...prev, step]);
+      pushWatch(
+        {
+          turn: base.state.turn,
+          label: `${who === "player" ? "我方" : "敌方"}阵亡换人`,
+          actions: [{ side: who, label: "换人" }],
+          step,
+          log: catalog ? res.log.map((event) => ({ side: event.side === "player" || event.side === "enemy" ? event.side : "system", text: describeEvent(event, catalog) })) : [],
+        },
+        res.state.turn,
+        base.terminal,
+      );
       const frame: Frame = {
         turn: res.state.turn,
         state: res.state,
@@ -320,9 +393,13 @@ export function BattleBoard() {
     setPendingE(null);
     setFrames(frames.slice(0, index + 1));
     setCursor(index);
-    // 回退帧 → 回放轨迹一并回退到对应回合并重播。
-    setAtlasSteps((prev) => prev.slice(0, index));
-    setAtlasResetKey((key) => key + 1);
+    // 回退帧 → 观战房间记录一并回退。
+    const room = watchRoomRef.current;
+    if (room) {
+      room.entries = room.entries.slice(0, index);
+      room.turn = frames[index].turn;
+      void pushWatchRoom(room);
+    }
     setBusy(true);
     try {
       const target = frames[index];
@@ -707,16 +784,33 @@ export function BattleBoard() {
         </div>
       </div>
 
-      <Panel
-        title="引擎流程回放"
-        actions={
-          <span className="text-[12px] font-normal text-muted-foreground">
-            每回合按发生顺序逐个点亮对应时机（小号全景图，完整版见「引擎」页）
-          </span>
-        }
-      >
-        <BoardAtlas key={atlasResetKey} steps={atlasSteps} />
-      </Panel>
+      {watchId ? (
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border bg-card px-3 py-2 text-[12px]">
+          <span className="font-medium">观战</span>
+          <a
+            href={`/watch/${watchId}`}
+            target="_blank"
+            rel="noreferrer"
+            className="max-w-[320px] truncate text-primary underline-offset-4 hover:underline"
+          >
+            {watchUrl(watchId)}
+          </a>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              navigator.clipboard?.writeText(watchUrl(watchId)).then(
+                () => toast.success("观战链接已复制"),
+                () => toast.error("复制失败，请手动复制"),
+              );
+            }}
+          >
+            复制链接
+          </Button>
+          <span className="ml-auto text-[11px] text-muted-foreground">大屏看引擎内部流程：进行中实时跟随，结束后回放</span>
+        </div>
+      ) : null}
 
       <Dialog open={saveOpen} onOpenChange={setSaveOpen}>
         <DialogContent className="max-w-[460px]">
