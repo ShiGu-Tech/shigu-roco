@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.60.0",
+  "version": "0.62.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -19734,6 +19734,362 @@
         }
       ],
       "note": "特性「贪得无厌」：过量回复转物攻待校准"
+    },
+    {
+      "id": "trait:sp-200-2",
+      "ownerType": "trait",
+      "ownerId": "sp-200-2",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-200-2"
+          ]
+        },
+        {
+          "path": "action.cost",
+          "op": "eq",
+          "value": 3
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "defense",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spdef",
+          "mode": "percent",
+          "value": 20
+        }
+      ],
+      "note": "特性「三鼓作气」"
+    },
+    {
+      "id": "trait:sp-193-1",
+      "ownerType": "trait",
+      "ownerId": "sp-193-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-193-1",
+            "sp-194-1"
+          ]
+        },
+        {
+          "path": "action.category",
+          "op": "eq",
+          "value": "Defense"
+        }
+      ],
+      "effects": [
+        {
+          "type": "escape",
+          "target": "self"
+        }
+      ],
+      "note": "特性「奔波命」：回合末脱离近似为立即"
+    },
+    {
+      "id": "trait:sp-207-1",
+      "ownerType": "trait",
+      "ownerId": "sp-207-1",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-207-1",
+            "sp-208-1",
+            "sp-209-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "escape",
+          "target": "self"
+        }
+      ],
+      "note": "特性「防过载保护」"
+    },
+    {
+      "id": "trait:sp-96-1",
+      "ownerType": "trait",
+      "ownerId": "sp-96-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-96-1",
+            "sp-97-1",
+            "sp-98-1"
+          ]
+        },
+        {
+          "path": "event.wentFirst",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "combo-add",
+          "delta": 1
+        }
+      ],
+      "note": "特性「咔咔冲刺」"
+    },
+    {
+      "id": "trait:sp-360-1",
+      "ownerType": "trait",
+      "ownerId": "sp-360-1",
+      "trigger": "statusApplied",
+      "when": [
+        {
+          "path": "event.statusId",
+          "op": "eq",
+          "value": "moe"
+        },
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-360-1",
+            "sp-361-1",
+            "sp-361-2"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "moe"
+        }
+      ],
+      "note": "特性「拉拉队长」：萌化状态下再获得萌化 → 解除"
+    },
+    {
+      "id": "trait:sp-266-1",
+      "ownerType": "trait",
+      "ownerId": "sp-266-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-266-1",
+            "sp-267-1",
+            "sp-269-1"
+          ]
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "power-all",
+          "delta": 30
+        }
+      ],
+      "note": "特性「斗技」：应对成功后全技能威力永久 +30"
+    },
+    {
+      "id": "trait:sp-266-1#2",
+      "ownerType": "trait",
+      "ownerId": "sp-266-1",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-266-1",
+            "sp-267-1",
+            "sp-269-1"
+          ]
+        },
+        {
+          "path": "self.active.counters.power-all",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "addPower",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.active.counters.power-all"
+          }
+        }
+      ],
+      "note": "特性「斗技」"
+    },
+    {
+      "id": "trait:sp-137-1",
+      "ownerType": "trait",
+      "ownerId": "sp-137-1",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-137-1",
+            "sp-138-1"
+          ]
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Earth"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addPower",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.active.loadout",
+            "count": {
+              "element": "Ice"
+            },
+            "scale": 10
+          }
+        }
+      ],
+      "note": "特性「冻土」：每携带 1 个冰系技能，地系威力 +10%"
+    },
+    {
+      "id": "trait:sp-171-1#2",
+      "ownerType": "trait",
+      "ownerId": "sp-171-1",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-171-1",
+            "sp-171-2",
+            "sp-172-1",
+            "sp-172-2",
+            "sp-173-1",
+            "sp-173-2"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "elements": [
+            "Earth"
+          ],
+          "deltaFrom": {
+            "path": "self.active.loadout",
+            "count": {
+              "element": "Water"
+            },
+            "scale": -1
+          },
+          "duration": "turns",
+          "turns": 1
+        }
+      ],
+      "note": "特性「消波块」：每携带 1 个水系技能，地系能耗 −1"
+    },
+    {
+      "id": "trait:sp-440-1",
+      "ownerType": "trait",
+      "ownerId": "sp-440-1",
+      "trigger": "battleStart",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-440-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": 2,
+          "mode": "add"
+        }
+      ],
+      "note": "特性「安眠」：进入战斗全技能能耗 +2"
+    },
+    {
+      "id": "trait:sp-440-1#2",
+      "ownerType": "trait",
+      "ownerId": "sp-440-1",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-440-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": 0.05,
+          "basis": "maxHp"
+        },
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 1
+        }
+      ],
+      "note": "特性「安眠」：回合末回复 5% 生命 + 1 能量"
     }
   ]
 }
