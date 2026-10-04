@@ -126,5 +126,7 @@
  *          `convertBuffToStatus`（把目标全部增益转为等量状态层数并清空增益）；供落井下毒 / 灰色肖像 / 毒雾。
  * - 0.42.0 图鉴域 · 系别注入：`ActiveSprite.element`（从图鉴 `elements` 注入运行时精灵），
  *          供「非本系技能」「非敌方系别」类条件（涂鸦 / 绝对秩序 / 流沙统治者）。
+ * - 0.43.0 技能栏域 · 槽位限制：`legalActions` 读取 passive 覆盖 `battle.allowedSlots` 位掩码（bit0=1号位…），
+ *          只列出允许槽位的技能（正位宝剑 / 宝剑王牌）。
  */
-export const ENGINE_VERSION = "0.42.0";
+export const ENGINE_VERSION = "0.43.0";

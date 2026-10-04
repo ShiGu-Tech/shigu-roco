@@ -87,7 +87,12 @@ export class Simulator {
     const loadout = active.loadout.length
       ? active.loadout
       : (toArray<string>(spriteDef.loadout).length ? toArray<string>(spriteDef.loadout) : toArray<string>(spriteDef.skillList));
-    for (const skillId of loadout) {
+    // 技能栏域 · 槽位限制（特性经 `setRuleModifier "battle.allowedSlots"` 声明可用槽位位掩码：bit0=1号位…）。
+    const ruleMods = this.mechanisms.ruleModifiers(state, this.bundle, who);
+    const slotMask = typeof ruleMods["battle.allowedSlots"] === "number" ? (ruleMods["battle.allowedSlots"] as number) : 0;
+    for (let slot = 0; slot < loadout.length; slot++) {
+      if (slotMask && !(slotMask & (1 << slot))) continue;
+      const skillId = loadout[slot];
       const skill = getSkill(this.bundle, skillId);
       if (effectiveCost(state, this.bundle, who, skillId) <= active.energy && toNum(active.cooldowns?.[skillId], 0) <= 0) {
         const name = toStr(skill.skillName, skillId);
