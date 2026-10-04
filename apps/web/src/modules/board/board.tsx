@@ -23,10 +23,10 @@ import { collectAtlasStep, flattenFirings } from "@/modules/atlas/collect";
 import { recordAtlasStep } from "@/modules/atlas/storage";
 import { ENGINE_VERSION } from "@/modules/engine/version";
 import { createWatchRoom, pushWatchRoom, watchUrl } from "@/modules/watch/client";
-import type { RoomSide, WatchEntry, WatchRoom } from "@/modules/watch/types";
+import type { RoomSide, WatchEntry, WatchLogLine, WatchRoom } from "@/modules/watch/types";
 import { saveReplay } from "@/modules/replays/storage";
 import { ENEMY_COLOR, PLAYER_COLOR } from "@/lib/chart-theme";
-import { describeEvent } from "./log";
+import { describeEvent, mechanismHitOf } from "./log";
 import type { BattleEvent, BattleState, Catalog, RecommendResult, Terminal } from "@/modules/battle/types";
 import { ActiveBoard } from "./active-board";
 import { LineupDetailDialog, LineupLibrary } from "./lineup-library";
@@ -124,6 +124,16 @@ export function BattleBoard() {
         return { id: active.spriteId, name: sprite?.nameZh ?? sprite?.name ?? active.spriteId };
       }),
     };
+  }
+
+  /** 事件流 → 观战事件行：叙事事件留文本，纯机制命中转「触发 / 机制 / 效果」胶囊。 */
+  function watchLog(log: BattleEvent[]): WatchLogLine[] {
+    if (!catalog) return [];
+    return log.map((event) => {
+      const side = event.side === "player" || event.side === "enemy" ? event.side : "system";
+      const hit = mechanismHitOf(event);
+      return hit ? { side, text: "", mechanism: hit } : { side, text: describeEvent(event, catalog) };
+    });
   }
 
   /** 追加一条观战记录并按发生顺序逐触发器披露（尽力而为，失败不阻断对战）。 */
@@ -285,7 +295,7 @@ export function BattleBoard() {
             { side: "enemy", label: pE.label },
           ],
           step,
-          log: catalog ? res.log.map((event) => ({ side: event.side === "player" || event.side === "enemy" ? event.side : "system", text: describeEvent(event, catalog) })) : [],
+          log: watchLog(res.log),
         },
         res.state.turn,
         res.terminal,
@@ -350,7 +360,7 @@ export function BattleBoard() {
           label: `${who === "player" ? "我方" : "敌方"}阵亡换人`,
           actions: [{ side: who, label: "换人" }],
           step,
-          log: catalog ? res.log.map((event) => ({ side: event.side === "player" || event.side === "enemy" ? event.side : "system", text: describeEvent(event, catalog) })) : [],
+          log: watchLog(res.log),
         },
         res.state.turn,
         base.terminal,

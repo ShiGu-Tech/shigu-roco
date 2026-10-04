@@ -1,4 +1,5 @@
 import type { BattleEvent, Catalog } from "@/modules/battle/types";
+import { effectVocabularyOf, triggerMetaOf } from "@/modules/engine/mechanisms/vocabulary";
 
 function sideName(side?: string): string {
   return side === "enemy" ? "敌方" : side === "player" ? "我方" : "";
@@ -50,6 +51,10 @@ export function describeEvent(e: BattleEvent, catalog: Catalog): string {
       return `${side}获得状态「${statusName(d.statusId)}」× ${n(d.after)}`;
     case "status-settled":
       return `${side}状态「${statusName(d.statusId)}」结算 → ${n(d.after)}`;
+    case "status-set":
+      return `${side}状态「${statusName(d.statusId)}」设为 ${n(d.after)}`;
+    case "status-scaled":
+      return `${side}状态「${statusName(d.statusId)}」${n(d.before)} → ${n(d.after)}`;
     case "status-removed":
       return `${side}状态「${statusName(d.statusId)}」消失`;
     case "weather-changed":
@@ -96,7 +101,63 @@ export function describeEvent(e: BattleEvent, catalog: Catalog): string {
     case "stat-inherited":
     case "faint":
       return localizeIds(e.text, catalog);
-    default:
+    default: {
+      const effectType = typeof d.effectType === "string" ? d.effectType : "";
+      if (effectType) {
+        const trig = typeof d.trigger === "string" ? `【${triggerMetaOf(d.trigger).title}】` : "";
+        return `${trig}机制效果：${effectVocabularyOf(effectType).title}`;
+      }
       return localizeIds(e.text || e.type, catalog);
+    }
   }
+}
+
+/** 有「人类可读叙事」的事件类型（= 上面 switch 有专属分支者）；其余带 `effectType` 的机制事件走胶囊。 */
+const NARRATIVE_TYPES = new Set<string>([
+  "damage",
+  "healed",
+  "magic-modified",
+  "energy-modified",
+  "switch-lock-modified",
+  "mark-immune",
+  "mark-applied",
+  "mark-removed",
+  "mark-settled",
+  "status-immune",
+  "status-applied",
+  "status-settled",
+  "status-set",
+  "status-scaled",
+  "status-removed",
+  "weather-changed",
+  "cooldown-modified",
+  "action-cancelled",
+  "action-priority-changed",
+  "action-replaced",
+  "action-inserted",
+  "mark-consumed",
+  "mark-scaled",
+  "mark-set",
+  "mark-transferred",
+  "mark-transformed",
+  "stat-modified",
+  "stat-cleared",
+  "skill-modified",
+  "skill-cost-modified",
+  "counter-added",
+  "counter-set",
+  "counter-cleared",
+  "entry-scheduled",
+  "switch",
+  "stat-inherited",
+  "faint",
+]);
+
+/** 机制命中（无叙事文本）→ 观战页渲染为「触发 / 机制 / 效果」胶囊；否则返回 null（走文本行）。 */
+export function mechanismHitOf(e: BattleEvent): { trigger: string; mechanismId: string; effectType: string } | null {
+  const d = (e.data ?? {}) as Record<string, unknown>;
+  const effectType = typeof d.effectType === "string" ? d.effectType : "";
+  const mechanismId = typeof d.mechanismId === "string" ? d.mechanismId : "";
+  if (!effectType || !mechanismId || NARRATIVE_TYPES.has(e.type)) return null;
+  return { trigger: typeof d.trigger === "string" ? d.trigger : "", mechanismId, effectType };
 }

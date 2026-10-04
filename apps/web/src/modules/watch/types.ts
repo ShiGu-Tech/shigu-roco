@@ -12,6 +12,13 @@ export interface RoomSide {
   sprites: { id: string; name: string; element?: string }[];
 }
 
+/** 一条观战事件行：`text` 为叙事文本；`mechanism` 存在时渲染为「触发 / 机制 / 效果」胶囊（可查看定义）。 */
+export interface WatchLogLine {
+  side: "player" | "enemy" | "system";
+  text: string;
+  mechanism?: { trigger: string; mechanismId: string; effectType: string };
+}
+
 /** 一次「用户操作 → 引擎响应」的观战条目（每回合一条；强制换人另计）。 */
 export interface WatchEntry {
   turn: number;
@@ -20,8 +27,8 @@ export interface WatchEntry {
   actions: { side: "player" | "enemy"; label: string }[];
   /** 轨迹（复用 `modules/atlas/types`）。 */
   step: AtlasStep;
-  /** 已渲染事件文本（主机侧 `describeEvent` 产出）。 */
-  log: { side: "player" | "enemy" | "system"; text: string }[];
+  /** 已渲染事件行（主机侧 `describeEvent` / `mechanismHitOf` 产出）。 */
+  log: WatchLogLine[];
 }
 
 /** 观战房间（`/api/watch/rooms/[id]` 返回体）。 */

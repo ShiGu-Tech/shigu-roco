@@ -11,12 +11,15 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Panel } from "@/components/panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogBody, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { flattenFirings } from "@/modules/atlas/collect";
 import { LifecycleGraph } from "@/modules/atlas/lifecycle-graph";
 import { useAtlasPlayback } from "@/modules/atlas/use-atlas-playback";
 import type { AtlasMechanism } from "@/modules/atlas/types";
 import { triggerMetaOf } from "@/modules/engine/mechanisms/vocabulary";
+import type { WorkbenchMechanism } from "@/modules/workbench/types";
 
+import { MechanismDefCard, MechanismHit } from "./mechanism-card";
 import { useMediaQuery } from "./use-media-query";
 import type { RoomSide, WatchRoom } from "./types";
 
@@ -43,14 +46,15 @@ function RosterCard({ side, tone }: { side: RoomSide; tone: "player" | "enemy" }
 export function WatchView({ roomId }: { roomId: string }) {
   const [room, setRoom] = useState<WatchRoom | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [mechanisms, setMechanisms] = useState<AtlasMechanism[]>([]);
+  const [mechanisms, setMechanisms] = useState<WorkbenchMechanism[]>([]);
   const [follow, setFollow] = useState(true);
+  const [defOpen, setDefOpen] = useState<{ id: string; effectType?: string } | null>(null);
   const wide = useMediaQuery("(min-width: 860px)");
 
   useEffect(() => {
     fetch("/api/engine/workbench/mechanisms", { cache: "no-store" })
       .then((res) => res.json())
-      .then((payload: { mechanisms: AtlasMechanism[] }) => setMechanisms(payload.mechanisms))
+      .then((payload: { mechanisms: WorkbenchMechanism[] }) => setMechanisms(payload.mechanisms))
       .catch(() => {});
   }, []);
 
@@ -86,6 +90,7 @@ export function WatchView({ roomId }: { roomId: string }) {
     };
   }, [roomId]);
 
+  const byId = useMemo(() => new Map(mechanisms.map((m) => [m.id, m])), [mechanisms]);
   const grouped = useMemo(() => {
     const map = new Map<string, AtlasMechanism[]>();
     for (const item of mechanisms) {
@@ -256,6 +261,7 @@ export function WatchView({ roomId }: { roomId: string }) {
             <p className="text-[12px] text-muted-foreground">等待第一条记录…</p>
           ) : (
             <div className="space-y-2">
+              <p className="text-[11px] text-muted-foreground">机制命中显示为「触发 · 机制 · 效果」胶囊；悬停或点击查看定义。</p>
               {room.entries.map((entry, index) => (
                 <div key={index} className="rounded-md border bg-card p-2">
                   <div className="flex flex-wrap items-baseline gap-x-2">
@@ -263,13 +269,17 @@ export function WatchView({ roomId }: { roomId: string }) {
                     <span className="text-[11px] text-muted-foreground">{entry.actions.map((action) => `${SIDE_LABEL[action.side] ?? action.side} ${action.label}`).join(" · ")}</span>
                   </div>
                   {entry.log.length ? (
-                    <div className="mt-1 space-y-0.5">
-                      {entry.log.map((line, i) => (
-                        <div key={i} className="flex items-start gap-1.5 text-[11px] text-muted-foreground">
-                          <span className="mt-[3px] shrink-0 text-[8px] leading-none">●</span>
-                          <span>{line.text}</span>
-                        </div>
-                      ))}
+                    <div className="mt-1 space-y-1">
+                      {entry.log.map((line, i) =>
+                        line.mechanism ? (
+                          <MechanismHit key={i} hit={line.mechanism} byId={byId} onOpen={(id, effectType) => setDefOpen({ id, effectType })} />
+                        ) : (
+                          <div key={i} className="flex items-start gap-1.5 text-[11px] text-muted-foreground">
+                            <span className="mt-[3px] shrink-0 text-[8px] leading-none">●</span>
+                            <span>{line.text}</span>
+                          </div>
+                        ),
+                      )}
                     </div>
                   ) : null}
                 </div>
@@ -278,6 +288,22 @@ export function WatchView({ roomId }: { roomId: string }) {
           )}
         </Panel>
       </div>
+
+      <Dialog
+        open={defOpen !== null}
+        onOpenChange={(open) => {
+          if (!open) setDefOpen(null);
+        }}
+      >
+        <DialogContent className="max-w-[560px]">
+          <DialogHeader>
+            <DialogTitle>机制定义</DialogTitle>
+          </DialogHeader>
+          <DialogBody>
+            {defOpen ? <MechanismDefCard mech={byId.get(defOpen.id) ?? null} id={defOpen.id} effectType={defOpen.effectType} mode="dialog" /> : null}
+          </DialogBody>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
