@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.111.0",
+  "version": "0.112.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -23996,36 +23996,6 @@
       "note": "特性「整点报时」：每场 1 次：累计消耗恰好 12 能量时回满能量与生命（能量近似为 +100）"
     },
     {
-      "id": "trait:sp-414-1",
-      "ownerType": "trait",
-      "ownerId": "sp-414-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "有求必应：使用「选择」技能后，会额外使用1次另一种「选择」效果。使用任意技能后，该技能冷却1回合。【待校准】"
-        }
-      ],
-      "note": "特性「有求必应」：待实现"
-    },
-    {
-      "id": "trait:sp-417-1",
-      "ownerType": "trait",
-      "ownerId": "sp-417-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "一意孤行：使用「选择」技能后，会额外使用1次相同的「选择」效果。使用任意技能后，该技能冷却1回合。【待校准】"
-        }
-      ],
-      "note": "特性「一意孤行」：待实现"
-    },
-    {
       "id": "trait:sp-418-1",
       "ownerType": "trait",
       "ownerId": "sp-418-1",
@@ -26502,6 +26472,108 @@
         }
       ],
       "note": "特性「张弛有度」：周末双攻 +40%，其余时间双防 +40%"
+    },
+    {
+      "id": "trait:sp-414-1#rule",
+      "ownerType": "trait",
+      "ownerId": "sp-414-1",
+      "trigger": "passive",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-414-1",
+            "sp-415-1",
+            "sp-416-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "choice.replayOther",
+          "value": true
+        }
+      ],
+      "note": "特性「有求必应」：使用选择技能后额外触发另一种「选择」效果"
+    },
+    {
+      "id": "trait:sp-414-1#cd",
+      "ownerType": "trait",
+      "ownerId": "sp-414-1",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-414-1",
+            "sp-415-1",
+            "sp-416-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyCooldown",
+          "target": "self",
+          "skillIdFrom": "event.action.skillId",
+          "delta": 1,
+          "minimum": 1
+        }
+      ],
+      "note": "特性「有求必应」：使用技能后该技能冷却 1 回合"
+    },
+    {
+      "id": "trait:sp-417-1#rule",
+      "ownerType": "trait",
+      "ownerId": "sp-417-1",
+      "trigger": "passive",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-417-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "choice.replaySame",
+          "value": true
+        }
+      ],
+      "note": "特性「一意孤行」：使用选择技能后额外触发相同「选择」效果"
+    },
+    {
+      "id": "trait:sp-417-1#cd",
+      "ownerType": "trait",
+      "ownerId": "sp-417-1",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-417-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyCooldown",
+          "target": "self",
+          "skillIdFrom": "event.action.skillId",
+          "delta": 1,
+          "minimum": 1
+        }
+      ],
+      "note": "特性「一意孤行」：使用技能后该技能冷却 1 回合"
     }
   ]
 }

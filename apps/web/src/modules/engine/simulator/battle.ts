@@ -486,6 +486,25 @@ export class Simulator {
           events.push({ type: "skill-reverted", side, text: `${caster.spriteId} 使用后还原技能 ${skillId}`, data: { skillId } });
         }
       }
+      // 选择域 · 再触发（有求必应 / 一意孤行）：使用「选择」技能后，追加另一 / 相同分支的效果。
+      if (entry.action.kind === "skill" && entry.action.skillId && this.skillHasChoice(entry.action.skillId)) {
+        const choiceMods = this.mechanisms.ruleModifiers(st, this.bundle, side);
+        const mode = choiceMods["choice.replayOther"] === true ? "other" : choiceMods["choice.replaySame"] === true ? "same" : null;
+        if (mode) {
+          const base = actionView.choice ?? 0;
+          const replayAction = { ...actionView, choice: (mode === "other" ? (base === 1 ? 0 : 1) : base) as 0 | 1 };
+          const replayCommands = this.mechanisms.dispatch({
+            state: st,
+            trigger: "beforeAction",
+            actorSide: side,
+            targetSide: opp,
+            action: replayAction,
+            event: { action: replayAction, actionId: entry.id, replay: true, burst, wentFirst },
+          });
+          events.push(...this.mechanisms.applyStateCommands(st, replayCommands, this.bundle).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+          if (this.sideState(st, opp).active.hp > 0) events.push(...this.mechanisms.applyDamageCommands(st, this.bundle, replayCommands, { action: replayAction, replay: true }).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
+        }
+      }
       const afterCommands = this.mechanisms.dispatch({
         state: st,
         trigger: "actionResolved",
@@ -696,6 +715,11 @@ export class Simulator {
   }
 
   /** 技能的行动类型（用于「应对」判定）。 */
+  /** 是否为「选择」技能（描述含「选择」，与 `legalActions` 同口径）。 */
+  private skillHasChoice(skillId: string): boolean {
+    return /选择/.test(toStr(getSkill(this.bundle, skillId).description, ""));
+  }
+
   private actionTypeOf(action: Action): string {
     if (action.kind === "skill" && action.skillId) return toStr(getSkill(this.bundle, action.skillId).actionType, "Attack");
     if (action.kind === "energy") return "Energy";

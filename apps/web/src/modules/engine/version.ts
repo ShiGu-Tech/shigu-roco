@@ -195,5 +195,8 @@
  *          常驻威力 / 连击计数器 `counters["power-add"]` / `["hits-add"]`（伤害结算读取、不消耗）；
  *          `BattleState.dayOfWeek`（未提供时按当前日期填充）+ 规则 `weekend.boost`（张弛有度：周末双攻 +40% /
  *          其余时间双防 +40%，模拟器按日写入 `pct-*`）。
+ * - 0.71.0 选择再触发：使用「选择」技能后，规则 `choice.replayOther`（有求必应：追加另一分支）/
+ *          `choice.replaySame`（一意孤行：追加相同分支）令模拟器以另一 / 相同 `choice` 重新派发 `beforeAction`
+ *          并结算其状态 / 伤害（不重复耗能）。
  */
-export const ENGINE_VERSION = "0.70.0";
+export const ENGINE_VERSION = "0.71.0";

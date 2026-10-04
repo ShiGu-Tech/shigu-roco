@@ -143,6 +143,30 @@ describe("structural: 展翅/异类/游弋/夺目/翻垃圾桶/瞳中倒影/噼�
     expect(t2.state.player.active.counters?.["pct-defense"]).toBe(0.4);
   });
 
+  it("有求必应：使用选择技后追加另一分支，且该技能冷却 1", () => {
+    const trait = spriteWithTrait("有求必应");
+    const state = makeState(
+      makeSide(makeActive(trait, { hp: 100, maxHp: 500, energy: 5 })),
+      makeSide(makeActive("sp-14-1", { hp: 500, maxHp: 500, energy: 20 })),
+    );
+    state.player.active.loadout = ["sk-7030600"];
+    const t = new Simulator(bundle).step(state, { kind: "skill", skillId: "sk-7030600", choice: 0 }, { kind: "energy" }, new Rng(1));
+    expect(t.state.player.active.hp).toBeGreaterThanOrEqual(225);
+    expect(t.state.player.active.energy).toBeGreaterThan(5);
+    expect(t.state.player.active.cooldowns?.["sk-7030600"] ?? 0).toBeGreaterThanOrEqual(1);
+  });
+
+  it("一意孤行：使用选择技后追加相同分支", () => {
+    const trait = spriteWithTrait("一意孤行");
+    const state = makeState(
+      makeSide(makeActive(trait, { hp: 100, maxHp: 500, energy: 5 })),
+      makeSide(makeActive("sp-14-1", { hp: 500, maxHp: 500, energy: 20 })),
+    );
+    state.player.active.loadout = ["sk-7030600"];
+    const t = new Simulator(bundle).step(state, { kind: "skill", skillId: "sk-7030600", choice: 0 }, { kind: "energy" }, new Rng(1));
+    expect(t.state.player.active.hp).toBeGreaterThanOrEqual(350);
+  });
+
   it("禁足：离场锁期间无法换人（legalActions 无 switch）", () => {
     const state = makeState(
       makeSide(makeActive("sp-14-1", { hp: 500, maxHp: 500, energy: 20 }), { bench: [makeActive("sp-15-1", { hp: 100, maxHp: 100 })] }),
