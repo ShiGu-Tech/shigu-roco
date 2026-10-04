@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.92.0",
+  "version": "0.93.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -16659,24 +16659,13 @@
           "type": "modifyEnergy",
           "target": "self",
           "delta": 2
-        }
-      ],
-      "note": "杠杆置换"
-    },
-    {
-      "id": "skill:sk-7070050:todo",
-      "ownerType": "skill",
-      "ownerId": "sk-7070050",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+        },
         {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "杠杆置换：交换两侧技能位置（无原语）【待校准】"
+          "type": "swap",
+          "what": "skills"
         }
       ],
-      "note": "杠杆置换：交换两侧技能位置（无原语）"
+      "note": "杠杆置换：回复 2 能量 + 交换两侧技能位置"
     },
     {
       "id": "skill:sk-7020550",
@@ -16769,38 +16758,6 @@
         }
       ],
       "note": "踏雷：回合末返场 + 迸发效果复制"
-    },
-    {
-      "id": "skill:sk-7120130",
-      "ownerType": "skill",
-      "ownerId": "sk-7120130",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "convertBuffToStatus",
-          "target": "opponent",
-          "statusId": "poison",
-          "factor": 1
-        }
-      ],
-      "note": "毒雾：敌方增益转为等量中毒"
-    },
-    {
-      "id": "skill:sk-7120160",
-      "ownerType": "skill",
-      "ownerId": "sk-7120160",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "scaleStat",
-          "target": "opponent",
-          "polarity": "debuff",
-          "factor": 2
-        }
-      ],
-      "note": "落井下毒：敌方属性减益层数翻倍"
     },
     {
       "id": "skill:sk-7120290",
@@ -17074,21 +17031,6 @@
         }
       ],
       "note": "联动装置：使用后两侧技能威力永久 +20（应对防御 +30 略）"
-    },
-    {
-      "id": "skill:sk-7070260",
-      "ownerType": "skill",
-      "ownerId": "sk-7070260",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "排气：受抵抗伤害累积 → 敌威力 −20【待校准】"
-        }
-      ],
-      "note": "排气：受抵抗伤害累积 → 敌威力 −20"
     },
     {
       "id": "skill:sk-7090180",
@@ -24923,6 +24865,137 @@
         }
       ],
       "note": "特性「哨兵」：回合末清除速度加成"
+    },
+    {
+      "id": "skill:sk-7120130",
+      "ownerType": "skill",
+      "ownerId": "sk-7120130",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7120130"
+        }
+      ],
+      "effects": [
+        {
+          "type": "convertBuffToStatus",
+          "target": "opponent",
+          "statusId": "poison",
+          "factor": 1
+        }
+      ],
+      "note": "毒雾：敌方所有增益转为等量中毒"
+    },
+    {
+      "id": "skill:sk-7120160",
+      "ownerType": "skill",
+      "ownerId": "sk-7120160",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7120160"
+        }
+      ],
+      "effects": [
+        {
+          "type": "scaleStat",
+          "target": "opponent",
+          "polarity": "debuff",
+          "factor": 2
+        }
+      ],
+      "note": "落井下毒：敌方减益层数翻倍"
+    },
+    {
+      "id": "skill:sk-7070260",
+      "ownerType": "skill",
+      "ownerId": "sk-7070260",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7070260"
+        }
+      ],
+      "effects": [
+        {
+          "type": "setCounter",
+          "target": "self",
+          "key": "exhaust",
+          "value": 1
+        }
+      ],
+      "note": "排气：使用后重置为 1 层（敌方威力 −20）"
+    },
+    {
+      "id": "skill:sk-7070260:onhit",
+      "ownerType": "skill",
+      "ownerId": "sk-7070260",
+      "trigger": "onHit",
+      "when": [
+        {
+          "path": "target.active.loadout",
+          "op": "contains",
+          "value": "sk-7070260"
+        },
+        {
+          "path": "event.resisted",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "path": "event.damageType",
+          "op": "in",
+          "value": [
+            "Physical",
+            "Magic"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "target",
+          "key": "exhaust",
+          "delta": 1
+        }
+      ],
+      "note": "排气：每受 1 次抵抗伤害，敌方威力 −20"
+    },
+    {
+      "id": "skill:sk-7070260:power",
+      "ownerType": "skill",
+      "ownerId": "sk-7070260",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.loadout",
+          "op": "contains",
+          "value": "sk-7070260"
+        },
+        {
+          "path": "target.active.counters.exhaust",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "addPower",
+          "target": "self",
+          "value": 0,
+          "valueFrom": {
+            "path": "target.active.counters.exhaust",
+            "scale": -20
+          }
+        }
+      ],
+      "note": "排气：敌方攻击威力 −20 × 层数"
     }
   ]
 }
