@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.36.0",
+  "version": "0.37.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -13811,6 +13811,563 @@
         }
       ],
       "note": "月陨星状态：信息隐藏 + 行动/受击解除（术语 3025，展示层为主）"
+    },
+    {
+      "id": "skill:sk-7020680",
+      "ownerType": "skill",
+      "ownerId": "sk-7020680",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020680"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "opponent",
+          "stat": "defense",
+          "mode": "percent",
+          "value": -120
+        },
+        {
+          "type": "modifyStat",
+          "target": "opponent",
+          "stat": "spdef",
+          "mode": "percent",
+          "value": -120
+        }
+      ],
+      "note": "锐利眼神"
+    },
+    {
+      "id": "skill:sk-7021030",
+      "ownerType": "skill",
+      "ownerId": "sk-7021030",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7021030"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "defense",
+          "mode": "percent",
+          "value": 140
+        }
+      ],
+      "note": "加固"
+    },
+    {
+      "id": "skill:sk-7050220",
+      "ownerType": "skill",
+      "ownerId": "sk-7050220",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7050220"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 190
+        }
+      ],
+      "note": "润泽"
+    },
+    {
+      "id": "skill:sk-7090390",
+      "ownerType": "skill",
+      "ownerId": "sk-7090390",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7090390"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "opponent",
+          "stat": "spdef",
+          "mode": "percent",
+          "value": -100
+        }
+      ],
+      "note": "霜冻"
+    },
+    {
+      "id": "skill:sk-7090300",
+      "ownerType": "skill",
+      "ownerId": "sk-7090300",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7090300"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "opponent",
+          "stat": "speed",
+          "mode": "flat",
+          "value": -90
+        }
+      ],
+      "note": "雪球"
+    },
+    {
+      "id": "skill:sk-7190480",
+      "ownerType": "skill",
+      "ownerId": "sk-7190480",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7190480"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 70
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spdef",
+          "mode": "percent",
+          "value": 70
+        }
+      ],
+      "note": "仰望夜空"
+    },
+    {
+      "id": "skill:sk-7021280",
+      "ownerType": "skill",
+      "ownerId": "sk-7021280",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7021280"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 1
+        },
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": 0.1,
+          "basis": "maxHp"
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 10
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spdef",
+          "mode": "percent",
+          "value": 10
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "speed",
+          "mode": "percent",
+          "value": 10
+        }
+      ],
+      "note": "缓一缓"
+    },
+    {
+      "id": "skill:sk-7020710",
+      "ownerType": "skill",
+      "ownerId": "sk-7020710",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020710"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "self",
+          "markId": "attack-mark",
+          "layers": 1
+        }
+      ],
+      "note": "主场优势"
+    },
+    {
+      "id": "skill:sk-7120240",
+      "ownerType": "skill",
+      "ownerId": "sk-7120240",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7120240"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "poison-mark",
+          "layers": 1
+        }
+      ],
+      "note": "疫病吐息"
+    },
+    {
+      "id": "skill:sk-7020740",
+      "ownerType": "skill",
+      "ownerId": "sk-7020740",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020740"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "thorn-mark",
+          "layers": 1
+        }
+      ],
+      "note": "棘刺"
+    },
+    {
+      "id": "skill:sk-7050240",
+      "ownerType": "skill",
+      "ownerId": "sk-7050240",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7050240"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "self",
+          "markId": "wet-mark",
+          "layers": 1
+        }
+      ],
+      "note": "打湿"
+    },
+    {
+      "id": "skill:sk-7110260",
+      "ownerType": "skill",
+      "ownerId": "sk-7110260",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7110260"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "self",
+          "markId": "electric-charge-mark",
+          "layers": 1
+        }
+      ],
+      "note": "增程电池"
+    },
+    {
+      "id": "skill:sk-7090330",
+      "ownerType": "skill",
+      "ownerId": "sk-7090330",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7090330"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "slow-mark",
+          "layers": 2
+        }
+      ],
+      "note": "速冻"
+    },
+    {
+      "id": "skill:sk-7100240",
+      "ownerType": "skill",
+      "ownerId": "sk-7100240",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7100240"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "self",
+          "markId": "dragon-devour-mark",
+          "layers": 1
+        }
+      ],
+      "note": "龙威"
+    },
+    {
+      "id": "skill:sk-7160380",
+      "ownerType": "skill",
+      "ownerId": "sk-7160380",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7160380"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "self",
+          "markId": "sprout-mark",
+          "layers": 1
+        }
+      ],
+      "note": "加油"
+    },
+    {
+      "id": "skill:sk-7180390",
+      "ownerType": "skill",
+      "ownerId": "sk-7180390",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7180390"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "undertow-mark",
+          "layers": 1
+        }
+      ],
+      "note": "纺纱"
+    },
+    {
+      "id": "skill:sk-7110440",
+      "ownerType": "skill",
+      "ownerId": "sk-7110440",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7110440"
+        }
+      ],
+      "effects": [
+        {
+          "type": "changeWeather",
+          "weatherId": "thunder",
+          "turns": 8
+        }
+      ],
+      "note": "惊雷"
+    },
+    {
+      "id": "skill:sk-7090370",
+      "ownerType": "skill",
+      "ownerId": "sk-7090370",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7090370"
+        }
+      ],
+      "effects": [
+        {
+          "type": "changeWeather",
+          "weatherId": "blizzard",
+          "turns": 8
+        }
+      ],
+      "note": "冬至"
+    },
+    {
+      "id": "skill:sk-7020760",
+      "ownerType": "skill",
+      "ownerId": "sk-7020760",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020760"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "opponent",
+          "scope": "all",
+          "delta": 1,
+          "mode": "add"
+        }
+      ],
+      "note": "精神扰乱：应对防御分支（+3）待补"
+    },
+    {
+      "id": "skill:sk-7050410",
+      "ownerType": "skill",
+      "ownerId": "sk-7050410",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7050410"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -2,
+          "mode": "add"
+        }
+      ],
+      "note": "盐水浴：应对防御分支（−3）待补"
+    },
+    {
+      "id": "skill:sk-7090170",
+      "ownerType": "skill",
+      "ownerId": "sk-7090170",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7090170"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "opponent",
+          "scope": "all",
+          "delta": 3,
+          "mode": "add",
+          "duration": "turns",
+          "turns": 1
+        }
+      ],
+      "note": "瞬间零度：应对防御分支待补"
+    },
+    {
+      "id": "skill:sk-7030290",
+      "ownerType": "skill",
+      "ownerId": "sk-7030290",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030290"
+        }
+      ],
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": 0.15,
+          "basis": "maxHp"
+        },
+        {
+          "type": "escape",
+          "target": "self"
+        }
+      ],
+      "note": "移花接木"
+    },
+    {
+      "id": "skill:sk-7110370",
+      "ownerType": "skill",
+      "ownerId": "sk-7110370",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7110370"
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceSwitch",
+          "target": "opponent"
+        }
+      ],
+      "note": "远程访问"
     }
   ]
 }
