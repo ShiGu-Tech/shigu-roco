@@ -1,7 +1,7 @@
 {
   "$schemaVersion": "0.2",
-  "version": "0.6.0",
-  "updatedAt": "2026-10-01",
+  "version": "0.6.1",
+  "updatedAt": "2026-10-04",
   "status": {
     "clearOnSwitch": true,
     "persistOnSwitch": [
@@ -37,12 +37,6 @@
     "max": 10,
     "note": "精灵进场能量默认 10（=上限）；「聚能」固定回复 5、占用当回合动作（低于上限时可用）【待校准】；聚能在应对判定中暂按状态技能处理。"
   },
-  "turnPhases": [
-    "magic",
-    "switch",
-    "skill",
-    "settle"
-  ],
   "switchOrderBasis": "oldActive",
   "damageFormula": {
     "kind": "roco_v1",

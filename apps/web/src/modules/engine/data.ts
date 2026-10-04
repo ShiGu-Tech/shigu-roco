@@ -8,6 +8,7 @@
 import type { DataBundle, Dict, RawDataFiles } from "./types";
 import { asDict, toArray, toNum, toStr } from "./types";
 import { mechanismsFromData } from "./mechanisms";
+import { annotateSkillFlags } from "./catalog/skill-flags";
 
 export class DataError extends Error {}
 
@@ -32,28 +33,6 @@ function hasElement(elements: Dict, name: string): boolean {
   return names.has(name);
 }
 
-/** 技能 tag（图鉴描述派生，只作查询面）：蓄力 / 选择 / 巧变 / 迸发 / 传动 / 奉献目标 / 迅捷 / 不移。
- *  注册图鉴不含 tag，装配后（Node 侧 server 合并注册技能时）需再跑一遍。 */
-export function deriveSkillTags(skills: Record<string, Dict>): void {
-  for (const skill of Object.values(skills)) {
-    const desc = toStr(skill.description, "");
-    const tags: string[] = [];
-    if (desc.trim().startsWith("蓄力")) tags.push("charge");
-    if (desc.includes("选择")) tags.push("choice");
-    if (desc.includes("巧变")) tags.push("improvise");
-    if (desc.includes("迸发")) tags.push("burst");
-    if (desc.includes("传动")) tags.push("shift");
-    if (desc.includes("受奉献影响")) tags.push("dedicationTarget");
-    // 迅捷（术语 1005）：描述自带「迅捷」标签（排除「获得迅捷」的条件式与「迅捷技能」的汇总式）。
-    if (desc.includes("迅捷") && !desc.includes("获得迅捷") && !desc.includes("迅捷技能")) tags.push("quick");
-    // 无额外效果的攻击技能（仅造成伤害，无回复 / 附加 / 状态 / 修正等），供「不移」类。
-    const isAttack = skill.category === "Physical" || skill.category === "Magic";
-    const hasExtra = /回复|获得|使|附加|印记|蓄力|连击|免疫|降低|提升|先手|应对|吸血|清除|交换|封印|混乱|中毒|灼烧|冻结|寄生|魔攻|物攻|双防|防御|速度|能耗|命中|暴击|无视|选择|巧变|迸发|传动|奉献|反转|复制|偷取|驱散|随机|偷|夺/.test(desc);
-    if (isAttack && !hasExtra) tags.push("simple");
-    skill.tags = tags.length ? tags : undefined;
-  }
-}
-
 export function buildBundle(raw: RawDataFiles): DataBundle {
   const warnings: string[] = [];
   const sprites = indexItems(toArray<Dict>(raw.sprites.sprites), "id");
@@ -62,7 +41,7 @@ export function buildBundle(raw: RawDataFiles): DataBundle {
   const marks = indexItems(toArray<Dict>(raw.marks.marks), "id");
   const weather = indexItems(toArray<Dict>(raw.weather.weather), "id");
 
-  deriveSkillTags(skills);
+  annotateSkillFlags(skills, raw.mechanisms);
 
   for (const [sid, sprite] of Object.entries(sprites)) {
     for (const skillId of toArray<string>(sprite.skillList)) {

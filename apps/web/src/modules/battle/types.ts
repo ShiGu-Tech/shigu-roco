@@ -79,6 +79,8 @@ export interface CatalogSkill {
   /** 类别图标（物理 / 魔法 / 防御 / 状态）。 */
   categoryIcon?: string | null;
   description?: string;
+  /** 选择技（明 / 暗分支）。 */
+  choice?: boolean;
 }
 
 /** 血脉定义（图鉴 meta.bloodlines）：battleTypeId 对应属性 id，icon 为血脉图标。 */

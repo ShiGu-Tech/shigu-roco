@@ -5,9 +5,10 @@
  * 不做静态兜底。
  */
 
-import { DataError, deriveSkillTags } from "./data";
+import { DataError } from "./data";
 import { loadData } from "./data-node";
 import { getActiveCatalog } from "./catalog";
+import { annotateSkillFlags } from "./catalog/skill-flags";
 import { toArray } from "./types";
 import type { DataBundle, Dict } from "./types";
 
@@ -26,6 +27,12 @@ export function getBundle(force = false): DataBundle {
         .filter((mechanism) => mechanism.ownerType === "skill" && toArray<Dict>(mechanism.effects).some((effect) => effect.type === "dealDamage"))
         .map((mechanism) => String(mechanism.ownerId)),
     );
+    // 蓄力技（机制含 `beginCharge`）不自动生成基础伤害，交由其 `:release` 机制结算。
+    const chargeSkills = new Set(
+      authored
+        .filter((mechanism) => mechanism.ownerType === "skill" && toArray<Dict>(mechanism.effects).some((effect) => effect.type === "beginCharge"))
+        .map((mechanism) => String(mechanism.ownerId)),
+    );
     // 威力 ≥ 哨兵值（如「消耗能量越高伤害越高」用 2100000 表示变量）不自动生成基础伤害，避免按哨兵值结算。
     const POWER_SENTINEL = 100000;
     const skillMechanisms = registered.skills
@@ -35,7 +42,7 @@ export function getBundle(force = false): DataBundle {
           Number(skill.power ?? 0) > 0 &&
           Number(skill.power ?? 0) < POWER_SENTINEL &&
           !authoredDamageSkills.has(String(skill.id)) &&
-          !String(skill.description ?? "").trim().startsWith("蓄力"),
+          !chargeSkills.has(String(skill.id)),
       )
       .map((skill) => ({
         id: `registered:skill:${String(skill.id)}`,
@@ -46,7 +53,8 @@ export function getBundle(force = false): DataBundle {
         effects: [{ type: "dealDamage", target: "target", category: String(skill.category), power: Number(skill.power), skillId: String(skill.id) }],
       }));
     const skillsById = Object.fromEntries(registered.skills.map((skill) => [String(skill.id), skill])) as Record<string, Dict>;
-    deriveSkillTags(skillsById);
+    const mechanisms = [...authored, ...skillMechanisms];
+    annotateSkillFlags(skillsById, mechanisms);
     cached = {
       ...base,
       sprites: Object.fromEntries(registered.sprites.map((sprite) => [String(sprite.id), sprite])),
@@ -55,7 +63,7 @@ export function getBundle(force = false): DataBundle {
       marks: Object.fromEntries(registered.marks.map((mark) => [String(mark.id), mark])),
       weather: Object.fromEntries(registered.weather.map((item) => [String(item.id), item])),
       elements: registered.elements,
-      mechanisms: [...authored, ...skillMechanisms],
+      mechanisms,
       dataVersion: registered.catalogVersion,
       dataUpdatedAt: registered.generatedAt,
       warnings: [...base.warnings, ...registered.warnings],

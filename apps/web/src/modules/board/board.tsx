@@ -522,7 +522,7 @@ export function BattleBoard() {
     const sk = skillById(catalog, skillId);
     if (!sk) return;
     // 选择技（描述自带，或特性经规则授予）：先让玩家选「明 / 暗」。
-    if ((who === "player" ? playerGrants : enemyGrants)?.skills.has(skillId) || /选择/.test(sk.description ?? "")) {
+    if ((who === "player" ? playerGrants : enemyGrants)?.skills.has(skillId) || sk.choice === true) {
       setChoicePick({ who, skillId, name: sk.name });
       return;
     }

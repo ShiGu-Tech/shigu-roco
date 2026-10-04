@@ -53,7 +53,7 @@ describe("closeout: 选择分支 / 巧变 / 全队被动 / 继承 / 重放 / 半
   });
 
   it("踏雷：攻击技能复制已触发迸发效果（重放不递归）", () => {
-    const burstSkill = skillBy((s) => Boolean((s.tags as string[] | undefined)?.includes("burst")) && (s.category === "Physical" || s.category === "Magic"), "no burst attack");
+    const burstSkill = skillBy((s) => String(s.description ?? "").includes("迸发") && (s.category === "Physical" || s.category === "Magic"), "no burst attack");
     const sim = new Simulator(bundle);
     const state = makeState(
       makeSide(makeActive("sp-14-1", { hp: 500, maxHp: 500, energy: 20 })),
@@ -161,7 +161,7 @@ describe("closeout: 选择分支 / 巧变 / 全队被动 / 继承 / 重放 / 半
   });
 
   it("疾风连袭：重放已用迅捷技能", () => {
-    const quick = skillBy((s) => Boolean((s.tags as string[] | undefined)?.includes("quick")) && (s.category === "Physical" || s.category === "Magic") && Number(s.power) > 0, "no quick attack");
+    const quick = skillBy((s) => s.quick === true && (s.category === "Physical" || s.category === "Magic") && Number(s.power) > 0, "no quick attack");
     const sim = new Simulator(bundle);
     const state = makeState(
       makeSide(makeActive("sp-14-1", { hp: 500, maxHp: 500, energy: 20 })),

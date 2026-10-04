@@ -189,6 +189,7 @@ function skillBrief(bundle: DataBundle, sk: Dict, icons: Dict): Dict {
     icon: toStr(sk.icon) || icons[id] || null,
     categoryIcon: toStr(sk.categoryIcon) || null,
     description: toStr(sk.description, toStr(sk.rawText)),
+    choice: sk.choice === true,
   };
 }
 

@@ -15,7 +15,7 @@ function spriteWithTrait(name: string): string {
 
 function nonQuickSkill(): string {
   for (const s of Object.values(bundle.skills as Record<string, Dict>)) {
-    if (Number(s.cost) <= 5 && !((s.tags as string[] | undefined) ?? []).includes("quick") && (s.category === "Physical" || s.category === "Magic")) return String(s.id);
+    if (Number(s.cost) <= 5 && s.quick !== true && (s.category === "Physical" || s.category === "Magic")) return String(s.id);
   }
   throw new Error("no skill");
 }

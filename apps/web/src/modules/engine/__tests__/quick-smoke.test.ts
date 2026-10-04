@@ -39,7 +39,7 @@ describe("迅捷 (D6)", () => {
     const hammer = Object.entries(bundle.sprites as Record<string, Dict>).find(([, v]) => (v.trait as Dict | undefined)?.name === "快锤")?.[0];
     expect(hammer).toBeTruthy();
     const cheap = Object.values(bundle.skills as Record<string, Dict>).find(
-      (s) => Number(s.cost) < 3 && !((s.tags as string[] | undefined) ?? []).includes("quick") && (s.category === "Physical" || s.category === "Magic"),
+      (s) => Number(s.cost) < 3 && s.quick !== true && (s.category === "Physical" || s.category === "Magic"),
     ) as { id: string } | undefined;
     if (!cheap) throw new Error("no cheap non-quick skill");
     const bench = makeActive(hammer!, { hp: 500, maxHp: 500, energy: 10 });

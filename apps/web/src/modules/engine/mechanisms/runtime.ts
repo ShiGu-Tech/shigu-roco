@@ -1341,9 +1341,8 @@ export class MechanismRuntime {
     // 规则覆盖 · `simple.powerMul`（不移）：无额外效果的攻击技能威力提升。
     if (skillId && bundle) {
       const mods = this.ruleModifiers(state, bundle, attackerSide);
-      if (typeof mods["simple.powerMul"] === "number") {
-        const tags = toArray<string>(getSkill(bundle, skillId).tags);
-        if (tags.includes("simple")) attackerMult *= 1 + (mods["simple.powerMul"] as number);
+      if (typeof mods["simple.powerMul"] === "number" && getSkill(bundle, skillId).simple === true) {
+        attackerMult *= 1 + (mods["simple.powerMul"] as number);
       }
       // 规则覆盖 · `power.nonLight`（夺目）：非光系技能威力提升。
       if (typeof mods["power.nonLight"] === "number" && toStr(getSkill(bundle, skillId).element) !== "Light") {

@@ -213,7 +213,7 @@ export class Simulator {
       const act = actions[side];
       if (act.kind !== "skill" || !act.skillId || act.released) continue;
       if (toNum(s.active.counters?.noCharge, 0) <= 0) continue;
-      if (!toArray<string>(getSkill(this.bundle, act.skillId).tags).includes("charge")) continue;
+      if (getSkill(this.bundle, act.skillId).charge !== true) continue;
       s.active.counters!.noCharge = Math.max(0, toNum(s.active.counters!.noCharge, 0) - 1);
       actions[side] = { ...act, released: true, label: "免蓄力释放" };
     }
@@ -501,7 +501,7 @@ export class Simulator {
         // 记忆域 · 记录本场已用过的「迅捷」/「迸发」技能（供疾风连袭 / 踏雷重放）。
         if (entry.action.skillId) {
           caster.counters ??= {};
-          if (toArray<string>(usedSkill.tags).includes("quick") || this.skillIsQuick(st, side, caster, entry.action.skillId, this.mechanisms.ruleModifiers(st, this.bundle, side))) {
+          if (usedSkill.quick === true || this.skillIsQuick(st, side, caster, entry.action.skillId, this.mechanisms.ruleModifiers(st, this.bundle, side))) {
             caster.counters[`usedQuick.${entry.action.skillId}`] = 1;
           }
           if (burst) caster.counters[`burstTriggered.${entry.action.skillId}`] = 1;
@@ -523,7 +523,7 @@ export class Simulator {
         }
         // 迅捷域 · 已使用迅捷技能的能耗累计（供「疾风连袭」动态能耗）。
         const usedCost = entry.action.skillId ? effectiveCost(st, this.bundle, side, entry.action.skillId, this.mechanisms.ruleModifiers(st, this.bundle, side)) : 0;
-        if (toArray<string>(usedSkill.tags).includes("quick") || this.skillIsQuick(st, side, caster, entry.action.skillId ?? "", this.mechanisms.ruleModifiers(st, this.bundle, side))) {
+        if (usedSkill.quick === true || this.skillIsQuick(st, side, caster, entry.action.skillId ?? "", this.mechanisms.ruleModifiers(st, this.bundle, side))) {
           this.bump(st, side, "quickCostSum", usedCost);
         }
         // 起飞加速：本场首次使用的技能记为永久迅捷。
@@ -769,7 +769,7 @@ export class Simulator {
   /** 某技能是否「迅捷」：静态 tag，或规则覆盖授予（快锤 能耗< N / 暴食 某系 / 翼轴 1 号位 / 起飞加速 首次技能 / 飓风 翼系共享）。 */
   private skillIsQuick(st: BattleState, side: Side, active: ActiveSprite, skillId: string, mods: RuleModifiers): boolean {
     const skill = getSkill(this.bundle, skillId);
-    if (toArray<string>(skill.tags).includes("quick")) return true;
+    if (skill.quick === true) return true;
     const below = toNum(mods["quick.costBelow"], 0);
     if (below > 0 && toNum(skill.cost, 0) < below) return true;
     if (mods[`quick.element.${toStr(skill.element)}`] === true) return true;
@@ -787,7 +787,7 @@ export class Simulator {
 
   /** 是否为「选择」技能：描述含「选择」，或特性经规则覆盖授予（`choice.all` / `choice.skill.<id>` / `choice.element.<El>`）。 */
   private skillHasChoice(skillId: string, mods?: RuleModifiers): boolean {
-    if (/选择/.test(toStr(getSkill(this.bundle, skillId).description, ""))) return true;
+    if (getSkill(this.bundle, skillId).choice === true) return true;
     if (!mods) return false;
     if (mods["choice.all"] === true) return true;
     if (mods[`choice.skill.${skillId}`] === true) return true;
