@@ -96,6 +96,7 @@ export const EFFECT_VOCABULARY: readonly EffectVocabulary[] = [
   { type: "clearStat", title: "驱散增减益", domain: "stat", params: { target: "目标", stat: "属性", layers: "层数", polarity: "极性", limit: "种类上限" } },
   { type: "scaleStat", title: "缩放增减益层数", domain: "stat", params: { target: "目标", polarity: "极性", stat: "属性", factor: "倍率", delta: "增减" } },
   { type: "convertBuffToStatus", title: "增益转状态", domain: "stat", params: { target: "目标", statusId: "状态", factor: "倍率" } },
+  { type: "convertStatPolarity", title: "增益减益互转", domain: "stat", params: { target: "目标", from: "来源极性" } },
   // 状态
   { type: "applyStatus", title: "施加状态", domain: "status", params: { target: "目标", statusId: "状态", layers: "层数", immuneElements: "免疫系别" } },
   { type: "setStatus", title: "设置状态层数", domain: "status", params: { target: "目标", statusId: "状态", layers: "层数", layersFrom: "层数取值" } },

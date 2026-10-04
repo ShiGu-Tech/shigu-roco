@@ -157,6 +157,17 @@ export class MechanismRuntime {
           const before = active.hp;
           const base = definition.amountFrom ? this.dynamicValue(state, command, definition.amountFrom, definition.amount, bundle) : definition.amount;
           const amount = Math.floor(definition.basis === "maxHp" ? active.maxHp * base : definition.basis === "currentHp" ? active.hp * base : base);
+          // 伪造账单：目标带 `healRedirect` 计数时，回复改为对敌方造成倍率伤害（含溢出）。
+          const redirectMul = toNum(active.counters?.healRedirect, 0);
+          if (redirectMul > 0) {
+            const otherSideR: Side = targetSide === "player" ? "enemy" : "player";
+            const oppR = otherSideR === "player" ? state.player.active : state.enemy.active;
+            const dealtR = Math.min(oppR.hp, Math.max(0, Math.floor(amount * redirectMul)));
+            oppR.hp = Math.max(0, oppR.hp - dealtR);
+            if (active.counters) delete active.counters.healRedirect;
+            events.push({ type: "damage", trigger: command.trigger, mechanismId: command.mechanismId, effectType: "heal", side: otherSideR, data: { value: dealtR, billRedirect: true } });
+            break;
+          }
           // 规则覆盖 · `heal.redirectToDamage`（戏耍）：回复改为对敌方造成等量伤害。
           const healMods = this.ruleModifiers(state, bundle, targetSide);
           if (healMods["heal.redirectToDamage"] === true) {
@@ -744,6 +755,20 @@ export class MechanismRuntime {
               events.push({ type: "stat-scaled", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { stat, before, after } });
             }
           }
+          break;
+        }
+        case "convertStatPolarity": {
+          if (!active || !targetSide) break;
+          const from = definition.from ?? "buff";
+          const source = from === "buff" ? active.buffs : active.debuffs;
+          const dest = from === "buff" ? active.debuffs : active.buffs;
+          for (const [stat, value] of Object.entries(source)) {
+            if (!value) continue;
+            const moved = from === "buff" ? -Math.abs(value) : Math.abs(value);
+            dest[stat] = (dest[stat] ?? 0) + moved;
+            delete source[stat];
+          }
+          events.push({ type: "stat-converted", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { from } });
           break;
         }
         case "convertBuffToStatus": {

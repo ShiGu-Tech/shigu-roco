@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.85.0",
+  "version": "0.86.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -12142,38 +12142,27 @@
       "trigger": "actionDeclared",
       "when": [
         {
-          "allOf": [
-            {
-              "path": "event.action.skillId",
-              "op": "eq",
-              "value": "sk-7090200"
-            },
-            {
-              "path": "event.opponentAction.actionType",
-              "op": "eq",
-              "value": "Attack"
-            }
-          ]
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7090200"
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
         }
       ],
       "effects": [
         {
-          "type": "forceFirst",
-          "target": "self"
-        },
-        {
-          "type": "applyStatus",
-          "target": "self",
-          "statusId": "def-7090200",
-          "layers": 1
-        },
-        {
-          "type": "unsupported",
-          "effectType": "defenseCounter",
-          "reason": "冰天雪地：被应对技能能耗 +3【待校准】"
+          "type": "modifySkillCost",
+          "target": "opponent",
+          "skillIdFrom": "event.opponentAction.skillId",
+          "delta": 3,
+          "duration": "permanent",
+          "key": "blizzard-cost"
         }
       ],
-      "note": "冰天雪地：应对攻击成功 → 必定先手 + 本回合承伤 −80%；被应对技能能耗 +3"
+      "note": "冰天雪地：被应对技能能耗 +3"
     },
     {
       "id": "skill:sk-7090200:reduce",
@@ -12307,38 +12296,29 @@
       "trigger": "actionDeclared",
       "when": [
         {
-          "allOf": [
-            {
-              "path": "event.action.skillId",
-              "op": "eq",
-              "value": "sk-7090350"
-            },
-            {
-              "path": "event.opponentAction.actionType",
-              "op": "eq",
-              "value": "Attack"
-            }
-          ]
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7090350"
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
         }
       ],
       "effects": [
         {
-          "type": "forceFirst",
-          "target": "self"
-        },
-        {
-          "type": "applyStatus",
+          "type": "modifyEnergy",
           "target": "self",
-          "statusId": "def-7090350",
-          "layers": 1
-        },
-        {
-          "type": "unsupported",
-          "effectType": "defenseCounter",
-          "reason": "雪替身：回复能量 = 被应对技能能耗 ×2【待校准】"
+          "delta": 0,
+          "deltaFrom": {
+            "path": "event.opponentAction.cost",
+            "scale": 2,
+            "round": "none"
+          }
         }
       ],
-      "note": "雪替身：应对攻击成功 → 必定先手 + 本回合承伤 −70%；回复能量 = 被应对技能能耗 ×2"
+      "note": "雪替身：回复被应对技能能耗 ×2 的能量"
     },
     {
       "id": "skill:sk-7090350:reduce",
@@ -12389,38 +12369,25 @@
       "trigger": "actionDeclared",
       "when": [
         {
-          "allOf": [
-            {
-              "path": "event.action.skillId",
-              "op": "eq",
-              "value": "sk-7021120"
-            },
-            {
-              "path": "event.opponentAction.actionType",
-              "op": "eq",
-              "value": "Attack"
-            }
-          ]
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7021120"
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
         }
       ],
       "effects": [
         {
-          "type": "forceFirst",
-          "target": "self"
-        },
-        {
-          "type": "applyStatus",
+          "type": "addCounter",
           "target": "self",
-          "statusId": "def-7021120",
-          "layers": 1
-        },
-        {
-          "type": "unsupported",
-          "effectType": "defenseCounter",
-          "reason": "嗜痛：每受 1 次攻击伤害双攻 +40%【待校准】"
+          "key": "pain",
+          "delta": 1
         }
       ],
-      "note": "嗜痛：应对攻击成功 → 必定先手 + 本回合承伤 −80%；每受 1 次攻击伤害双攻 +40%"
+      "note": "嗜痛：应对成功进入持续"
     },
     {
       "id": "skill:sk-7021120:reduce",
@@ -12548,38 +12515,25 @@
       "trigger": "actionDeclared",
       "when": [
         {
-          "allOf": [
-            {
-              "path": "event.action.skillId",
-              "op": "eq",
-              "value": "sk-7060250"
-            },
-            {
-              "path": "event.opponentAction.actionType",
-              "op": "eq",
-              "value": "Attack"
-            }
-          ]
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7060250"
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
         }
       ],
       "effects": [
         {
-          "type": "forceFirst",
-          "target": "self"
-        },
-        {
-          "type": "applyStatus",
+          "type": "addCounter",
           "target": "self",
-          "statusId": "def-7060250",
-          "layers": 1
-        },
-        {
-          "type": "unsupported",
-          "effectType": "defenseCounter",
-          "reason": "点亮：光系技能威力永久 +50%【待校准】"
+          "key": "lightup",
+          "delta": 1
         }
       ],
-      "note": "点亮：应对攻击成功 → 必定先手 + 本回合承伤 −90%；光系技能威力永久 +50%"
+      "note": "点亮：应对成功进入持续"
     },
     {
       "id": "skill:sk-7060250:reduce",
@@ -12713,38 +12667,25 @@
       "trigger": "actionDeclared",
       "when": [
         {
-          "allOf": [
-            {
-              "path": "event.action.skillId",
-              "op": "eq",
-              "value": "sk-7140300"
-            },
-            {
-              "path": "event.opponentAction.actionType",
-              "op": "eq",
-              "value": "Attack"
-            }
-          ]
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7140300"
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
         }
       ],
       "effects": [
         {
-          "type": "forceFirst",
-          "target": "self"
-        },
-        {
-          "type": "applyStatus",
+          "type": "addCounter",
           "target": "self",
-          "statusId": "def-7140300",
-          "layers": 1
-        },
-        {
-          "type": "unsupported",
-          "effectType": "defenseCounter",
-          "reason": "防御反击：自己全技能威力 +40【待校准】"
+          "key": "counter",
+          "delta": 1
         }
       ],
-      "note": "防御反击：应对攻击成功 → 必定先手 + 本回合承伤 −80%；自己全技能威力 +40"
+      "note": "防御反击：应对成功进入持续"
     },
     {
       "id": "skill:sk-7140300:reduce",
@@ -12877,38 +12818,35 @@
       "trigger": "actionDeclared",
       "when": [
         {
-          "allOf": [
-            {
-              "path": "event.action.skillId",
-              "op": "eq",
-              "value": "sk-7070080"
-            },
-            {
-              "path": "event.opponentAction.actionType",
-              "op": "eq",
-              "value": "Attack"
-            }
-          ]
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7070080"
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
         }
       ],
       "effects": [
         {
-          "type": "forceFirst",
-          "target": "self"
-        },
-        {
-          "type": "applyStatus",
+          "type": "modifySkillCost",
           "target": "self",
-          "statusId": "def-7070080",
-          "layers": 1
+          "scope": "all",
+          "delta": -1,
+          "duration": "permanent",
+          "key": "conserv"
         },
         {
-          "type": "unsupported",
-          "effectType": "defenseCounter",
-          "reason": "能量守恒：两侧技能能耗永久 −1【待校准】"
+          "type": "modifySkillCost",
+          "target": "opponent",
+          "scope": "all",
+          "delta": -1,
+          "duration": "permanent",
+          "key": "conserv2"
         }
       ],
-      "note": "能量守恒：应对攻击成功 → 必定先手 + 本回合承伤 −80%；两侧技能能耗永久 −1"
+      "note": "能量守恒：两侧技能能耗永久 −1"
     },
     {
       "id": "skill:sk-7070080:reduce",
@@ -13036,38 +12974,27 @@
       "trigger": "actionDeclared",
       "when": [
         {
-          "allOf": [
-            {
-              "path": "event.action.skillId",
-              "op": "eq",
-              "value": "sk-7140190"
-            },
-            {
-              "path": "event.opponentAction.actionType",
-              "op": "eq",
-              "value": "Attack"
-            }
-          ]
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7140190"
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
         }
       ],
       "effects": [
         {
-          "type": "forceFirst",
-          "target": "self"
-        },
-        {
-          "type": "applyStatus",
+          "type": "setCounter",
           "target": "self",
-          "statusId": "def-7140190",
-          "layers": 1
-        },
-        {
-          "type": "unsupported",
-          "effectType": "defenseCounter",
-          "reason": "听桥：对敌方造成威力与被应对技能相等的武系物伤【待校准】"
+          "key": "listenPower",
+          "valueFrom": {
+            "path": "event.opponentAction.cost"
+          }
         }
       ],
-      "note": "听桥：应对攻击成功 → 必定先手 + 本回合承伤 −60%；对敌方造成威力与被应对技能相等的武系物伤"
+      "note": "听桥：记录被应对技能能耗"
     },
     {
       "id": "skill:sk-7140190:reduce",
@@ -16951,31 +16878,44 @@
       "id": "skill:sk-7180350",
       "ownerType": "skill",
       "ownerId": "sk-7180350",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "actionResolved",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "伪造账单：「敌方回复生命」钩子【待校准】"
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7180350"
         }
       ],
-      "note": "伪造账单：「敌方回复生命」钩子"
+      "effects": [
+        {
+          "type": "setCounter",
+          "target": "opponent",
+          "key": "healRedirect",
+          "value": 2
+        }
+      ],
+      "note": "伪造账单：敌方本回合回复改为失去 2 倍"
     },
     {
       "id": "skill:sk-7180450",
       "ownerType": "skill",
       "ownerId": "sk-7180450",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "actionResolved",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "掉包：属性增益 → 减益 转化（无原语）【待校准】"
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7180450"
         }
       ],
-      "note": "掉包：属性增益 → 减益 转化（无原语）"
+      "effects": [
+        {
+          "type": "convertStatPolarity",
+          "target": "opponent",
+          "from": "buff"
+        }
+      ],
+      "note": "掉包：敌方属性增益转为等量减益"
     },
     {
       "id": "skill:sk-7110360",
@@ -21924,16 +21864,25 @@
       "id": "trait:sp-144-2#2",
       "ownerType": "trait",
       "ownerId": "sp-144-2",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "抓到你了：自己入场时敌方获得2层冻结，使敌方获得冻结时，也会使其获得全技能能耗+1。【待校准】"
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-144-2"
+          ]
         }
       ],
-      "note": "特性「抓到你了」：待实现"
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "freeze",
+          "layers": 2
+        }
+      ],
+      "note": "特性「抓到你了」：入场时敌方获 2 层冻结"
     },
     {
       "id": "trait:sp-145-1",
@@ -24550,6 +24499,159 @@
         }
       ],
       "note": "重金属粉尘：攻击技能附加中毒 3"
+    },
+    {
+      "id": "trait:sp-144-2#3",
+      "ownerType": "trait",
+      "ownerId": "sp-144-2",
+      "trigger": "statusApplied",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-144-2"
+          ]
+        },
+        {
+          "path": "event.statusId",
+          "op": "eq",
+          "value": "freeze"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "opponent",
+          "scope": "all",
+          "delta": 1,
+          "duration": "permanent",
+          "key": "grip2-freeze"
+        }
+      ],
+      "note": "特性「抓到你了」：使敌方获冻结时其全技能能耗 +1"
+    },
+    {
+      "id": "skill:sk-7021120",
+      "ownerType": "skill",
+      "ownerId": "sk-7021120",
+      "trigger": "onHit",
+      "when": [
+        {
+          "path": "target.active.counters.pain",
+          "op": "gte",
+          "value": 1
+        },
+        {
+          "path": "event.damageType",
+          "op": "in",
+          "value": [
+            "Physical",
+            "Magic"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "target",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 40
+        },
+        {
+          "type": "modifyStat",
+          "target": "target",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 40
+        }
+      ],
+      "note": "嗜痛：每受 1 次攻击伤害双攻 +40%"
+    },
+    {
+      "id": "skill:sk-7060250",
+      "ownerType": "skill",
+      "ownerId": "sk-7060250",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.counters.lightup",
+          "op": "gte",
+          "value": 1
+        },
+        {
+          "path": "action.element",
+          "op": "eq",
+          "value": "Light"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyDamage",
+          "target": "self",
+          "mode": "multiply",
+          "value": 1.5,
+          "scope": "outgoing"
+        }
+      ],
+      "note": "点亮：光系技能威力 +50%"
+    },
+    {
+      "id": "skill:sk-7140300",
+      "ownerType": "skill",
+      "ownerId": "sk-7140300",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.counters.counter",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "addPower",
+          "target": "self",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.counter",
+            "scale": 40
+          }
+        }
+      ],
+      "note": "防御反击：全技能威力 +40"
+    },
+    {
+      "id": "skill:sk-7140190",
+      "ownerType": "skill",
+      "ownerId": "sk-7140190",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7140190"
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "opponent",
+          "category": "Physical",
+          "element": "Fight",
+          "power": 0,
+          "powerFrom": {
+            "path": "self.counters.listenPower"
+          }
+        }
+      ],
+      "note": "听桥：造成威力等于被应对技能能耗的武系物伤"
     }
   ]
 }

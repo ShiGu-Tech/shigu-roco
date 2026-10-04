@@ -147,5 +147,7 @@
  *          行动视图 `action.neighborIds`（相邻技能 id）。服务联动装置 / 友谊之果 / 系统发育 / 重金属粉尘。
  * - 0.52.0 能耗域规则：`effectiveCost` 增可选 `rules` 参数，支持 `cost.signFlip`（对流：增减反转）/
  *          `cost.changeMul`（倾轧：变化幅度倍率）；`battle.ts` 各调用点传入 `ruleModifiers`。
+ * - 0.53.0 增量长尾：`convertStatPolarity`（增益↔减益互转，掉包）；`healRedirect` 计数治疗改道（伪造账单，
+ *          含溢出、回合末清除）；`actionDeclared` 的 `opponentAction` 补 `cost`（雪替身 / 听桥 / 冰天雪地）。
  */
-export const ENGINE_VERSION = "0.52.0";
+export const ENGINE_VERSION = "0.53.0";

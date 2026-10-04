@@ -54,6 +54,7 @@ const WRITE_NODES: WriteSpec[] = [
   { suffix: "clearStat", title: "写入 · 驱散属性", target: "self", params: [{ name: "stat", type: "string" }, { name: "polarity", type: "string" }, { name: "limit", type: "number" }] },
   { suffix: "scaleStat", title: "写入 · 缩放属性", target: "self", params: [{ name: "polarity", type: "string" }, { name: "stat", type: "string" }, { name: "factor", type: "number" }, { name: "delta", type: "number" }] },
   { suffix: "convertBuffToStatus", title: "写入 · 增益转状态", target: "opponent", params: [{ name: "statusId", type: "string", required: true }, { name: "factor", type: "number" }] },
+  { suffix: "convertStatPolarity", title: "写入 · 增减益互转", target: "opponent", params: [{ name: "from", type: "string" }] },
   { suffix: "modifyDamage", title: "写入 · 伤害修饰", target: "self", params: [{ name: "mode", type: "string" }, { name: "value", type: "number" }, { name: "scope", type: "string" }] },
   { suffix: "addPower", title: "写入 · 威力加成", target: "self", inputs: ["value"], params: [] },
   { suffix: "setHits", title: "写入 · 连击段数", target: "self", inputs: ["hits"], params: [{ name: "markId", type: "string" }, { name: "base", type: "number" }, { name: "perStack", type: "number" }] },

@@ -95,6 +95,8 @@ export type EffectSpec =
   | { type: "scaleStat"; target?: string; polarity?: "buff" | "debuff" | "all"; stat?: string; factor?: number; delta?: number }
   /** 强化域 · 增益转状态：把目标全部增益（合计层数 × factor）转为 `statusId` 层数并清空增益。 */
   | { type: "convertBuffToStatus"; target?: string; statusId: string; factor?: number }
+  /** 强化域 · 增益减益互转：把目标的增益转为等量减益（掉包）。 */
+  | { type: "convertStatPolarity"; target?: string; from?: "buff" | "debuff" }
   /** 伤害修饰：scope=outgoing 攻方输出倍率、incoming 防方承伤倍率；multiply 相乘 / add 相加（+value）。 */
   | { type: "modifyDamage"; target?: string; mode: "multiply" | "add"; value: number; scope?: "outgoing" | "incoming" }
   /** 技能栏域 · 条件威力加成：在 `beforeDamage` 收集，累加到本次 `dealDamage` 的有效威力（先于属性 / STAB）。 */

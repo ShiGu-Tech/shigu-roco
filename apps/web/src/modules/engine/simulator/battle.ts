@@ -247,7 +247,7 @@ export class Simulator {
           actionId: actionIds[side],
           reaction: this.reactionOf(actions[side].skillId),
           reacted: reactedBySide[side] === true,
-          opponentAction: { kind: opponentAction.kind, skillId: opponentAction.skillId, actionType: toStr(opponentSkill.actionType), category: toStr(opponentSkill.category) },
+          opponentAction: { kind: opponentAction.kind, skillId: opponentAction.skillId, actionType: toStr(opponentSkill.actionType), category: toStr(opponentSkill.category), cost: opponentAction.skillId ? effectiveCost(st, this.bundle, otherSide(side), opponentAction.skillId, this.mechanisms.ruleModifiers(st, this.bundle, otherSide(side))) : 0 },
         },
       });
       const mechanismEvents = this.mechanisms.applyActionCommands(queue, commands, actionIds, () => `action-${st.turn}-extra-${queue.all().length}`);
@@ -677,6 +677,8 @@ export class Simulator {
       if (s.wishCooldown > 0) s.wishCooldown -= 1;
       // 冷却按精灵「占场消耗」：只结算在场精灵；下场（bench）冻结，换回后从剩余值继续。
       const active = s.active;
+      // 伪造账单：本回合治疗改道计数到期清除。
+      if (active.counters?.healRedirect) delete active.counters.healRedirect;
       for (const skillId of Object.keys(active.cooldowns ?? {})) {
         if (touched[side].has(skillId)) continue;
         active.cooldowns![skillId] -= 1;
