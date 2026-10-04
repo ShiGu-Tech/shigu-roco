@@ -97,7 +97,7 @@ export type EffectSpec =
   /** 冷却：scope=defense 作用于全部防御技能；skillIdFrom 从上下文取目标技能（如 event.opponentAction.skillId）。 */
   | { type: "modifyCooldown"; target?: string; skillId?: string; skillIdFrom?: string; scope?: "skill" | "defense"; delta: number; minimum?: number }
   /** 状态层数（不再混存 duration）；immuneElements 与目标系别比对，命中即免疫。 */
-  | { type: "applyStatus"; target?: string; statusId: string; layers?: number; immuneElements?: string[] }
+  | { type: "applyStatus"; target?: string; statusId: string; layers?: number; layersFrom?: DynamicRef; immuneElements?: string[] }
   /** 状态设为指定层数（0 = 移除）；`layersFrom` 为上下文点路径动态取值。 */
   | { type: "setStatus"; target?: string; statusId: string; layers?: number; layersFrom?: DynamicRef }
   /** 状态缩放：对指定状态（省略 = 全部）做 `factor` 乘 + `delta` 加（如减益翻倍）。 */

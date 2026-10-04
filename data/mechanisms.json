@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.67.0",
+  "version": "0.68.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -20586,31 +20586,62 @@
       "id": "trait:sp-27-1",
       "ownerType": "trait",
       "ownerId": "sp-27-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "地脉：初始能量为0，入场前己方精灵每放1次地系技能，回复3能量。【待校准】"
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-27-1",
+            "sp-28-1",
+            "sp-29-1"
+          ]
         }
       ],
-      "note": "特性「地脉」：待实现"
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 0,
+          "deltaFrom": {
+            "path": "self.counters.usedGround",
+            "scale": 3
+          }
+        }
+      ],
+      "note": "特性「地脉」：入场前每放 1 次地系技能回复 3 能量"
     },
     {
       "id": "trait:sp-29-2",
       "ownerType": "trait",
       "ownerId": "sp-29-2",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "地脉馈赠：突破能量上限并立即回复10能量，入场前己方精灵每使用1次地系技能，回复3能量。【待校准】"
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-29-2"
+          ]
         }
       ],
-      "note": "特性「地脉馈赠」：待实现"
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 10
+        },
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 0,
+          "deltaFrom": {
+            "path": "self.counters.usedGround",
+            "scale": 3
+          }
+        }
+      ],
+      "note": "特性「地脉馈赠」：回复 10 + 入场前每放 1 次地系技能 +3"
     },
     {
       "id": "trait:sp-32-1",
@@ -20736,16 +20767,40 @@
       "id": "trait:sp-60-1",
       "ownerType": "trait",
       "ownerId": "sp-60-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "壮胆：队伍存在虫系精灵，自己获得双攻+50%。【待校准】"
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-60-1",
+            "sp-61-1",
+            "sp-62-1"
+          ]
+        },
+        {
+          "path": "self.counters.teamInsect",
+          "op": "gte",
+          "value": 1
         }
       ],
-      "note": "特性「壮胆」：待实现"
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 50
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 50
+        }
+      ],
+      "note": "特性「壮胆」：队伍存在虫系精灵则双攻 +50%"
     },
     {
       "id": "trait:sp-71-1",
@@ -20766,46 +20821,100 @@
       "id": "trait:sp-73-1",
       "ownerType": "trait",
       "ownerId": "sp-73-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "慢热型：初始能量为0，入场前己方精灵每成功应对1次，回复5能量。【待校准】"
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-73-1",
+            "sp-74-1",
+            "sp-75-1"
+          ]
         }
       ],
-      "note": "特性「慢热型」：待实现"
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 0,
+          "deltaFrom": {
+            "path": "self.counters.reacts",
+            "scale": 5
+          }
+        }
+      ],
+      "note": "特性「慢热型」：入场前己方每成功应对 1 次回复 5 能量"
     },
     {
       "id": "trait:sp-76-1",
       "ownerType": "trait",
       "ownerId": "sp-76-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "skillUsed",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "溶解扩散：每携带1个毒系技能进入战斗，水系技能使敌方获得1层中毒。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-76-1",
+            "sp-76-2",
+            "sp-77-1",
+            "sp-77-2",
+            "sp-78-1",
+            "sp-78-2"
+          ]
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Water"
         }
       ],
-      "note": "特性「溶解扩散」：待实现"
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "poison",
+          "layersFrom": {
+            "path": "self.counters.loadoutPoison",
+            "scale": 1
+          }
+        }
+      ],
+      "note": "特性「溶解扩散」：每携带 1 个毒系技能，水系技能使敌方获 1 层中毒"
     },
     {
       "id": "trait:sp-78-3",
       "ownerType": "trait",
       "ownerId": "sp-78-3",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "skillUsed",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "溶解腐蚀：每携带1个毒系技能进入战斗，水系技能使敌方获得2层中毒。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-78-3",
+            "sp-78-4"
+          ]
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Water"
         }
       ],
-      "note": "特性「溶解腐蚀」：待实现"
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "poison",
+          "layersFrom": {
+            "path": "self.counters.loadoutPoison",
+            "scale": 2
+          }
+        }
+      ],
+      "note": "特性「溶解腐蚀」：每携带 1 个毒系技能，水系技能使敌方获 2 层中毒"
     },
     {
       "id": "trait:sp-79-1",
@@ -20826,31 +20935,169 @@
       "id": "trait:sp-82-1",
       "ownerType": "trait",
       "ownerId": "sp-82-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "虫群鼓舞：队伍中每有1只其他的虫系精灵，自己入场时获得攻防速+10%。【待校准】"
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-82-1",
+            "sp-83-1",
+            "sp-84-1"
+          ]
+        },
+        {
+          "path": "self.counters.teamInsect",
+          "op": "gte",
+          "value": 1
         }
       ],
-      "note": "特性「虫群鼓舞」：待实现"
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.teamInsect",
+            "terms": [
+              {
+                "coef": 10,
+                "power": 1
+              },
+              {
+                "coef": -10,
+                "power": 0
+              }
+            ]
+          }
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "defense",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.teamInsect",
+            "terms": [
+              {
+                "coef": 10,
+                "power": 1
+              },
+              {
+                "coef": -10,
+                "power": 0
+              }
+            ]
+          }
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "speed",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.teamInsect",
+            "terms": [
+              {
+                "coef": 10,
+                "power": 1
+              },
+              {
+                "coef": -10,
+                "power": 0
+              }
+            ]
+          }
+        }
+      ],
+      "note": "特性「虫群鼓舞」：队伍每有 1 只其他虫系精灵，入场时攻防速 +10%"
     },
     {
       "id": "trait:sp-84-2",
       "ownerType": "trait",
       "ownerId": "sp-84-2",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "虫群突袭：队伍中每有1只其他的虫系精灵，自己入场时获得攻防速+15%。【待校准】"
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-84-2"
+          ]
+        },
+        {
+          "path": "self.counters.teamInsect",
+          "op": "gte",
+          "value": 1
         }
       ],
-      "note": "特性「虫群突袭」：待实现"
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.teamInsect",
+            "terms": [
+              {
+                "coef": 15,
+                "power": 1
+              },
+              {
+                "coef": -15,
+                "power": 0
+              }
+            ]
+          }
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "defense",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.teamInsect",
+            "terms": [
+              {
+                "coef": 15,
+                "power": 1
+              },
+              {
+                "coef": -15,
+                "power": 0
+              }
+            ]
+          }
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "speed",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.teamInsect",
+            "terms": [
+              {
+                "coef": 15,
+                "power": 1
+              },
+              {
+                "coef": -15,
+                "power": 0
+              }
+            ]
+          }
+        }
+      ],
+      "note": "特性「虫群突袭」：队伍每有 1 只其他虫系精灵，入场时攻防速 +15%"
     },
     {
       "id": "trait:sp-85-1",
@@ -20991,31 +21238,63 @@
       "id": "trait:sp-108-1",
       "ownerType": "trait",
       "ownerId": "sp-108-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "水翼推进：己方精灵每使用1次水系技能，自己入场时获得全技能能耗-1。【待校准】"
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-108-1",
+            "sp-109-1",
+            "sp-110-1"
+          ]
         }
       ],
-      "note": "特性「水翼推进」：待实现"
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": 0,
+          "deltaFrom": {
+            "path": "self.counters.usedWater",
+            "scale": -1
+          },
+          "duration": "permanent",
+          "key": "water-wing"
+        }
+      ],
+      "note": "特性「水翼推进」：每使用 1 次水系技能，入场时全技能能耗 −1"
     },
     {
       "id": "trait:sp-110-2",
       "ownerType": "trait",
       "ownerId": "sp-110-2",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "水翼飞升：己方精灵每使用1次水系技能，自己入场时获得全技能能耗-1，且能耗为0的技能威力+30%。【待校准】"
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-110-2"
+          ]
         }
       ],
-      "note": "特性「水翼飞升」：待实现"
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": 0,
+          "deltaFrom": {
+            "path": "self.counters.usedWater",
+            "scale": -1
+          },
+          "duration": "permanent",
+          "key": "water-wing-2"
+        }
+      ],
+      "note": "特性「水翼飞升」：每使用 1 次水系技能，入场时全技能能耗 −1"
     },
     {
       "id": "trait:sp-111-1",
@@ -21126,16 +21405,41 @@
       "id": "trait:sp-131-1",
       "ownerType": "trait",
       "ownerId": "sp-131-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "悲悯：己方队伍中每有1只力竭的精灵，自己获得双攻+30%。【待校准】"
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-131-1"
+          ]
         }
       ],
-      "note": "特性「悲悯」：待实现"
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.faints",
+            "scale": 30
+          }
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.faints",
+            "scale": 30
+          }
+        }
+      ],
+      "note": "特性「悲悯」：己方每有 1 只力竭精灵，双攻 +30%"
     },
     {
       "id": "trait:sp-131-2",
@@ -21156,16 +21460,30 @@
       "id": "trait:sp-134-1",
       "ownerType": "trait",
       "ownerId": "sp-134-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "结晶水：初始能量为0，入场前己方精灵每放1次冰系技能，回复3能量。【待校准】"
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-134-1",
+            "sp-135-1",
+            "sp-136-1"
+          ]
         }
       ],
-      "note": "特性「结晶水」：待实现"
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 0,
+          "deltaFrom": {
+            "path": "self.counters.usedIce",
+            "scale": 3
+          }
+        }
+      ],
+      "note": "特性「结晶水」：入场前每放 1 次冰系技能回复 3 能量"
     },
     {
       "id": "trait:sp-144-2#2",
@@ -21456,46 +21774,95 @@
       "id": "trait:sp-212-1",
       "ownerType": "trait",
       "ownerId": "sp-212-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "拨浪鼓：己方精灵每使用1次状态技能，自己入场时毒系和萌系技能威力+10。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-212-1",
+            "sp-213-1"
+          ]
+        },
+        {
+          "path": "action.element",
+          "op": "in",
+          "value": [
+            "Poison",
+            "Fairy"
+          ]
         }
       ],
-      "note": "特性「拨浪鼓」：待实现"
+      "effects": [
+        {
+          "type": "addPower",
+          "target": "self",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.usedTypeStatus",
+            "scale": 10
+          }
+        }
+      ],
+      "note": "特性「拨浪鼓」：己方每使用 1 次状态技能，毒/萌系技能威力 +10"
     },
     {
       "id": "trait:sp-216-1",
       "ownerType": "trait",
       "ownerId": "sp-216-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "蒸汽膨胀：己方精灵每使用1次火系技能，自己入场时获得全技能威力+10。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-216-1",
+            "sp-217-1",
+            "sp-218-1"
+          ]
         }
       ],
-      "note": "特性「蒸汽膨胀」：待实现"
+      "effects": [
+        {
+          "type": "addPower",
+          "target": "self",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.usedFire",
+            "scale": 10
+          }
+        }
+      ],
+      "note": "特性「蒸汽膨胀」：己方每使用 1 次火系技能，全技能威力 +10"
     },
     {
       "id": "trait:sp-218-2",
       "ownerType": "trait",
       "ownerId": "sp-218-2",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "蒸汽革命：己方精灵每使用1次火系技能，自己入场时获得全技能威力+10和物防+5%【待校准】"
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-218-2"
+          ]
         }
       ],
-      "note": "特性「蒸汽革命」：待实现"
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "defense",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.usedFire",
+            "scale": 5
+          }
+        }
+      ],
+      "note": "特性「蒸汽革命」：己方每使用 1 次火系技能，入场时物防 +5%"
     },
     {
       "id": "trait:sp-221-1",
@@ -21621,16 +21988,30 @@
       "id": "trait:sp-249-1",
       "ownerType": "trait",
       "ownerId": "sp-249-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "散热：初始能量为0，入场前己方精灵每放1次火系技能，回复3能量。【待校准】"
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-249-1",
+            "sp-250-1",
+            "sp-251-1"
+          ]
         }
       ],
-      "note": "特性「散热」：待实现"
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 0,
+          "deltaFrom": {
+            "path": "self.counters.usedFire",
+            "scale": 3
+          }
+        }
+      ],
+      "note": "特性「散热」：入场前每放 1 次火系技能回复 3 能量"
     },
     {
       "id": "trait:sp-252-1",
@@ -21921,16 +22302,29 @@
       "id": "trait:sp-323-1",
       "ownerType": "trait",
       "ownerId": "sp-323-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "血型吸引：敌方每携带1种系别的技能，自己攻击时威力+10。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-323-1",
+            "sp-324-1"
+          ]
         }
       ],
-      "note": "特性「血型吸引」：待实现"
+      "effects": [
+        {
+          "type": "addPower",
+          "target": "self",
+          "value": 0,
+          "valueFrom": {
+            "path": "opponent.counters.loadoutElements",
+            "scale": 10
+          }
+        }
+      ],
+      "note": "特性「血型吸引」：敌方每携带 1 种系别技能，威力 +10"
     },
     {
       "id": "trait:sp-325-1",
@@ -22281,16 +22675,54 @@
       "id": "trait:sp-393-1",
       "ownerType": "trait",
       "ownerId": "sp-393-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "淬炼火：入场前己方精灵每使用1次火系技能，获得攻防+10%，速度+10。（最多触发10次）【待校准】"
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-393-1",
+            "sp-394-1",
+            "sp-395-1"
+          ]
         }
       ],
-      "note": "特性「淬炼火」：待实现"
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.usedFire",
+            "scale": 10
+          }
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "defense",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.usedFire",
+            "scale": 10
+          }
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "speed",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.usedFire",
+            "scale": 10
+          }
+        }
+      ],
+      "note": "特性「淬炼火」：入场前己方每使用 1 次火系技能，攻防速 +10%（略去最多 10 次上限）"
     },
     {
       "id": "trait:sp-396-1",
@@ -22621,6 +23053,63 @@
         }
       ],
       "note": "特性「秋收」：待实现"
+    },
+    {
+      "id": "trait:sp-110-2#2",
+      "ownerType": "trait",
+      "ownerId": "sp-110-2",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-110-2"
+          ]
+        },
+        {
+          "path": "action.cost",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyDamage",
+          "target": "self",
+          "mode": "multiply",
+          "value": 1.3,
+          "scope": "outgoing"
+        }
+      ],
+      "note": "特性「水翼飞升」：能耗为 0 的技能威力 +30%"
+    },
+    {
+      "id": "trait:sp-218-2#2",
+      "ownerType": "trait",
+      "ownerId": "sp-218-2",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-218-2"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "addPower",
+          "target": "self",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.usedFire",
+            "scale": 10
+          }
+        }
+      ],
+      "note": "特性「蒸汽革命」：全技能威力 +10×火系技能次数"
     }
   ]
 }

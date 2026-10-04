@@ -586,7 +586,8 @@ export class MechanismRuntime {
             break;
           }
           const before = active.statuses[definition.statusId] ?? 0;
-          const delta = definition.layers ?? 1;
+          const delta = definition.layersFrom !== undefined ? Math.max(0, Math.floor(this.dynamicValue(state, command, definition.layersFrom, definition.layers ?? 1, bundle))) : (definition.layers ?? 1);
+          if (delta <= 0) break;
           active.statuses[definition.statusId] = before + delta;
           const sourceActive = command.actorSide === "player" ? state.player.active : command.actorSide === "enemy" ? state.enemy.active : undefined;
           events.push({ type: "status-applied", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { statusId: definition.statusId, before, after: active.statuses[definition.statusId], layers: delta, sourceSide: command.actorSide ?? null, sourceSpriteId: sourceActive?.spriteId ?? null } });

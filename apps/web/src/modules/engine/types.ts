@@ -90,6 +90,8 @@ export interface LastTurn {
   element?: string;
   reacted?: boolean;
   switched?: boolean;
+  /** 本回合实际消耗的技能能耗（供「按双方能耗」类条件）。 */
+  cost?: number;
 }
 
 export interface SideState {

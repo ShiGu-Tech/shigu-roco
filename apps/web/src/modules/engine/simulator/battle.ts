@@ -34,6 +34,39 @@ export class Simulator {
     return who === "player" ? state.player : state.enemy;
   }
 
+  /** 队伍域 · 计数器自增（`SideState.counters`）。 */
+  private bump(st: BattleState, side: Side, key: string, delta = 1): void {
+    const s = this.sideState(st, side);
+    s.counters ??= {};
+    s.counters[key] = toNum(s.counters[key], 0) + delta;
+  }
+
+  /** 队伍域 · 开局按图鉴预计算：队伍各系只数 `team<Element>`、携带各系技能数 `loadout<Element>`、
+   *  携带技能总能耗 `loadoutCost`、携带系别种数 `loadoutElements`。 */
+  private seedSideCounters(st: BattleState, side: Side): void {
+    const s = this.sideState(st, side);
+    s.counters ??= {};
+    const c = s.counters;
+    for (const sprite of [s.active, ...s.bench]) {
+      const def = getSprite(this.bundle, sprite.spriteId);
+      for (const el of toArray<string>(def.elements)) c[`team${el}`] = toNum(c[`team${el}`], 0) + 1;
+    }
+    const def = getSprite(this.bundle, s.active.spriteId);
+    const loadout = s.active.loadout.length
+      ? s.active.loadout
+      : (toArray<string>(def.loadout).length ? toArray<string>(def.loadout) : toArray<string>(def.skillList));
+    const elements = new Set<string>();
+    let totalCost = 0;
+    for (const skillId of loadout) {
+      const sk = getSkill(this.bundle, skillId);
+      const el = toStr(sk.element);
+      if (el) { c[`loadout${el}`] = toNum(c[`loadout${el}`], 0) + 1; elements.add(el); }
+      totalCost += toNum(sk.cost, 0);
+    }
+    c.loadoutCost = totalCost;
+    c.loadoutElements = elements.size;
+  }
+
   // ---------------------------------------------------------------- 动作
   legalActions(state: BattleState, who: Side): Action[] {
     const side = this.sideState(state, who);
@@ -111,6 +144,8 @@ export class Simulator {
       // 入场域：开局在场精灵各自「入场」一次（供「首次入场」类特性）。
       for (const side of SIDES) events.push(...this.enterField(st, side, { from: null, forced: false }));
       events.push(...this.triggerState(st, "battleStart", { event: { turn: st.turn } }));
+      // 队伍域 · 开局按图鉴预计算队伍 / 携带统计（供「队伍每有 1 只 X 系」「每携带 1 个 X 系技能」类特性）。
+      for (const side of SIDES) this.seedSideCounters(st, side);
     }
 
     // 技能栏域 · 传动：turnStart 按侧派发，使 `self.active.loadout` 类条件可取到自身（与 turnEnd 一致）。
@@ -233,6 +268,11 @@ export class Simulator {
       if (entry.action.kind === "skill") {
         if (entry.action.skillId) touched[side].add(entry.action.skillId);
         const usedSkill = entry.action.skillId ? getSkill(this.bundle, entry.action.skillId) : {};
+        // 队伍域 · 历史计数：本方已使用该系 / 该类型技能次数、累计使用、成功应对次数（供「每使用过 1 次 X 系」类）。
+        this.bump(st, side, `used${toStr(usedSkill.element)}`);
+        this.bump(st, side, `usedType${toStr(usedSkill.actionType)}`);
+        this.bump(st, side, "skillUsed");
+        if (reactedBySide[side] === true) this.bump(st, side, "reacts");
         events.push(...this.triggerState(st, "skillUsed", { actorSide: side, targetSide: opp, action: actionView, event: { skillId: entry.action.skillId, actionId: entry.id, element: toStr(usedSkill.element), category: toStr(usedSkill.category), actionType: toStr(usedSkill.actionType), reacted: reactedBySide[side] === true, wentFirst, burst } }));
         const skillId = entry.action.skillId;
         if (skillId && caster.skillOverrides?.[skillId]?.expires === 0) {
@@ -271,11 +311,11 @@ export class Simulator {
       const s = this.sideState(st, side);
       if (action.kind === "skill" && action.skillId) {
         const used = getSkill(this.bundle, action.skillId);
-        s.lastTurn = { skillId: action.skillId, category: toStr(used.category), actionType: toStr(used.actionType), element: toStr(used.element), reacted: reactedBySide[side] === true };
+        s.lastTurn = { skillId: action.skillId, category: toStr(used.category), actionType: toStr(used.actionType), element: toStr(used.element), reacted: reactedBySide[side] === true, cost: effectiveCost(st, this.bundle, side, action.skillId) };
       } else if (action.kind === "energy") {
-        s.lastTurn = { actionType: "Energy" };
+        s.lastTurn = { actionType: "Energy", cost: 0 };
       } else {
-        s.lastTurn = { switched: true };
+        s.lastTurn = { switched: true, cost: 0 };
       }
     }
 
@@ -433,6 +473,8 @@ export class Simulator {
     const gained = active.energy - before;
     // 单次（nextAction）能耗条目：聚能也算一次行动，结算后移除。
     if (active.costMods?.some((m) => m.duration === "nextAction")) active.costMods = active.costMods.filter((m) => m.duration !== "nextAction");
+    // 队伍域 · 历史计数：本方聚能次数（供「敌方每使用 1 次聚能」类）。
+    this.bump(st, side, "charges");
     return [{ type: "energy", side, text: `${active.spriteId} 聚能 +${gained}（${active.energy}/${cap}）`, data: { value: gained } }];
   }
 
@@ -474,6 +516,8 @@ export class Simulator {
       events.push(...this.mechanisms.applyDamageCommands(st, this.bundle, commands).map((event) => this.asBattleEvent(event.type, event.side ?? null, event)));
     }
     events.push(...this.triggerState(st, "afterSwitch", { actorSide: side, targetSide: otherSide(side), action: { kind: "switch", benchId }, event: { from: old.spriteId, to: target.spriteId, forced } }));
+    // 队伍域 · 历史计数：本方换人次数（供「敌方每更换 1 次」类）。
+    this.bump(st, side, "switches");
     return events;
   }
 
@@ -606,6 +650,8 @@ export class Simulator {
       events.push(...this.triggerState(st, "beforeDeath", { actorSide: side, targetSide: opp, event: deathEvent }));
       s.active.faintHandled = true;
       s.magic -= perFaint;
+      // 队伍域 · 历史计数：本队力竭只数（供「每有 1 只力竭」类）。
+      this.bump(st, side, "faints");
       events.push({ type: "faint", side, text: `${s.active.spriteId} 阵亡，魔力 -${perFaint}`, data: {} });
       events.push(...this.triggerState(st, "afterDeath", { actorSide: side, targetSide: opp, event: deathEvent }));
       this.pruneAuraCostMods(st);
