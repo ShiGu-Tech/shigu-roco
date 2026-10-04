@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.119.0",
+  "version": "0.119.1",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -17473,72 +17473,6 @@
       "note": "特性「爆燃」"
     },
     {
-      "id": "trait:sp-8-1#2",
-      "ownerType": "trait",
-      "ownerId": "sp-8-1",
-      "trigger": "skillUsed",
-      "when": [
-        {
-          "path": "self.active.spriteId",
-          "op": "in",
-          "value": [
-            "sp-8-1",
-            "sp-9-1",
-            "sp-10-1"
-          ]
-        },
-        {
-          "path": "event.element",
-          "op": "eq",
-          "value": "Water"
-        }
-      ],
-      "effects": [
-        {
-          "type": "modifySkillCost",
-          "target": "self",
-          "scope": "all",
-          "delta": -1,
-          "mode": "add",
-          "duration": "turns",
-          "turns": 1
-        }
-      ],
-      "note": "特性「浸润」"
-    },
-    {
-      "id": "trait:sp-10-2#2",
-      "ownerType": "trait",
-      "ownerId": "sp-10-2",
-      "trigger": "skillUsed",
-      "when": [
-        {
-          "path": "self.active.spriteId",
-          "op": "in",
-          "value": [
-            "sp-10-2"
-          ]
-        },
-        {
-          "path": "event.element",
-          "op": "eq",
-          "value": "Water"
-        }
-      ],
-      "effects": [
-        {
-          "type": "modifySkillCost",
-          "target": "self",
-          "scope": "all",
-          "delta": -2,
-          "mode": "add",
-          "duration": "turns",
-          "turns": 1
-        }
-      ],
-      "note": "特性「浪潮」"
-    },
-    {
       "id": "trait:sp-165-1",
       "ownerType": "trait",
       "ownerId": "sp-165-1",
@@ -17916,35 +17850,6 @@
         }
       ],
       "note": "特性「诅咒」"
-    },
-    {
-      "id": "trait:sp-139-1#2",
-      "ownerType": "trait",
-      "ownerId": "sp-139-1",
-      "trigger": "beforeAction",
-      "when": [
-        {
-          "path": "self.active.spriteId",
-          "op": "in",
-          "value": [
-            "sp-139-1",
-            "sp-140-1",
-            "sp-141-1"
-          ]
-        }
-      ],
-      "effects": [
-        {
-          "type": "modifySkillCost",
-          "target": "opponent",
-          "scope": "all",
-          "delta": 1,
-          "mode": "add",
-          "duration": "turns",
-          "turns": 1
-        }
-      ],
-      "note": "特性「冰封」"
     },
     {
       "id": "trait:sp-390-1",
@@ -18429,60 +18334,6 @@
       "note": "特性「坠星」：敌方每层星陨 +20%"
     },
     {
-      "id": "trait:sp-427-1",
-      "ownerType": "trait",
-      "ownerId": "sp-427-1",
-      "trigger": "buffGained",
-      "when": [
-        {
-          "path": "self.active.spriteId",
-          "op": "in",
-          "value": [
-            "sp-427-1",
-            "sp-428-1",
-            "sp-429-1"
-          ]
-        }
-      ],
-      "effects": [
-        {
-          "type": "modifySkillCost",
-          "target": "self",
-          "scope": "all",
-          "delta": -1,
-          "mode": "add"
-        }
-      ],
-      "note": "特性「王子的诺言」：获得增益 → 全技能能耗 −1"
-    },
-    {
-      "id": "trait:sp-427-1#2",
-      "ownerType": "trait",
-      "ownerId": "sp-427-1",
-      "trigger": "debuffGained",
-      "when": [
-        {
-          "path": "self.active.spriteId",
-          "op": "in",
-          "value": [
-            "sp-427-1",
-            "sp-428-1",
-            "sp-429-1"
-          ]
-        }
-      ],
-      "effects": [
-        {
-          "type": "modifySkillCost",
-          "target": "self",
-          "scope": "all",
-          "delta": 1,
-          "mode": "add"
-        }
-      ],
-      "note": "特性「王子的诺言」：获得减益 → 全技能能耗 +1"
-    },
-    {
       "id": "trait:sp-99-1",
       "ownerType": "trait",
       "ownerId": "sp-99-1",
@@ -18787,39 +18638,6 @@
       "note": "特性「恶魔的晚宴」：主动击败（killer=target 侧）永久双攻 +50%"
     },
     {
-      "id": "trait:sp-159-1#2",
-      "ownerType": "trait",
-      "ownerId": "sp-159-1",
-      "trigger": "skillUsed",
-      "when": [
-        {
-          "path": "self.active.spriteId",
-          "op": "in",
-          "value": [
-            "sp-159-1",
-            "sp-160-1",
-            "sp-161-1"
-          ]
-        },
-        {
-          "path": "event.reacted",
-          "op": "eq",
-          "value": true
-        }
-      ],
-      "effects": [
-        {
-          "type": "modifySkillCost",
-          "target": "self",
-          "scope": "all",
-          "delta": -5,
-          "mode": "add",
-          "duration": "nextAction"
-        }
-      ],
-      "note": "特性「思维之盾」"
-    },
-    {
       "id": "trait:sp-293-1",
       "ownerType": "trait",
       "ownerId": "sp-293-1",
@@ -18910,11 +18728,8 @@
       "when": [
         {
           "path": "self.active.spriteId",
-          "op": "in",
-          "value": [
-            "sp-379-1",
-            "sp-380-1"
-          ]
+          "op": "eq",
+          "value": "sp-379-1"
         }
       ],
       "effects": [
@@ -19081,42 +18896,6 @@
         }
       ],
       "note": "特性「勇敢」"
-    },
-    {
-      "id": "trait:sp-12-1#2",
-      "ownerType": "trait",
-      "ownerId": "sp-12-1",
-      "trigger": "beforeAction",
-      "when": [
-        {
-          "path": "self.active.spriteId",
-          "op": "in",
-          "value": [
-            "sp-12-1",
-            "sp-12-2",
-            "sp-13-1",
-            "sp-13-2",
-            "sp-14-1",
-            "sp-14-2"
-          ]
-        },
-        {
-          "path": "action.category",
-          "op": "eq",
-          "value": "Defense"
-        }
-      ],
-      "effects": [
-        {
-          "type": "modifySkillCost",
-          "target": "self",
-          "scope": "all",
-          "delta": -2,
-          "mode": "add",
-          "duration": "nextAction"
-        }
-      ],
-      "note": "特性「缩壳」"
     },
     {
       "id": "trait:sp-66-1",
@@ -19359,38 +19138,6 @@
         }
       ],
       "note": "特性「加个雪球」：施加冻结时 +2 层"
-    },
-    {
-      "id": "trait:sp-142-1#2",
-      "ownerType": "trait",
-      "ownerId": "sp-142-1",
-      "trigger": "statusApplied",
-      "when": [
-        {
-          "path": "event.statusId",
-          "op": "eq",
-          "value": "freeze"
-        },
-        {
-          "path": "event.sourceSpriteId",
-          "op": "in",
-          "value": [
-            "sp-142-1",
-            "sp-143-1",
-            "sp-144-1"
-          ]
-        }
-      ],
-      "effects": [
-        {
-          "type": "modifySkillCost",
-          "target": "self",
-          "scope": "all",
-          "delta": 1,
-          "mode": "add"
-        }
-      ],
-      "note": "特性「捉迷藏」：施加冻结时同给能耗 +1"
     },
     {
       "id": "trait:sp-242-1",
@@ -19913,46 +19660,6 @@
         }
       ],
       "note": "特性「冻土」：每携带 1 个冰系技能，地系威力 +10%"
-    },
-    {
-      "id": "trait:sp-171-1#2",
-      "ownerType": "trait",
-      "ownerId": "sp-171-1",
-      "trigger": "beforeAction",
-      "when": [
-        {
-          "path": "self.active.spriteId",
-          "op": "in",
-          "value": [
-            "sp-171-1",
-            "sp-171-2",
-            "sp-172-1",
-            "sp-172-2",
-            "sp-173-1",
-            "sp-173-2"
-          ]
-        }
-      ],
-      "effects": [
-        {
-          "type": "modifySkillCost",
-          "target": "self",
-          "scope": "all",
-          "elements": [
-            "Earth"
-          ],
-          "deltaFrom": {
-            "path": "self.active.loadout",
-            "count": {
-              "element": "Water"
-            },
-            "scale": -1
-          },
-          "duration": "turns",
-          "turns": 1
-        }
-      ],
-      "note": "特性「消波块」：每携带 1 个水系技能，地系能耗 −1"
     },
     {
       "id": "trait:sp-440-1",
@@ -23575,36 +23282,6 @@
       "note": "特性「合拍」：本回合与敌方技能在系别 / 类型 / 能耗上每相同 1 项，物攻与物防永久 +10%"
     },
     {
-      "id": "trait:sp-373-1#2",
-      "ownerType": "trait",
-      "ownerId": "sp-373-1",
-      "trigger": "passive",
-      "when": [
-        {
-          "path": "self.active.spriteId",
-          "op": "in",
-          "value": [
-            "sp-373-1",
-            "sp-374-1"
-          ]
-        }
-      ],
-      "effects": [
-        {
-          "type": "modifySkillCost",
-          "target": "self",
-          "scope": "all",
-          "excludeElements": [
-            "Psychic"
-          ],
-          "delta": -2,
-          "duration": "permanent",
-          "key": "blind"
-        }
-      ],
-      "note": "特性「盲从」：非幻系技能能耗 −2"
-    },
-    {
       "id": "trait:sp-376-1",
       "ownerType": "trait",
       "ownerId": "sp-376-1",
@@ -23800,30 +23477,6 @@
         }
       ],
       "note": "特性「友谊之果」：回合结束时双方所有精灵回复 1 能量"
-    },
-    {
-      "id": "trait:sp-409-1#2",
-      "ownerType": "trait",
-      "ownerId": "sp-409-1",
-      "trigger": "beforeDamage",
-      "when": [
-        {
-          "path": "self.active.spriteId",
-          "op": "in",
-          "value": [
-            "sp-409-1"
-          ]
-        }
-      ],
-      "effects": [
-        {
-          "type": "transformMark",
-          "target": "opponent",
-          "toMarkId": "starfall-mark",
-          "scope": "sprite"
-        }
-      ],
-      "note": "特性「与星星同行」：攻击时将敌方所有印记收拢为相同层数的星陨印记"
     },
     {
       "id": "trait:sp-410-1",
@@ -24064,44 +23717,6 @@
     },
     {
       "id": "trait:sp-4-3#2",
-      "ownerType": "trait",
-      "ownerId": "sp-4-3",
-      "trigger": "actionResolved",
-      "when": [
-        {
-          "path": "self.active.spriteId",
-          "op": "in",
-          "value": [
-            "sp-4-3"
-          ]
-        },
-        {
-          "path": "action.category",
-          "op": "in",
-          "value": [
-            "Physical",
-            "Magic"
-          ]
-        }
-      ],
-      "effects": [
-        {
-          "type": "clearStat",
-          "target": "self",
-          "stat": "atk",
-          "polarity": "buff"
-        },
-        {
-          "type": "clearStat",
-          "target": "self",
-          "stat": "spatk",
-          "polarity": "buff"
-        }
-      ],
-      "note": "特性「草木苏醒时」：攻击后重置双攻加成"
-    },
-    {
-      "id": "trait:sp-4-3#3",
       "ownerType": "trait",
       "ownerId": "sp-4-3",
       "trigger": "actionResolved",
