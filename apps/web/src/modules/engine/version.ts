@@ -88,5 +88,8 @@
  *          命中链门控后仅 survivors 进全量求值 / 图行走——程序源 collect 2.4ms→0.19ms、step×4 19.8ms→1.77ms，
  *          与 DSL 同量级（collect / step 差 <±17%），**Simulator 默认源切程序源**（DSL 经注入保留做对照）。
  *          回归：`relevance.test`（合成语义 + 全量 soundness + 骨架等价 + 普查守卫）+ `program-collect` A/B 重跑。
+ * - 0.27.0 连击数 buff（`mechanisms/runtime.ts` 伤害结算）：攻击方 `counters["combo-add"]`（+N 段）与
+ *          `counters["combo-mul"]`（+N% 段，1 = +100%）在技能自身段数之上叠加（`floor((hits + add) * (1 + mul))`）；
+ *          供「获得连击数 +N / −N / +100%」类技能（暴风眼 / 耀眼 / 惊鸿一瞥 / 羽翼庇护 …）经 `addCounter` 纯数据登记。
  */
-export const ENGINE_VERSION = "0.26.1";
+export const ENGINE_VERSION = "0.27.0";

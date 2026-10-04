@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.39.0",
+  "version": "0.40.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -12250,12 +12250,13 @@
           "layers": 1
         },
         {
-          "type": "unsupported",
-          "effectType": "defenseCounter",
-          "reason": "羽翼庇护：自己连击数 +2【待校准】"
+          "type": "addCounter",
+          "target": "self",
+          "key": "combo-add",
+          "delta": 2
         }
       ],
-      "note": "羽翼庇护：应对攻击成功 → 必定先手 + 本回合承伤 −70%；自己连击数 +2"
+      "note": "羽翼庇护：应对攻击成功 → 必定先手 + 本回合承伤减伤；应对攻击 → 自己获得连击数 +2"
     },
     {
       "id": "skill:sk-7150310:reduce",
@@ -14915,6 +14916,94 @@
         }
       ],
       "note": "超声波：全技能威力 +20"
+    },
+    {
+      "id": "skill:sk-7150140",
+      "ownerType": "skill",
+      "ownerId": "sk-7150140",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7150140"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "combo-mul",
+          "delta": 1
+        }
+      ],
+      "note": "暴风眼：获得连击数 +100%"
+    },
+    {
+      "id": "skill:sk-7021050",
+      "ownerType": "skill",
+      "ownerId": "sk-7021050",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7021050"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "opponent",
+          "key": "combo-add",
+          "delta": -4
+        }
+      ],
+      "note": "耀眼：敌方获得连击数 −4"
+    },
+    {
+      "id": "skill:sk-7150410",
+      "ownerType": "skill",
+      "ownerId": "sk-7150410",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7150410"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "combo-add",
+          "delta": 1
+        }
+      ],
+      "note": "惊鸿一瞥：获得连击数 +1（迅捷 tag 待 C0）"
+    },
+    {
+      "id": "skill:sk-7030270",
+      "ownerType": "skill",
+      "ownerId": "sk-7030270",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7030270"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "combo-add",
+          "delta": 2
+        }
+      ],
+      "note": "芳香诱引：获得连击数 +2（应对防御 打断+眩晕分支待 C0）"
     }
   ]
 }

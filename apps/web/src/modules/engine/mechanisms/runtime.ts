@@ -779,6 +779,10 @@ export class MechanismRuntime {
         }
       }
     }
+    // 记忆域 · 连击数 buff：`combo-add`（+N 段）/ `combo-mul`（+N% 段，1 = +100%）叠加在技能自身段数之上。
+    const comboAdd = toNum(attacker.counters?.["combo-add"], 0);
+    const comboMul = toNum(attacker.counters?.["combo-mul"], 0);
+    if (comboAdd || comboMul) hits = Math.max(1, Math.floor((hits + comboAdd) * (1 + comboMul)));
     return { attackerMult, defenderMult, reduction, hits, powerBonus };
   }
 
