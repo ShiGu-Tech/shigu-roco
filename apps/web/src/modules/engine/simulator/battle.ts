@@ -173,6 +173,14 @@ export class Simulator {
       const side = entry.actorSide;
       const caster = this.sideState(st, side).active;
       if (caster.hp <= 0) return;
+      // 眩晕：本回合无法行动（计数器 `stun`，行动即消耗）。
+      if (toNum(caster.counters?.stun, 0) >= 1) {
+        caster.counters = { ...(caster.counters ?? {}), stun: 0 };
+        entry.status = "resolved";
+        events.push({ type: "stun", side, text: `${caster.spriteId} 处于眩晕，无法行动`, data: {} });
+        logs.push(`stun: ${side}`);
+        return;
+      }
       const wentFirst = firstResolvedSide === null;
       if (wentFirst) firstResolvedSide = side;
       // 入场域 · 迸发：本次入场后的首次行动。

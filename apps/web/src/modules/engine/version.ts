@@ -91,5 +91,7 @@
  * - 0.27.0 连击数 buff（`mechanisms/runtime.ts` 伤害结算）：攻击方 `counters["combo-add"]`（+N 段）与
  *          `counters["combo-mul"]`（+N% 段，1 = +100%）在技能自身段数之上叠加（`floor((hits + add) * (1 + mul))`）；
  *          供「获得连击数 +N / −N / +100%」类技能（暴风眼 / 耀眼 / 惊鸿一瞥 / 羽翼庇护 …）经 `addCounter` 纯数据登记。
+ * - 0.28.0 眩晕（`simulator/battle.ts` 行动结算）：行动结算前若在者 `counters["stun"] >= 1`，则本回合跳过该行动并清零，
+ *          产出 `stun` 事件；供「打断 + 敌下回合眩晕」类技能（摇篮曲 / 芳香诱引 / 龙守望）经 `addCounter stun` 登记。
  */
-export const ENGINE_VERSION = "0.27.0";
+export const ENGINE_VERSION = "0.28.0";

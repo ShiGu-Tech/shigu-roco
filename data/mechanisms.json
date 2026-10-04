@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.40.0",
+  "version": "0.41.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -15004,6 +15004,84 @@
         }
       ],
       "note": "芳香诱引：获得连击数 +2（应对防御 打断+眩晕分支待 C0）"
+    },
+    {
+      "id": "skill:sk-7021160:counter",
+      "ownerType": "skill",
+      "ownerId": "sk-7021160",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7021160"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Defense"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "cancelAction",
+          "target": "opponent"
+        },
+        {
+          "type": "addCounter",
+          "target": "opponent",
+          "key": "stun",
+          "delta": 1
+        }
+      ],
+      "note": "摇篮曲：应对防御成功 → 必定先手 + 打断被应对技能 + 敌方眩晕（下回合无法行动）"
+    },
+    {
+      "id": "skill:sk-7030270:counter",
+      "ownerType": "skill",
+      "ownerId": "sk-7030270",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7030270"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Defense"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "cancelAction",
+          "target": "opponent"
+        },
+        {
+          "type": "addCounter",
+          "target": "opponent",
+          "key": "stun",
+          "delta": 1
+        }
+      ],
+      "note": "芳香诱引：应对防御成功 → 必定先手 + 打断被应对技能 + 敌方眩晕（下回合无法行动）"
     }
   ]
 }
