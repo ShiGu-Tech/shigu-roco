@@ -7,7 +7,7 @@ import type { ActiveSprite, BattleState, CostMod, DataBundle, Dict, Side } from 
 import { asDict, toArray, toNum, toStr } from "../types";
 import { ActionQueue } from "./action-queue";
 import { resolveContextPath } from "./conditions";
-import type { DynamicRef, DynamicValue, EffectCommand, EffectDefinition, MechanismContext, MechanismEvent, TriggerName } from "./types";
+import type { DynamicRef, DynamicValue, EffectCommand, EffectDefinition, MechanismContext, MechanismEvent, RuleModifiers, TriggerName } from "./types";
 
 interface DamageModifiers {
   attackerMult: number;
@@ -78,8 +78,8 @@ export class MechanismRuntime {
   }
 
   /** 规则覆盖通道：收集 `passive` 触发器声明的 `setRuleModifier`（按传入 side 的在场精灵），供结算读「有效规则」。 */
-  ruleModifiers(state: BattleState, bundle: DataBundle | undefined, side: Side | null): Record<string, number | boolean> {
-    const out: Record<string, number | boolean> = {};
+  ruleModifiers(state: BattleState, bundle: DataBundle | undefined, side: Side | null): RuleModifiers {
+    const out: RuleModifiers = {};
     if (!bundle || !side) return out;
     const commands = this.dispatch({
       state,
@@ -141,7 +141,7 @@ export class MechanismRuntime {
   }
 
   /** 印记有效上限：passive 覆盖 ?? 印记自身 ?? rules.marks.maxStack。 */
-  private markCap(mods: Record<string, number | boolean>, bundle: DataBundle | undefined, markId: string): number {
+  private markCap(mods: RuleModifiers, bundle: DataBundle | undefined, markId: string): number {
     const markPolicy = asDict(bundle?.rules.marks);
     const value = mods["marks.maxStack"] ?? bundle?.marks[markId]?.maxStack ?? markPolicy.maxStack;
     return typeof value === "number" ? value : Number.MAX_SAFE_INTEGER;

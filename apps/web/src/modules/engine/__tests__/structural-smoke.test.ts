@@ -167,6 +167,16 @@ describe("structural: 展翅/异类/游弋/夺目/翻垃圾桶/瞳中倒影/噼�
     expect(t.state.player.active.hp).toBeGreaterThanOrEqual(350);
   });
 
+  it("不朽：力竭 4 回合后复活", () => {
+    const trait = spriteWithTrait("不朽");
+    const state = makeState(makeSide(makeActive(trait, { hp: 0, maxHp: 500, energy: 20 })), makeSide(makeActive("sp-14-1", { hp: 500, maxHp: 500, energy: 20 })));
+    const sim = new Simulator(bundle);
+    let r = sim.step(state, { kind: "energy" }, { kind: "energy" }, new Rng(1));
+    expect(r.state.player.active.reviveDue).toBe(5);
+    for (let i = 0; i < 4; i++) r = sim.step(r.state, { kind: "energy" }, { kind: "energy" }, new Rng(2 + i));
+    expect(r.state.player.active.hp).toBe(500);
+  });
+
   it("禁足：离场锁期间无法换人（legalActions 无 switch）", () => {
     const state = makeState(
       makeSide(makeActive("sp-14-1", { hp: 500, maxHp: 500, energy: 20 }), { bench: [makeActive("sp-15-1", { hp: 100, maxHp: 100 })] }),

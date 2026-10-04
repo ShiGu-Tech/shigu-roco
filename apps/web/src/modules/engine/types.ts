@@ -49,6 +49,9 @@ export interface ActiveSprite {
   returnedThisTurn?: boolean;
   /** 记忆域 · 计数器：任意 key → 值（如每使用/累计类）。 */
   counters?: Record<string, number>;
+  /** 复生域 · 力竭后预定复活的回合（`st.turn` 达到即复活）；`reviveAs` 为复活后的形态精灵 id。 */
+  reviveDue?: number;
+  reviveAs?: string;
   /** 记忆域 · 技能永久修正：skillId → 威力 / 能耗 / 连击 / 先手的持久 delta。 */
   skillMods?: Record<string, { power?: number; cost?: number; hits?: number; priority?: number }>;
   /** 能耗域 · 声明式能耗修正条目（读时求和，见 `effectiveCost`）。 */

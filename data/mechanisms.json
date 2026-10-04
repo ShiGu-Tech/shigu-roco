@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.112.0",
+  "version": "0.113.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -22943,21 +22943,6 @@
       "note": "特性「宝剑王牌」：仅可使用 1 号位和 3 号位技能"
     },
     {
-      "id": "trait:sp-289-1",
-      "ownerType": "trait",
-      "ownerId": "sp-289-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "不朽：力竭4回合后复活。【待校准】"
-        }
-      ],
-      "note": "特性「不朽」：待实现"
-    },
-    {
       "id": "trait:sp-291-1",
       "ownerType": "trait",
       "ownerId": "sp-291-1",
@@ -26574,6 +26559,31 @@
         }
       ],
       "note": "特性「一意孤行」：使用技能后该技能冷却 1 回合"
+    },
+    {
+      "id": "trait:sp-289-1",
+      "ownerType": "trait",
+      "ownerId": "sp-289-1",
+      "trigger": "passive",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-289-1",
+            "sp-290-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "revive.afterTurns",
+          "value": 4
+        }
+      ],
+      "note": "特性「不朽」：力竭 4 回合后复活"
     }
   ]
 }

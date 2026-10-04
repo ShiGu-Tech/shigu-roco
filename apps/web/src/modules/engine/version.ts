@@ -198,5 +198,7 @@
  * - 0.71.0 选择再触发：使用「选择」技能后，规则 `choice.replayOther`（有求必应：追加另一分支）/
  *          `choice.replaySame`（一意孤行：追加相同分支）令模拟器以另一 / 相同 `choice` 重新派发 `beforeAction`
  *          并结算其状态 / 伤害（不重复耗能）。
+ * - 0.72.0 复生域 + 规则值类型：`setRuleModifier` 允许字符串值（`RuleModifiers`）；`ActiveSprite.reviveDue` /
+ *          `reviveAs` + 规则 `revive.afterTurns`（不朽：力竭 N 回合后于回合开始恢复满血重新可用）。
  */
-export const ENGINE_VERSION = "0.71.0";
+export const ENGINE_VERSION = "0.72.0";

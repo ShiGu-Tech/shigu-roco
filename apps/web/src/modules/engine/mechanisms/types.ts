@@ -1,5 +1,8 @@
 import type { Action, BattleState, Dict, Side } from "../types";
 
+/** 规则覆盖表：`passive` 经 `setRuleModifier` 收集的键 → 值（数值 / 布尔 / 字符串，如复活形态精灵 id）。 */
+export type RuleModifiers = Record<string, number | boolean | string>;
+
 export type TriggerName =
   | "battleStart"
   | "turnStart"
@@ -201,7 +204,7 @@ export type EffectSpec =
   /** 记忆域 · 技能永久修正：对某技能叠加威力 / 能耗 / 连击 / 先手的持久 delta。 */
   | { type: "modifySkill"; target?: string; skillId?: string; skillIdFrom?: string; power?: number; cost?: number; hits?: number; priority?: number }
   /** 规则覆盖通道：按 `passive` 触发器收集，覆盖 `rules.*` 默认值（如印记上限 / 异种互斥）。key 用点路径。 */
-  | { type: "setRuleModifier"; target?: string; key: string; value: number | boolean }
+  | { type: "setRuleModifier"; target?: string; key: string; value: number | boolean | string }
   | { type: "unsupported"; effectType: string; reason?: string };
 
 /** 效果 = 实现体 + 可选概率（0~1，runtime 用确定性种子掷点）。 */

@@ -10,6 +10,7 @@ import { asDict, toArray, toNum, toStr } from "../types";
 import { clearMarksOnSwitch } from "./marks";
 import { clearStatusesOnSwitch } from "./status";
 import { ActionQueue, MechanismRuntime, type MechanismSource } from "../mechanisms";
+import type { RuleModifiers } from "../mechanisms/types";
 import { programCollectorFor } from "../graph";
 
 const SIDES: Side[] = ["player", "enemy"];
@@ -282,6 +283,17 @@ export class Simulator {
     events.push(...this.runPendingEffects(st, "turnStart"));
     this.refreshDerivedCounters(st);
     for (const side of SIDES) this.estimateIncomingLethal(st, side);
+    // 复生域 · 到期复活（不朽）：力竭精灵于预定回合恢复满血。
+    for (const side of SIDES) {
+      const s = this.sideState(st, side);
+      for (const sp of [s.active, ...s.bench]) {
+        if (sp.hp > 0 || sp.reviveDue === undefined || st.turn < sp.reviveDue) continue;
+        sp.hp = sp.maxHp;
+        sp.faintHandled = false;
+        delete sp.reviveDue;
+        events.push({ type: "revive", side, text: `${sp.spriteId} 复活`, data: {} });
+      }
+    }
 
     // ① 洛克魔法阶段（愿力）
     for (const side of SIDES) {
@@ -696,7 +708,7 @@ export class Simulator {
   }
 
   /** 某技能是否「迅捷」：静态 tag，或规则覆盖授予（快锤 能耗< N / 暴食 某系 / 翼轴 1 号位 / 起飞加速 首次技能 / 飓风 翼系共享）。 */
-  private skillIsQuick(st: BattleState, side: Side, active: ActiveSprite, skillId: string, mods: Record<string, number | boolean>): boolean {
+  private skillIsQuick(st: BattleState, side: Side, active: ActiveSprite, skillId: string, mods: RuleModifiers): boolean {
     const skill = getSkill(this.bundle, skillId);
     if (toArray<string>(skill.tags).includes("quick")) return true;
     const below = toNum(mods["quick.costBelow"], 0);
@@ -1024,6 +1036,12 @@ export class Simulator {
       if (s.active.hp > 0) continue;
       events.push(...this.triggerState(st, "beforeDeath", { actorSide: side, targetSide: opp, event: deathEvent }));
       s.active.faintHandled = true;
+      // 复生域 · 预定复活（不朽）：力竭 N 回合后恢复满血重新可用。
+      const selfRevive = toNum(this.mechanisms.ruleModifiers(st, this.bundle, side)["revive.afterTurns"], 0);
+      if (selfRevive > 0) {
+        s.active.reviveDue = st.turn + selfRevive;
+        events.push({ type: "revive-scheduled", side, text: `${s.active.spriteId} 预定 ${st.turn + selfRevive} 回合后复活`, data: { dueTurn: s.active.reviveDue } });
+      }
       s.magic -= perFaint;
       // 队伍域 · 历史计数：本队力竭只数（供「每有 1 只力竭」类）；双方合计力竭只数（悼亡）。
       this.bump(st, side, "faints");

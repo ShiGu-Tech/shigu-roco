@@ -5,6 +5,7 @@
  */
 
 import { getSkill } from "./data";
+import type { RuleModifiers } from "./mechanisms/types";
 import type { ActiveSprite, BattleState, DataBundle, Side } from "./types";
 import { toNum } from "./types";
 
@@ -26,7 +27,7 @@ function costModMatches(active: ActiveSprite, skillId: string, bundle: DataBundl
 
 /** 单个技能的当次有效能耗（已 clamp ≥0、已取整）。
  *  `rules` 为 passive 声明的规则覆盖：`cost.signFlip`（对流：增减反转）/ `cost.changeMul`（倾轧：变化幅度倍率）。 */
-export function effectiveCost(state: BattleState, bundle: DataBundle, side: Side, skillId: string, rules?: Record<string, number | boolean>): number {
+export function effectiveCost(state: BattleState, bundle: DataBundle, side: Side, skillId: string, rules?: RuleModifiers): number {
   const active = side === "player" ? state.player.active : state.enemy.active;
   // 规则覆盖 · `cost.lastTurnSum`（基因编辑）：基础能耗 = 上回合双方使用技能能耗之和。
   const base = rules?.["cost.lastTurnSum"] === true
