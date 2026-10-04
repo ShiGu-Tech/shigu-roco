@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.71.0",
+  "version": "0.72.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -16809,12 +16809,13 @@
       "when": [],
       "effects": [
         {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "毒雾：增益 → 中毒 转化（无原语）【待校准】"
+          "type": "convertBuffToStatus",
+          "target": "opponent",
+          "statusId": "poison",
+          "factor": 1
         }
       ],
-      "note": "毒雾：增益 → 中毒 转化（无原语）"
+      "note": "毒雾：敌方增益转为等量中毒"
     },
     {
       "id": "skill:sk-7120160",
@@ -16824,12 +16825,13 @@
       "when": [],
       "effects": [
         {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "落井下毒：属性减益层数翻倍（减益非状态）【待校准】"
+          "type": "scaleStat",
+          "target": "opponent",
+          "polarity": "debuff",
+          "factor": 2
         }
       ],
-      "note": "落井下毒：属性减益层数翻倍（减益非状态）"
+      "note": "落井下毒：敌方属性减益层数翻倍"
     },
     {
       "id": "skill:sk-7120290",
@@ -22349,16 +22351,32 @@
       "id": "trait:sp-299-1",
       "ownerType": "trait",
       "ownerId": "sp-299-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "afterDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "灰色肖像：攻击会使敌方已有的减益层数+3。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-299-1",
+            "sp-300-1",
+            "sp-301-1"
+          ]
+        },
+        {
+          "path": "target.active.debuffs.*",
+          "op": "gt",
+          "value": 0
         }
       ],
-      "note": "特性「灰色肖像」：待实现"
+      "effects": [
+        {
+          "type": "scaleStat",
+          "target": "opponent",
+          "polarity": "debuff",
+          "delta": 3
+        }
+      ],
+      "note": "特性「灰色肖像」：攻击使敌方已有减益层数 +3"
     },
     {
       "id": "trait:sp-302-1",

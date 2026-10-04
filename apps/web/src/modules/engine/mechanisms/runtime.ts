@@ -672,6 +672,42 @@ export class MechanismRuntime {
           }
           break;
         }
+        case "scaleStat": {
+          if (!active || !targetSide) break;
+          const factor = definition.factor ?? 1;
+          const delta = definition.delta ?? 0;
+          const polarity = definition.polarity ?? "all";
+          const buckets: [string, Record<string, number>][] = [];
+          if (polarity !== "debuff") buckets.push(["buff", active.buffs]);
+          if (polarity !== "buff") buckets.push(["debuff", active.debuffs]);
+          for (const [, bucket] of buckets) {
+            const keys = definition.stat ? [definition.stat] : Object.keys(bucket);
+            for (const stat of keys) {
+              const before = bucket[stat] ?? 0;
+              if (before === 0) continue;
+              const after = Math.max(-999, Math.min(999, before * factor + delta));
+              bucket[stat] = after;
+              events.push({ type: "stat-scaled", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { stat, before, after } });
+            }
+          }
+          break;
+        }
+        case "convertBuffToStatus": {
+          if (!active || !targetSide) break;
+          const factor = definition.factor ?? 1;
+          let total = 0;
+          for (const stat of Object.keys(active.buffs)) {
+            const value = active.buffs[stat] ?? 0;
+            if (value > 0) total += value;
+            delete active.buffs[stat];
+          }
+          const layers = Math.max(0, Math.floor(total * factor));
+          if (layers <= 0) break;
+          const before = active.statuses[definition.statusId] ?? 0;
+          active.statuses[definition.statusId] = before + layers;
+          events.push({ type: "status-applied", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { statusId: definition.statusId, before, after: active.statuses[definition.statusId], layers, sourceSide: command.actorSide ?? null } });
+          break;
+        }
         case "learnSkill": {
           if (!active || !targetSide) break;
           const { skillId } = definition;

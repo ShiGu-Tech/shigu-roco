@@ -122,5 +122,7 @@
  * - 0.39.0 致命域 · 致命拦截（`simulator/battle.ts` + `触发 beforeFatal`）：`handleFaints` 在结算阵亡前派发
  *          `beforeFatal`，机制把生命拉回 >0 即免于阵亡（不死鸟 / 化茧 / 不朽）。
  * - 0.40.0 `skillUsed` 事件补 `cost`（实际能耗，供「释放 N 能耗技能」类印记 / 特性，如龙噬印记）。
+ * - 0.41.0 强化域 · 属性层数缩放 / 增益转状态原语：`scaleStat`（按极性缩放 buff/debuff 层数）、
+ *          `convertBuffToStatus`（把目标全部增益转为等量状态层数并清空增益）；供落井下毒 / 灰色肖像 / 毒雾。
  */
-export const ENGINE_VERSION = "0.40.0";
+export const ENGINE_VERSION = "0.41.0";

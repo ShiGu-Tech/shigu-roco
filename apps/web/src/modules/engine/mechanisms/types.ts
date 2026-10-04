@@ -85,6 +85,10 @@ export type EffectSpec =
   | { type: "dealDamage"; target?: string; category: "Physical" | "Magic" | "Passive"; power: number; powerFrom?: DynamicValue; skillId?: string; element?: string; basis?: "formula" | "flat" | "maxHp" | "currentHp" | "stack"; amount?: number; markId?: string }
   | { type: "heal"; target?: string; amount: number; amountFrom?: DynamicValue; basis?: "flat" | "maxHp" | "currentHp" }
   | { type: "modifyStat"; target?: string; stat: string; mode: "flat" | "percent"; value: number; valueFrom?: DynamicValue; maxStages?: number }
+  /** 强化域 · 属性增益 / 减益层数缩放：按 `polarity`（省略 = 全部）对某属性（省略 = 全部）做 `factor` 乘 + `delta` 加。 */
+  | { type: "scaleStat"; target?: string; polarity?: "buff" | "debuff" | "all"; stat?: string; factor?: number; delta?: number }
+  /** 强化域 · 增益转状态：把目标全部增益（合计层数 × factor）转为 `statusId` 层数并清空增益。 */
+  | { type: "convertBuffToStatus"; target?: string; statusId: string; factor?: number }
   /** 伤害修饰：scope=outgoing 攻方输出倍率、incoming 防方承伤倍率；multiply 相乘 / add 相加（+value）。 */
   | { type: "modifyDamage"; target?: string; mode: "multiply" | "add"; value: number; scope?: "outgoing" | "incoming" }
   /** 技能栏域 · 条件威力加成：在 `beforeDamage` 收集，累加到本次 `dealDamage` 的有效威力（先于属性 / STAB）。 */
