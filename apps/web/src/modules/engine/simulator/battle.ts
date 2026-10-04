@@ -471,6 +471,35 @@ export class Simulator {
         events.push(...this.runPendingEffects(st, "turnEnd"));
       }
     }
+    // 规则覆盖 · 回合对比（石天平 能耗差扣能量 / 合拍 同项永久加成），按本回合双方动作结算。
+    for (const side of SIDES) {
+      const mods = this.mechanisms.ruleModifiers(st, this.bundle, side);
+      if (mods["drainCostDiff"] !== true && mods["harmony"] !== true) continue;
+      const opp = otherSide(side);
+      const selfAct = actions[side];
+      const oppAct = actions[opp];
+      const selfCost = selfAct.kind === "skill" && selfAct.skillId ? effectiveCost(st, this.bundle, side, selfAct.skillId, mods) : 0;
+      const oppCost = oppAct.kind === "skill" && oppAct.skillId ? effectiveCost(st, this.bundle, opp, oppAct.skillId) : 0;
+      if (mods["drainCostDiff"] === true && selfCost > oppCost) {
+        const target = this.sideState(st, opp).active;
+        const before = target.energy;
+        target.energy = Math.max(0, target.energy - (selfCost - oppCost));
+        events.push({ type: "energy-modified", side: opp, text: "", data: { before, after: target.energy, delta: -Math.max(0, before - target.energy) } });
+      }
+      if (mods["harmony"] === true && selfAct.skillId && oppAct.skillId) {
+        const a = getSkill(this.bundle, selfAct.skillId);
+        const b = getSkill(this.bundle, oppAct.skillId);
+        const matches = (a.element === b.element ? 1 : 0) + (a.actionType === b.actionType ? 1 : 0) + (selfCost === oppCost ? 1 : 0);
+        if (matches > 0) {
+          const active = this.sideState(st, side).active;
+          active.counters ??= {};
+          for (const stat of ["atk", "defense"]) {
+            active.counters[`pct-${stat}`] = toNum(active.counters[`pct-${stat}`], 0) + 0.1 * matches;
+          }
+          events.push({ type: "counter-set", side, text: "", data: { key: "pct-atk", after: active.counters["pct-atk"] } });
+        }
+      }
+    }
     // 行动域 · 返场：回合末结算后重新入场（重置迸发标记 + 派发 onEntry）。
     for (const side of SIDES) {
       const act = this.sideState(st, side).active;

@@ -40,7 +40,8 @@ export function effectiveStat(bundle: DataBundle, spriteDef: Dict, active: Activ
   const base = statWithProfile(bundle.stats, spriteDef, active.profile, stat);
   const bonus = toNum(active.buffs[stat], 0) + toNum(active.debuffs[stat], 0);
   const flat = toNum(active.counters?.[`flat-${stat}`], 0);
-  return base * (1 + bonus) + flat;
+  const pct = toNum(active.counters?.[`pct-${stat}`], 0);
+  return base * (1 + bonus + pct) + flat;
 }
 
 /** 强化差值 = 1 + 攻方层 − 防方层（层以分数存于 buffs/debuffs，一层 = 0.1）。 */

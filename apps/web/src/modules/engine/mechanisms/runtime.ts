@@ -1107,6 +1107,10 @@ export class MechanismRuntime {
         const tags = toArray<string>(getSkill(bundle, skillId).tags);
         if (tags.includes("simple")) attackerMult *= 1 + (mods["simple.powerMul"] as number);
       }
+      // 规则覆盖 · `power.nonLight`（夺目）：非光系技能威力提升。
+      if (typeof mods["power.nonLight"] === "number" && toStr(getSkill(bundle, skillId).element) !== "Light") {
+        attackerMult *= 1 + (mods["power.nonLight"] as number);
+      }
     }
     return { attackerMult, defenderMult, reduction, hits, powerBonus };
   }

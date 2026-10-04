@@ -48,6 +48,32 @@ describe("batch: 打断 / 元素链 / 免蓄力", () => {
     expect(s.enemy.active.statuses.freeze ?? 0).toBeGreaterThanOrEqual(4);
   });
 
+  it("石天平：能耗高于敌方 → 回合末敌方失去差值能量", () => {
+    const trait = spriteWithTrait("石天平");
+    const skill = skillBy((s) => (s.category === "Physical" || s.category === "Magic") && Number(s.power) > 0 && Number(s.cost) >= 1 && Number(s.cost) <= 5);
+    const cost = Number((bundle.skills[skill] as Dict).cost);
+    const state = makeState(
+      makeSide(makeActive(trait, { hp: 500, maxHp: 500, energy: 20 })),
+      makeSide(makeActive("sp-14-1", { hp: 500, maxHp: 500, energy: 10 })),
+    );
+    state.player.active.loadout = [skill];
+    const t = new Simulator(bundle).step(state, { kind: "skill", skillId: skill }, { kind: "energy" }, new Rng(1));
+    expect(t.state.enemy.active.energy).toBe(10 - cost);
+  });
+
+  it("合拍：与敌方同项越多，物攻/物防永久加成越高", () => {
+    const trait = spriteWithTrait("合拍");
+    const skill = skillBy((s) => (s.category === "Physical" || s.category === "Magic") && Number(s.power) > 0);
+    const state = makeState(
+      makeSide(makeActive(trait, { hp: 5000, maxHp: 5000, energy: 20 })),
+      makeSide(makeActive("sp-14-1", { hp: 5000, maxHp: 5000, energy: 20 })),
+    );
+    state.player.active.loadout = [skill];
+    state.enemy.active.loadout = [skill];
+    const t = new Simulator(bundle).step(state, { kind: "skill", skillId: skill }, { kind: "skill", skillId: skill }, new Rng(1));
+    expect(t.state.player.active.counters?.["pct-atk"] ?? 0).toBeGreaterThan(0);
+  });
+
   it("龙守望：下一次技能无需蓄力（吹炎立即释放）", () => {
     const chargeSkill = "sk-7100130"; // 吹炎
     const state = makeState(

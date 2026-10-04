@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.105.0",
+  "version": "0.107.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -21546,30 +21546,54 @@
       "ownerType": "trait",
       "ownerId": "sp-111-1",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "石天平：若使用技能能耗高于敌方，回合结束敌方失去能耗之差的能量。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-111-1",
+            "sp-112-1"
+          ]
         }
       ],
-      "note": "特性「石天平」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "drainCostDiff",
+          "value": true
+        }
+      ],
+      "note": "特性「石天平」：使用技能能耗高于敌方时，回合结束敌方失去能耗之差的能量"
     },
     {
       "id": "trait:sp-117-2",
       "ownerType": "trait",
       "ownerId": "sp-117-2",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "夺目：额外获得三个未携带的随机技能，且非光系技能威力+25%。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-117-2"
+          ]
         }
       ],
-      "note": "特性「夺目」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "power.nonLight",
+          "value": 0.25
+        },
+        {
+          "type": "unsupported",
+          "effectType": "extraRandomSkills",
+          "reason": "额外获得三个未携带随机技能 待实现【待校准】"
+        }
+      ],
+      "note": "特性「夺目」：非光系技能威力 +25%（额外随机技能待实现）"
     },
     {
       "id": "trait:sp-118-1",
@@ -23861,15 +23885,25 @@
       "ownerType": "trait",
       "ownerId": "sp-371-1",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "合拍：本回合与敌方使用的技能在系别/类型/能耗上每有1项相同，回合结束时获得物攻和物防永久+10%。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-371-1",
+            "sp-372-1"
+          ]
         }
       ],
-      "note": "特性「合拍」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "harmony",
+          "value": true
+        }
+      ],
+      "note": "特性「合拍」：本回合与敌方技能在系别 / 类型 / 能耗上每相同 1 项，物攻与物防永久 +10%"
     },
     {
       "id": "trait:sp-373-1#2",

@@ -179,5 +179,7 @@
  * - 0.65.0 印记规则：`mark.consumeHalf`（守望星：触发星陨印记仅消耗一半层数，`consumed` 仍按满层结算伤害）。
  * - 0.66.0 蓄力 / 打断 / 元素链：`counters.noCharge`（免蓄力：跳过蓄力直接释放）+ 规则 `charge.any`（蓄力中可任选技能）；
  *          新触发器 `interrupt`（取消对手行动时派发，供威慑）；模拟器记元素链计数 `elChainIce` / `elChainFire`（大雪球 / 大火球）。
+ * - 0.67.0 回合对比规则：`effectiveStat` 增永久百分比计数器 `pct-<stat>`（合拍）；回合末规则 `drainCostDiff`（石天平）/
+ *          `harmony`（合拍）；伤害规则 `power.nonLight`（夺目：非光系威力 +N）。
  */
-export const ENGINE_VERSION = "0.66.0";
+export const ENGINE_VERSION = "0.67.0";
