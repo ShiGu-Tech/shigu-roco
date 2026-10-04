@@ -19,7 +19,7 @@ export function TrendChart({ history }: { history: TrendPoint[] }) {
 
   const option: EChartsOption = {
     tooltip: { trigger: "axis", valueFormatter: (v) => `${Number(v).toFixed(1)}%` },
-    legend: { data: ["我方胜率", "敌方胜率"], top: 0, textStyle: { color: axis } },
+    legend: { data: ["红方胜率", "蓝方胜率"], top: 0, textStyle: { color: axis } },
     grid: { left: 48, right: 16, top: 34, bottom: 28 },
     xAxis: {
       type: "category",
@@ -37,7 +37,7 @@ export function TrendChart({ history }: { history: TrendPoint[] }) {
     },
     series: [
       {
-        name: "我方胜率",
+        name: "红方胜率",
         type: "line",
         smooth: true,
         symbolSize: 7,
@@ -47,7 +47,7 @@ export function TrendChart({ history }: { history: TrendPoint[] }) {
         data: history.map((h) => Number((h.myWin * 100).toFixed(1))),
       },
       {
-        name: "敌方胜率",
+        name: "蓝方胜率",
         type: "line",
         smooth: true,
         symbolSize: 7,

@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 import { forcedSwitch, getCatalog, legalActions, recommend, requestLeader, simulateTurn } from "@/modules/battle/client";
+import { SIDE_NAME } from "@/modules/battle/side-labels";
 import { loadOpponentLibrary } from "@/modules/battle/storage";
 import { collectAtlasStep, flattenFirings } from "@/modules/atlas/collect";
 import { recordAtlasStep } from "@/modules/atlas/storage";
@@ -281,8 +282,8 @@ export function BattleBoard() {
     setPhase("battle");
     setBusy(true);
     // 建房（观战可选，失败不阻断对战）。
-    const player = roomSide("我方", st.player);
-    const enemy = roomSide("敌方", st.enemy);
+    const player = roomSide(SIDE_NAME.player, st.player);
+    const enemy = roomSide(SIDE_NAME.enemy, st.enemy);
     const dataVersion = (catalog as { dataVersion?: string }).dataVersion ?? "";
     try {
       const id = await createWatchRoom({ seed: st.seed, player, enemy, dataVersion, engineVersion: ENGINE_VERSION });
@@ -399,14 +400,14 @@ export function BattleBoard() {
       const res = await forcedSwitch(base.state, who, benchId);
       const step = collectAtlasStep({
         turn: base.state.turn,
-        actions: [{ side: who, kind: "switch", benchId, label: `${who === "player" ? "我方" : "敌方"}阵亡换人` }],
+        actions: [{ side: who, kind: "switch", benchId, label: `${who === "player" ? SIDE_NAME.player : SIDE_NAME.enemy}阵亡换人` }],
         log: res.log,
       });
       recordAtlasStep("board", step);
       pushWatch(
         {
           turn: base.state.turn,
-          label: `${who === "player" ? "我方" : "敌方"}阵亡换人`,
+          label: `${who === "player" ? SIDE_NAME.player : SIDE_NAME.enemy}阵亡换人`,
           actions: [{ side: who, label: "换人" }],
           step,
           log: watchLog(res.log),
@@ -420,7 +421,7 @@ export function BattleBoard() {
         log: res.log,
         history: base.history,
         terminal: base.terminal,
-        label: `${who === "player" ? "我方" : "敌方"}阵亡换人`,
+        label: `${who === "player" ? SIDE_NAME.player : SIDE_NAME.enemy}阵亡换人`,
       };
       setFrames((f) => [...f, frame]);
       setCursor((c) => c + 1);
@@ -444,7 +445,7 @@ export function BattleBoard() {
         log: res.log,
         history: base.history,
         terminal: base.terminal,
-        label: `${who === "player" ? "我方" : "敌方"}首领化`,
+        label: `${who === "player" ? SIDE_NAME.player : SIDE_NAME.enemy}首领化`,
       };
       setFrames((f) => [...f, frame]);
       setCursor((c) => c + 1);
@@ -643,7 +644,7 @@ export function BattleBoard() {
       <div className="space-y-3">
         <div className="rounded-md border border-dashed p-3 text-[13px] text-muted-foreground">
           <span className="font-medium text-foreground">选择阵容开始对战</span>：选 <b>1 套</b> → 下一步挑对手的 6 只精灵（未知）；
-          选 <b>2 套</b> → 直接对战（先选的为我方、后选的为对手）。
+          选 <b>2 套</b> → 直接对战（先选的为红方、后选的为蓝方）。
         </div>
 
         <Panel
@@ -680,7 +681,7 @@ export function BattleBoard() {
 
         {editingTeam && (
           <TeamEditor
-            title="配队（我方）"
+            title="配队（红方）"
             scope="player"
             entries={playerTeam}
             catalog={catalog}
@@ -780,7 +781,7 @@ export function BattleBoard() {
             catalog={catalog}
             side={state!.player}
             tone="player"
-            title="我方场上"
+            title="红方场上"
             maxMagic={maxMagic}
             rec={rec}
             selectedKey={pendingP ? actionKey(pendingP.action) : null}
@@ -799,7 +800,7 @@ export function BattleBoard() {
         <div className="order-3 flex min-w-0 flex-col gap-3 min-[860px]:order-2">
           {terminal?.ended && (
             <div className="rounded-md border border-primary/50 bg-primary/5 px-3 py-2 text-[13px] font-medium">
-              对局结束：{terminal.winner === "player" ? "我方" : "敌方"}胜 · {terminal.reason}
+              对局结束：{terminal.winner === "player" ? SIDE_NAME.player : SIDE_NAME.enemy}胜 · {terminal.reason}
             </div>
           )}
           <Panel title="胜率走势">
@@ -835,7 +836,7 @@ export function BattleBoard() {
                         color: row.side === "player" ? PLAYER_COLOR : row.side === "enemy" ? ENEMY_COLOR : "var(--muted-foreground)",
                       }}
                     >
-                      {row.side === "player" ? "我方" : row.side === "enemy" ? "敌方" : "·"}
+                      {row.side === "player" ? SIDE_NAME.player : row.side === "enemy" ? SIDE_NAME.enemy : "·"}
                     </span>
                     <span className="w-[42px] shrink-0">
                       {row.kind ? <Badge variant="outline" className="px-1 py-0 text-[10px]">{row.kind}</Badge> : null}
@@ -863,16 +864,16 @@ export function BattleBoard() {
                   撤销选择
                 </Button>
                 <span className="text-[11px] text-muted-foreground">
-                  {pendingP ? `我方已选：${pendingP.label}` : ""}
+                  {pendingP ? `${SIDE_NAME.player}已选：${pendingP.label}` : ""}
                   {pendingP && pendingE ? " · " : ""}
-                  {pendingE ? `敌方已选：${pendingE.label}` : ""}
+                  {pendingE ? `${SIDE_NAME.enemy}已选：${pendingE.label}` : ""}
                 </span>
               </div>
             )}
             {choicePick && (
               <div className="flex flex-wrap items-center gap-2 border-t px-3 py-2">
                 <span className="text-[12px] font-medium">
-                  {choicePick.who === "player" ? "我方" : "敌方"} · {choicePick.name}：请选择
+                  {choicePick.who === "player" ? SIDE_NAME.player : SIDE_NAME.enemy} · {choicePick.name}：请选择
                 </span>
                 <Button type="button" size="sm" disabled={busy} onClick={() => commitChoice(0)}>
                   明
@@ -893,7 +894,7 @@ export function BattleBoard() {
             catalog={catalog}
             side={state!.enemy}
             tone="enemy"
-            title="敌方场上"
+            title="蓝方场上"
             subtitle={enemyUnknown ? "资质未知 · 按中性 5★·60 级估算" : "已知"}
             maxMagic={maxMagic}
             rec={enemyRec}

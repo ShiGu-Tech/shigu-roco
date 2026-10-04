@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { NativeSelect } from "@/components/ui/native-select";
 
 import { getCatalog, recommend } from "./client";
+import { SIDE_NAME } from "./side-labels";
 import { ResultPanel } from "./result-panel";
 import { activeFromSprite, createInitialState } from "./state";
 import {
@@ -403,7 +404,7 @@ export function BattleWorkbench() {
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label>我方魔力</Label>
+                <Label>{SIDE_NAME.player}魔力</Label>
                 <Input
                   type="number"
                   value={state.player.magic}
@@ -411,7 +412,7 @@ export function BattleWorkbench() {
                 />
               </div>
               <div className="space-y-1">
-                <Label>敌方魔力</Label>
+                <Label>{SIDE_NAME.enemy}魔力</Label>
                 <Input
                   type="number"
                   value={state.enemy.magic}
@@ -464,14 +465,14 @@ export function BattleWorkbench() {
           </Card>
 
           <ActiveCard
-            title="我方场上"
+            title={`${SIDE_NAME.player}场上`}
             subtitle="已知"
             active={state.player.active}
             catalog={catalog}
             onChange={(m) => patch((d) => m(d.player.active))}
           />
           <ActiveCard
-            title="敌方场上"
+            title={`${SIDE_NAME.enemy}场上`}
             subtitle="推测 / 可观测"
             active={state.enemy.active}
             catalog={catalog}
@@ -481,7 +482,7 @@ export function BattleWorkbench() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center justify-between">
-                <span>我方背包</span>
+                <span>{SIDE_NAME.player}背包</span>
                 <Button
                   type="button"
                   size="sm"

@@ -47,12 +47,12 @@ describe("board log", () => {
     const rowSkill = logRowOf(skill, catalog);
     expect(rowSkill.kind).toBe("攻击");
     expect(rowSkill.source).toBe("械斗");
-    expect(rowSkill.text).toBe("敌方受到 115 点伤害");
+    expect(rowSkill.text).toBe("蓝方受到 115 点伤害");
 
     const trait = ev("damage", { mechanismId: "trait:sp-202-1", trigger: "onEntry", effectType: "dealDamage", value: 418 }, "enemy");
     const rowTrait = logRowOf(trait, catalog);
     expect(rowTrait.kind).toBe("特性");
     expect(rowTrait.source).toBe("鳗尾兽·铃兰晚钟");
-    expect(rowTrait.text).toBe("敌方受到 418 点伤害");
+    expect(rowTrait.text).toBe("蓝方受到 418 点伤害");
   });
 });

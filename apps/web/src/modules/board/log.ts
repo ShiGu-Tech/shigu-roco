@@ -1,23 +1,20 @@
+import { SIDE_NAME, sideNameOf } from "@/modules/battle/side-labels";
 import type { BattleEvent, Catalog } from "@/modules/battle/types";
 import { effectVocabularyOf, triggerMetaOf } from "@/modules/engine/mechanisms/vocabulary";
-
-function sideName(side?: string): string {
-  return side === "enemy" ? "敌方" : side === "player" ? "我方" : "";
-}
 
 /** 把事件文本里的技能 / 精灵 id 与 side 换成中文。 */
 function localizeIds(text: string, catalog: Catalog): string {
   return text
     .replace(/sk-\d+/g, (m) => catalog.allSkills.find((s) => s.id === m)?.name ?? m)
     .replace(/sp-\d+-\d+/g, (m) => catalog.sprites.find((s) => s.id === m)?.name ?? m)
-    .replace(/\bplayer\b/g, "我方")
-    .replace(/\benemy\b/g, "敌方");
+    .replace(/\bplayer\b/g, SIDE_NAME.player)
+    .replace(/\benemy\b/g, SIDE_NAME.enemy);
 }
 
 /** 把一条战斗事件翻成中文可读句子（引擎机制事件多为英文 type + data，这里统一成中文）。 */
 export function describeEvent(e: BattleEvent, catalog: Catalog): string {
   const d = (e.data ?? {}) as Record<string, unknown>;
-  const side = sideName(e.side);
+  const side = sideNameOf(e.side);
   const n = (v: unknown): number => (typeof v === "number" ? v : Number(v) || 0);
   const statusName = (id: unknown) => catalog.statuses.find((s) => s.id === id)?.nameZh ?? String(id ?? "");
   const markName = (id: unknown) => catalog.marks.find((m) => m.id === id)?.nameZh ?? String(id ?? "");

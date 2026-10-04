@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { flattenFirings } from "@/modules/atlas/collect";
+import { SIDE_NAME } from "@/modules/battle/side-labels";
 import { LifecycleGraph } from "@/modules/atlas/lifecycle-graph";
 import { useAtlasPlayback } from "@/modules/atlas/use-atlas-playback";
 import type { AtlasMechanism } from "@/modules/atlas/types";
@@ -23,7 +24,7 @@ import { MechanismDefCard, MechanismHit } from "./mechanism-card";
 import { useMediaQuery } from "./use-media-query";
 import type { RoomSide, WatchRoom } from "./types";
 
-const SIDE_LABEL: Record<string, string> = { player: "我方", enemy: "敌方" };
+const SIDE_LABEL: Record<string, string> = SIDE_NAME;
 
 function RosterCard({ side, tone }: { side: RoomSide; tone: "player" | "enemy" }) {
   return (
@@ -156,7 +157,7 @@ export function WatchView({ roomId }: { roomId: string }) {
         <span className="text-[12px] text-muted-foreground tnum">第 {room.turn} 回合</span>
         {room.terminal ? (
           <span className="text-[12px] text-foreground">
-            {room.terminal.winner ? `${room.terminal.winner === "player" ? "我方" : "敌方"}胜 · ` : ""}
+            {room.terminal.winner ? `${room.terminal.winner === "player" ? SIDE_NAME.player : SIDE_NAME.enemy}胜 · ` : ""}
             {room.terminal.reason}
           </span>
         ) : null}

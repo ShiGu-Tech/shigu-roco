@@ -1130,10 +1130,10 @@ export class Simulator {
   // ------------------------------------------------------------------ 终止
   terminal(state: BattleState): Terminal {
     const { player: p, enemy: e } = state;
-    if (p.magic <= 0) return { ended: true, winner: "enemy", reason: "我方魔力耗尽" };
-    if (e.magic <= 0) return { ended: true, winner: "player", reason: "敌方魔力耗尽" };
-    if (![p.active, ...p.bench].some((s) => s.hp > 0)) return { ended: true, winner: "enemy", reason: "我方精灵全部阵亡" };
-    if (![e.active, ...e.bench].some((s) => s.hp > 0)) return { ended: true, winner: "player", reason: "敌方精灵全部阵亡" };
+    if (p.magic <= 0) return { ended: true, winner: "enemy", reason: "红方魔力耗尽" };
+    if (e.magic <= 0) return { ended: true, winner: "player", reason: "蓝方魔力耗尽" };
+    if (![p.active, ...p.bench].some((s) => s.hp > 0)) return { ended: true, winner: "enemy", reason: "红方精灵全部阵亡" };
+    if (![e.active, ...e.bench].some((s) => s.hp > 0)) return { ended: true, winner: "player", reason: "蓝方精灵全部阵亡" };
     return { ended: false, winner: null, reason: "" };
   }
 

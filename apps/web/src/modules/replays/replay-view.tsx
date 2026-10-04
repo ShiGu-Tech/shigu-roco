@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 import { ENEMY_COLOR, PLAYER_COLOR } from "@/lib/chart-theme";
+import { SIDE_NAME } from "@/modules/battle/side-labels";
 import type { Catalog } from "@/modules/battle/types";
 import { ActiveBoard } from "@/modules/board/active-board";
 import { describeEvent } from "@/modules/board/log";
@@ -48,8 +49,8 @@ function stampName(name: string): string {
 }
 
 function winnerLabel(r: Replay): string {
-  if (r.winner === "player") return "我方胜";
-  if (r.winner === "enemy") return "敌方胜";
+  if (r.winner === "player") return `${SIDE_NAME.player}胜`;
+  if (r.winner === "enemy") return `${SIDE_NAME.enemy}胜`;
   return "未分胜负";
 }
 
@@ -146,7 +147,7 @@ export function ReplayView() {
                 <Badge variant="outline" className="tnum">第 {r.turns} 回合</Badge>
               </div>
               <p className="mt-1 truncate text-[12px] text-muted-foreground">
-                我方 {r.playerLabel} <span className="px-1">vs</span> 敌方 {r.enemyLabel}
+                {SIDE_NAME.player} {r.playerLabel} <span className="px-1">vs</span> {SIDE_NAME.enemy} {r.enemyLabel}
               </p>
               <p className="mt-0.5 text-[11px] text-muted-foreground">
                 {formatTime(r.createdAt)}
@@ -350,7 +351,7 @@ function ReplayPlayer({ replay, onBack }: { replay: Replay; onBack: () => void }
 
       {frame.terminal?.ended && (
         <div className="rounded-md border border-primary/50 bg-primary/5 px-3 py-2 text-[13px] font-medium">
-          对局结束：{frame.terminal.winner === "player" ? "我方" : "敌方"}胜 · {frame.terminal.reason}
+          对局结束：{frame.terminal.winner === "player" ? SIDE_NAME.player : SIDE_NAME.enemy}胜 · {frame.terminal.reason}
         </div>
       )}
 
@@ -360,7 +361,7 @@ function ReplayPlayer({ replay, onBack }: { replay: Replay; onBack: () => void }
             catalog={catalog}
             side={frame.state.player}
             tone="player"
-            title="我方场上"
+            title="红方场上"
             maxMagic={maxMagic}
             rec={null}
             selectedKey={null}
@@ -405,7 +406,7 @@ function ReplayPlayer({ replay, onBack }: { replay: Replay; onBack: () => void }
             catalog={catalog}
             side={frame.state.enemy}
             tone="enemy"
-            title="敌方场上"
+            title="蓝方场上"
             maxMagic={maxMagic}
             rec={null}
             selectedKey={null}

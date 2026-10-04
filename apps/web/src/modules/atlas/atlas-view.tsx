@@ -7,6 +7,7 @@ import { cn } from "cn";
 import { Panel } from "@/components/panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { SIDE_NAME } from "@/modules/battle/side-labels";
 import { triggerMetaOf } from "@/modules/engine/mechanisms/vocabulary";
 
 import { aggregateTrace } from "./collect";
@@ -45,7 +46,7 @@ function TraceBar({ trace, onClear }: { trace: AtlasTrace | null; onClear: () =>
   const last = trace.steps[trace.steps.length - 1];
   const actionsText =
     last?.actions
-      .map((action) => `${action.side === "player" ? "我方" : "敌方"} ${action.label ?? ACTION_KIND_LABELS[action.kind] ?? action.kind}`)
+      .map((action) => `${action.side === "player" ? SIDE_NAME.player : SIDE_NAME.enemy} ${action.label ?? ACTION_KIND_LABELS[action.kind] ?? action.kind}`)
       .join(" · ") ?? "—";
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border bg-card px-3 py-2 text-[12px]">

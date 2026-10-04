@@ -12,6 +12,7 @@ import { collectAtlasStep } from "@/modules/atlas/collect";
 import { recordAtlasStep } from "@/modules/atlas/storage";
 import { describeEvent } from "@/modules/board/log";
 import { getCatalog } from "@/modules/battle/client";
+import { SIDE_NAME } from "@/modules/battle/side-labels";
 import type { BattleEvent, Catalog, CatalogSprite } from "@/modules/battle/types";
 import { STAT_LABEL } from "@/modules/engine/calc";
 import { parseState } from "@/modules/engine/api/handlers";
@@ -378,17 +379,17 @@ export function DebugView() {
               ) : null}
             </label>
           </div>
-          <SidePanel title="我方" catalog={catalog} side={debug.player} onChange={(player) => setDebug({ ...debug, player })} />
-          <SidePanel title="敌方" catalog={catalog} side={debug.enemy} onChange={(enemy) => setDebug({ ...debug, enemy })} />
+          <SidePanel title={SIDE_NAME.player} catalog={catalog} side={debug.player} onChange={(player) => setDebug({ ...debug, player })} />
+          <SidePanel title={SIDE_NAME.enemy} catalog={catalog} side={debug.enemy} onChange={(enemy) => setDebug({ ...debug, enemy })} />
         </div>
       </Panel>
 
       <div className="space-y-3">
-        <Panel title="双方行动（引擎合法行动）" actions={terminal ? <Badge variant={terminal.winner === "player" ? "default" : "destructive"}>{terminal.ended ? (terminal.winner === "player" ? "我方胜" : terminal.winner === "enemy" ? "敌方胜" : "终局") : ""}</Badge> : undefined}>
+        <Panel title="双方行动（引擎合法行动）" actions={terminal ? <Badge variant={terminal.winner === "player" ? "default" : "destructive"}>{terminal.ended ? (terminal.winner === "player" ? `${SIDE_NAME.player}胜` : terminal.winner === "enemy" ? `${SIDE_NAME.enemy}胜` : "终局") : ""}</Badge> : undefined}>
           <div className="space-y-2">
             <div className="grid grid-cols-1 gap-1.5 min-[520px]:grid-cols-2">
               <label className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                我方
+                {SIDE_NAME.player}
                 <NativeSelect value={playerIndex} onChange={(e) => setPlayerIndex(Number(e.target.value))} className="h-8 flex-1 px-1 text-[12px]" disabled={legal.player.length === 0}>
                   {legal.player.map((action, index) => (
                     <option key={index} value={index}>
@@ -398,7 +399,7 @@ export function DebugView() {
                 </NativeSelect>
               </label>
               <label className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                敌方
+                {SIDE_NAME.enemy}
                 <NativeSelect value={enemyIndex} onChange={(e) => setEnemyIndex(Number(e.target.value))} className="h-8 flex-1 px-1 text-[12px]" disabled={legal.enemy.length === 0}>
                   {legal.enemy.map((action, index) => (
                     <option key={index} value={index}>

@@ -62,5 +62,5 @@ export function deleteLineup(id: string): void {
 }
 
 export function scopeLabel(scope: LineupScope): string {
-  return scope === "player" ? "我方" : "对方";
+  return scope === "player" ? "红方" : "蓝方";
 }
