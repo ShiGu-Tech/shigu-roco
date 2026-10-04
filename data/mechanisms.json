@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.62.0",
+  "version": "0.63.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -20090,6 +20090,245 @@
         }
       ],
       "note": "特性「安眠」：回合末回复 5% 生命 + 1 能量"
+    },
+    {
+      "id": "trait:sp-168-1",
+      "ownerType": "trait",
+      "ownerId": "sp-168-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-168-1",
+            "sp-169-1",
+            "sp-170-1"
+          ]
+        },
+        {
+          "path": "action.cost",
+          "op": "lte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "poison",
+          "layers": 4,
+          "immuneElements": [
+            "Grass"
+          ]
+        }
+      ],
+      "note": "特性「毒腺」"
+    },
+    {
+      "id": "trait:sp-306-1",
+      "ownerType": "trait",
+      "ownerId": "sp-306-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-306-1"
+          ]
+        },
+        {
+          "path": "opponent.magic",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "defense",
+          "mode": "percent",
+          "value": 100
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spdef",
+          "mode": "percent",
+          "value": 100
+        }
+      ],
+      "note": "特性「构装契约者」"
+    },
+    {
+      "id": "trait:sp-303-1",
+      "ownerType": "trait",
+      "ownerId": "sp-303-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-303-1",
+            "sp-304-1",
+            "sp-305-1"
+          ]
+        },
+        {
+          "path": "self.magic",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 100
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 100
+        }
+      ],
+      "note": "特性「图书守卫者」"
+    },
+    {
+      "id": "trait:sp-198-1",
+      "ownerType": "trait",
+      "ownerId": "sp-198-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-198-1",
+            "sp-199-1",
+            "sp-200-1"
+          ]
+        },
+        {
+          "path": "action.cost",
+          "op": "eq",
+          "value": 3
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "defense",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spdef",
+          "mode": "percent",
+          "value": 20
+        }
+      ],
+      "note": "特性「鼓气」"
+    },
+    {
+      "id": "trait:sp-298-1",
+      "ownerType": "trait",
+      "ownerId": "sp-298-1",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-298-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "transferMark",
+          "amount": 1,
+          "from": "opponent",
+          "to": "self"
+        }
+      ],
+      "note": "特性「特殊清洁场景」：偷取敌方 1 层印记"
+    },
+    {
+      "id": "trait:sp-214-1",
+      "ownerType": "trait",
+      "ownerId": "sp-214-1",
+      "trigger": "afterDeath",
+      "when": [
+        {
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-214-1",
+            "sp-215-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "grantDedication",
+          "target": "opponent",
+          "count": 5
+        }
+      ],
+      "note": "特性「振奋虫心」：主动击败（killer=target 侧）→ 队伍 5 次随机奉献"
+    },
+    {
+      "id": "trait:sp-369-1",
+      "ownerType": "trait",
+      "ownerId": "sp-369-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-369-1",
+            "sp-370-1"
+          ]
+        },
+        {
+          "path": "action.element",
+          "op": "eq",
+          "value": "Light"
+        }
+      ],
+      "effects": [
+        {
+          "type": "escape",
+          "target": "self"
+        }
+      ],
+      "note": "特性「安可」：使用光系后回合末返场（近似立即）"
     }
   ]
 }
