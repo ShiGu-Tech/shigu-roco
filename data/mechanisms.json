@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.75.0",
+  "version": "0.78.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -16972,31 +16972,47 @@
       "id": "skill:sk-7020840",
       "ownerType": "skill",
       "ownerId": "sk-7020840",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "turnStart",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "借用：每回合随机变为队友技能【待校准】"
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7020840"
         }
       ],
-      "note": "借用：每回合随机变为队友技能"
+      "effects": [
+        {
+          "type": "randomizeSkill",
+          "target": "self",
+          "skillId": "sk-7020840",
+          "sourceFrom": "self.bench.0.loadout",
+          "duration": 0
+        }
+      ],
+      "note": "借用：每回合随机变为队友技能（取场下首只）"
     },
     {
       "id": "skill:sk-7020850",
       "ownerType": "skill",
       "ownerId": "sk-7020850",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "turnStart",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "取念：每回合随机变为敌方技能【待校准】"
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7020850"
         }
       ],
-      "note": "取念：每回合随机变为敌方技能"
+      "effects": [
+        {
+          "type": "randomizeSkill",
+          "target": "self",
+          "skillId": "sk-7020850",
+          "sourceFrom": "opponent.active.loadout",
+          "duration": 0
+        }
+      ],
+      "note": "取念：每回合随机变为敌方携带技能"
     },
     {
       "id": "skill:sk-7020860",
@@ -20570,16 +20586,41 @@
       "id": "trait:sp-4-3",
       "ownerType": "trait",
       "ownerId": "sp-4-3",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "energyGained",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "草木苏醒时：每回复1能量，物攻和魔攻永久+20%，攻击后重置。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-4-3"
+          ]
         }
       ],
-      "note": "特性「草木苏醒时」：待实现"
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "event.value",
+            "scale": 20
+          }
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "event.value",
+            "scale": 20
+          }
+        }
+      ],
+      "note": "特性「草木苏醒时」：每回复 1 能量双攻永久 +20%（攻击后重置）"
     },
     {
       "id": "trait:sp-11-7",
@@ -20850,16 +20891,27 @@
       "id": "trait:sp-57-1",
       "ownerType": "trait",
       "ownerId": "sp-57-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "afterSwitch",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "做噩梦：敌方精灵离场后，更换入场的精灵失去3能量。【待校准】"
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-57-1",
+            "sp-57-2",
+            "sp-58-1",
+            "sp-58-2"
+          ]
         }
       ],
-      "note": "特性「做噩梦」：待实现"
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": -3
+        }
+      ],
+      "note": "特性「做噩梦」：敌方精灵离场后，换入精灵失去 3 能量"
     },
     {
       "id": "trait:sp-59-1",
@@ -20919,16 +20971,31 @@
       "id": "trait:sp-71-1",
       "ownerType": "trait",
       "ownerId": "sp-71-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "energyGained",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "腐植循环：每回复1能量，同时回复5%生命。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-71-1",
+            "sp-72-1"
+          ]
         }
       ],
-      "note": "特性「腐植循环」：待实现"
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "basis": "maxHp",
+          "amount": 0,
+          "amountFrom": {
+            "path": "event.value",
+            "scale": 0.05,
+            "round": "none"
+          }
+        }
+      ],
+      "note": "特性「腐植循环」：每回复 1 能量同时回复 5% 生命"
     },
     {
       "id": "trait:sp-73-1",
@@ -21513,16 +21580,26 @@
       "id": "trait:sp-123-1",
       "ownerType": "trait",
       "ownerId": "sp-123-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "afterSwitch",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "下黑手：敌方精灵离场后，更换入场的精灵获得5层中毒。【待校准】"
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-123-1",
+            "sp-124-1"
+          ]
         }
       ],
-      "note": "特性「下黑手」：待实现"
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "poison",
+          "layers": 5
+        }
+      ],
+      "note": "特性「下黑手」：敌方精灵离场后，换入精灵获 5 层中毒"
     },
     {
       "id": "trait:sp-131-1",
@@ -21568,16 +21645,41 @@
       "id": "trait:sp-131-2",
       "ownerType": "trait",
       "ownerId": "sp-131-2",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "悼亡：双方队伍中每有1只力竭的精灵，自己获得双攻+30%。【待校准】"
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-131-2"
+          ]
         }
       ],
-      "note": "特性「悼亡」：待实现"
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.bothFaints",
+            "scale": 30
+          }
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.bothFaints",
+            "scale": 30
+          }
+        }
+      ],
+      "note": "特性「悼亡」：双方每有 1 只力竭精灵，双攻 +30%"
     },
     {
       "id": "trait:sp-134-1",
@@ -21688,15 +21790,26 @@
       "ownerType": "trait",
       "ownerId": "sp-174-1",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "多人宿舍：自己的能量可以超过能量上限。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-174-1",
+            "sp-175-1",
+            "sp-176-1"
+          ]
         }
       ],
-      "note": "特性「多人宿舍」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "energy.noCap",
+          "value": true
+        }
+      ],
+      "note": "特性「多人宿舍」：能量可超过上限"
     },
     {
       "id": "trait:sp-177-1",
@@ -21739,16 +21852,37 @@
       "id": "trait:sp-181-1",
       "ownerType": "trait",
       "ownerId": "sp-181-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "身经百练：己方精灵每应对1次，自己入场时水系和武系技能威力+20%。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-181-1",
+            "sp-182-1"
+          ]
+        },
+        {
+          "path": "action.element",
+          "op": "in",
+          "value": [
+            "Water",
+            "Fight"
+          ]
         }
       ],
-      "note": "特性「身经百练」：待实现"
+      "effects": [
+        {
+          "type": "addPower",
+          "target": "self",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.reacts",
+            "scale": 20
+          }
+        }
+      ],
+      "note": "特性「身经百练」：己方每应对 1 次，水系 / 武系技能威力 +20（近似为固定 +20）"
     },
     {
       "id": "trait:sp-183-1",
@@ -21829,16 +21963,64 @@
       "id": "trait:sp-192-1",
       "ownerType": "trait",
       "ownerId": "sp-192-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "渗透：己方精灵每使用1次武系或地系技能，自己入场时获得攻防+5%。【待校准】"
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-192-1",
+            "sp-192-2"
+          ]
         }
       ],
-      "note": "特性「渗透」：待实现"
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.usedFight",
+            "scale": 5
+          }
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.usedGround",
+            "scale": 5
+          }
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "defense",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.usedFight",
+            "scale": 5
+          }
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "defense",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.usedGround",
+            "scale": 5
+          }
+        }
+      ],
+      "note": "特性「渗透」：每使用 1 次武系或地系技能，入场时攻防 +5%"
     },
     {
       "id": "trait:sp-195-1",
@@ -22013,16 +22195,38 @@
       "id": "trait:sp-221-1",
       "ownerType": "trait",
       "ownerId": "sp-221-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "定向精炼：己方精灵每使用1次防御技能，自己入场时机械系和地系技能威力+10%。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-221-1",
+            "sp-222-1",
+            "sp-223-1"
+          ]
+        },
+        {
+          "path": "action.element",
+          "op": "in",
+          "value": [
+            "Mechanic",
+            "Ground"
+          ]
         }
       ],
-      "note": "特性「定向精炼」：待实现"
+      "effects": [
+        {
+          "type": "addPower",
+          "target": "self",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.usedTypeDefense",
+            "scale": 10
+          }
+        }
+      ],
+      "note": "特性「定向精炼」：己方每使用 1 次防御技能，机械 / 地系技能威力 +10"
     },
     {
       "id": "trait:sp-224-1",
@@ -22103,16 +22307,29 @@
       "id": "trait:sp-239-1",
       "ownerType": "trait",
       "ownerId": "sp-239-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "charged",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "洄游：每次进入蓄力状态，获得全技能能耗永久-2。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-239-1",
+            "sp-240-1",
+            "sp-241-1"
+          ]
         }
       ],
-      "note": "特性「洄游」：待实现"
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -2,
+          "duration": "permanent",
+          "key": "huiyou"
+        }
+      ],
+      "note": "特性「洄游」：每次进入蓄力，全技能能耗永久 −2"
     },
     {
       "id": "trait:sp-246-1",
@@ -22181,16 +22398,30 @@
       "id": "trait:sp-252-1",
       "ownerType": "trait",
       "ownerId": "sp-252-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "冰钻：敌方携带技能总能耗每有1点，自己攻击时威力+10%。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-252-1",
+            "sp-253-1",
+            "sp-254-1"
+          ]
         }
       ],
-      "note": "特性「冰钻」：待实现"
+      "effects": [
+        {
+          "type": "addPower",
+          "target": "self",
+          "value": 0,
+          "valueFrom": {
+            "path": "opponent.counters.loadoutCost",
+            "scale": 10
+          }
+        }
+      ],
+      "note": "特性「冰钻」：敌方携带总能耗每 1 点威力 +10（近似为固定 +10/点）"
     },
     {
       "id": "trait:sp-255-1",
@@ -22444,16 +22675,28 @@
       "id": "trait:sp-302-1",
       "ownerType": "trait",
       "ownerId": "sp-302-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "变形活画：行动时，敌方每有1层增益，本次行动技能威力+10%，速度+5。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-302-1"
+          ]
         }
       ],
-      "note": "特性「变形活画」：待实现"
+      "effects": [
+        {
+          "type": "addPower",
+          "target": "self",
+          "value": 0,
+          "valueFrom": {
+            "path": "opponent.active.buffs.*",
+            "scale": 10
+          }
+        }
+      ],
+      "note": "特性「变形活画」：行动时敌方每有 1 层增益威力 +10（速度部分略）"
     },
     {
       "id": "trait:sp-307-1",
@@ -22594,31 +22837,105 @@
       "id": "trait:sp-327-1",
       "ownerType": "trait",
       "ownerId": "sp-327-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "搜刮：敌方每使用1次「聚能」技能或更换精灵，自己入场时获得魔攻+20%。【待校准】"
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-327-1",
+            "sp-328-1",
+            "sp-329-1"
+          ]
         }
       ],
-      "note": "特性「搜刮」：待实现"
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "opponent.counters.charges",
+            "scale": 20
+          }
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "opponent.counters.switches",
+            "scale": 20
+          }
+        }
+      ],
+      "note": "特性「搜刮」：敌方每聚能 / 换人 1 次，入场魔攻 +20%"
     },
     {
       "id": "trait:sp-329-2",
       "ownerType": "trait",
       "ownerId": "sp-329-2",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "扫荡：敌方每使用1次「聚能」技能或更换精灵，自己入场时获得魔攻+20%和魔防+10%。【待校准】"
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-329-2"
+          ]
         }
       ],
-      "note": "特性「扫荡」：待实现"
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "opponent.counters.charges",
+            "scale": 20
+          }
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "opponent.counters.switches",
+            "scale": 20
+          }
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spdef",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "opponent.counters.charges",
+            "scale": 10
+          }
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spdef",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "opponent.counters.switches",
+            "scale": 10
+          }
+        }
+      ],
+      "note": "特性「扫荡」：敌方每聚能 / 换人 1 次，入场魔攻 +20%、魔防 +10%"
     },
     {
       "id": "trait:sp-330-1",
@@ -22966,16 +23283,32 @@
       "id": "trait:sp-384-1",
       "ownerType": "trait",
       "ownerId": "sp-384-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "盘根木：初始生命为10%，入场前己方精灵每使用1次草系技能，回复30%生命。【待校准】"
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-384-1",
+            "sp-385-1",
+            "sp-386-1"
+          ]
         }
       ],
-      "note": "特性「盘根木」：待实现"
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "basis": "maxHp",
+          "amount": 0,
+          "amountFrom": {
+            "path": "self.counters.usedGrass",
+            "scale": 0.3,
+            "round": "none"
+          }
+        }
+      ],
+      "note": "特性「盘根木」：入场前己方每使用 1 次草系技能回复 30% 生命（略去初始 10%）"
     },
     {
       "id": "trait:sp-393-1",
@@ -23396,16 +23729,42 @@
       "id": "trait:sp-464-1",
       "ownerType": "trait",
       "ownerId": "sp-464-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "旧玩具：己方精灵每使用过1个不同系别的技能，自己入场时获得双攻+10%。【待校准】"
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-464-1",
+            "sp-465-1"
+          ]
         }
       ],
-      "note": "特性「旧玩具」：待实现"
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.usedElementKinds",
+            "scale": 10
+          }
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.counters.usedElementKinds",
+            "scale": 10
+          }
+        }
+      ],
+      "note": "特性「旧玩具」：己方每使用过 1 个不同系别技能，入场双攻 +10%"
     },
     {
       "id": "trait:sp-466-1",
@@ -23478,6 +23837,82 @@
         }
       ],
       "note": "特性「蒸汽革命」：全技能威力 +10×火系技能次数"
+    },
+    {
+      "id": "trait:sp-4-3#2",
+      "ownerType": "trait",
+      "ownerId": "sp-4-3",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-4-3"
+          ]
+        },
+        {
+          "path": "action.category",
+          "op": "in",
+          "value": [
+            "Physical",
+            "Magic"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "clearStat",
+          "target": "self",
+          "stat": "atk",
+          "polarity": "buff"
+        },
+        {
+          "type": "clearStat",
+          "target": "self",
+          "stat": "spatk",
+          "polarity": "buff"
+        }
+      ],
+      "note": "特性「草木苏醒时」：攻击后重置双攻加成"
+    },
+    {
+      "id": "trait:sp-4-3#3",
+      "ownerType": "trait",
+      "ownerId": "sp-4-3",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-4-3"
+          ]
+        },
+        {
+          "path": "action.category",
+          "op": "in",
+          "value": [
+            "Physical",
+            "Magic"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "clearStat",
+          "target": "self",
+          "stat": "atk",
+          "polarity": "buff"
+        },
+        {
+          "type": "clearStat",
+          "target": "self",
+          "stat": "spatk",
+          "polarity": "buff"
+        }
+      ],
+      "note": "特性「草木苏醒时」：攻击后重置双攻加成"
     }
   ]
 }

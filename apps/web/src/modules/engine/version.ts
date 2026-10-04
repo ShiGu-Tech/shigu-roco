@@ -129,5 +129,8 @@
  * - 0.43.0 技能栏域 · 槽位限制：`legalActions` 读取 passive 覆盖 `battle.allowedSlots` 位掩码（bit0=1号位…），
  *          只列出允许槽位的技能（正位宝剑 / 宝剑王牌）。
  * - 0.44.0 队伍域 · 累计消耗能量计数 `energySpent`（`executeSkill` 自增，供「累计消耗恰好为 N」类，如整点报时）。
+ * - 0.45.0 长尾能力：`randomizeSkill.sourceFrom`（候选池改为上下文点路径，如 `opponent.active.loadout`）；
+ *          触发器 `energyGained`（`energy-modified` 增益级联 + 聚能派发）/ `charged`（`skill-charged` 级联）；
+ *          计数 `bothFaints` / `usedElementKinds`（不同系别种数）；规则 `energy.noCap`（聚能不设上限）。
  */
-export const ENGINE_VERSION = "0.44.0";
+export const ENGINE_VERSION = "0.45.0";

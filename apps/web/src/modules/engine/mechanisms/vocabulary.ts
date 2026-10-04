@@ -70,6 +70,8 @@ export const TRIGGER_VOCABULARY: readonly TriggerMeta[] = [
   { name: "debuffGained", title: "获得减益", phase: "entity" },
   { name: "weatherChanged", title: "天气变化", phase: "entity" },
   { name: "skillCooldownReduced", title: "冷却减少", phase: "other" },
+  { name: "energyGained", title: "获得能量", phase: "entity" },
+  { name: "charged", title: "进入蓄力", phase: "action" },
   { name: "passive", title: "被动常驻", phase: "other" },
 ] as const;
 
@@ -129,7 +131,7 @@ export const EFFECT_VOCABULARY: readonly EffectVocabulary[] = [
   { type: "learnSkill", title: "学习技能", domain: "skill", params: { target: "目标", skillId: "技能", source: "来源", duration: "时效" } },
   { type: "forgetSkill", title: "遗忘技能", domain: "skill", params: { target: "目标", skillId: "技能" } },
   { type: "replaceSkill", title: "替换技能", domain: "skill", params: { target: "目标", fromSkillId: "原技能", toSkillId: "新技能", duration: "时效" } },
-  { type: "randomizeSkill", title: "随机技能", domain: "skill", params: { target: "目标", skillId: "目标技能", source: "候选池", duration: "时效" } },
+  { type: "randomizeSkill", title: "随机技能", domain: "skill", params: { target: "目标", skillId: "目标技能", source: "候选池", sourceFrom: "候选池取值", duration: "时效" } },
   { type: "swapSkillSet", title: "交换技能组", domain: "skill", params: { target: "目标", from: "自", to: "至", duration: "时效" } },
   { type: "modifySkill", title: "技能永久修正", domain: "skill", params: { target: "目标", skillId: "技能", power: "威力", cost: "能耗", hits: "连击", priority: "先手" } },
   // 记忆

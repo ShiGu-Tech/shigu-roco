@@ -109,7 +109,7 @@ export class MechanismRuntime {
         : toNum(resolved, fallback);
     let value = spec.terms ? spec.terms.reduce((sum, term) => sum + term.coef * Math.pow(raw, term.power), 0) : raw * (spec.scale ?? 1) + (spec.offset ?? 0);
     value += spec.terms ? (spec.offset ?? 0) : 0;
-    return spec.round === "ceil" ? Math.ceil(value) : spec.round === "round" ? Math.round(value) : Math.floor(value);
+    return spec.round === "none" ? value : spec.round === "ceil" ? Math.ceil(value) : spec.round === "round" ? Math.round(value) : Math.floor(value);
   }
 
   /** 统计技能 id 数组中符合图鉴属性的条目数（供 `DynamicValue.count`）。 */
@@ -736,7 +736,10 @@ export class MechanismRuntime {
         case "randomizeSkill": {
           if (!active || !targetSide) break;
           const current = definition.skillId ?? active.loadout[active.loadout.length - 1];
-          const pool = definition.source.filter((id) => id && id !== current);
+          const source = definition.sourceFrom
+            ? toArray<string>(resolveContextPath({ state, trigger: command.trigger, actorSide: command.actorSide, targetSide: command.targetSide, event: command.event ?? {} }, definition.sourceFrom))
+            : (definition.source ?? []);
+          const pool = source.filter((id) => id && id !== current);
           if (!current || !pool.length) break;
           const rng = new Rng(hashSeed(state, `${command.mechanismId}:${state.turn}`));
           const picked = pool[rng.int(pool.length)];
@@ -792,6 +795,8 @@ export class MechanismRuntime {
           : event.type === "mark-applied" ? ["markApplied", "markReached"]
           : event.type === "buff-gained" ? ["buffGained"]
           : event.type === "debuff-gained" ? ["debuffGained"]
+          : event.type === "energy-modified" && toNum(event.data.delta, 0) > 0 ? ["energyGained"]
+          : event.type === "skill-charged" ? ["charged"]
           : [];
         if (!triggers.length) continue;
         const actorSide = event.side;

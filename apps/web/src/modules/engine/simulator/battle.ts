@@ -285,6 +285,11 @@ export class Simulator {
         this.bump(st, side, `usedType${toStr(usedSkill.actionType)}`);
         this.bump(st, side, "skillUsed");
         if (reactedBySide[side] === true) this.bump(st, side, "reacts");
+        // 已使用过的不同系别种数（供「每使用过 1 个不同系别」类）。
+        {
+          const c = this.sideState(st, side).counters!;
+          c.usedElementKinds = Object.keys(c).filter((k) => k.startsWith("used") && !k.startsWith("usedType") && toNum(c[k], 0) > 0).length;
+        }
         events.push(...this.triggerState(st, "skillUsed", { actorSide: side, targetSide: opp, action: actionView, event: { skillId: entry.action.skillId, actionId: entry.id, element: toStr(usedSkill.element), category: toStr(usedSkill.category), actionType: toStr(usedSkill.actionType), cost: entry.action.skillId ? effectiveCost(st, this.bundle, side, entry.action.skillId) : 0, reacted: reactedBySide[side] === true, wentFirst, burst } }));
         const skillId = entry.action.skillId;
         if (skillId && caster.skillOverrides?.[skillId]?.expires === 0) {
@@ -480,14 +485,19 @@ export class Simulator {
     const energy = asDict(this.bundle.rules.energy);
     const recover = Math.floor(toNum(energy.recover, 5));
     const cap = Math.floor(toNum(energy.max, 10));
+    // 规则覆盖：`energy.noCap`（多人宿舍）时聚能不设上限。
+    const noCap = this.mechanisms.ruleModifiers(st, this.bundle, side)["energy.noCap"] === true;
     const before = active.energy;
-    active.energy = Math.min(cap, active.energy + recover);
+    active.energy = noCap ? active.energy + recover : Math.min(cap, active.energy + recover);
     const gained = active.energy - before;
     // 单次（nextAction）能耗条目：聚能也算一次行动，结算后移除。
     if (active.costMods?.some((m) => m.duration === "nextAction")) active.costMods = active.costMods.filter((m) => m.duration !== "nextAction");
     // 队伍域 · 历史计数：本方聚能次数（供「敌方每使用 1 次聚能」类）。
     this.bump(st, side, "charges");
-    return [{ type: "energy", side, text: `${active.spriteId} 聚能 +${gained}（${active.energy}/${cap}）`, data: { value: gained } }];
+    const events: BattleEvent[] = [{ type: "energy", side, text: `${active.spriteId} 聚能 +${gained}（${active.energy}/${cap}）`, data: { value: gained } }];
+    // 能量域 · 获得能量触发器（供「每回复 1 能量」类，如腐植循环 / 草木苏醒时）。
+    if (gained > 0) events.push(...this.triggerState(st, "energyGained", { actorSide: side, targetSide: otherSide(side), event: { value: gained } }));
+    return events;
   }
 
   doSwitch(st: BattleState, side: Side, benchId?: string, forced = false): BattleEvent[] {
@@ -667,8 +677,10 @@ export class Simulator {
       events.push(...this.triggerState(st, "beforeDeath", { actorSide: side, targetSide: opp, event: deathEvent }));
       s.active.faintHandled = true;
       s.magic -= perFaint;
-      // 队伍域 · 历史计数：本队力竭只数（供「每有 1 只力竭」类）。
+      // 队伍域 · 历史计数：本队力竭只数（供「每有 1 只力竭」类）；双方合计力竭只数（悼亡）。
       this.bump(st, side, "faints");
+      this.bump(st, side, "bothFaints");
+      this.bump(st, opp, "bothFaints");
       events.push({ type: "faint", side, text: `${s.active.spriteId} 阵亡，魔力 -${perFaint}`, data: {} });
       events.push(...this.triggerState(st, "afterDeath", { actorSide: side, targetSide: opp, event: deathEvent }));
       this.pruneAuraCostMods(st);

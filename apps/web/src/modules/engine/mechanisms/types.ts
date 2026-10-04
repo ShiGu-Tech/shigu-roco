@@ -30,7 +30,9 @@ export type TriggerName =
   | "buffGained"
   | "debuffGained"
   | "weatherChanged"
-  | "skillCooldownReduced";
+  | "skillCooldownReduced"
+  | "energyGained"
+  | "charged";
 
 export type MechanismOwnerType = "skill" | "trait" | "status" | "mark" | "weather" | "system";
 
@@ -69,7 +71,7 @@ export interface DynamicValue {
   path: string;
   scale?: number;
   offset?: number;
-  round?: "floor" | "ceil" | "round";
+  round?: "floor" | "ceil" | "round" | "none";
   terms?: { coef: number; power: number }[];
   /** `path` 指向技能 id 数组时（如 `self.active.loadout`），按图鉴条目属性筛选计数（需 bundle）。 */
   count?: { element?: string; category?: string; actionType?: string };
@@ -171,7 +173,7 @@ export type EffectSpec =
   | { type: "learnSkill"; target?: string; skillId: string; source?: string; duration?: number }
   | { type: "forgetSkill"; target?: string; skillId: string }
   | { type: "replaceSkill"; target?: string; fromSkillId: string; toSkillId: string; duration?: number }
-  | { type: "randomizeSkill"; target?: string; skillId?: string; source: string[]; duration?: number; costDelta?: number }
+  | { type: "randomizeSkill"; target?: string; skillId?: string; source?: string[]; sourceFrom?: string; duration?: number; costDelta?: number }
   | { type: "swapSkillSet"; target?: string; from: string; to: string; duration?: number }
   /** 记忆域 · 计数器：`target.active.counters[key] += delta`。 */
   | { type: "addCounter"; target?: string; key: string; delta: number }

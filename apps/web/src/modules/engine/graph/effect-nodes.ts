@@ -102,7 +102,7 @@ const WRITE_NODES: WriteSpec[] = [
   { suffix: "learnSkill", title: "写入 · 习得技能", target: "self", params: [{ name: "skillId", type: "string", required: true }, { name: "duration", type: "number" }] },
   { suffix: "forgetSkill", title: "写入 · 遗忘技能", target: "self", params: [{ name: "skillId", type: "string", required: true }] },
   { suffix: "replaceSkill", title: "写入 · 替换技能", target: "self", params: [{ name: "fromSkillId", type: "string", required: true }, { name: "toSkillId", type: "string", required: true }, { name: "duration", type: "number" }] },
-  { suffix: "randomizeSkill", title: "写入 · 随机技能", target: "self", params: [{ name: "skillId", type: "string" }, { name: "source", type: "json", required: true }, { name: "duration", type: "number" }] },
+  { suffix: "randomizeSkill", title: "写入 · 随机技能", target: "self", params: [{ name: "skillId", type: "string" }, { name: "source", type: "json" }, { name: "sourceFrom", type: "string" }, { name: "duration", type: "number" }] },
   { suffix: "swapSkillSet", title: "写入 · 交换技能", target: "self", params: [{ name: "from", type: "string", required: true }, { name: "to", type: "string", required: true }, { name: "duration", type: "number" }] },
   { suffix: "scheduleEntry", title: "写入 · 入场队列", target: "self", params: [{ name: "effects", type: "json", required: true }] },
   { suffix: "scheduleEffect", title: "写入 · 延迟效果", target: "self", params: [{ name: "effects", type: "json", required: true }, { name: "delay", type: "number" }, { name: "timing", type: "string" }] },
