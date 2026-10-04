@@ -137,7 +137,7 @@ export const EFFECT_VOCABULARY: readonly EffectVocabulary[] = [
   { type: "replaceSkill", title: "替换技能", domain: "skill", params: { target: "目标", fromSkillId: "原技能", toSkillId: "新技能", duration: "时效" } },
   { type: "randomizeSkill", title: "随机技能", domain: "skill", params: { target: "目标", skillId: "目标技能", source: "候选池", sourceFrom: "候选池取值", duration: "时效" } },
   { type: "swapSkillSet", title: "交换技能组", domain: "skill", params: { target: "目标", from: "自", to: "至", duration: "时效" } },
-  { type: "modifySkill", title: "技能永久修正", domain: "skill", params: { target: "目标", skillId: "技能", power: "威力", cost: "能耗", hits: "连击", priority: "先手" } },
+  { type: "modifySkill", title: "技能永久修正", domain: "skill", params: { target: "目标", skillId: "技能", skillIdFrom: "技能取值", power: "威力", cost: "能耗", hits: "连击", priority: "先手" } },
   // 记忆
   { type: "addCounter", title: "计数器增减", domain: "counter", params: { target: "目标", key: "键", delta: "增减" } },
   { type: "setCounter", title: "设置计数器", domain: "counter", params: { target: "目标", key: "键", value: "值", valueFrom: "取值" } },

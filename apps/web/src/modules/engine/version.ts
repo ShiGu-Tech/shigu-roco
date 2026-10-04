@@ -143,5 +143,7 @@
  *          `inheritStat` 作为普通效果（`afterSwitch` 时把场下末位精灵的强化复制给换入精灵）。
  * - 0.50.0 内容补齐第四期 D5：`spreadEnergy`（为场下每只回复能量）；哨兵变量威力 / 逐段效果走
  *          `addPower.valueFrom` / `setHits` / `afterDamage` 组合（魔能爆 / 极寒领域 / 拆礼物 / 冰捆缚 / 打喷嚏…）。
+ * - 0.51.0 增量长尾：`modifySkill.skillIdFrom`（技能 id 取自上下文，如相邻技能）；`spreadEnergy.deltaFrom`；
+ *          行动视图 `action.neighborIds`（相邻技能 id）。服务联动装置 / 友谊之果 / 系统发育 / 重金属粉尘。
  */
-export const ENGINE_VERSION = "0.50.0";
+export const ENGINE_VERSION = "0.51.0";

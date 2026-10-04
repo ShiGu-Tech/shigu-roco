@@ -189,7 +189,7 @@ export class MechanismRuntime {
         case "spreadEnergy": {
           if (!targetSide) break;
           const side = targetSide === "player" ? state.player : state.enemy;
-          const delta = Math.floor(definition.delta);
+          const delta = Math.floor(definition.deltaFrom ? this.dynamicValue(state, command, definition.deltaFrom, definition.delta, bundle) : definition.delta);
           if (!delta) break;
           for (const sprite of side.bench) sprite.energy = Math.max(0, sprite.energy + delta);
           events.push({ type: "energy-spread", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { delta } });
@@ -378,13 +378,15 @@ export class MechanismRuntime {
         }
         case "modifySkill": {
           if (!active || !targetSide) break;
+          const resolvedSkillId = definition.skillIdFrom ? toStr(resolveContextPath({ state, trigger: command.trigger, actorSide: command.actorSide, targetSide: command.targetSide, event: command.event ?? {} }, definition.skillIdFrom)) : definition.skillId;
+          if (!resolvedSkillId) break;
           active.skillMods ??= {};
-          const mod = (active.skillMods[definition.skillId] ??= {});
+          const mod = (active.skillMods[resolvedSkillId] ??= {});
           for (const field of ["power", "cost", "hits", "priority"] as const) {
             const delta = definition[field];
             if (typeof delta === "number") mod[field] = (mod[field] ?? 0) + delta;
           }
-          events.push({ type: "skill-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { skillId: definition.skillId, mod: { ...mod } } });
+          events.push({ type: "skill-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { skillId: resolvedSkillId, mod: { ...mod } } });
           break;
         }
         case "applyMark": {

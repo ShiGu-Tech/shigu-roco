@@ -414,11 +414,17 @@ export class Simulator {
     }
     const skill = getSkill(this.bundle, action.skillId);
     const cost = effectiveCost(st, this.bundle, side, action.skillId);
+    const neighborIds: string[] = [];
+    if (index >= 0 && count > 1) {
+      if (index > 0) neighborIds.push(active.loadout[index - 1]);
+      if (index < count - 1) neighborIds.push(active.loadout[index + 1]);
+    }
     return {
       ...action,
       slot: index >= 0 ? index + 1 : undefined,
       neighborPowerSum,
       neighborPowerDiff,
+      neighborIds,
       cost,
       category: toStr(skill.category),
       element: toStr(skill.element),

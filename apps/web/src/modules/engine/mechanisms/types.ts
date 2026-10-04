@@ -153,7 +153,7 @@ export type EffectSpec =
   | { type: "modifyMagic"; target?: string; delta: number }
   | { type: "modifyEnergy"; target?: string; delta: number; deltaFrom?: DynamicValue }
   /** 能量域 · 为场下每个精灵回复 `delta` 能量（富养化）。 */
-  | { type: "spreadEnergy"; target?: string; delta: number }
+  | { type: "spreadEnergy"; target?: string; delta: number; deltaFrom?: DynamicValue }
   | { type: "modifySwitchLock"; target?: string; delta: number }
   | { type: "applyMark"; target?: string; markId: string; layers?: number; layersFrom?: DynamicRef; scope?: "sprite" | "team"; immuneElements?: string[] }
   /** 印记消耗：驱散目标指定（省略 = 全部）印记。`effectsPerLayer` 每层执行一次（自动累加）；
@@ -188,7 +188,7 @@ export type EffectSpec =
   /** 记忆域 · 计数器：清除指定 key（省略 = 全部）。 */
   | { type: "clearCounter"; target?: string; key?: string }
   /** 记忆域 · 技能永久修正：对某技能叠加威力 / 能耗 / 连击 / 先手的持久 delta。 */
-  | { type: "modifySkill"; target?: string; skillId: string; power?: number; cost?: number; hits?: number; priority?: number }
+  | { type: "modifySkill"; target?: string; skillId?: string; skillIdFrom?: string; power?: number; cost?: number; hits?: number; priority?: number }
   /** 规则覆盖通道：按 `passive` 触发器收集，覆盖 `rules.*` 默认值（如印记上限 / 异种互斥）。key 用点路径。 */
   | { type: "setRuleModifier"; target?: string; key: string; value: number | boolean }
   | { type: "unsupported"; effectType: string; reason?: string };

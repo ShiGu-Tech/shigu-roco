@@ -87,7 +87,7 @@ const WRITE_NODES: WriteSpec[] = [
   { suffix: "addCounter", title: "写入 · 计数器 +", target: "self", inputs: ["delta"], params: [{ name: "key", type: "string", required: true }] },
   { suffix: "setCounter", title: "写入 · 计数器 =", target: "self", inputs: ["value"], params: [{ name: "key", type: "string", required: true }] },
   { suffix: "clearCounter", title: "写入 · 清空计数器", target: "self", params: [{ name: "key", type: "string" }] },
-  { suffix: "modifySkill", title: "写入 · 技能永久修正", target: "self", params: [{ name: "skillId", type: "string", required: true }, { name: "power", type: "number" }, { name: "cost", type: "number" }, { name: "hits", type: "number" }, { name: "priority", type: "number" }] },
+  { suffix: "modifySkill", title: "写入 · 技能永久修正", target: "self", params: [{ name: "skillId", type: "string" }, { name: "skillIdFrom", type: "string" }, { name: "power", type: "number" }, { name: "cost", type: "number" }, { name: "hits", type: "number" }, { name: "priority", type: "number" }] },
   { suffix: "changeWeather", title: "写入 · 天气", target: "self", params: [{ name: "weatherId", type: "string", required: true }, { name: "turns", type: "number" }] },
   { suffix: "modifyWeatherTurns", title: "写入 · 延长天气", target: "self", params: [{ name: "weatherId", type: "string" }, { name: "delta", type: "number", required: true }] },
   { suffix: "beginCharge", title: "写入 · 进入蓄力", target: "self", params: [{ name: "skillId", type: "string" }, { name: "choice", type: "number" }] },

@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.83.0",
+  "version": "0.84.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -16869,16 +16869,23 @@
       "id": "skill:sk-7120290",
       "ownerType": "skill",
       "ownerId": "sk-7120290",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "actionResolved",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "重金属粉尘：给携带攻击技能附加中毒（技能级附加）【待校准】"
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7120290"
         }
       ],
-      "note": "重金属粉尘：给携带攻击技能附加中毒（技能级附加）"
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "dust",
+          "delta": 1
+        }
+      ],
+      "note": "重金属粉尘：获得「攻击附加中毒」效果"
     },
     {
       "id": "skill:sk-7150320",
@@ -17086,16 +17093,29 @@
       "id": "skill:sk-7070070",
       "ownerType": "skill",
       "ownerId": "sk-7070070",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "actionResolved",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "联动装置：相邻技能威力永久修正【待校准】"
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7070070"
         }
       ],
-      "note": "联动装置：相邻技能威力永久修正"
+      "effects": [
+        {
+          "type": "modifySkill",
+          "target": "self",
+          "skillIdFrom": "action.neighborIds.0",
+          "power": 20
+        },
+        {
+          "type": "modifySkill",
+          "target": "self",
+          "skillIdFrom": "action.neighborIds.1",
+          "power": 20
+        }
+      ],
+      "note": "联动装置：使用后两侧技能威力永久 +20（应对防御 +30 略）"
     },
     {
       "id": "skill:sk-7070260",
@@ -23362,16 +23382,30 @@
       "id": "trait:sp-342-1",
       "ownerType": "trait",
       "ownerId": "sp-342-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "energyGained",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "系统发育：获得能量或生命时，会将等量的能量或生命随机分配给场下的精灵。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-342-1",
+            "sp-343-1",
+            "sp-344-1"
+          ]
         }
       ],
-      "note": "特性「系统发育」：待实现"
+      "effects": [
+        {
+          "type": "spreadEnergy",
+          "target": "self",
+          "delta": 0,
+          "deltaFrom": {
+            "path": "event.value",
+            "round": "none"
+          }
+        }
+      ],
+      "note": "特性「系统发育」：获得能量时将等量随机分配给场下（生命部分略）"
     },
     {
       "id": "trait:sp-345-1",
@@ -23721,16 +23755,40 @@
       "id": "trait:sp-396-1",
       "ownerType": "trait",
       "ownerId": "sp-396-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "turnEnd",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "友谊之果：回合结束时，双方队伍中的所有精灵回复1能量。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-396-1",
+            "sp-397-1"
+          ]
         }
       ],
-      "note": "特性「友谊之果」：待实现"
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 1
+        },
+        {
+          "type": "spreadEnergy",
+          "target": "self",
+          "delta": 1
+        },
+        {
+          "type": "modifyEnergy",
+          "target": "opponent",
+          "delta": 1
+        },
+        {
+          "type": "spreadEnergy",
+          "target": "opponent",
+          "delta": 1
+        }
+      ],
+      "note": "特性「友谊之果」：回合结束时双方所有精灵回复 1 能量"
     },
     {
       "id": "trait:sp-400-1",
@@ -24443,6 +24501,36 @@
         }
       ],
       "note": "薄纱环·暗：自身获正面印记（近似攻击印记）"
+    },
+    {
+      "id": "skill:sk-7120290#2",
+      "ownerType": "skill",
+      "ownerId": "sk-7120290",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.counters.dust",
+          "op": "gte",
+          "value": 1
+        },
+        {
+          "path": "action.category",
+          "op": "in",
+          "value": [
+            "Physical",
+            "Magic"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "poison",
+          "layers": 3
+        }
+      ],
+      "note": "重金属粉尘：攻击技能附加中毒 3"
     }
   ]
 }
