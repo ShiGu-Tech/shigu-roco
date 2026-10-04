@@ -1,7 +1,7 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.34.0",
-  "updatedAt": "2026-10-01",
+  "version": "0.35.0",
+  "updatedAt": "2026-10-04",
   "mechanisms": [
     {
       "id": "skill:sk-7020370",
@@ -11263,6 +11263,2189 @@
           "percent": 40
         }
       ]
+    },
+    {
+      "id": "skill:sk-7160290:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7160290",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7160290"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7160290",
+          "layers": 1
+        },
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "moe",
+          "layers": 1
+        }
+      ],
+      "note": "捧杀：应对攻击成功 → 必定先手 + 本回合承伤 −90%；敌方 1 层萌化"
+    },
+    {
+      "id": "skill:sk-7160290:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7160290",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7160290",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 90
+        }
+      ],
+      "note": "捧杀：本回合承伤 −90%"
+    },
+    {
+      "id": "skill:sk-7160290:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7160290",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7160290",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7160290"
+        }
+      ],
+      "note": "捧杀：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7090210:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7090210",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7090210"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7090210",
+          "layers": 1
+        },
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "freeze",
+          "layers": 2,
+          "immuneElements": [
+            "Ice"
+          ]
+        }
+      ],
+      "note": "冰墙：应对攻击成功 → 必定先手 + 本回合承伤 −80%；敌方 2 层冻结"
+    },
+    {
+      "id": "skill:sk-7090210:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7090210",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7090210",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 80
+        }
+      ],
+      "note": "冰墙：本回合承伤 −80%"
+    },
+    {
+      "id": "skill:sk-7090210:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7090210",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7090210",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7090210"
+        }
+      ],
+      "note": "冰墙：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7030520:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7030520",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7030520"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7030520",
+          "layers": 1
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "defense",
+          "mode": "percent",
+          "value": 70
+        }
+      ],
+      "note": "纤维化：应对攻击成功 → 必定先手 + 本回合承伤 −80%；自己物防 +70%"
+    },
+    {
+      "id": "skill:sk-7030520:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7030520",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7030520",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 80
+        }
+      ],
+      "note": "纤维化：本回合承伤 −80%"
+    },
+    {
+      "id": "skill:sk-7030520:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7030520",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7030520",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7030520"
+        }
+      ],
+      "note": "纤维化：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7030330:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7030330",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7030330"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7030330",
+          "layers": 1
+        },
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 3
+        }
+      ],
+      "note": "蜡质膜：应对攻击成功 → 必定先手 + 本回合承伤 −80%；回复 3 能量"
+    },
+    {
+      "id": "skill:sk-7030330:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7030330",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7030330",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 80
+        }
+      ],
+      "note": "蜡质膜：本回合承伤 −80%"
+    },
+    {
+      "id": "skill:sk-7030330:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7030330",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7030330",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7030330"
+        }
+      ],
+      "note": "蜡质膜：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7090340:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7090340",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7090340"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7090340",
+          "layers": 1
+        },
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "slow-mark",
+          "layers": 2
+        }
+      ],
+      "note": "冰蛋壳：应对攻击成功 → 必定先手 + 本回合承伤 −70%；敌方 2 层减速印记"
+    },
+    {
+      "id": "skill:sk-7090340:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7090340",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7090340",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 70
+        }
+      ],
+      "note": "冰蛋壳：本回合承伤 −70%"
+    },
+    {
+      "id": "skill:sk-7090340:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7090340",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7090340",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7090340"
+        }
+      ],
+      "note": "冰蛋壳：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7160340:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7160340",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7160340"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7160340",
+          "layers": 1
+        },
+        {
+          "type": "applyMark",
+          "target": "self",
+          "markId": "sprout-mark",
+          "layers": 1
+        }
+      ],
+      "note": "委屈：应对攻击成功 → 必定先手 + 本回合承伤 −70%；自己 1 层萌芽印记"
+    },
+    {
+      "id": "skill:sk-7160340:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7160340",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7160340",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 70
+        }
+      ],
+      "note": "委屈：本回合承伤 −70%"
+    },
+    {
+      "id": "skill:sk-7160340:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7160340",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7160340",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7160340"
+        }
+      ],
+      "note": "委屈：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7150150:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7150150",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7150150"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7150150",
+          "layers": 1
+        }
+      ],
+      "note": "风墙：应对攻击成功 → 必定先手 + 本回合承伤 −50%；迅捷（tag，待 C4/C0）"
+    },
+    {
+      "id": "skill:sk-7150150:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7150150",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7150150",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 50
+        }
+      ],
+      "note": "风墙：本回合承伤 −50%"
+    },
+    {
+      "id": "skill:sk-7150150:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7150150",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7150150",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7150150"
+        }
+      ],
+      "note": "风墙：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7020790:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7020790",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7020790"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7020790",
+          "layers": 1
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 70
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 70
+        }
+      ],
+      "note": "防反：应对攻击成功 → 必定先手 + 本回合承伤 −70%；自己物攻 / 魔攻 +70%"
+    },
+    {
+      "id": "skill:sk-7020790:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7020790",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7020790",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 70
+        }
+      ],
+      "note": "防反：本回合承伤 −70%"
+    },
+    {
+      "id": "skill:sk-7020790:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7020790",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7020790",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7020790"
+        }
+      ],
+      "note": "防反：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7110280:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7110280",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7110280"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7110280",
+          "layers": 1
+        }
+      ],
+      "note": "集中：应对攻击成功 → 必定先手 + 本回合承伤 −80%；回合结束返场"
+    },
+    {
+      "id": "skill:sk-7110280:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7110280",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7110280",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 80
+        }
+      ],
+      "note": "集中：本回合承伤 −80%"
+    },
+    {
+      "id": "skill:sk-7110280:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7110280",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7110280",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7110280"
+        },
+        {
+          "type": "escape",
+          "target": "self"
+        }
+      ],
+      "note": "集中：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7140180",
+      "ownerType": "skill",
+      "ownerId": "sk-7140180",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7140180"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "cancelAction",
+          "target": "opponent"
+        },
+        {
+          "type": "dealDamage",
+          "target": "opponent",
+          "category": "Physical",
+          "power": 90
+        }
+      ],
+      "note": "硬门：应对攻击成功 → 必定先手；打断被应对技能并造成 90 威力物伤"
+    },
+    {
+      "id": "skill:sk-7130320:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7130320",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7130320"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7130320",
+          "layers": 1
+        },
+        {
+          "type": "unsupported",
+          "effectType": "defenseCounter",
+          "reason": "虫结阵：己方队伍 1 次随机奉献【待校准】"
+        }
+      ],
+      "note": "虫结阵：应对攻击成功 → 必定先手 + 本回合承伤 −80%；己方队伍 1 次随机奉献"
+    },
+    {
+      "id": "skill:sk-7130320:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7130320",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7130320",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 80
+        }
+      ],
+      "note": "虫结阵：本回合承伤 −80%"
+    },
+    {
+      "id": "skill:sk-7130320:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7130320",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7130320",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7130320"
+        }
+      ],
+      "note": "虫结阵：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7090200:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7090200",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7090200"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7090200",
+          "layers": 1
+        },
+        {
+          "type": "unsupported",
+          "effectType": "defenseCounter",
+          "reason": "冰天雪地：被应对技能能耗 +3【待校准】"
+        }
+      ],
+      "note": "冰天雪地：应对攻击成功 → 必定先手 + 本回合承伤 −80%；被应对技能能耗 +3"
+    },
+    {
+      "id": "skill:sk-7090200:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7090200",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7090200",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 80
+        }
+      ],
+      "note": "冰天雪地：本回合承伤 −80%"
+    },
+    {
+      "id": "skill:sk-7090200:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7090200",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7090200",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7090200"
+        }
+      ],
+      "note": "冰天雪地：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7150310:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7150310",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7150310"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7150310",
+          "layers": 1
+        },
+        {
+          "type": "unsupported",
+          "effectType": "defenseCounter",
+          "reason": "羽翼庇护：自己连击数 +2【待校准】"
+        }
+      ],
+      "note": "羽翼庇护：应对攻击成功 → 必定先手 + 本回合承伤 −70%；自己连击数 +2"
+    },
+    {
+      "id": "skill:sk-7150310:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7150310",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7150310",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 70
+        }
+      ],
+      "note": "羽翼庇护：本回合承伤 −70%"
+    },
+    {
+      "id": "skill:sk-7150310:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7150310",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7150310",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7150310"
+        }
+      ],
+      "note": "羽翼庇护：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7090350:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7090350",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7090350"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7090350",
+          "layers": 1
+        },
+        {
+          "type": "unsupported",
+          "effectType": "defenseCounter",
+          "reason": "雪替身：回复能量 = 被应对技能能耗 ×2【待校准】"
+        }
+      ],
+      "note": "雪替身：应对攻击成功 → 必定先手 + 本回合承伤 −70%；回复能量 = 被应对技能能耗 ×2"
+    },
+    {
+      "id": "skill:sk-7090350:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7090350",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7090350",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 70
+        }
+      ],
+      "note": "雪替身：本回合承伤 −70%"
+    },
+    {
+      "id": "skill:sk-7090350:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7090350",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7090350",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7090350"
+        }
+      ],
+      "note": "雪替身：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7021120:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7021120",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7021120"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7021120",
+          "layers": 1
+        },
+        {
+          "type": "unsupported",
+          "effectType": "defenseCounter",
+          "reason": "嗜痛：每受 1 次攻击伤害双攻 +40%【待校准】"
+        }
+      ],
+      "note": "嗜痛：应对攻击成功 → 必定先手 + 本回合承伤 −80%；每受 1 次攻击伤害双攻 +40%"
+    },
+    {
+      "id": "skill:sk-7021120:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7021120",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7021120",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 80
+        }
+      ],
+      "note": "嗜痛：本回合承伤 −80%"
+    },
+    {
+      "id": "skill:sk-7021120:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7021120",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7021120",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7021120"
+        }
+      ],
+      "note": "嗜痛：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7120300:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7120300",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7120300"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7120300",
+          "layers": 1
+        },
+        {
+          "type": "unsupported",
+          "effectType": "defenseCounter",
+          "reason": "毒肽：巧变：毒系状态技能【待校准】"
+        }
+      ],
+      "note": "毒肽：应对攻击成功 → 必定先手 + 本回合承伤 −70%；巧变：毒系状态技能"
+    },
+    {
+      "id": "skill:sk-7120300:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7120300",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7120300",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 70
+        }
+      ],
+      "note": "毒肽：本回合承伤 −70%"
+    },
+    {
+      "id": "skill:sk-7120300:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7120300",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7120300",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7120300"
+        }
+      ],
+      "note": "毒肽：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7060250:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7060250",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7060250"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7060250",
+          "layers": 1
+        },
+        {
+          "type": "unsupported",
+          "effectType": "defenseCounter",
+          "reason": "点亮：光系技能威力永久 +50%【待校准】"
+        }
+      ],
+      "note": "点亮：应对攻击成功 → 必定先手 + 本回合承伤 −90%；光系技能威力永久 +50%"
+    },
+    {
+      "id": "skill:sk-7060250:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7060250",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7060250",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 90
+        }
+      ],
+      "note": "点亮：本回合承伤 −90%"
+    },
+    {
+      "id": "skill:sk-7060250:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7060250",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7060250",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7060250"
+        }
+      ],
+      "note": "点亮：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7180210:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7180210",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7180210"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7180210",
+          "layers": 1
+        },
+        {
+          "type": "unsupported",
+          "effectType": "defenseCounter",
+          "reason": "等价交换：自己获得 50% 吸血【待校准】"
+        }
+      ],
+      "note": "等价交换：应对攻击成功 → 必定先手 + 本回合承伤 −90%；自己获得 50% 吸血"
+    },
+    {
+      "id": "skill:sk-7180210:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7180210",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7180210",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 90
+        }
+      ],
+      "note": "等价交换：本回合承伤 −90%"
+    },
+    {
+      "id": "skill:sk-7180210:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7180210",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7180210",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7180210"
+        }
+      ],
+      "note": "等价交换：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7140300:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7140300",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7140300"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7140300",
+          "layers": 1
+        },
+        {
+          "type": "unsupported",
+          "effectType": "defenseCounter",
+          "reason": "防御反击：自己全技能威力 +40【待校准】"
+        }
+      ],
+      "note": "防御反击：应对攻击成功 → 必定先手 + 本回合承伤 −80%；自己全技能威力 +40"
+    },
+    {
+      "id": "skill:sk-7140300:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7140300",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7140300",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 80
+        }
+      ],
+      "note": "防御反击：本回合承伤 −80%"
+    },
+    {
+      "id": "skill:sk-7140300:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7140300",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7140300",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7140300"
+        }
+      ],
+      "note": "防御反击：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7020810:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7020810",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7020810"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7020810",
+          "layers": 1
+        },
+        {
+          "type": "unsupported",
+          "effectType": "defenseCounter",
+          "reason": "无畏之心：减免伤害转为回复，且本技能能耗永久 +2【待校准】"
+        }
+      ],
+      "note": "无畏之心：应对攻击成功 → 必定先手 + 本回合承伤 −100%；减免伤害转为回复，且本技能能耗永久 +2"
+    },
+    {
+      "id": "skill:sk-7020810:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7020810",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7020810",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 100
+        }
+      ],
+      "note": "无畏之心：本回合承伤 −100%"
+    },
+    {
+      "id": "skill:sk-7020810:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7020810",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7020810",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7020810"
+        }
+      ],
+      "note": "无畏之心：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7070080:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7070080",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7070080"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7070080",
+          "layers": 1
+        },
+        {
+          "type": "unsupported",
+          "effectType": "defenseCounter",
+          "reason": "能量守恒：两侧技能能耗永久 −1【待校准】"
+        }
+      ],
+      "note": "能量守恒：应对攻击成功 → 必定先手 + 本回合承伤 −80%；两侧技能能耗永久 −1"
+    },
+    {
+      "id": "skill:sk-7070080:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7070080",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7070080",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 80
+        }
+      ],
+      "note": "能量守恒：本回合承伤 −80%"
+    },
+    {
+      "id": "skill:sk-7070080:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7070080",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7070080",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7070080"
+        }
+      ],
+      "note": "能量守恒：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7100320:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7100320",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7100320"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7100320",
+          "layers": 1
+        },
+        {
+          "type": "unsupported",
+          "effectType": "defenseCounter",
+          "reason": "守护咒：巧变：龙系状态技能【待校准】"
+        }
+      ],
+      "note": "守护咒：应对攻击成功 → 必定先手 + 本回合承伤 −90%；巧变：龙系状态技能"
+    },
+    {
+      "id": "skill:sk-7100320:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7100320",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7100320",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 90
+        }
+      ],
+      "note": "守护咒：本回合承伤 −90%"
+    },
+    {
+      "id": "skill:sk-7100320:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7100320",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7100320",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7100320"
+        }
+      ],
+      "note": "守护咒：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7140190:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7140190",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7140190"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7140190",
+          "layers": 1
+        },
+        {
+          "type": "unsupported",
+          "effectType": "defenseCounter",
+          "reason": "听桥：对敌方造成威力与被应对技能相等的武系物伤【待校准】"
+        }
+      ],
+      "note": "听桥：应对攻击成功 → 必定先手 + 本回合承伤 −60%；对敌方造成威力与被应对技能相等的武系物伤"
+    },
+    {
+      "id": "skill:sk-7140190:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7140190",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7140190",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 60
+        }
+      ],
+      "note": "听桥：本回合承伤 −60%"
+    },
+    {
+      "id": "skill:sk-7140190:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7140190",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7140190",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7140190"
+        }
+      ],
+      "note": "听桥：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7110420:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7110420",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7110420"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7110420",
+          "layers": 1
+        },
+        {
+          "type": "unsupported",
+          "effectType": "defenseCounter",
+          "reason": "电磁偏转：下回合所选技能使用次数 +1【待校准】"
+        }
+      ],
+      "note": "电磁偏转：应对攻击成功 → 必定先手 + 本回合承伤 −70%；下回合所选技能使用次数 +1"
+    },
+    {
+      "id": "skill:sk-7110420:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7110420",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7110420",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 70
+        }
+      ],
+      "note": "电磁偏转：本回合承伤 −70%"
+    },
+    {
+      "id": "skill:sk-7110420:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7110420",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7110420",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7110420"
+        }
+      ],
+      "note": "电磁偏转：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7040450:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7040450",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7040450"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7040450",
+          "layers": 1
+        },
+        {
+          "type": "unsupported",
+          "effectType": "defenseCounter",
+          "reason": "淬火：下次攻击技能威力翻倍【待校准】"
+        }
+      ],
+      "note": "淬火：应对攻击成功 → 必定先手 + 本回合承伤 −80%；下次攻击技能威力翻倍"
+    },
+    {
+      "id": "skill:sk-7040450:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7040450",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7040450",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 80
+        }
+      ],
+      "note": "淬火：本回合承伤 −80%"
+    },
+    {
+      "id": "skill:sk-7040450:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7040450",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7040450",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7040450"
+        }
+      ],
+      "note": "淬火：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7040640:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7040640",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7040640"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7040640",
+          "layers": 1
+        },
+        {
+          "type": "unsupported",
+          "effectType": "defenseCounter",
+          "reason": "暖气：下次攻击技能威力 +50【待校准】"
+        }
+      ],
+      "note": "暖气：应对攻击成功 → 必定先手 + 本回合承伤 −70%；下次攻击技能威力 +50"
+    },
+    {
+      "id": "skill:sk-7040640:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7040640",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7040640",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 70
+        }
+      ],
+      "note": "暖气：本回合承伤 −70%"
+    },
+    {
+      "id": "skill:sk-7040640:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7040640",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7040640",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7040640"
+        }
+      ],
+      "note": "暖气：回合末移除减伤状态"
+    },
+    {
+      "id": "skill:sk-7100250:declare",
+      "ownerType": "skill",
+      "ownerId": "sk-7100250",
+      "trigger": "actionDeclared",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7100250"
+            },
+            {
+              "path": "event.opponentAction.actionType",
+              "op": "eq",
+              "value": "Attack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "forceFirst",
+          "target": "self"
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "def-7100250",
+          "layers": 1
+        },
+        {
+          "type": "unsupported",
+          "effectType": "defenseCounter",
+          "reason": "龙血：下次技能无需蓄力【待校准】"
+        }
+      ],
+      "note": "龙血：应对攻击成功 → 必定先手 + 本回合承伤 −70%；下次技能无需蓄力"
+    },
+    {
+      "id": "skill:sk-7100250:reduce",
+      "ownerType": "skill",
+      "ownerId": "sk-7100250",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.statuses.def-7100250",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 70
+        }
+      ],
+      "note": "龙血：本回合承伤 −70%"
+    },
+    {
+      "id": "skill:sk-7100250:expire",
+      "ownerType": "skill",
+      "ownerId": "sk-7100250",
+      "trigger": "turnEnd",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7100250",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "removeStatus",
+          "target": "self",
+          "statusId": "def-7100250"
+        }
+      ],
+      "note": "龙血：回合末移除减伤状态"
     }
   ]
 }
