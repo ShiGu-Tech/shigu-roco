@@ -188,6 +188,17 @@ describe("structural: 展翅/异类/游弋/夺目/翻垃圾桶/瞳中倒影/噼�
     expect(t.state.player.active.buffs.atk).toBe(0.4);
   });
 
+  it("契约的形状：国王球 → 攻/防/速 +15%；棱镜球随机化为具体球种", () => {
+    const trait = spriteWithTrait("契约的形状");
+    const king = makeState(makeSide(makeActive(trait, { hp: 500, maxHp: 500, energy: 20, profile: { ball: "king" } })), makeSide(makeActive("sp-14-1")));
+    const tk = new Simulator(bundle).step(king, { kind: "energy" }, { kind: "energy" }, new Rng(1));
+    expect(tk.state.player.active.counters?.["pct-atk"]).toBeCloseTo(0.15);
+    expect(tk.state.player.active.counters?.["pct-speed"]).toBeCloseTo(0.15);
+    const prism = makeState(makeSide(makeActive(trait, { hp: 500, maxHp: 500, energy: 20, profile: { ball: "prism" } })), makeSide(makeActive("sp-14-1")));
+    const tp = new Simulator(bundle).step(prism, { kind: "energy" }, { kind: "energy" }, new Rng(1));
+    expect(tp.state.player.active.ball).not.toBe("prism");
+  });
+
   it("禁足：离场锁期间无法换人（legalActions 无 switch）", () => {
     const state = makeState(
       makeSide(makeActive("sp-14-1", { hp: 500, maxHp: 500, energy: 20 }), { bench: [makeActive("sp-15-1", { hp: 100, maxHp: 100 })] }),

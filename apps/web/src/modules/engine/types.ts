@@ -21,6 +21,8 @@ export interface StatProfile {
   stars?: number;
   /** 血脉（培养资质的一部分）：血脉 key（如 COMMON / LEADER / GRASS…），可替换。 */
   bloodline?: string;
+  /** 咕噜球（捕捉球）键（契约的形状）：如 `king` / `photosynthesis` / `prism`。 */
+  ball?: string;
 }
 
 // ---------------------------------------------------------------- 运行时模型
@@ -66,6 +68,8 @@ export interface ActiveSprite {
   bloodline?: string;
   /** 血脉域 · 血脉对应的系别名（系别血脉；首领等无系别为 ""）。 */
   bloodlineElement?: string;
+  /** 球域 · 当前咕噜球键（来自 `profile.ball`；棱镜球入场时随机化为具体球种）。 */
+  ball?: string;
 }
 
 /** 能耗修正条目：挂在精灵身上、由技能 / 特性 / 状态登记，读时按作用域求和。 */

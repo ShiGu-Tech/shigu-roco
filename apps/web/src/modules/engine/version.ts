@@ -201,5 +201,7 @@
  * - 0.72.0 复生域 + 规则值类型：`setRuleModifier` 允许字符串值（`RuleModifiers`）；`ActiveSprite.reviveDue` /
  *          `reviveAs` + 规则 `revive.afterTurns`（不朽：力竭 N 回合后于回合开始恢复满血重新可用）。
  * - 0.73.0 选择计数：队伍记录某「选择」技能「明」「暗」各用 1 次 → 侧计数器 `choiceFull`（供猫精灵的礼物）。
+ * - 0.74.0 球域：`StatProfile.ball`（配队「咕噜球」参数，缺省国王球）→ `ActiveSprite.ball` 注入；棱镜球按规则
+ *          `ball.prism.pool` 随机化为具体球种（近似：未实现「只保留一半效果」）。
  */
-export const ENGINE_VERSION = "0.73.0";
+export const ENGINE_VERSION = "0.74.0";

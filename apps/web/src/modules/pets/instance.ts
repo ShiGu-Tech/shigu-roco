@@ -28,6 +28,8 @@ export interface PetInstance {
   nature: string | null;
   /** 血脉槽 id：`leader` / `polluted` / `strange` / 系别名（图鉴 elements.name）；缺省 = 精灵本体第一属性。 */
   bloodline?: string;
+  /** 咕噜球（捕捉球）id（契约的形状）；缺省 = 国王球。 */
+  ball?: string;
   talent: TalentMap;
   /** 出战技能 id（外键 → 模板技能池），≤ 4；空 = 用模板默认 4 招。 */
   skills: string[];
@@ -74,6 +76,7 @@ export interface PetSetupLike {
   stars: number;
   nature: string | null;
   bloodline?: string;
+  ball?: string;
   talent: TalentMap;
   skills: string[];
 }
@@ -86,6 +89,7 @@ export function instanceFromSetup(spriteId: string, setup: PetSetupLike, now = D
     stars: setup.stars,
     nature: setup.nature,
     bloodline: setup.bloodline,
+    ball: setup.ball,
     talent: { ...setup.talent },
     skills: [...setup.skills],
   };
@@ -98,6 +102,7 @@ export function setupFromInstance(instance: PetInstance): PetSetupLike {
     stars: instance.stars,
     nature: instance.nature,
     bloodline: instance.bloodline,
+    ball: instance.ball,
     talent: { ...instance.talent },
     skills: [...instance.skills],
   };
@@ -162,14 +167,14 @@ export function defaultBloodline(catalog: Catalog, spriteId: string): string {
 }
 
 /** 实例 → 引擎档案：个体值 = 天分 ×(1 + 星级)，与《数值与伤害模型》口径一致。 */
-export function profileFromInstance(instance: Pick<PetInstance, "level" | "stars" | "nature" | "talent">): StatProfile {
+export function profileFromInstance(instance: Pick<PetInstance, "level" | "stars" | "nature" | "talent" | "bloodline" | "ball">): StatProfile {
   const stars = Math.max(0, Math.floor(instance.stars));
   const iv: Record<string, number> = {};
   for (const key of STAT_KEYS) {
     const talent = instance.talent[key];
     if (talent != null) iv[key] = Math.round(talent * (1 + stars));
   }
-  return { level: instance.level, stars, nature: instance.nature ?? null, iv };
+  return { level: instance.level, stars, nature: instance.nature ?? null, iv, bloodline: instance.bloodline, ball: instance.ball };
 }
 
 export type InstanceIssue =

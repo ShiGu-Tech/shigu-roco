@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.114.0",
+  "version": "0.115.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -23082,21 +23082,6 @@
       "note": "特性「月光审判」：攻击时若敌方血脉是首领血脉，威力 +100%"
     },
     {
-      "id": "trait:sp-317-1",
-      "ownerType": "trait",
-      "ownerId": "sp-317-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "契约的形状：根据捕捉所用的咕噜球，入场时获得不同效果。【待校准】"
-        }
-      ],
-      "note": "特性「契约的形状」：待实现"
-    },
-    {
       "id": "trait:sp-320-1",
       "ownerType": "trait",
       "ownerId": "sp-320-1",
@@ -26615,6 +26600,512 @@
         }
       ],
       "note": "特性「猫精灵的礼物」：己方每完整使用 1 次选择技（明+暗），自己入场时物攻 +40%"
+    },
+    {
+      "id": "trait:sp-317-1#prism",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "passive",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "ball.prism.pool",
+          "value": "normal,advanced,king,photosynthesis,net,thermostat,sand,insulation,wonderful,warlike,darkstar,transform"
+        }
+      ],
+      "note": "特性「契约的形状」：棱镜球候选池"
+    },
+    {
+      "id": "trait:sp-317-1#ball-normal",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "normal"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-atk",
+          "delta": 0.05
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-defense",
+          "delta": 0.05
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-speed",
+          "delta": 0.05
+        }
+      ],
+      "note": "特性「契约的形状」：normal 球入场效果"
+    },
+    {
+      "id": "trait:sp-317-1#ball-advanced",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "advanced"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-atk",
+          "delta": 0.1
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-defense",
+          "delta": 0.1
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-speed",
+          "delta": 0.1
+        }
+      ],
+      "note": "特性「契约的形状」：advanced 球入场效果"
+    },
+    {
+      "id": "trait:sp-317-1#ball-king",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "king"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-atk",
+          "delta": 0.15
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-defense",
+          "delta": 0.15
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-speed",
+          "delta": 0.15
+        }
+      ],
+      "note": "特性「契约的形状」：king 球入场效果"
+    },
+    {
+      "id": "trait:sp-317-1#ball-photosynthesis",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "photosynthesis"
+        }
+      ],
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": 0.09,
+          "basis": "maxHp"
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-spatk",
+          "delta": 0.4
+        }
+      ],
+      "note": "特性「契约的形状」：photosynthesis 球入场效果"
+    },
+    {
+      "id": "trait:sp-317-1#ball-net",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "net"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -1,
+          "duration": "permanent"
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "hits-add",
+          "delta": 1
+        }
+      ],
+      "note": "特性「契约的形状」：net 球入场效果"
+    },
+    {
+      "id": "trait:sp-317-1#ball-thermostat",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "thermostat"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "burn",
+          "layers": 4
+        },
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "freeze",
+          "layers": 1
+        }
+      ],
+      "note": "特性「契约的形状」：thermostat 球入场效果"
+    },
+    {
+      "id": "trait:sp-317-1#ball-sand",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "sand"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "opponent",
+          "key": "pct-defense",
+          "delta": -0.4
+        },
+        {
+          "type": "addCounter",
+          "target": "opponent",
+          "key": "flat-speed",
+          "delta": -40
+        },
+        {
+          "type": "addCounter",
+          "target": "opponent",
+          "key": "hits-add",
+          "delta": -2
+        }
+      ],
+      "note": "特性「契约的形状」：sand 球入场效果"
+    },
+    {
+      "id": "trait:sp-317-1#ball-insulation",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "insulation"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "flat-speed",
+          "delta": 50
+        },
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "poison",
+          "layers": 1
+        }
+      ],
+      "note": "特性「契约的形状」：insulation 球入场效果"
+    },
+    {
+      "id": "trait:sp-317-1#ball-wonderful",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "wonderful"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "power-add",
+          "delta": 20
+        },
+        {
+          "type": "addCounter",
+          "target": "opponent",
+          "key": "pct-atk",
+          "delta": -0.3
+        },
+        {
+          "type": "addCounter",
+          "target": "opponent",
+          "key": "pct-spatk",
+          "delta": -0.3
+        }
+      ],
+      "note": "特性「契约的形状」：wonderful 球入场效果"
+    },
+    {
+      "id": "trait:sp-317-1#ball-warlike",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "warlike"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-atk",
+          "delta": 0.4
+        },
+        {
+          "type": "addCounter",
+          "target": "opponent",
+          "key": "pct-spdef",
+          "delta": -0.4
+        }
+      ],
+      "note": "特性「契约的形状」：warlike 球入场效果"
+    },
+    {
+      "id": "trait:sp-317-1#ball-darkstar",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "darkstar"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "lifesteal",
+          "delta": 0.3
+        },
+        {
+          "type": "modifyEnergy",
+          "target": "opponent",
+          "delta": -1
+        }
+      ],
+      "note": "特性「契约的形状」：darkstar 球入场效果"
+    },
+    {
+      "id": "trait:sp-317-1#ball-transform",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "transform"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-defense",
+          "delta": 0.3
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-spdef",
+          "delta": 0.3
+        },
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "starfall-mark",
+          "layers": 1
+        }
+      ],
+      "note": "特性「契约的形状」：transform 球入场效果"
     }
   ]
 }

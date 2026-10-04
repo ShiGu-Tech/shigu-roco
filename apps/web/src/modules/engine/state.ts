@@ -10,6 +10,7 @@ export function cloneProfile(p: StatProfile | undefined): StatProfile | undefine
     iv: p.iv ? { ...p.iv } : undefined,
     stars: p.stars,
     bloodline: p.bloodline,
+    ball: p.ball,
   };
 }
 
@@ -42,6 +43,7 @@ export function cloneActive(a: ActiveSprite): ActiveSprite {
     carryElements: a.carryElements ? [...a.carryElements] : undefined,
     bloodline: a.bloodline,
     bloodlineElement: a.bloodlineElement,
+    ball: a.ball,
   };
 }
 

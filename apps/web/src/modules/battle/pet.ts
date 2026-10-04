@@ -16,6 +16,8 @@ export interface PetSetup {
   nature: string | null;
   /** 血脉槽 id（首领化 / 系别 / 污染 / 奇异）；缺省 = 精灵本体第一属性。 */
   bloodline?: string;
+  /** 咕噜球（捕捉球）id（契约的形状）；缺省 = 国王球。 */
+  ball?: string;
   talent: TalentMap;
   /** 出战 4 招；空数组 = 尚未确定（对方技能未知）。 */
   skills: string[];
@@ -54,5 +56,5 @@ export function profileFromSetup(setup?: PetSetup): StatProfile | undefined {
     const talent = setup.talent[key];
     if (talent != null) iv[key] = Math.round(talent * (1 + stars));
   }
-  return { level: setup.level, stars, nature: setup.nature ?? null, iv, bloodline: setup.bloodline };
+  return { level: setup.level, stars, nature: setup.nature ?? null, iv, bloodline: setup.bloodline, ball: setup.ball ?? "king" };
 }

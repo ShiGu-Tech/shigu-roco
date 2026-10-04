@@ -264,6 +264,15 @@ export class Simulator {
           sprite.bloodline = key;
           sprite.bloodlineElement = key === "leader" || key === "polluted" || key === "strange" ? "" : key;
         }
+        // 球域 · 注入咕噜球；「棱镜球」按规则候选池随机化为具体球种（近似：未实现「只保留一半效果」）。
+        const ballKey = toStr(sprite.profile?.ball);
+        if (ballKey) {
+          sprite.ball = ballKey;
+          if (ballKey === "prism") {
+            const pool = toStr(this.mechanisms.ruleModifiers(st, this.bundle, side)["ball.prism.pool"]).split(",").map((v) => v.trim()).filter(Boolean);
+            if (pool.length) sprite.ball = pool[(st.seed + st.turn + sprite.spriteId.length) % pool.length];
+          }
+        }
       }
     }
 

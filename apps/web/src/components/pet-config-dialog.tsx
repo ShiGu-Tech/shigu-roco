@@ -21,6 +21,7 @@ import { computeStats, type StatKey } from "@/modules/engine/stats";
 import { MAX_INVEST, MAX_TALENT, profileFromSetup, type PetSetup } from "@/modules/battle/pet";
 import type { Catalog, CatalogSprite } from "@/modules/battle/types";
 import { bloodlineOptions, defaultBloodline, type BloodlineOption } from "@/modules/pets/instance";
+import { BALL_OPTIONS, DEFAULT_BALL, ballOptionOf } from "@/modules/pets/balls";
 import { recommendBuild } from "@/modules/pets/recommend";
 
 const STAT_ORDER: StatKey[] = [...PANEL_ORDER];
@@ -63,6 +64,33 @@ function BloodlinePicker({
             ) : (
               <span className="max-w-[72px] truncate">{o.label}</span>
             )}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/** 咕噜球（捕捉球）选择：文字按钮（暂无官方球图标，留待接入 URL）。 */
+function BallPicker({ value, onChange }: { value: string; onChange: (id: string) => void }) {
+  return (
+    <div className="flex max-h-[104px] flex-wrap gap-1 overflow-y-auto rounded-md border bg-background/60 p-1">
+      {BALL_OPTIONS.map((o) => {
+        const active = o.id === value;
+        return (
+          <button
+            key={o.id}
+            type="button"
+            title={o.label}
+            aria-pressed={active}
+            onClick={() => onChange(o.id)}
+            className={cn(
+              "inline-flex h-7 items-center rounded px-2 text-[11px] transition-colors",
+              active ? "bg-primary text-primary-foreground" : "hover:bg-accent",
+              !o.effective && !active ? "text-muted-foreground" : "",
+            )}
+          >
+            {o.label}
           </button>
         );
       })}
@@ -213,6 +241,7 @@ export function PetConfigDialog({
       : null;
   const bloodlines = bloodlineOptions(catalog);
   const effectiveBloodline = setup.bloodline || defaultBloodline(catalog, spriteId);
+  const effectiveBall = setup.ball || DEFAULT_BALL;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -293,6 +322,16 @@ export function PetConfigDialog({
                       onChange={(id) => onSetupChange({ ...setup, bloodline: id })}
                     />
                   </div>
+                </div>
+              </Section>
+
+              <Section>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">
+                    捕捉球
+                    <span className="ml-1 text-muted-foreground">{ballOptionOf(effectiveBall)?.label ?? ""}</span>
+                  </Label>
+                  <BallPicker value={effectiveBall} onChange={(id) => onSetupChange({ ...setup, ball: id })} />
                 </div>
               </Section>
 

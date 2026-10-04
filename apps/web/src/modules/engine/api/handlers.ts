@@ -40,6 +40,7 @@ function parseProfile(raw: unknown): StatProfile | undefined {
     iv: p.iv ? intDict(p.iv) : undefined,
     stars: p.stars === undefined ? undefined : toNum(p.stars, 0),
     bloodline: p.bloodline === undefined || p.bloodline === null ? undefined : toStr(p.bloodline),
+    ball: p.ball === undefined || p.ball === null ? undefined : toStr(p.ball),
   };
 }
 
