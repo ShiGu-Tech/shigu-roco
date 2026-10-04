@@ -117,6 +117,7 @@ export const EFFECT_VOCABULARY: readonly EffectVocabulary[] = [
   { type: "modifyCooldown", title: "冷却修正", domain: "cooldown", params: { target: "目标", skillId: "技能", skillIdFrom: "技能取值", scope: "作用域", delta: "增减", minimum: "下限" } },
   // 能量 / 魔力
   { type: "modifyEnergy", title: "能量修正", domain: "energy", params: { target: "目标", delta: "增减", deltaFrom: "增减取值" } },
+  { type: "spreadEnergy", title: "场下回能", domain: "energy", params: { target: "目标", delta: "每只回复" } },
   { type: "modifyMagic", title: "魔力修正", domain: "magic", params: { target: "目标", delta: "增减" } },
   // 行动
   { type: "setPriority", title: "设置先手", domain: "action", params: { target: "目标", value: "先手值" } },

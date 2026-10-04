@@ -75,6 +75,7 @@ const WRITE_NODES: WriteSpec[] = [
   { suffix: "clearCostMod", title: "写入 · 驱散能耗", target: "self", params: [{ name: "all", type: "boolean" }] },
   { suffix: "modifyCooldown", title: "写入 · 冷却", target: "self", inputs: ["delta"], params: [{ name: "skillId", type: "string" }, { name: "scope", type: "string" }, { name: "minimum", type: "number" }] },
   { suffix: "modifyEnergy", title: "写入 · 能量", target: "self", inputs: ["delta"], params: [] },
+  { suffix: "spreadEnergy", title: "写入 · 场下回能", target: "self", inputs: ["delta"], params: [] },
   { suffix: "modifyMagic", title: "写入 · 魔力", target: "opponent", inputs: ["delta"], params: [] },
   { suffix: "modifySwitchLock", title: "写入 · 离场锁", target: "opponent", inputs: ["delta"], params: [] },
   { suffix: "forceSwitch", title: "写入 · 强制换人", target: "self", params: [] },

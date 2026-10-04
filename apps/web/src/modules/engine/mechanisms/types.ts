@@ -152,6 +152,8 @@ export type EffectSpec =
   | { type: "inheritStat"; polarity?: "buff" | "debuff" | "all" }
   | { type: "modifyMagic"; target?: string; delta: number }
   | { type: "modifyEnergy"; target?: string; delta: number; deltaFrom?: DynamicValue }
+  /** 能量域 · 为场下每个精灵回复 `delta` 能量（富养化）。 */
+  | { type: "spreadEnergy"; target?: string; delta: number }
   | { type: "modifySwitchLock"; target?: string; delta: number }
   | { type: "applyMark"; target?: string; markId: string; layers?: number; layersFrom?: DynamicRef; scope?: "sprite" | "team"; immuneElements?: string[] }
   /** 印记消耗：驱散目标指定（省略 = 全部）印记。`effectsPerLayer` 每层执行一次（自动累加）；

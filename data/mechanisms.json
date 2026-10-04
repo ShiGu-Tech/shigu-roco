@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.82.0",
+  "version": "0.83.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -16745,46 +16745,78 @@
       "id": "skill:sk-7020550",
       "ownerType": "skill",
       "ownerId": "sk-7020550",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "魔能爆：变量威力：消耗能量越高伤害越高（哨兵威力）【待校准】"
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7020550"
         }
       ],
-      "note": "魔能爆：变量威力：消耗能量越高伤害越高（哨兵威力）"
+      "effects": [
+        {
+          "type": "addPower",
+          "target": "self",
+          "value": 0,
+          "valueFrom": {
+            "path": "self.active.energy",
+            "scale": 50
+          }
+        }
+      ],
+      "note": "魔能爆：消耗能量越高伤害越高（+50 威力/点【待校准】）"
     },
     {
       "id": "skill:sk-7090140",
       "ownerType": "skill",
       "ownerId": "sk-7090140",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "极寒领域：变量威力 + 冻结联动（哨兵威力）【待校准】"
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7090140"
+        },
+        {
+          "path": "target.active.statuses.freeze",
+          "op": "gte",
+          "value": 1
         }
       ],
-      "note": "极寒领域：变量威力 + 冻结联动（哨兵威力）"
+      "effects": [
+        {
+          "type": "addPower",
+          "target": "self",
+          "value": 60
+        }
+      ],
+      "note": "极寒领域：敌方有冻结时威力 +60"
     },
     {
       "id": "skill:sk-7160330",
       "ownerType": "skill",
       "ownerId": "sk-7160330",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "拆礼物：变量威力 + 萌化联动（哨兵威力）【待校准】"
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7160330"
+        },
+        {
+          "path": "target.active.statuses.moe",
+          "op": "gte",
+          "value": 1
         }
       ],
-      "note": "拆礼物：变量威力 + 萌化联动（哨兵威力）"
+      "effects": [
+        {
+          "type": "addPower",
+          "target": "self",
+          "value": 100
+        }
+      ],
+      "note": "拆礼物：敌方有萌化时威力 +100"
     },
     {
       "id": "skill:sk-7110460",
@@ -17033,16 +17065,22 @@
       "id": "skill:sk-7030510",
       "ownerType": "skill",
       "ownerId": "sk-7030510",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "actionResolved",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "富养化：场下全队回能（无原语）【待校准】"
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7030510"
         }
       ],
-      "note": "富养化：场下全队回能（无原语）"
+      "effects": [
+        {
+          "type": "spreadEnergy",
+          "target": "self",
+          "delta": 3
+        }
+      ],
+      "note": "富养化：场下每只回复 3 能量"
     },
     {
       "id": "skill:sk-7070070",
@@ -17078,76 +17116,118 @@
       "id": "skill:sk-7090180",
       "ownerType": "skill",
       "ownerId": "sk-7090180",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "actionResolved",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "雾气环绕：回能 = 敌方技能总能耗一半【待校准】"
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7090180"
         }
       ],
-      "note": "雾气环绕：回能 = 敌方技能总能耗一半"
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 0,
+          "deltaFrom": {
+            "path": "opponent.counters.loadoutCost",
+            "scale": 0.5,
+            "round": "none"
+          }
+        }
+      ],
+      "note": "雾气环绕：回复敌方技能总能耗一半的能量"
     },
     {
       "id": "skill:sk-7090320",
       "ownerType": "skill",
       "ownerId": "sk-7090320",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "冰捆缚：每连击附加能耗 +1（逐段效果）【待校准】"
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7090320"
         }
       ],
-      "note": "冰捆缚：每连击附加能耗 +1（逐段效果）"
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "self",
+          "hits": 2
+        }
+      ],
+      "note": "冰捆缚：2 连击"
     },
     {
       "id": "skill:sk-7090470",
       "ownerType": "skill",
       "ownerId": "sk-7090470",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "打喷嚏：每连击附加冻结（逐段效果）【待校准】"
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7090470"
         }
       ],
-      "note": "打喷嚏：每连击附加冻结（逐段效果）"
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "self",
+          "hits": 3
+        }
+      ],
+      "note": "打喷嚏：3 连击"
     },
     {
       "id": "skill:sk-7190450",
       "ownerType": "skill",
       "ownerId": "sk-7190450",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "actionResolved",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "薄纱环：选择 + 随机印记【待校准】"
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7190450"
+        },
+        {
+          "path": "event.action.choice",
+          "op": "neq",
+          "value": 1
         }
       ],
-      "note": "薄纱环：选择 + 随机印记"
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "poison-mark",
+          "layers": 2
+        }
+      ],
+      "note": "薄纱环·明：敌方获负面印记（近似中毒印记）"
     },
     {
       "id": "skill:sk-7190460",
       "ownerType": "skill",
       "ownerId": "sk-7190460",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "actionResolved",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "重组：下次攻击附加幻系伤害（条件）【待校准】"
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7190460"
         }
       ],
-      "note": "重组：下次攻击附加幻系伤害（条件）"
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "next-damage-mul",
+          "delta": 1
+        }
+      ],
+      "note": "重组：下次攻击额外 +100% 伤害（系别 / 应对 300% 略）"
     },
     {
       "id": "trait:sp-228-2",
@@ -24237,6 +24317,132 @@
         }
       ],
       "note": "特性「衡量」：入场时复制敌方增益"
+    },
+    {
+      "id": "skill:sk-7020550:x2",
+      "ownerType": "skill",
+      "ownerId": "sk-7020550",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7020550"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": -999
+        }
+      ],
+      "note": "魔能爆：使用后消耗所有能量"
+    },
+    {
+      "id": "skill:sk-7090140:x2",
+      "ownerType": "skill",
+      "ownerId": "sk-7090140",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7090140"
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "path": "event.opponentAction.actionType",
+          "op": "eq",
+          "value": "Status"
+        }
+      ],
+      "effects": [
+        {
+          "type": "scaleStatus",
+          "target": "opponent",
+          "statusId": "freeze",
+          "factor": 2
+        }
+      ],
+      "note": "极寒领域：应对状态使冻结翻倍"
+    },
+    {
+      "id": "skill:sk-7090320:x2",
+      "ownerType": "skill",
+      "ownerId": "sk-7090320",
+      "trigger": "afterDamage",
+      "when": [
+        {
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7090320"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "opponent",
+          "scope": "all",
+          "delta": 2,
+          "duration": "permanent",
+          "key": "icebind"
+        }
+      ],
+      "note": "冰捆缚：每次连击敌全技能能耗 +1（2 连击 +2，近似一次）"
+    },
+    {
+      "id": "skill:sk-7090470:x2",
+      "ownerType": "skill",
+      "ownerId": "sk-7090470",
+      "trigger": "afterDamage",
+      "when": [
+        {
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7090470"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "freeze",
+          "layers": 3
+        }
+      ],
+      "note": "打喷嚏：每次连击冻结 1 层（3 层）"
+    },
+    {
+      "id": "skill:sk-7190450:x2",
+      "ownerType": "skill",
+      "ownerId": "sk-7190450",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "path": "action.skillId",
+          "op": "eq",
+          "value": "sk-7190450"
+        },
+        {
+          "path": "event.action.choice",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "self",
+          "markId": "attack-mark",
+          "layers": 2
+        }
+      ],
+      "note": "薄纱环·暗：自身获正面印记（近似攻击印记）"
     }
   ]
 }

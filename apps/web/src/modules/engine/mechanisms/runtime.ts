@@ -186,6 +186,15 @@ export class MechanismRuntime {
           events.push({ type: "energy-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { before, after: active.energy, delta } });
           break;
         }
+        case "spreadEnergy": {
+          if (!targetSide) break;
+          const side = targetSide === "player" ? state.player : state.enemy;
+          const delta = Math.floor(definition.delta);
+          if (!delta) break;
+          for (const sprite of side.bench) sprite.energy = Math.max(0, sprite.energy + delta);
+          events.push({ type: "energy-spread", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { delta } });
+          break;
+        }
         case "modifySwitchLock": {
           const side = targetSide === "player" ? state.player : state.enemy;
           const before = side.switchLock;

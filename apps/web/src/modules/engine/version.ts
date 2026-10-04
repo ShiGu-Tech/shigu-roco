@@ -141,5 +141,7 @@
  *          （`buildBundle` 派生：无额外效果的攻击技能）；规则 `simple.powerMul`（`damageModifiers` 读取）。
  * - 0.49.0 内容补齐第四期 D4：`modifyStat.statFrom`（属性名取自上下文）；`copyStat`（复制对方增益 / 减益）；
  *          `inheritStat` 作为普通效果（`afterSwitch` 时把场下末位精灵的强化复制给换入精灵）。
+ * - 0.50.0 内容补齐第四期 D5：`spreadEnergy`（为场下每只回复能量）；哨兵变量威力 / 逐段效果走
+ *          `addPower.valueFrom` / `setHits` / `afterDamage` 组合（魔能爆 / 极寒领域 / 拆礼物 / 冰捆缚 / 打喷嚏…）。
  */
-export const ENGINE_VERSION = "0.49.0";
+export const ENGINE_VERSION = "0.50.0";
