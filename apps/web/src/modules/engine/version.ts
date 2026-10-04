@@ -162,6 +162,7 @@
  *          `counters.flat-<stat>`（供「示弱」永久速度）。
  * - 0.59.0 迅捷（术语 1005，D6）：主动换人入场后，把换入精灵第一个能量足够且带 `quick` tag 的技能作为额外行动
  *          入队（照常拼速 + 参与 `actionDeclared` 应对判定）；技能 tag 派生抽为 `deriveSkillTags` 并在服务端装配注册
- *          图鉴后补跑（注册图鉴本身不含 tag）。
+ *          图鉴后补跑（注册图鉴本身不含 tag）。模拟器另记侧计数器 `quickCostSum`（已用迅捷技能能耗累计），供
+ *          「疾风连袭」动态能耗。
  */
 export const ENGINE_VERSION = "0.59.0";

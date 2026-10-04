@@ -20,6 +20,20 @@ describe("迅捷 (D6)", () => {
     expect(t.state.player.active.energy).toBe(9);
   });
 
+  it("疾风连袭：能耗 = floor(已用迅捷能耗 / 2) + 使用次数", () => {
+    const state = makeState(
+      makeSide(makeActive("sp-8-1", { hp: 500, maxHp: 500, energy: 10 })),
+      makeSide(makeActive("sp-14-1", { hp: 500, maxHp: 500, energy: 10 })),
+    );
+    state.player.active.loadout = ["sk-7150260", "sk-7150320"];
+    const sim = new Simulator(bundle);
+    let s = sim.step(state, { kind: "skill", skillId: "sk-7150260" }, { kind: "energy" }, new Rng(1)).state;
+    s = sim.step(s, { kind: "skill", skillId: "sk-7150320" }, { kind: "energy" }, new Rng(2)).state;
+    const before = s.player.active.energy;
+    s = sim.step(s, { kind: "skill", skillId: "sk-7150320" }, { kind: "energy" }, new Rng(3)).state;
+    expect(before - s.player.active.energy).toBe(1);
+  });
+
   it("能量不足时不触发迅捷", () => {
     const bench = makeActive("sp-14-1", { hp: 500, maxHp: 500, energy: 0 });
     bench.loadout = ["sk-7150260"];

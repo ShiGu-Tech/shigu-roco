@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.94.0",
+  "version": "0.96.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -16782,21 +16782,6 @@
       "note": "重金属粉尘：获得「攻击附加中毒」效果"
     },
     {
-      "id": "skill:sk-7150320",
-      "ownerType": "skill",
-      "ownerId": "sk-7150320",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "skillEffect",
-          "reason": "疾风连袭：释放过的迅捷技能汇总 + 动态能耗【待校准】"
-        }
-      ],
-      "note": "疾风连袭：释放过的迅捷技能汇总 + 动态能耗"
-    },
-    {
       "id": "skill:sk-7180350",
       "ownerType": "skill",
       "ownerId": "sk-7180350",
@@ -25040,6 +25025,54 @@
         }
       ],
       "note": "反弹：把自己的萌化转移给敌方（近似：自身形态不回溯）"
+    },
+    {
+      "id": "skill:sk-7150320",
+      "ownerType": "skill",
+      "ownerId": "sk-7150320",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7150320"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "galeUses",
+          "delta": 1
+        },
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "skillId": "sk-7150320",
+          "mode": "set",
+          "key": "gale-sum:7150320",
+          "deltaFrom": {
+            "path": "self.counters.quickCostSum",
+            "scale": 0.5
+          }
+        },
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "skillId": "sk-7150320",
+          "mode": "set",
+          "key": "gale-uses:7150320",
+          "deltaFrom": {
+            "path": "self.active.counters.galeUses"
+          }
+        },
+        {
+          "type": "unsupported",
+          "effectType": "recast",
+          "reason": "释放已用迅捷技能 待实现【待校准】"
+        }
+      ],
+      "note": "疾风连袭：能耗 = 已用迅捷技能能耗之和的一半 + 使用次数（释放迅捷技能待实现）"
     }
   ]
 }

@@ -385,6 +385,11 @@ export class Simulator {
         this.bump(st, side, `usedType${toStr(usedSkill.actionType)}`);
         this.bump(st, side, "skillUsed");
         if (reactedBySide[side] === true) this.bump(st, side, "reacts");
+        // 迅捷域 · 已使用迅捷技能的能耗累计（供「疾风连袭」动态能耗）。
+        if (toArray<string>(usedSkill.tags).includes("quick")) {
+          const usedCost = entry.action.skillId ? effectiveCost(st, this.bundle, side, entry.action.skillId, this.mechanisms.ruleModifiers(st, this.bundle, side)) : 0;
+          this.bump(st, side, "quickCostSum", usedCost);
+        }
         // 已使用过的不同系别种数（供「每使用过 1 个不同系别」类）。
         {
           const c = this.sideState(st, side).counters!;
