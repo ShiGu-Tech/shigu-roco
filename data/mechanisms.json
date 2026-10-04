@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.53.0",
+  "version": "0.54.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -18028,6 +18028,429 @@
         }
       ],
       "note": "特性「冰封」"
+    },
+    {
+      "id": "trait:sp-390-1",
+      "ownerType": "trait",
+      "ownerId": "sp-390-1",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-390-1",
+            "sp-391-1",
+            "sp-392-1"
+          ]
+        },
+        {
+          "path": "state.weather.id",
+          "op": "eq",
+          "value": "blizzard"
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Ice"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyDamage",
+          "mode": "multiply",
+          "value": 2,
+          "scope": "outgoing"
+        }
+      ],
+      "note": "特性「冰雪魂魄」"
+    },
+    {
+      "id": "trait:sp-406-1",
+      "ownerType": "trait",
+      "ownerId": "sp-406-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-406-1",
+            "sp-407-1",
+            "sp-408-1"
+          ]
+        },
+        {
+          "path": "state.weather.id",
+          "op": "eq",
+          "value": "rain"
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Water"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "lifesteal",
+          "delta": 0.5
+        }
+      ],
+      "note": "特性「滴眼液」"
+    },
+    {
+      "id": "trait:sp-387-1",
+      "ownerType": "trait",
+      "ownerId": "sp-387-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-387-1",
+            "sp-388-1",
+            "sp-389-1"
+          ]
+        },
+        {
+          "path": "state.weather.id",
+          "op": "eq",
+          "value": "thunder"
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Electric"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "conductive-charge",
+          "layers": 1,
+          "immuneElements": [
+            "Electric"
+          ]
+        }
+      ],
+      "note": "特性「电子音乐」"
+    },
+    {
+      "id": "trait:sp-179-1",
+      "ownerType": "trait",
+      "ownerId": "sp-179-1",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-179-1",
+            "sp-180-1"
+          ]
+        },
+        {
+          "path": "state.weather.id",
+          "op": "eq",
+          "value": "rain"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyDamage",
+          "mode": "multiply",
+          "value": 2,
+          "scope": "outgoing"
+        }
+      ],
+      "note": "特性「得寸进尺」：双攻 +100% 近似为伤害 ×2"
+    },
+    {
+      "id": "trait:sp-1-1",
+      "ownerType": "trait",
+      "ownerId": "sp-1-1",
+      "trigger": "afterDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-1-1"
+          ]
+        },
+        {
+          "path": "event.effectiveness",
+          "op": "gt",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "defense",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "speed",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 2
+        }
+      ],
+      "note": "特性「最好的伙伴」"
+    },
+    {
+      "id": "trait:sp-1-2",
+      "ownerType": "trait",
+      "ownerId": "sp-1-2",
+      "trigger": "afterDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-1-2"
+          ]
+        },
+        {
+          "path": "event.effectiveness",
+          "op": "gt",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "defense",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "speed",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 2
+        }
+      ],
+      "note": "特性「裁决」：首个技能替换光系愿力冲击待校准"
+    },
+    {
+      "id": "trait:sp-1-4",
+      "ownerType": "trait",
+      "ownerId": "sp-1-4",
+      "trigger": "afterDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-1-4"
+          ]
+        },
+        {
+          "path": "event.effectiveness",
+          "op": "gt",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "defense",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "speed",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 2
+        }
+      ],
+      "note": "特性「点燃」：首个技能替换火系愿力冲击待校准"
+    },
+    {
+      "id": "trait:sp-1-5",
+      "ownerType": "trait",
+      "ownerId": "sp-1-5",
+      "trigger": "afterDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-1-5"
+          ]
+        },
+        {
+          "path": "event.effectiveness",
+          "op": "gt",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "defense",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "speed",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 2
+        }
+      ],
+      "note": "特性「净化」：首个技能替换水系愿力冲击待校准"
+    },
+    {
+      "id": "trait:sp-1-3",
+      "ownerType": "trait",
+      "ownerId": "sp-1-3",
+      "trigger": "afterDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-1-3"
+          ]
+        },
+        {
+          "path": "event.effectiveness",
+          "op": "gt",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "defense",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "speed",
+          "mode": "percent",
+          "value": 20
+        },
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 2
+        }
+      ],
+      "note": "特性「滋养」：首个技能替换草系愿力冲击待校准"
+    },
+    {
+      "id": "trait:sp-268-1",
+      "ownerType": "trait",
+      "ownerId": "sp-268-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-268-1"
+          ]
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 30
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 30
+        }
+      ],
+      "note": "特性「指挥家」"
     }
   ]
 }
