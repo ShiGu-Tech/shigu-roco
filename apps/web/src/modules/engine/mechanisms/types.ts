@@ -148,6 +148,8 @@ export type EffectSpec =
   | { type: "consumeMark"; target?: string; markId?: string; scope?: "sprite" | "team"; effectsPerLayer?: EffectSpec[]; effectsOnConsume?: EffectSpec[] }
   | { type: "removeMark"; target?: string; markId?: string; layers?: number; scope?: "sprite" | "team" }
   | { type: "changeWeather"; weatherId: string; turns?: number }
+  /** 天气域 · 延长当前天气回合数（`weatherId` 省略 = 不限；不匹配则不生效）。 */
+  | { type: "modifyWeatherTurns"; weatherId?: string; delta: number }
   | { type: "setPriority"; target?: string; value: number }
   | { type: "forceFirst"; target?: string }
   | { type: "insertAction"; action: Action; targetSide?: Side }

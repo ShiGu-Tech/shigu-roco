@@ -513,6 +513,13 @@ export class MechanismRuntime {
           state.weather = { id: definition.weatherId, turnsLeft: definition.turns ?? 1 };
           events.push({ type: "weather-changed", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, data: { weatherId: definition.weatherId, turns: state.weather.turnsLeft } });
           break;
+        case "modifyWeatherTurns": {
+          if (!state.weather) break;
+          if (definition.weatherId && state.weather.id !== definition.weatherId) break;
+          state.weather.turnsLeft = Math.max(0, state.weather.turnsLeft + definition.delta);
+          events.push({ type: "weather-turns-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, data: { weatherId: state.weather.id, turns: state.weather.turnsLeft, delta: definition.delta } });
+          break;
+        }
         case "applyStatus": {
           if (!active || !targetSide) break;
           if (this.isImmune(bundle, active.spriteId, definition.immuneElements)) {
