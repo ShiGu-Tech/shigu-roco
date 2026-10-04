@@ -276,6 +276,8 @@ export function WatchView({ roomId }: { roomId: string }) {
                         ) : (
                           <div key={i} className="flex items-start gap-1.5 text-[11px] text-muted-foreground">
                             <span className="mt-[3px] shrink-0 text-[8px] leading-none">●</span>
+                            {line.kind ? <Badge variant="outline" className="shrink-0 px-1 py-0 text-[10px]">{line.kind}</Badge> : null}
+                            {line.source ? <span className="shrink-0" title={line.source}>{line.source}</span> : null}
                             <span>{line.text}</span>
                           </div>
                         ),

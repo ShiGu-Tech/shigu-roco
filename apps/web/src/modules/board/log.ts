@@ -161,3 +161,60 @@ export function mechanismHitOf(e: BattleEvent): { trigger: string; mechanismId: 
   if (!effectType || !mechanismId || NARRATIVE_TYPES.has(e.type)) return null;
   return { trigger: typeof d.trigger === "string" ? d.trigger : "", mechanismId, effectType };
 }
+
+/** 一条战斗日志行：分类（攻击/防御/状态/特性…）+ 来源名（技能名/特性名）+ 结果文本。 */
+export interface LogRow {
+  side: "player" | "enemy" | "system";
+  /** 攻击 / 防御 / 状态（技能按 `actionTypeZh`）；特性 / 印记 / 状态 / 天气（机制归属）。 */
+  kind: string;
+  source: string;
+  text: string;
+  mechanism?: { trigger: string; mechanismId: string; effectType: string };
+}
+
+function skillLabel(catalog: Catalog, id: string): { kind: string; name: string } | null {
+  const skill = catalog.allSkills.find((s) => s.id === id);
+  if (!skill) return null;
+  return { kind: skill.actionTypeZh ?? skill.actionType ?? "技能", name: skill.nameZh ?? skill.name };
+}
+
+/** 事件来源：优先技能，其次机制归属（特性 / 印记 / 状态 / 天气）。 */
+export function sourceOf(e: BattleEvent, catalog: Catalog): { kind: string; name: string } | null {
+  const d = (e.data ?? {}) as Record<string, unknown>;
+  const skillId = typeof d.skillId === "string" ? d.skillId : "";
+  if (skillId) return skillLabel(catalog, skillId);
+  const mechanismId = typeof d.mechanismId === "string" ? d.mechanismId : "";
+  if (!mechanismId) return null;
+  const parts = mechanismId.split(":");
+  if (parts[0] === "registered" && parts[1] === "skill") return skillLabel(catalog, parts[2]);
+  const [owner, ownerId] = parts;
+  if (owner === "skill") return skillLabel(catalog, ownerId);
+  if (owner === "trait") {
+    const sprite = catalog.sprites.find((s) => s.id === ownerId) ?? catalog.sprites.find((s) => s.id === `${ownerId}-1`);
+    const name = sprite?.nameZh ?? sprite?.name ?? ownerId;
+    const trait = sprite?.trait?.name;
+    return { kind: "特性", name: trait ? `${name}·${trait}` : name };
+  }
+  if (owner === "status") {
+    const s = catalog.statuses.find((x) => x.id === ownerId);
+    return { kind: "状态", name: s?.nameZh ?? s?.name ?? ownerId };
+  }
+  if (owner === "mark") {
+    const m = catalog.marks.find((x) => x.id === ownerId);
+    return { kind: "印记", name: m?.nameZh ?? m?.name ?? ownerId };
+  }
+  if (owner === "weather") {
+    const w = catalog.weather.find((x) => x.id === ownerId);
+    return { kind: "天气", name: w?.nameZh ?? w?.name ?? ownerId };
+  }
+  return null;
+}
+
+/** 组装一条日志行（结果文本去掉末尾重复的来源名，如「（械斗）」）。 */
+export function logRowOf(e: BattleEvent, catalog: Catalog): LogRow {
+  const side = e.side === "player" || e.side === "enemy" ? e.side : "system";
+  const src = sourceOf(e, catalog);
+  let text = describeEvent(e, catalog);
+  if (src?.name && text.endsWith(`（${src.name}）`)) text = text.slice(0, text.length - src.name.length - 2).trim();
+  return { side, kind: src?.kind ?? "", source: src?.name ?? "", text, mechanism: mechanismHitOf(e) ?? undefined };
+}

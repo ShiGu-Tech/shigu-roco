@@ -12,10 +12,13 @@ export interface RoomSide {
   sprites: { id: string; name: string; element?: string }[];
 }
 
-/** 一条观战事件行：`text` 为叙事文本；`mechanism` 存在时渲染为「触发 / 机制 / 效果」胶囊（可查看定义）。 */
+/** 一条观战事件行：`kind`/`source` 为分类与来源（攻击/防御/状态/特性… + 技能/特性名）；
+ *  `text` 为叙事文本；`mechanism` 存在时渲染为「触发 / 机制 / 效果」胶囊（可查看定义）。 */
 export interface WatchLogLine {
   side: "player" | "enemy" | "system";
   text: string;
+  kind?: string;
+  source?: string;
   mechanism?: { trigger: string; mechanismId: string; effectType: string };
 }
 

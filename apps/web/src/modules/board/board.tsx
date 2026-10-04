@@ -26,7 +26,7 @@ import { createWatchRoom, pushWatchRoom, watchUrl } from "@/modules/watch/client
 import type { RoomSide, WatchEntry, WatchLogLine, WatchRoom } from "@/modules/watch/types";
 import { saveReplay } from "@/modules/replays/storage";
 import { ENEMY_COLOR, PLAYER_COLOR } from "@/lib/chart-theme";
-import { describeEvent, mechanismHitOf } from "./log";
+import { logRowOf } from "./log";
 import type { BattleEvent, BattleState, Catalog, RecommendResult, Terminal } from "@/modules/battle/types";
 import { ActiveBoard } from "./active-board";
 import { LineupDetailDialog, LineupLibrary } from "./lineup-library";
@@ -130,9 +130,10 @@ export function BattleBoard() {
   function watchLog(log: BattleEvent[]): WatchLogLine[] {
     if (!catalog) return [];
     return log.map((event) => {
-      const side = event.side === "player" || event.side === "enemy" ? event.side : "system";
-      const hit = mechanismHitOf(event);
-      return hit ? { side, text: "", mechanism: hit } : { side, text: describeEvent(event, catalog) };
+      const row = logRowOf(event, catalog);
+      return row.mechanism
+        ? { side: row.side, kind: row.kind, source: row.source, text: "", mechanism: row.mechanism }
+        : { side: row.side, kind: row.kind, source: row.source, text: row.text };
     });
   }
 
@@ -760,20 +761,28 @@ export function BattleBoard() {
           >
             <div className="max-h-[380px] overflow-y-auto">
               {log.length === 0 && <p className="px-3 py-2 text-[12px] text-muted-foreground">暂无事件。</p>}
-              {log.map((e, i) => (
-                <div key={i} className="flex items-start gap-2 border-b px-3 py-1.5 text-[12px] last:border-0">
-                  <span
-                    className="mt-[3px] shrink-0 text-[10px] leading-none"
-                    style={{
-                      color:
-                        e.side === "player" ? PLAYER_COLOR : e.side === "enemy" ? ENEMY_COLOR : "var(--muted-foreground)",
-                    }}
-                  >
-                    ●
-                  </span>
-                  <span>{describeEvent(e, catalog)}</span>
-                </div>
-              ))}
+              {log.map((e, i) => {
+                const row = logRowOf(e, catalog!);
+                return (
+                  <div key={i} className="flex items-start gap-2 border-b px-3 py-1.5 text-[12px] last:border-0">
+                    <span
+                      className="mt-[4px] shrink-0 text-[10px] leading-none"
+                      style={{
+                        color: row.side === "player" ? PLAYER_COLOR : row.side === "enemy" ? ENEMY_COLOR : "var(--muted-foreground)",
+                      }}
+                    >
+                      ●
+                    </span>
+                    <span className="w-[42px] shrink-0">
+                      {row.kind ? <Badge variant="outline" className="px-1 py-0 text-[10px]">{row.kind}</Badge> : null}
+                    </span>
+                    <span className="w-[96px] shrink-0 truncate text-[11px] text-muted-foreground" title={row.source}>
+                      {row.source}
+                    </span>
+                    <span className="min-w-0 flex-1">{row.text}</span>
+                  </div>
+                );
+              })}
             </div>
             {(pendingP || pendingE) && (
               <div className="flex items-center gap-2 border-t px-3 py-2">
