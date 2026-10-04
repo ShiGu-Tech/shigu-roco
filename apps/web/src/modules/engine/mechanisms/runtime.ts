@@ -1,13 +1,21 @@
-import { getSkill, getSprite } from "../data";
+import { bundleTypeMultiplier, getSkill, getSprite } from "../data";
 import { computeDamage } from "../effects/damage";
 import { Rng } from "../rng";
-import { recordSkillOverride } from "../state";
+import { makeActive, recordSkillOverride } from "../state";
 import { applyProfile } from "../stats";
 import type { ActiveSprite, BattleState, CostMod, DataBundle, Dict, Side } from "../types";
 import { asDict, toArray, toNum, toStr } from "../types";
 import { ActionQueue } from "./action-queue";
 import { resolveContextPath } from "./conditions";
 import type { DynamicRef, DynamicValue, EffectCommand, EffectDefinition, MechanismContext, MechanismEvent, RuleModifiers, TriggerName } from "./types";
+
+/** 威力哨兵阈值（与 `server.ts` 的自动基础伤害装配一致）：`power >= N` 视为「变量威力」占位，随机技能池须排除。 */
+const POWER_SENTINEL = 100000;
+
+function isSentinelSkill(bundle: DataBundle | undefined, skillId: string): boolean {
+  if (!bundle?.skills[skillId]) return false;
+  return toNum(getSkill(bundle, skillId).power, 0) >= POWER_SENTINEL;
+}
 
 interface DamageModifiers {
   attackerMult: number;
@@ -79,8 +87,10 @@ export class MechanismRuntime {
 
   /** 规则覆盖通道：收集 `passive` 触发器声明的 `setRuleModifier`（按传入 side 的在场精灵），供结算读「有效规则」。 */
   ruleModifiers(state: BattleState, bundle: DataBundle | undefined, side: Side | null): RuleModifiers {
-    const out: RuleModifiers = {};
-    if (!bundle || !side) return out;
+    if (!side) return {};
+    const current = side === "player" ? state.player.active : state.enemy.active;
+    const out: RuleModifiers = { ...(current.ruleOverrides ?? {}) };
+    if (!bundle) return out;
     const commands = this.dispatch({
       state,
       trigger: "passive",
@@ -281,6 +291,49 @@ export class MechanismRuntime {
           active.spriteId = to;
           applyProfile(bundle.stats, getSprite(bundle, to), active, active.profile);
           events.push({ type: "transform", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { from, to } });
+          break;
+        }
+        case "setDisguise": {
+          if (!active || !targetSide || !bundle) break;
+          const to = definition.spriteId ?? (definition.spriteIdFrom ? toStr(this.dynamicValue(state, command, definition.spriteIdFrom as DynamicRef, 0, bundle)) : "");
+          if (!to || !bundle.sprites[to]) break;
+          const from = active.spriteId;
+          active.disguise = active.disguise ?? from;
+          active.spriteId = to;
+          applyProfile(bundle.stats, getSprite(bundle, to), active, active.profile);
+          events.push({ type: "disguised", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { from, to } });
+          break;
+        }
+        case "revealDisguise": {
+          if (!active || !targetSide || !bundle) break;
+          const original = active.disguise;
+          if (!original || !bundle.sprites[original]) {
+            events.push({ type: "disguise-revealed", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { revealed: false } });
+            break;
+          }
+          const from = active.spriteId;
+          active.spriteId = original;
+          delete active.disguise;
+          applyProfile(bundle.stats, getSprite(bundle, original), active, active.profile);
+          events.push({ type: "disguise-revealed", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { revealed: true, from, to: original } });
+          break;
+        }
+        case "scheduleRevive": {
+          if (!active || !targetSide) break;
+          const after = Math.max(1, Math.floor(definition.afterTurns));
+          active.reviveDue = state.turn + after;
+          if (definition.spriteId) active.reviveAs = definition.spriteId;
+          events.push({ type: "revive-scheduled", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { dueTurn: active.reviveDue, spriteId: definition.spriteId ?? null } });
+          break;
+        }
+        case "inheritTrait": {
+          if (!targetSide) break;
+          const fromSide: Side = definition.from === "opponent" || !definition.from ? (targetSide === "player" ? "enemy" : "player") : targetSide;
+          const inherited = this.ruleModifiers(state, bundle, fromSide);
+          if (!Object.keys(inherited).length) break;
+          const to = targetSide === "player" ? state.player.active : state.enemy.active;
+          to.ruleOverrides = { ...(to.ruleOverrides ?? {}), ...inherited };
+          events.push({ type: "trait-inherited", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { from: fromSide, keys: Object.keys(inherited) } });
           break;
         }
         case "returnField": {
@@ -868,7 +921,7 @@ export class MechanismRuntime {
           let source: string[];
           if (definition.sourceFrom === "uncarried" || !definition.sourceFrom) source = Object.keys(bundle.skills);
           else source = toArray<string>(resolveContextPath({ state, trigger: command.trigger, actorSide: command.actorSide, targetSide: command.targetSide, event: command.event ?? {} }, definition.sourceFrom));
-          const pool = source.filter((id) => id && !active.loadout.includes(id));
+          const pool = source.filter((id) => id && !active.loadout.includes(id) && !isSentinelSkill(bundle, id));
           if (!pool.length) break;
           const rng = new Rng(hashSeed(state, `${command.mechanismId}:${state.turn}:learn`));
           const learned: string[] = [];
@@ -879,6 +932,58 @@ export class MechanismRuntime {
             learned.push(picked);
           }
           if (learned.length) events.push({ type: "skill-learned", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { skillId: learned[learned.length - 1], learned, loadout: active.loadout } });
+          break;
+        }
+        case "summonRandom": {
+          if (!targetSide || !bundle) break;
+          const side = targetSide === "player" ? state.player : state.enemy;
+          const summoner = command.actorSide === "player" ? state.player.active : command.actorSide === "enemy" ? state.enemy.active : side.active;
+          // 去重：同一召唤者已召唤的精灵在背包中时不再重复召唤（防止反复入场无限膨胀）。
+          if (side.bench.some((s) => s.summonedBy === summoner.spriteId)) break;
+          const count = Math.max(1, Math.floor(definition.count ?? 1));
+          const inTeam = new Set([side.active, ...side.bench].map((s) => s.spriteId));
+          const pool = (definition.source?.length ? definition.source : Object.keys(bundle.sprites)).filter((id) => bundle.sprites[id] && !inTeam.has(id));
+          if (!pool.length) break;
+          const rng = new Rng(hashSeed(state, `${command.mechanismId}:${state.turn}:summon`));
+          const level = toNum(asDict(bundle.rules.level).default, 60);
+          const summoned: string[] = [];
+          for (let i = 0; i < count && pool.length; i++) {
+            const id = pool.splice(rng.int(pool.length), 1)[0];
+            const sprite = makeActive(id);
+            applyProfile(bundle.stats, getSprite(bundle, id), sprite, { level });
+            sprite.summonedBy = summoner.spriteId;
+            side.bench.push(sprite);
+            summoned.push(id);
+          }
+          events.push({ type: "sprites-summoned", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { summoned, summoner: summoner.spriteId } });
+          break;
+        }
+        case "replaySkills": {
+          if (!active || !targetSide || !bundle) break;
+          // 防重放递归：重放派发的 beforeAction 不得再次触发重放（踏雷 isBurst 复制时尤需）。
+          if (command.event?.replayed === true) break;
+          const prefix = definition.sourceFrom === "quickUsed" ? "usedQuick." : definition.sourceFrom === "burstTriggered" ? "burstTriggered." : null;
+          if (!prefix) break;
+          const counters = active.counters ?? {};
+          let pool = Object.keys(counters)
+            .filter((key) => key.startsWith(prefix) && toNum(counters[key], 0) > 0)
+            .map((key) => key.slice(prefix.length));
+          if (!pool.length) break;
+          const rawCount = definition.countFrom ? this.dynamicValue(state, command, definition.countFrom, definition.count ?? pool.length, bundle) : definition.count ?? pool.length;
+          pool = pool.slice(0, Math.max(0, Math.floor(rawCount)));
+          if (!pool.length) break;
+          const opp: Side | undefined = command.actorSide === "player" ? "enemy" : command.actorSide === "enemy" ? "player" : command.targetSide;
+          for (const skillId of pool) {
+            if (!bundle.skills[skillId]) continue;
+            const replayAction = { kind: "skill" as const, skillId };
+            const replayEvent = { ...(command.event ?? {}), action: replayAction, replayed: true, skillId, ...(definition.asBurst ? { burst: true } : {}) };
+            let replayCommands = this.dispatch({ state, trigger: "beforeAction", actorSide: command.actorSide, targetSide: opp, action: replayAction, event: replayEvent });
+            // 仅迸发效果：剔除自动生成的基础伤害命令（`registered:skill:*`），只保留迸发附加效果。
+            if (definition.asBurst) replayCommands = replayCommands.filter((c) => !c.mechanismId.startsWith("registered:skill:"));
+            events.push(...this.applyStateCommands(state, replayCommands, bundle, depth + 1));
+            events.push(...this.applyDamageCommands(state, bundle, replayCommands, replayEvent));
+          }
+          events.push({ type: "skills-replayed", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { skills: pool } });
           break;
         }
         case "forgetSkill": {
@@ -899,7 +1004,8 @@ export class MechanismRuntime {
         }
         case "randomizeSkill": {
           if (!active || !targetSide) break;
-          const current = definition.skillId ?? active.loadout[active.loadout.length - 1];
+          const resolvedSkill = definition.skillId ?? (definition.skillIdFrom ? toStr(resolveContextPath({ state, trigger: command.trigger, actorSide: command.actorSide, targetSide: command.targetSide, event: command.event ?? {} }, definition.skillIdFrom)) || undefined : undefined);
+          const current = resolvedSkill ?? active.loadout[active.loadout.length - 1];
           const ownSide = targetSide === "player" ? state.player : state.enemy;
           const oppSide = targetSide === "player" ? state.enemy : state.player;
           const teamSkills = () => [...new Set([ownSide.active, ...ownSide.bench].flatMap((s) => s.loadout))];
@@ -908,9 +1014,15 @@ export class MechanismRuntime {
           if (definition.sourceFrom === "uncarried") source = Object.keys(bundle?.skills ?? {}).filter((id) => !active.loadout.includes(id));
           else if (definition.sourceFrom === "team") source = teamSkills();
           else if (definition.sourceFrom === "opponent") source = oppSkills();
+          // 巧变：同系别技能——候选池 = 与当前技能同元素的全部技能。
+          else if (definition.sourceFrom === "sameElement") {
+            const element = current && bundle?.skills[current] ? toStr(getSkill(bundle, current).element) : "";
+            source = element ? Object.keys(bundle?.skills ?? {}).filter((id) => toStr(getSkill(bundle as DataBundle, id).element) === element) : [];
+          }
           else if (definition.sourceFrom) source = toArray<string>(resolveContextPath({ state, trigger: command.trigger, actorSide: command.actorSide, targetSide: command.targetSide, event: command.event ?? {} }, definition.sourceFrom));
           else source = definition.source ?? [];
-          const pool = source.filter((id) => id && id !== current);
+          // 排除哨兵威力技能（变量威力占位，不应被巧变随机抽中）。
+          const pool = source.filter((id) => id && id !== current && !isSentinelSkill(bundle, id));
           if (!current || !pool.length) break;
           const rng = new Rng(hashSeed(state, `${command.mechanismId}:${state.turn}`));
           const picked = pool[rng.int(pool.length)];
@@ -1046,6 +1158,23 @@ export class MechanismRuntime {
       target.hp = Math.max(0, target.hp - damage);
       const targetState = targetSide === "player" ? state.player : state.enemy;
       targetState.lastHit = { side: attackerSide, skillId: definition.skillId };
+      // 规则覆盖 · `damage.healBack`（无畏之心）：把减免掉的伤害按比例转回目标生命。
+      const healBack = toNum(this.ruleModifiers(state, bundle, targetSide)["damage.healBack"], 0);
+      if (healBack > 0 && modifiers) {
+        const raw = computeDamage(bundle, attackerDef, targetDef, attacker, target, effectiveSkill, {
+          weatherId: state.weather?.id ?? null,
+          attackerTraitMult: modifiers.attackerMult,
+          defenderTraitMult: modifiers.defenderMult,
+          damageReduction: 0,
+          hits: modifiers.hits,
+        });
+        const prevented = Math.max(0, raw.damage - damage);
+        if (prevented > 0) {
+          const beforeHeal = target.hp;
+          target.hp = Math.min(target.maxHp, target.hp + Math.floor(prevented * healBack));
+          events.push({ type: "healed", trigger: command.trigger, mechanismId: command.mechanismId, effectType: "healBack", side: targetSide, data: { before: beforeHeal, after: target.hp, value: target.hp - beforeHeal, fromPrevented: true } });
+        }
+      }
       // 队伍域 · 已失去生命（按 25% 分段，供「每失去 25% 生命」类，如嫁祸）。
       targetState.counters ??= {};
       targetState.counters.hpLostQuarters = Math.floor(((target.maxHp - target.hp) / Math.max(1, target.maxHp)) * 4);
@@ -1138,6 +1267,8 @@ export class MechanismRuntime {
     // 记忆域 · 常驻威力 / 连击加成（`power-add` / `hits-add`，不消耗）：供特性「技能威力 +N / 连击 ±N」。
     const flatPower = toNum(attacker.counters?.["power-add"], 0);
     if (flatPower) powerBonus += flatPower;
+    // 记忆域 · 系别常驻威力（`power-add:<Element>`，不消耗）：供「某系技能威力永久 +N」（光度换算）。
+    if (element) powerBonus += toNum(attacker.counters?.[`power-add:${element}`], 0);
     const hitsAdd = toNum(attacker.counters?.["hits-add"], 0);
     if (hitsAdd) hits = Math.max(1, hits + hitsAdd);
     // 「下一次攻击」一次性加成（消耗后清零）：next-damage-mul（+N% 伤害）/ next-power-add（+N 威力）。
@@ -1165,6 +1296,16 @@ export class MechanismRuntime {
       // 规则覆盖 · `power.nonLight`（夺目）：非光系技能威力提升。
       if (typeof mods["power.nonLight"] === "number" && toStr(getSkill(bundle, skillId).element) !== "Light") {
         attackerMult *= 1 + (mods["power.nonLight"] as number);
+      }
+      // 规则覆盖 · `power.element.<El>`（秋收）：指定系别技能威力提升（值 = 小数倍率）。
+      const elementMul = element ? mods[`power.element.${element}`] : undefined;
+      if (typeof elementMul === "number") attackerMult *= 1 + elementMul;
+      // 规则覆盖 · `damage.superEffectiveTaken`（狂欢开始）：防方受到的克制伤害提升（值 = 小数倍率）。
+      const seTaken = toNum(this.ruleModifiers(state, bundle, targetSide)["damage.superEffectiveTaken"], 0);
+      if (seTaken > 0 && element) {
+        const defender = targetSide === "player" ? state.player.active : state.enemy.active;
+        const defenderDef = getSprite(bundle, defender.spriteId);
+        if (bundleTypeMultiplier(bundle, element, toArray<string>(defenderDef.elements)) > 1) defenderMult *= 1 + seTaken;
       }
       // 规则覆盖 · `power.vsPolluted`（天通地明）：敌方血脉为污染血脉时威力 +100%。
       if (mods["power.vsPolluted"] === true) {

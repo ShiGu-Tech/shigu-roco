@@ -148,6 +148,14 @@ export type EffectSpec =
   | { type: "returnField"; target?: string }
   /** 行动域 · 变身：把目标换成指定精灵（`spriteId` 或 `spriteIdFrom`），按原血量比例重算 maxHp / hp（棋绮后 / 未完虫）。 */
   | { type: "transform"; target?: string; spriteId?: string; spriteIdFrom?: DynamicRef }
+  /** 复生域 · 预定复活：目标力竭后第 `afterTurns` 回合恢复满血（`spriteId` 给定时复活为指定形态；正模标本）。 */
+  | { type: "scheduleRevive"; target?: string; afterTurns: number; spriteId?: string }
+  /** 伪装域 · 记录原始形态并变身（伪装）；伪装被识破时还原。 */
+  | { type: "setDisguise"; target?: string; spriteId?: string; spriteIdFrom?: DynamicRef }
+  /** 伪装域 · 识破：还原目标伪装（博物）。 */
+  | { type: "revealDisguise"; target?: string }
+  /** 特性继承域 · 把 `from` 侧当前被动规则覆盖并入目标（铭记于月亮：击败者继承被击败者特性）。 */
+  | { type: "inheritTrait"; target?: string; from?: "opponent" }
   /** 行动域 · 允许被限制的换人（清除离场锁）。 */
   | { type: "allowSwitch"; target?: string }
   /** 交换域 · 自身与对手交换 `hpRatio`（生命比例）/ `skills`（技能栏）/ `stats`（增益与减益）。 */
@@ -191,9 +199,13 @@ export type EffectSpec =
   | { type: "learnSkill"; target?: string; skillId?: string; skillIdFrom?: string; source?: string; duration?: number; costDelta?: number }
   /** 技能栏域 · 随机习得：向目标 `loadout` 追加 `count` 个候选池（`sourceFrom`，默认未携带）中随机的技能。 */
   | { type: "learnRandomSkills"; target?: string; count: number; sourceFrom?: string; duration?: number }
+  /** 队伍域 · 随机召唤：向目标侧 `bench` 追加 `count` 个候选池（`source`，默认全图鉴未在场）中随机的精灵，标记 `summonedBy`（只能与召唤者互换）。 */
+  | { type: "summonRandom"; target?: string; count?: number; source?: string[] }
+  /** 技能栏域 · 重放已用技能（疾风连袭 / 踏雷）：对 `sourceFrom` 池（quickUsed / burstTriggered）中 `count` 个技能各派发一次 beforeAction（含基础伤害），不重复付费。 */
+  | { type: "replaySkills"; target?: string; sourceFrom: "quickUsed" | "burstTriggered" | string; count?: number; countFrom?: DynamicRef; asBurst?: boolean }
   | { type: "forgetSkill"; target?: string; skillId: string }
   | { type: "replaceSkill"; target?: string; fromSkillId: string; toSkillId: string; duration?: number }
-  | { type: "randomizeSkill"; target?: string; skillId?: string; source?: string[]; sourceFrom?: string; duration?: number; costDelta?: number }
+  | { type: "randomizeSkill"; target?: string; skillId?: string; skillIdFrom?: string; source?: string[]; sourceFrom?: string; duration?: number; costDelta?: number }
   | { type: "swapSkillSet"; target?: string; from: string; to: string; duration?: number }
   /** 记忆域 · 计数器：`target.active.counters[key] += delta`。 */
   | { type: "addCounter"; target?: string; key: string; delta: number }

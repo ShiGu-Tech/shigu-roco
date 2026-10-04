@@ -203,5 +203,20 @@
  * - 0.73.0 选择计数：队伍记录某「选择」技能「明」「暗」各用 1 次 → 侧计数器 `choiceFull`（供猫精灵的礼物）。
  * - 0.74.0 球域：`StatProfile.ball`（配队「咕噜球」参数，缺省国王球）→ `ActiveSprite.ball` 注入；棱镜球按规则
  *          `ball.prism.pool` 随机化为具体球种（近似：未实现「只保留一半效果」）。
+ * - 0.75.0 长尾收官：
+ *          ① 全队被动通道——条件作用域暴露 `selfTeam` / `targetTeam`（该侧全部精灵 id，含板凳），
+ *             供「队伍中存在某特性持有者」类（正模标本 / 魔术帽）；`ruleModifiers` 并入 `ActiveSprite.ruleOverrides`。
+ *          ② 特性继承域——`inheritTrait`（把 `from` 侧当前被动规则覆盖并入目标）+ `copyStat` 式 `ruleOverrides` 持久化（铭记于月亮）。
+ *          ③ 选择分支改写——`skillHasChoice` / `legalActions` 读规则覆盖 `choice.all` / `choice.skill.<id>` /
+ *             `choice.element.<El>`；聚能选择 `choice.energy`（`Action.choice` 泛化到 energy，`energyGained` 事件带 `choice`）。
+ *          ④ 巧变——`randomizeSkill` 支持 `skillIdFrom` 与 `sourceFrom:"sameElement"`（用后变同系别随机技能、能耗 −1；
+ *             换碟 / 魔术帽）。魔术帽经 `selfTeam` / `targetTeam` 覆盖双方。
+ *          ⑤ 伤害规则——`damage.healBack`（无畏之心：减免伤害转回复）/ `damage.superEffectiveTaken`（狂欢开始）/
+ *             `power.element.<El>`（秋收：指定系别威力倍率）/ 系别常驻威力计数器 `power-add:<Element>`（光度换算）。
+ *          ⑥ 迸发窗口延长 `burst.extend`（连续负荷）；预定复活 `scheduleRevive`（正模标本，复生时按 `reviveAs` 变身）。
+ *          ⑦ 技能重放 `replaySkills`（疾风连袭重放已用迅捷技能 / 踏雷复制已触发迸发效果，`asBurst` 剔除自动基础伤害）。
+ *          ⑧ 伪装域 `setDisguise` / `revealDisguise`（博物，能力就绪；图鉴暂无伪装数据）。
+ *          ⑨ 棱镜球半量：入场写 `counters.prismHalf`，球效果机制据此走半量分支（数据侧生成）。
+ *          ⑩ 队伍域 `summonRandom`（向背包追加随机精灵）+ `ActiveSprite.summonedBy`（被召唤者只能与召唤者互换；狂欢开始）。
  */
-export const ENGINE_VERSION = "0.74.0";
+export const ENGINE_VERSION = "0.75.0";

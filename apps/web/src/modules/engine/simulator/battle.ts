@@ -3,6 +3,7 @@
 import { effectiveCost } from "../cost";
 import { getSkill, getSprite } from "../data";
 import { computeDamage, effectiveStat } from "../effects/damage";
+import { applyProfile } from "../stats";
 import type { Rng } from "../rng";
 import { cloneState, expireSkillOverrides, revertSkillOverride } from "../state";
 import type { Action, ActiveSprite, BattleEvent, BattleState, DataBundle, Side, StepResult, Terminal } from "../types";
@@ -148,8 +149,8 @@ export class Simulator {
       const affordable = skillCost <= active.energy || (ruleMods["cost.payWithHp"] === true && active.hp > 0);
       if (affordable && toNum(active.cooldowns?.[skillId], 0) <= 0) {
         const name = toStr(skill.skillName, skillId);
-        // 选择技（描述含「选择：」）：列出「明 / 暗」两个分支。
-        if (/选择/.test(toStr(skill.description, ""))) {
+        // 选择技（描述含「选择：」，或特性经规则覆盖授予）：列出「明 / 暗」两个分支。
+        if (this.skillHasChoice(skillId, ruleMods)) {
           actions.push({ kind: "skill", skillId, choice: 0, label: `${name} · 明` });
           actions.push({ kind: "skill", skillId, choice: 1, label: `${name} · 暗` });
         } else {
@@ -158,9 +159,12 @@ export class Simulator {
       }
     }
 
+    // 队伍域 · 召唤限制（狂欢开始）：被召唤精灵只能与召唤者互换。
+    const summonedBy = active.summonedBy;
     if (side.switchLock <= 0 && !active.statuses.rooted) {
       for (const bench of side.bench) {
         if (bench.hp > 0 && bench.spriteId !== active.spriteId) {
+          if (summonedBy && bench.spriteId !== summonedBy) continue;
           actions.push({ kind: "switch", benchId: bench.spriteId, label: `换 ${bench.spriteId}` });
         }
       }
@@ -171,7 +175,13 @@ export class Simulator {
     }
 
     const energyMax = toNum(asDict(this.bundle.rules.energy).max, 10);
-    if (active.energy < energyMax) actions.push({ kind: "energy", label: "聚能" });
+    // 选择域 · 聚能选择（长久保存制法）：经规则覆盖授予时列出「明 / 暗」分支。
+    if (ruleMods["choice.energy"] === true) {
+      actions.push({ kind: "energy", choice: 0, label: "聚能 · 明" });
+      actions.push({ kind: "energy", choice: 1, label: "聚能 · 暗" });
+    } else if (active.energy < energyMax) {
+      actions.push({ kind: "energy", label: "聚能" });
+    }
 
     return actions;
   }
@@ -267,10 +277,14 @@ export class Simulator {
         // 球域 · 注入咕噜球；「棱镜球」按规则候选池随机化为具体球种（近似：未实现「只保留一半效果」）。
         const ballKey = toStr(sprite.profile?.ball);
         if (ballKey) {
-          sprite.ball = ballKey;
-          if (ballKey === "prism") {
+          // 棱镜球：仅首次注入时随机化为具体球种（此后固定，不再逐回合重随机），并标记半量。
+          if (ballKey === "prism" && !sprite.counters?.prismHalf) {
             const pool = toStr(this.mechanisms.ruleModifiers(st, this.bundle, side)["ball.prism.pool"]).split(",").map((v) => v.trim()).filter(Boolean);
-            if (pool.length) sprite.ball = pool[(st.seed + st.turn + sprite.spriteId.length) % pool.length];
+            sprite.ball = pool.length ? pool[(st.seed + st.turn + sprite.spriteId.length) % pool.length] : "prism";
+            sprite.counters ??= {};
+            sprite.counters.prismHalf = 1;
+          } else if (ballKey !== "prism") {
+            sprite.ball = ballKey;
           }
         }
       }
@@ -297,10 +311,17 @@ export class Simulator {
       const s = this.sideState(st, side);
       for (const sp of [s.active, ...s.bench]) {
         if (sp.hp > 0 || sp.reviveDue === undefined || st.turn < sp.reviveDue) continue;
+        const reviveTo = sp.reviveAs && this.bundle.sprites[sp.reviveAs] ? sp.reviveAs : undefined;
         sp.hp = sp.maxHp;
         sp.faintHandled = false;
         delete sp.reviveDue;
-        events.push({ type: "revive", side, text: `${sp.spriteId} 复活`, data: {} });
+        if (reviveTo) {
+          sp.spriteId = reviveTo;
+          applyProfile(this.bundle.stats, getSprite(this.bundle, reviveTo), sp, sp.profile);
+          sp.hp = sp.maxHp;
+        }
+        delete sp.reviveAs;
+        events.push({ type: "revive", side, text: `${sp.spriteId} 复活`, data: { spriteId: sp.spriteId, to: reviveTo ?? sp.spriteId } });
       }
     }
 
@@ -444,7 +465,7 @@ export class Simulator {
       entry.status = "executing";
       const opp = otherSide(side);
       if (entry.action.kind === "energy") {
-        events.push(...this.applyEnergy(st, side));
+        events.push(...this.applyEnergy(st, side, entry.action.choice));
         logs.push(`energy: ${side}`);
       } else {
         // 使用次数 +1：本行动的技能额外执行（不重复消耗能量）；计数器用完清零。
@@ -457,7 +478,17 @@ export class Simulator {
         logs.push(`skill: ${side} -> ${entry.action.skillId ?? ""}${extra ? ` ×${extra + 1}` : ""}`);
       }
       entry.status = "resolved";
-      caster.actedSinceEntry = true;
+      // 规则覆盖 · `burst.extend`（连续负荷）：本次入场的迸发窗口多延续 N 次行动。
+      {
+        const burstExtend = toNum(this.mechanisms.ruleModifiers(st, this.bundle, side)["burst.extend"], 0);
+        const used = toNum(caster.counters?.burstExtended, 0);
+        if (burstExtend > 0 && used < burstExtend) {
+          caster.counters ??= {};
+          caster.counters.burstExtended = used + 1;
+        } else {
+          caster.actedSinceEntry = true;
+        }
+      }
       // 蓄力释放完成：清除待释放并解除离场锁。
       if (entry.action.released && caster.pendingSkill) {
         caster.pendingSkill = undefined;
@@ -467,13 +498,21 @@ export class Simulator {
       if (entry.action.kind === "skill") {
         if (entry.action.skillId) touched[side].add(entry.action.skillId);
         const usedSkill = entry.action.skillId ? getSkill(this.bundle, entry.action.skillId) : {};
+        // 记忆域 · 记录本场已用过的「迅捷」/「迸发」技能（供疾风连袭 / 踏雷重放）。
+        if (entry.action.skillId) {
+          caster.counters ??= {};
+          if (toArray<string>(usedSkill.tags).includes("quick") || this.skillIsQuick(st, side, caster, entry.action.skillId, this.mechanisms.ruleModifiers(st, this.bundle, side))) {
+            caster.counters[`usedQuick.${entry.action.skillId}`] = 1;
+          }
+          if (burst) caster.counters[`burstTriggered.${entry.action.skillId}`] = 1;
+        }
         // 队伍域 · 历史计数：本方已使用该系 / 该类型技能次数、累计使用、成功应对次数（供「每使用过 1 次 X 系」类）。
         this.bump(st, side, `used${toStr(usedSkill.element)}`);
         this.bump(st, side, `usedType${toStr(usedSkill.actionType)}`);
         this.bump(st, side, "skillUsed");
         if (reactedBySide[side] === true) this.bump(st, side, "reacts");
         // 选择域 · 队伍记录：某「选择」技能「明」「暗」各用过 1 次即记一次完整（供猫精灵的礼物）。
-        if (entry.action.skillId && this.skillHasChoice(entry.action.skillId)) {
+        if (entry.action.skillId && this.skillHasChoice(entry.action.skillId, this.mechanisms.ruleModifiers(st, this.bundle, side))) {
           const c = this.sideState(st, side).counters!;
           const branchKey = `choice${entry.action.choice === 1 ? 1 : 0}.${entry.action.skillId}`;
           this.bump(st, side, branchKey, 1);
@@ -518,7 +557,7 @@ export class Simulator {
         }
       }
       // 选择域 · 再触发（有求必应 / 一意孤行）：使用「选择」技能后，追加另一 / 相同分支的效果。
-      if (entry.action.kind === "skill" && entry.action.skillId && this.skillHasChoice(entry.action.skillId)) {
+      if (entry.action.kind === "skill" && entry.action.skillId && this.skillHasChoice(entry.action.skillId, this.mechanisms.ruleModifiers(st, this.bundle, side))) {
         const choiceMods = this.mechanisms.ruleModifiers(st, this.bundle, side);
         const mode = choiceMods["choice.replayOther"] === true ? "other" : choiceMods["choice.replaySame"] === true ? "same" : null;
         if (mode) {
@@ -626,6 +665,7 @@ export class Simulator {
       if (!act.returnedThisTurn) continue;
       act.returnedThisTurn = false;
       act.actedSinceEntry = false;
+      if (act.counters?.burstExtended !== undefined) delete act.counters.burstExtended;
       events.push(...this.triggerState(st, "onEntry", { actorSide: side, targetSide: otherSide(side), event: { enteredSpriteId: act.spriteId, returned: true } }));
     }
     for (const event of events) {
@@ -745,10 +785,14 @@ export class Simulator {
     return false;
   }
 
-  /** 技能的行动类型（用于「应对」判定）。 */
-  /** 是否为「选择」技能（描述含「选择」，与 `legalActions` 同口径）。 */
-  private skillHasChoice(skillId: string): boolean {
-    return /选择/.test(toStr(getSkill(this.bundle, skillId).description, ""));
+  /** 是否为「选择」技能：描述含「选择」，或特性经规则覆盖授予（`choice.all` / `choice.skill.<id>` / `choice.element.<El>`）。 */
+  private skillHasChoice(skillId: string, mods?: RuleModifiers): boolean {
+    if (/选择/.test(toStr(getSkill(this.bundle, skillId).description, ""))) return true;
+    if (!mods) return false;
+    if (mods["choice.all"] === true) return true;
+    if (mods[`choice.skill.${skillId}`] === true) return true;
+    const element = toStr(getSkill(this.bundle, skillId).element);
+    return element ? mods[`choice.element.${element}`] === true : false;
   }
 
   private actionTypeOf(action: Action): string {
@@ -785,6 +829,9 @@ export class Simulator {
     const first = !active.entered;
     active.entered = true;
     active.actedSinceEntry = false;
+    if (active.counters?.burstExtended !== undefined) delete active.counters.burstExtended;
+    // 图鉴域 · 入场即注入系别（召唤 / 变身等中途上场者当回合即可参与系别判定）。
+    if (!active.element?.length) active.element = toArray<string>(getSprite(this.bundle, active.spriteId).elements);
     return this.triggerState(st, "onEntry", {
       actorSide: side,
       targetSide: otherSide(side),
@@ -829,7 +876,7 @@ export class Simulator {
     return events;
   }
 
-  private applyEnergy(st: BattleState, side: Side): BattleEvent[] {
+  private applyEnergy(st: BattleState, side: Side, choice?: 0 | 1): BattleEvent[] {
     const active = this.sideState(st, side).active;
     const energy = asDict(this.bundle.rules.energy);
     const gainReduce = toNum(this.mechanisms.ruleModifiers(st, this.bundle, side)["energy.gainReduce"], 0);
@@ -844,9 +891,9 @@ export class Simulator {
     if (active.costMods?.some((m) => m.duration === "nextAction")) active.costMods = active.costMods.filter((m) => m.duration !== "nextAction");
     // 队伍域 · 历史计数：本方聚能次数（供「敌方每使用 1 次聚能」类）。
     this.bump(st, side, "charges");
-    const events: BattleEvent[] = [{ type: "energy", side, text: `${active.spriteId} 聚能 +${gained}（${active.energy}/${cap}）`, data: { value: gained } }];
-    // 能量域 · 获得能量触发器（供「每回复 1 能量」类，如腐植循环 / 草木苏醒时）。
-    if (gained > 0) events.push(...this.triggerState(st, "energyGained", { actorSide: side, targetSide: otherSide(side), event: { value: gained } }));
+    const events: BattleEvent[] = [{ type: "energy", side, text: `${active.spriteId} 聚能 +${gained}（${active.energy}/${cap}）`, data: { value: gained, choice: choice ?? 0 } }];
+    // 能量域 · 获得能量触发器（供「每回复 1 能量」类，如腐植循环 / 草木苏醒时；选择分支恒派发）。
+    if (gained > 0 || choice === 1) events.push(...this.triggerState(st, "energyGained", { actorSide: side, targetSide: otherSide(side), event: { value: gained, choice: choice ?? 0 } }));
     return events;
   }
 
@@ -856,6 +903,9 @@ export class Simulator {
     if (!forced && (s.switchLock > 0 || s.active.statuses.rooted)) return events;
     const target = s.bench.find((b) => b.spriteId === benchId && b.hp > 0);
     if (!target) return events;
+    // 队伍域 · 召唤限制（狂欢开始）：被召唤精灵只能与召唤者互换。
+    const summoner = s.active.summonedBy;
+    if (!forced && summoner && target.spriteId !== summoner) return events;
     const old = s.active;
     events.push(...this.triggerState(st, "beforeSwitch", { actorSide: side, targetSide: otherSide(side), action: { kind: "switch", benchId }, event: { from: old.spriteId, to: target.spriteId, forced } }));
     events.push(...clearMarksOnSwitch(st, side, this.bundle));

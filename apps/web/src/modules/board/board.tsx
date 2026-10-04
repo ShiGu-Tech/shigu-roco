@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
-import { forcedSwitch, getCatalog, recommend, requestLeader, simulateTurn } from "@/modules/battle/client";
+import { forcedSwitch, getCatalog, legalActions, recommend, requestLeader, simulateTurn } from "@/modules/battle/client";
 import { loadOpponentLibrary } from "@/modules/battle/storage";
 import { collectAtlasStep, flattenFirings } from "@/modules/atlas/collect";
 import { recordAtlasStep } from "@/modules/atlas/storage";
@@ -27,7 +27,7 @@ import type { RoomSide, WatchEntry, WatchLogLine, WatchRoom } from "@/modules/wa
 import { saveReplay } from "@/modules/replays/storage";
 import { ENEMY_COLOR, PLAYER_COLOR } from "@/lib/chart-theme";
 import { logRowOf } from "./log";
-import type { BattleEvent, BattleState, Catalog, RecommendResult, Terminal } from "@/modules/battle/types";
+import type { BattleEvent, BattleState, Catalog, EngineAction, RecommendResult, Terminal } from "@/modules/battle/types";
 import { ActiveBoard } from "./active-board";
 import { LineupDetailDialog, LineupLibrary } from "./lineup-library";
 import { deleteLineup, listLineups, type Lineup } from "./lineups";
@@ -40,6 +40,7 @@ import {
   buildState,
   deriveActions,
   emptySetup,
+  energyRule,
   optionFromSkill,
   skillById,
   spriteOf,
@@ -47,6 +48,33 @@ import {
   type ActionOption,
   type TeamEntry,
 } from "./util";
+
+/** 引擎规则授予的「选择」权限：哪些技能有明 / 暗分支、聚能是否有分支（对战台据此显示，避免前端重判规则）。 */
+interface ChoiceGrants {
+  skills: Set<string>;
+  energy: boolean;
+}
+
+function choiceGrantsOf(actions: EngineAction[]): ChoiceGrants {
+  const skills = new Set<string>();
+  let energy = false;
+  for (const action of actions) {
+    if (action.kind === "skill" && action.skillId && action.choice !== undefined) skills.add(action.skillId);
+    else if (action.kind === "energy" && action.choice !== undefined) energy = true;
+  }
+  return { skills, energy };
+}
+
+/** 聚能若有明 / 暗分支，替换为两条（其余行动原样）。 */
+function withChoiceGrants(options: ActionOption[], grants: ChoiceGrants | undefined, catalog: Catalog): ActionOption[] {
+  if (!grants?.energy) return options;
+  const { recover } = energyRule(catalog);
+  return [
+    ...options.filter((option) => option.action.kind !== "energy"),
+    { action: { kind: "energy", choice: 0, label: "聚能 · 明" }, label: "聚能 · 明", kindLabel: `+${recover} 能量` },
+    { action: { kind: "energy", choice: 1, label: "聚能 · 暗" }, label: "聚能 · 暗", kindLabel: "选择分支" },
+  ];
+}
 
 const PRESETS = {
   fast: { label: "快速", maxIterations: 400, timeLimitMs: 300 },
@@ -106,6 +134,7 @@ export function BattleBoard() {
   const [pendingP, setPendingP] = useState<ActionOption | null>(null);
   const [pendingE, setPendingE] = useState<ActionOption | null>(null);
   const [choicePick, setChoicePick] = useState<{ who: "player" | "enemy"; skillId: string; name: string } | null>(null);
+  const [engineChoice, setEngineChoice] = useState<{ for: BattleState; player: ChoiceGrants; enemy: ChoiceGrants } | null>(null);
   const [busy, setBusy] = useState(false);
   const [saveOpen, setSaveOpen] = useState(false);
   const [saveName, setSaveName] = useState("");
@@ -192,13 +221,31 @@ export function BattleBoard() {
   const history = current?.history ?? [];
   const terminal = current?.terminal ?? null;
 
+  // 引擎规则授予的选择分支（光度换算火系 / 长久保存制法聚能）：向 Worker 取真值，前端不重判规则。
+  useEffect(() => {
+    if (!state || phase !== "battle") return;
+    let alive = true;
+    Promise.all([legalActions(state, "player"), legalActions(state, "enemy")])
+      .then(([player, enemy]) => {
+        if (alive) setEngineChoice({ for: state, player: choiceGrantsOf(player.actions), enemy: choiceGrantsOf(enemy.actions) });
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [state, phase]);
+
+  // 仅当授权来自「当前这一帧 state」时才生效，避免异步回填前套用上一帧的授权。
+  const playerGrants = engineChoice?.for === state ? engineChoice.player : undefined;
+  const enemyGrants = engineChoice?.for === state ? engineChoice.enemy : undefined;
+
   const playerOptions = useMemo(
-    () => (catalog && state ? deriveActions(state.player, catalog) : []),
-    [catalog, state],
+    () => (catalog && state ? withChoiceGrants(deriveActions(state.player, catalog), playerGrants, catalog) : []),
+    [catalog, state, playerGrants],
   );
   const enemyOptions = useMemo(
-    () => (catalog && state ? deriveActions(state.enemy, catalog) : []),
-    [catalog, state],
+    () => (catalog && state ? withChoiceGrants(deriveActions(state.enemy, catalog), enemyGrants, catalog) : []),
+    [catalog, state, enemyGrants],
   );
   const playerOthers = useMemo(
     () => playerOptions.filter((o) => o.action.kind !== "skill" && o.action.kind !== "switch"),
@@ -474,8 +521,8 @@ export function BattleBoard() {
     if (!catalog) return;
     const sk = skillById(catalog, skillId);
     if (!sk) return;
-    // 选择技：先让玩家选「明 / 暗」。
-    if (/选择/.test(sk.description ?? "")) {
+    // 选择技（描述自带，或特性经规则授予）：先让玩家选「明 / 暗」。
+    if ((who === "player" ? playerGrants : enemyGrants)?.skills.has(skillId) || /选择/.test(sk.description ?? "")) {
       setChoicePick({ who, skillId, name: sk.name });
       return;
     }

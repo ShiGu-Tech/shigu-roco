@@ -5,7 +5,7 @@
  */
 
 import { evalExpr, type Expr } from "../effects/formula";
-import { resolveRef } from "../mechanisms/conditions";
+import { resolveRef, teamSpriteIds } from "../mechanisms/conditions";
 import { triggerMetaOf, TRIGGER_NAMES } from "../mechanisms/vocabulary";
 import type { DynamicRef } from "../mechanisms";
 import type { Side } from "../types";
@@ -65,6 +65,8 @@ function scope(ctx: NodeContext): Record<string, unknown> {
     actor: actor ? sideOf(ctx.state, actor) : undefined,
     target: target ? sideOf(ctx.state, target) : undefined,
     opponent: target ? sideOf(ctx.state, target) : undefined,
+    selfTeam: teamSpriteIds(ctx.state, actor),
+    targetTeam: teamSpriteIds(ctx.state, target),
   };
   scopeCache.set(ctx as unknown as object, built);
   return built;

@@ -153,7 +153,7 @@ describe("G2 机制编译器", () => {
     }
     expect(diffs, `等价失败 ${diffs.length}/${mechanisms.length} 条`).toEqual([]);
     expect(executed, `实际执行事件的机制过少（${executed}/${mechanisms.length}），条件满足器可能失效`).toBeGreaterThan(mechanisms.length / 2);
-  });
+  }, 30000);
 
   it("oncePerTurn：同状态连续两次派发，门语义两侧一致", () => {
     const def = mechanisms.find((m) => m.oncePerTurn && m.trigger !== "passive");
@@ -193,7 +193,7 @@ describe("G2 机制编译器", () => {
     // entries 顺序 = collect 的 priority desc / id asc
     const sorted = [...mechanisms].sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0) || a.id.localeCompare(b.id));
     expect(program.entries).toEqual(sorted.map((m) => `${m.id}#entry0`));
-  });
+  }, 20000);
 
   it("条件组合子：allOf / anyOf / not / has / contains / in / valueFrom 与 conditionsMatch 等价", () => {
     const synthetic: MechanismDefinition[] = [

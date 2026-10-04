@@ -44,6 +44,9 @@ export function cloneActive(a: ActiveSprite): ActiveSprite {
     bloodline: a.bloodline,
     bloodlineElement: a.bloodlineElement,
     ball: a.ball,
+    ruleOverrides: a.ruleOverrides ? { ...a.ruleOverrides } : undefined,
+    disguise: a.disguise,
+    summonedBy: a.summonedBy,
   };
 }
 

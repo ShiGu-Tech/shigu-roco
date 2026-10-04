@@ -1,4 +1,4 @@
-import type { Side } from "../types";
+import type { BattleState, Side } from "../types";
 import { toNum } from "../types";
 import type { Condition, DynamicRef, MechanismContext } from "./types";
 
@@ -23,6 +23,15 @@ function sideState(context: MechanismContext, side: Side | undefined): unknown {
   return side === "player" ? context.state.player : context.state.enemy;
 }
 
+/** 全队被动通道：`selfTeam` / `targetTeam` 暴露该侧全部精灵 id（含在场与板凳，含已力竭），
+ *  供「队伍中存在某特性持有者」类条件（正模标本 / 魔术帽）。 */
+export function teamSpriteIds(state: BattleState, side: Side | undefined): string[] {
+  if (!side) return [];
+  const s = side === "player" ? state?.player : state?.enemy;
+  if (!s) return [];
+  return [s.active?.spriteId, ...(s.bench ?? []).map((b) => b.spriteId)].filter((id): id is string => Boolean(id));
+}
+
 /** 条件作用域：self/actor 指触发方，target/opponent 指目标方，event 为事件负载。
  *  独立函数：一次 collect 批内建一次、全批复用（叶求值 / 门控 / conditionsMatch 共享同一份）。 */
 export function conditionScope(context: MechanismContext): unknown {
@@ -33,6 +42,8 @@ export function conditionScope(context: MechanismContext): unknown {
     actor: sideState(context, context.actorSide),
     target: sideState(context, context.targetSide),
     opponent: sideState(context, context.targetSide),
+    selfTeam: teamSpriteIds(context.state, context.actorSide),
+    targetTeam: teamSpriteIds(context.state, context.targetSide),
   };
 }
 

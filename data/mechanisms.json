@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.115.0",
+  "version": "0.119.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -12772,12 +12772,15 @@
           "layers": 1
         },
         {
-          "type": "unsupported",
-          "effectType": "defenseCounter",
-          "reason": "无畏之心：减免伤害转为回复，且本技能能耗永久 +2【待校准】"
+          "type": "modifySkillCost",
+          "target": "self",
+          "skillId": "sk-7020810",
+          "delta": 2,
+          "duration": "permanent",
+          "key": "fortitude:cost"
         }
       ],
-      "note": "无畏之心：应对攻击成功 → 必定先手 + 本回合承伤 −100%；减免伤害转为回复，且本技能能耗永久 +2"
+      "note": "无畏之心：应对攻击成功 → 必定先手 + 本回合承伤 −100% + 本技能能耗永久 +2"
     },
     {
       "id": "skill:sk-7020810:reduce",
@@ -22792,21 +22795,6 @@
       "note": "特性「哨兵」：若敌方技能足够击败自己，回合开始速度 +50"
     },
     {
-      "id": "trait:sp-272-1",
-      "ownerType": "trait",
-      "ownerId": "sp-272-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "连续负荷：自己技能的迸发效果延长1回合。【待校准】"
-        }
-      ],
-      "note": "特性「连续负荷」：待实现"
-    },
-    {
       "id": "trait:sp-273-1",
       "ownerType": "trait",
       "ownerId": "sp-273-1",
@@ -23428,21 +23416,6 @@
       "note": "特性「守望星」：触发星陨印记时仅消耗一半层数，仍按满层结算伤害"
     },
     {
-      "id": "trait:sp-348-1",
-      "ownerType": "trait",
-      "ownerId": "sp-348-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "狂欢开始：在场时，背包里会变化出随机精灵，随机精灵只能与本精灵相互更换。本精灵受到的克制伤害+25%。【待校准】"
-        }
-      ],
-      "note": "特性「狂欢开始」：待实现"
-    },
-    {
       "id": "trait:sp-354-1",
       "ownerType": "trait",
       "ownerId": "sp-354-1",
@@ -23526,21 +23499,6 @@
       "note": "特性「大火球」：使用 2 次不同的火系技能 → 下次技能无需蓄力，随后重置"
     },
     {
-      "id": "trait:sp-358-1",
-      "ownerType": "trait",
-      "ownerId": "sp-358-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "换碟：自己携带的音波弹/音爆/金属噪音/午夜噪音威力提升，且获得巧变：同系别技能。【待校准】"
-        }
-      ],
-      "note": "特性「换碟」：待实现"
-    },
-    {
       "id": "trait:sp-362-1",
       "ownerType": "trait",
       "ownerId": "sp-362-1",
@@ -23590,21 +23548,6 @@
         }
       ],
       "note": "特性「焰色反应」：在场时衰减的灼烧转为等量中毒"
-    },
-    {
-      "id": "trait:sp-367-1",
-      "ownerType": "trait",
-      "ownerId": "sp-367-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "魔术帽：在场时，场上双方携带的技能获得巧变：同系别技能。【待校准】"
-        }
-      ],
-      "note": "特性「魔术帽」：待实现"
     },
     {
       "id": "trait:sp-371-1",
@@ -24022,66 +23965,6 @@
       "note": "特性「和弦共振」：双方场上每有 1 种不同印记，魔攻 +50%（近似为固定 +50 威力/种）"
     },
     {
-      "id": "trait:sp-432-1",
-      "ownerType": "trait",
-      "ownerId": "sp-432-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "光度换算：携带的火系技能获得选择：使用后失去15%生命，光系技能威力永久+30。【待校准】"
-        }
-      ],
-      "note": "特性「光度换算」：待实现"
-    },
-    {
-      "id": "trait:sp-434-1",
-      "ownerType": "trait",
-      "ownerId": "sp-434-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "长久保存制法：自己的聚能获得选择：偷取敌方3能量。【待校准】"
-        }
-      ],
-      "note": "特性「长久保存制法」：待实现"
-    },
-    {
-      "id": "trait:sp-441-1",
-      "ownerType": "trait",
-      "ownerId": "sp-441-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "博物：在场时，识破精灵的变化效果，解除其伪装。【待校准】"
-        }
-      ],
-      "note": "特性「博物」：待实现"
-    },
-    {
-      "id": "trait:sp-454-1",
-      "ownerType": "trait",
-      "ownerId": "sp-454-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "正模标本：自己队伍中的其他精灵，在力竭1回合后会变为未完虫。【待校准】"
-        }
-      ],
-      "note": "特性「正模标本」：待实现"
-    },
-    {
       "id": "trait:sp-464-1",
       "ownerType": "trait",
       "ownerId": "sp-464-1",
@@ -24121,21 +24004,6 @@
         }
       ],
       "note": "特性「旧玩具」：己方每使用过 1 个不同系别技能，入场双攻 +10%"
-    },
-    {
-      "id": "trait:sp-466-1",
-      "ownerType": "trait",
-      "ownerId": "sp-466-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "秋收：处于草系环境中时，机械系技能威力+50%。【待校准】"
-        }
-      ],
-      "note": "特性「秋收」：待实现"
     },
     {
       "id": "trait:sp-110-2#2",
@@ -24978,12 +24846,12 @@
           }
         },
         {
-          "type": "unsupported",
-          "effectType": "recast",
-          "reason": "释放已用迅捷技能 待实现【待校准】"
+          "type": "replaySkills",
+          "target": "self",
+          "sourceFrom": "quickUsed"
         }
       ],
-      "note": "疾风连袭：能耗 = 已用迅捷技能能耗之和的一半 + 使用次数（释放迅捷技能待实现）"
+      "note": "疾风连袭：能耗 = 已用迅捷技能能耗之和的一半 + 使用次数；并重放已用迅捷技能"
     },
     {
       "id": "skill:sk-7110460",
@@ -25009,14 +24877,9 @@
               "target": "self"
             }
           ]
-        },
-        {
-          "type": "unsupported",
-          "effectType": "burstCopy",
-          "reason": "携带攻击技能复制已触发迸发效果 待实现【待校准】"
         }
       ],
-      "note": "踏雷：回合结束时返场（迸发效果复制待实现）"
+      "note": "踏雷：回合结束时返场；下回合攻击技能获得已触发过的迸发效果（应对防御：全部）"
     },
     {
       "id": "skill:sk-7110360",
@@ -25789,21 +25652,6 @@
         }
       ],
       "note": "特性「铭记于月亮」：每次攻击后失去 5% 生命"
-    },
-    {
-      "id": "trait:sp-443-1#inherit",
-      "ownerType": "trait",
-      "ownerId": "sp-443-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "inheritTrait",
-          "reason": "铭记于月亮：获得自己击败的精灵的特性【待校准】"
-        }
-      ],
-      "note": "特性「铭记于月亮」：待实现（继承特性）"
     },
     {
       "id": "trait:sp-340-1",
@@ -26646,6 +26494,11 @@
           "path": "self.active.ball",
           "op": "eq",
           "value": "normal"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "neq",
+          "value": 1
         }
       ],
       "effects": [
@@ -26689,6 +26542,11 @@
           "path": "self.active.ball",
           "op": "eq",
           "value": "advanced"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "neq",
+          "value": 1
         }
       ],
       "effects": [
@@ -26732,6 +26590,11 @@
           "path": "self.active.ball",
           "op": "eq",
           "value": "king"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "neq",
+          "value": 1
         }
       ],
       "effects": [
@@ -26775,6 +26638,11 @@
           "path": "self.active.ball",
           "op": "eq",
           "value": "photosynthesis"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "neq",
+          "value": 1
         }
       ],
       "effects": [
@@ -26812,6 +26680,11 @@
           "path": "self.active.ball",
           "op": "eq",
           "value": "net"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "neq",
+          "value": 1
         }
       ],
       "effects": [
@@ -26850,6 +26723,11 @@
           "path": "self.active.ball",
           "op": "eq",
           "value": "thermostat"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "neq",
+          "value": 1
         }
       ],
       "effects": [
@@ -26887,6 +26765,11 @@
           "path": "self.active.ball",
           "op": "eq",
           "value": "sand"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "neq",
+          "value": 1
         }
       ],
       "effects": [
@@ -26930,6 +26813,11 @@
           "path": "self.active.ball",
           "op": "eq",
           "value": "insulation"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "neq",
+          "value": 1
         }
       ],
       "effects": [
@@ -26967,6 +26855,11 @@
           "path": "self.active.ball",
           "op": "eq",
           "value": "wonderful"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "neq",
+          "value": 1
         }
       ],
       "effects": [
@@ -27010,6 +26903,11 @@
           "path": "self.active.ball",
           "op": "eq",
           "value": "warlike"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "neq",
+          "value": 1
         }
       ],
       "effects": [
@@ -27047,6 +26945,11 @@
           "path": "self.active.ball",
           "op": "eq",
           "value": "darkstar"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "neq",
+          "value": 1
         }
       ],
       "effects": [
@@ -27083,6 +26986,11 @@
           "path": "self.active.ball",
           "op": "eq",
           "value": "transform"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "neq",
+          "value": 1
         }
       ],
       "effects": [
@@ -27106,6 +27014,1097 @@
         }
       ],
       "note": "特性「契约的形状」：transform 球入场效果"
+    },
+    {
+      "id": "trait:sp-272-1#c55",
+      "ownerType": "trait",
+      "ownerId": "sp-272-1",
+      "trigger": "passive",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-272-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "burst.extend",
+          "value": 1
+        }
+      ],
+      "note": "特性「连续负荷」：自己技能的迸发窗口延长 1 次行动"
+    },
+    {
+      "id": "trait:sp-367-1#c55",
+      "ownerType": "trait",
+      "ownerId": "sp-367-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "anyOf": [
+            {
+              "path": "selfTeam",
+              "op": "contains",
+              "value": "sp-367-1"
+            },
+            {
+              "path": "targetTeam",
+              "op": "contains",
+              "value": "sp-367-1"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "randomizeSkill",
+          "target": "self",
+          "skillIdFrom": "event.skillId",
+          "sourceFrom": "sameElement",
+          "costDelta": -1
+        }
+      ],
+      "note": "特性「魔术帽」：场上双方携带的技能获得巧变：同系别技能"
+    },
+    {
+      "id": "trait:sp-432-1#c55-choice",
+      "ownerType": "trait",
+      "ownerId": "sp-432-1",
+      "trigger": "passive",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-432-1",
+            "sp-433-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "choice.element.Fire",
+          "value": true
+        }
+      ],
+      "note": "特性「光度换算」：携带的火系技能获得选择"
+    },
+    {
+      "id": "trait:sp-432-1#c55-convert",
+      "ownerType": "trait",
+      "ownerId": "sp-432-1",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-432-1",
+            "sp-433-1"
+          ]
+        },
+        {
+          "path": "event.action.element",
+          "op": "eq",
+          "value": "Fire"
+        },
+        {
+          "path": "event.action.choice",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": -0.15,
+          "basis": "maxHp"
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "power-add:Light",
+          "delta": 30
+        }
+      ],
+      "note": "特性「光度换算」：火系技能选择·暗 → 失去 15% 生命，光系技能威力永久 +30"
+    },
+    {
+      "id": "trait:sp-434-1#c55-choice",
+      "ownerType": "trait",
+      "ownerId": "sp-434-1",
+      "trigger": "passive",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-434-1",
+            "sp-435-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "choice.energy",
+          "value": true
+        }
+      ],
+      "note": "特性「长久保存制法」：自己的聚能获得选择"
+    },
+    {
+      "id": "trait:sp-434-1#c55-steal",
+      "ownerType": "trait",
+      "ownerId": "sp-434-1",
+      "trigger": "energyGained",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-434-1",
+            "sp-435-1"
+          ]
+        },
+        {
+          "path": "event.choice",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "opponent",
+          "delta": -3
+        },
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 3
+        }
+      ],
+      "note": "特性「长久保存制法」：聚能选择·暗 → 偷取敌方 3 能量"
+    },
+    {
+      "id": "trait:sp-441-1#c55",
+      "ownerType": "trait",
+      "ownerId": "sp-441-1",
+      "trigger": "turnStart",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-441-1",
+            "sp-442-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "revealDisguise",
+          "target": "opponent"
+        }
+      ],
+      "note": "特性「博物」：在场时识破敌方伪装（【待校准】图鉴暂无伪装数据，能力已就绪）"
+    },
+    {
+      "id": "trait:sp-454-1#c55",
+      "ownerType": "trait",
+      "ownerId": "sp-454-1",
+      "trigger": "afterDeath",
+      "when": [
+        {
+          "path": "selfTeam",
+          "op": "contains",
+          "value": "sp-454-1"
+        },
+        {
+          "path": "event.spriteId",
+          "op": "neq",
+          "value": "sp-454-1"
+        }
+      ],
+      "effects": [
+        {
+          "type": "scheduleRevive",
+          "target": "self",
+          "afterTurns": 1,
+          "spriteId": "sp-454-1"
+        }
+      ],
+      "note": "特性「正模标本」：队内其他精灵力竭 1 回合后变为未完虫"
+    },
+    {
+      "id": "trait:sp-443-1#c55-inherit",
+      "ownerType": "trait",
+      "ownerId": "sp-443-1",
+      "trigger": "afterDeath",
+      "when": [
+        {
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-443-1",
+            "sp-444-1",
+            "sp-445-1"
+          ]
+        },
+        {
+          "path": "event.killerSide",
+          "op": "eq",
+          "valueFrom": "targetSide"
+        }
+      ],
+      "effects": [
+        {
+          "type": "inheritTrait",
+          "target": "target",
+          "from": "opponent"
+        }
+      ],
+      "note": "特性「铭记于月亮」：击败对手后继承其特性的被动规则（近似：仅继承被动规则覆盖）"
+    },
+    {
+      "id": "skill:sk-7020810#c55-healback",
+      "ownerType": "skill",
+      "ownerId": "sk-7020810",
+      "trigger": "passive",
+      "when": [
+        {
+          "path": "self.active.statuses.def-7020810",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "damage.healBack",
+          "value": 1
+        }
+      ],
+      "note": "无畏之心：减免伤害转为回复自己生命"
+    },
+    {
+      "id": "skill:sk-7110460#c55-notreact",
+      "ownerType": "skill",
+      "ownerId": "sk-7110460",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7110460"
+        },
+        {
+          "path": "event.reacted",
+          "op": "neq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "setCounter",
+          "target": "self",
+          "key": "replayBurst",
+          "value": 1
+        }
+      ],
+      "note": "踏雷：记录复制 1 个迸发效果"
+    },
+    {
+      "id": "skill:sk-7110460#c55-reacted",
+      "ownerType": "skill",
+      "ownerId": "sk-7110460",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7110460"
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "setCounter",
+          "target": "self",
+          "key": "replayBurst",
+          "value": 999
+        }
+      ],
+      "note": "踏雷：应对防御 → 记录复制全部迸发效果"
+    },
+    {
+      "id": "skill:sk-7110460#c55-replay",
+      "ownerType": "skill",
+      "ownerId": "sk-7110460",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "self.active.counters.replayBurst",
+          "op": "gte",
+          "value": 1
+        },
+        {
+          "path": "event.action.category",
+          "op": "in",
+          "value": [
+            "Physical",
+            "Magic"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "replaySkills",
+          "target": "self",
+          "sourceFrom": "burstTriggered",
+          "countFrom": "self.active.counters.replayBurst",
+          "asBurst": true
+        },
+        {
+          "type": "clearCounter",
+          "target": "self",
+          "key": "replayBurst"
+        }
+      ],
+      "note": "踏雷：攻击技能复制已触发的迸发效果"
+    },
+    {
+      "id": "trait:sp-317-1#ball-normal#half",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "normal"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-atk",
+          "delta": 0.025
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-defense",
+          "delta": 0.025
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-speed",
+          "delta": 0.025
+        }
+      ],
+      "note": "特性「契约的形状」：normal 球入场效果（棱镜球：半量）"
+    },
+    {
+      "id": "trait:sp-317-1#ball-advanced#half",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "advanced"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-atk",
+          "delta": 0.05
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-defense",
+          "delta": 0.05
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-speed",
+          "delta": 0.05
+        }
+      ],
+      "note": "特性「契约的形状」：advanced 球入场效果（棱镜球：半量）"
+    },
+    {
+      "id": "trait:sp-317-1#ball-king#half",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "king"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-atk",
+          "delta": 0.075
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-defense",
+          "delta": 0.075
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-speed",
+          "delta": 0.075
+        }
+      ],
+      "note": "特性「契约的形状」：king 球入场效果（棱镜球：半量）"
+    },
+    {
+      "id": "trait:sp-317-1#ball-photosynthesis#half",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "photosynthesis"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": 0.045,
+          "basis": "maxHp"
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-spatk",
+          "delta": 0.2
+        }
+      ],
+      "note": "特性「契约的形状」：photosynthesis 球入场效果（棱镜球：半量）"
+    },
+    {
+      "id": "trait:sp-317-1#ball-net#half",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "net"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": 0,
+          "duration": "permanent"
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "hits-add",
+          "delta": 0
+        }
+      ],
+      "note": "特性「契约的形状」：net 球入场效果（棱镜球：半量）"
+    },
+    {
+      "id": "trait:sp-317-1#ball-thermostat#half",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "thermostat"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "burn",
+          "layers": 2
+        },
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "freeze",
+          "layers": 0
+        }
+      ],
+      "note": "特性「契约的形状」：thermostat 球入场效果（棱镜球：半量）"
+    },
+    {
+      "id": "trait:sp-317-1#ball-sand#half",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "sand"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "opponent",
+          "key": "pct-defense",
+          "delta": -0.2
+        },
+        {
+          "type": "addCounter",
+          "target": "opponent",
+          "key": "flat-speed",
+          "delta": -20
+        },
+        {
+          "type": "addCounter",
+          "target": "opponent",
+          "key": "hits-add",
+          "delta": -1
+        }
+      ],
+      "note": "特性「契约的形状」：sand 球入场效果（棱镜球：半量）"
+    },
+    {
+      "id": "trait:sp-317-1#ball-insulation#half",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "insulation"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "flat-speed",
+          "delta": 25
+        },
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "poison",
+          "layers": 0
+        }
+      ],
+      "note": "特性「契约的形状」：insulation 球入场效果（棱镜球：半量）"
+    },
+    {
+      "id": "trait:sp-317-1#ball-wonderful#half",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "wonderful"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "power-add",
+          "delta": 10
+        },
+        {
+          "type": "addCounter",
+          "target": "opponent",
+          "key": "pct-atk",
+          "delta": -0.15
+        },
+        {
+          "type": "addCounter",
+          "target": "opponent",
+          "key": "pct-spatk",
+          "delta": -0.15
+        }
+      ],
+      "note": "特性「契约的形状」：wonderful 球入场效果（棱镜球：半量）"
+    },
+    {
+      "id": "trait:sp-317-1#ball-warlike#half",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "warlike"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-atk",
+          "delta": 0.2
+        },
+        {
+          "type": "addCounter",
+          "target": "opponent",
+          "key": "pct-spdef",
+          "delta": -0.2
+        }
+      ],
+      "note": "特性「契约的形状」：warlike 球入场效果（棱镜球：半量）"
+    },
+    {
+      "id": "trait:sp-317-1#ball-darkstar#half",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "darkstar"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "lifesteal",
+          "delta": 0.15
+        },
+        {
+          "type": "modifyEnergy",
+          "target": "opponent",
+          "delta": 0
+        }
+      ],
+      "note": "特性「契约的形状」：darkstar 球入场效果（棱镜球：半量）"
+    },
+    {
+      "id": "trait:sp-317-1#ball-transform#half",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-317-1",
+            "sp-318-1",
+            "sp-319-1"
+          ]
+        },
+        {
+          "path": "self.active.ball",
+          "op": "eq",
+          "value": "transform"
+        },
+        {
+          "path": "self.active.counters.prismHalf",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-defense",
+          "delta": 0.15
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "pct-spdef",
+          "delta": 0.15
+        },
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "starfall-mark",
+          "layers": 0
+        }
+      ],
+      "note": "特性「契约的形状」：transform 球入场效果（棱镜球：半量）"
+    },
+    {
+      "id": "trait:sp-348-1#c56",
+      "ownerType": "trait",
+      "ownerId": "sp-348-1",
+      "trigger": "passive",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-348-1",
+            "sp-349-1",
+            "sp-350-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "damage.superEffectiveTaken",
+          "value": 0.25
+        }
+      ],
+      "note": "特性「狂欢开始」：受到的克制伤害 +25%"
+    },
+    {
+      "id": "trait:sp-348-1#c56-summon",
+      "ownerType": "trait",
+      "ownerId": "sp-348-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-348-1",
+            "sp-349-1",
+            "sp-350-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "summonRandom",
+          "target": "self",
+          "count": 3
+        }
+      ],
+      "note": "特性「狂欢开始」：在场时背包变化出 3 只随机精灵（只能与本精灵互换）"
+    },
+    {
+      "id": "trait:sp-466-1",
+      "ownerType": "trait",
+      "ownerId": "sp-466-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "fieldEnvironment",
+          "reason": "秋收：草地环境时机械系技能威力 +50%【待校准：草地环境数据缺失，暂缓】"
+        }
+      ],
+      "note": "特性「秋收」：待实现（草地环境）"
+    },
+    {
+      "id": "trait:sp-358-1#c57-power-sk-7020890",
+      "ownerType": "trait",
+      "ownerId": "sp-358-1",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7020890"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addPower",
+          "target": "self",
+          "value": 15
+        }
+      ],
+      "note": "特性「换碟」：音波弹威力 +15"
+    },
+    {
+      "id": "trait:sp-358-1#c57-power-sk-7020410",
+      "ownerType": "trait",
+      "ownerId": "sp-358-1",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7020410"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addPower",
+          "target": "self",
+          "value": 20
+        }
+      ],
+      "note": "特性「换碟」：音爆威力 +20"
+    },
+    {
+      "id": "trait:sp-358-1#c57-power-sk-7070130",
+      "ownerType": "trait",
+      "ownerId": "sp-358-1",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7070130"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addPower",
+          "target": "self",
+          "value": 20
+        }
+      ],
+      "note": "特性「换碟」：金属噪音威力 +20"
+    },
+    {
+      "id": "trait:sp-358-1#c57-power-sk-7170210",
+      "ownerType": "trait",
+      "ownerId": "sp-358-1",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7170210"
+        }
+      ],
+      "effects": [
+        {
+          "type": "addPower",
+          "target": "self",
+          "value": 5
+        }
+      ],
+      "note": "特性「换碟」：午夜噪音威力 +5"
+    },
+    {
+      "id": "trait:sp-358-1#c57-improv",
+      "ownerType": "trait",
+      "ownerId": "sp-358-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "in",
+          "value": [
+            "sk-7020890",
+            "sk-7020410",
+            "sk-7070130",
+            "sk-7170210"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "randomizeSkill",
+          "target": "self",
+          "skillIdFrom": "event.skillId",
+          "sourceFrom": "sameElement",
+          "costDelta": -1
+        }
+      ],
+      "note": "特性「换碟」：上述技能获得巧变：同系别技能（用后变为同系随机技能且能耗 −1）"
     }
   ]
 }

@@ -4,6 +4,8 @@
  * 游戏数据（data/*.json）保持原始结构，用宽松 Dict 访问。
  */
 
+import type { RuleModifiers } from "./mechanisms/types";
+
 export type Side = "player" | "enemy";
 export type ActionKind = "skill" | "defend" | "switch" | "wish" | "leader" | "energy";
 
@@ -70,6 +72,12 @@ export interface ActiveSprite {
   bloodlineElement?: string;
   /** 球域 · 当前咕噜球键（来自 `profile.ball`；棱镜球入场时随机化为具体球种）。 */
   ball?: string;
+  /** 规则覆盖域 · 由「特性继承」等机制写入的持久规则覆盖（读取时并入 `ruleModifiers`）。 */
+  ruleOverrides?: RuleModifiers;
+  /** 伪装域 · 伪装后的原始精灵 id（博物等识破类机制据其还原形态）。 */
+  disguise?: string;
+  /** 队伍域 · 被随机召唤出来时记录的召唤者精灵 id（狂欢开始：只能与召唤者互换）。 */
+  summonedBy?: string;
 }
 
 /** 能耗修正条目：挂在精灵身上、由技能 / 特性 / 状态登记，读时按作用域求和。 */
