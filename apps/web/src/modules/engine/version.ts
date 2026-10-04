@@ -107,5 +107,8 @@
  * - 0.34.0 蓄力（行动模型）：`ActiveSprite.pendingSkill` + `beginCharge`（进入蓄力 + 离场锁）；使用时 `step`
  *          把该侧行动替换为 `released:true` 的自动释放（忽略输入），释放后清空；`server.ts` 跳过描述以「蓄力」开头的
  *          技能的基础伤害自动生成，改由数据在 release 时机登记。
+ * - 0.35.0 随机属性减益 + 技能 tag（`mechanisms/runtime.ts` / `data.ts`）：新增 `randomStatDebuff`（确定性种子向随机属性
+ *          各扣 N 层，供 暗涌印记登记）；`buildBundle` 由图鉴描述派生技能 `tags`（蓄力 / 选择 / 巧变 / 迸发 / 传动 /
+ *          奉献目标），仅作查询面。
  */
-export const ENGINE_VERSION = "0.34.0";
+export const ENGINE_VERSION = "0.35.0";

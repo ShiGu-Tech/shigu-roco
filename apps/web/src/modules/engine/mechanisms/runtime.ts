@@ -513,6 +513,20 @@ export class MechanismRuntime {
           state.weather = { id: definition.weatherId, turnsLeft: definition.turns ?? 1 };
           events.push({ type: "weather-changed", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, data: { weatherId: definition.weatherId, turns: state.weather.turnsLeft } });
           break;
+        case "randomStatDebuff": {
+          if (!active || !targetSide) break;
+          const stats = definition.stats ?? ["atk", "spatk", "defense", "spdef", "speed"];
+          const rng = new Rng(hashSeed(state, `${command.mechanismId}:${state.turn}`));
+          const cap = toNum(asDict(bundle?.rules.stage).cap, Number.POSITIVE_INFINITY);
+          const applied: Record<string, number> = {};
+          for (let i = 0; i < definition.layers; i++) {
+            const stat = stats[rng.int(stats.length)];
+            active.debuffs[stat] = Math.max(-cap, Math.min(cap, (active.debuffs[stat] ?? 0) - 1));
+            applied[stat] = (applied[stat] ?? 0) + 1;
+          }
+          events.push({ type: "stat-debuffed-random", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { layers: definition.layers, applied } });
+          break;
+        }
         case "beginCharge": {
           if (!active || !targetSide) break;
           const skillId = definition.skillId;

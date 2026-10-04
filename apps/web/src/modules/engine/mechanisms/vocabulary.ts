@@ -142,6 +142,7 @@ export const EFFECT_VOCABULARY: readonly EffectVocabulary[] = [
   { type: "changeWeather", title: "改变天气", domain: "weather", params: { weatherId: "天气", turns: "持续回合" } },
   { type: "modifyWeatherTurns", title: "延长天气", domain: "weather", params: { weatherId: "天气", delta: "回合增减" } },
   { type: "beginCharge", title: "进入蓄力", domain: "skill", params: { skillId: "技能", choice: "选择" } },
+  { type: "randomStatDebuff", title: "随机属性减益", domain: "stat", params: { target: "目标", layers: "层数", stats: "候选属性" } },
   // 其他
   { type: "unsupported", title: "未支持效果", domain: "other", params: { effectType: "原效果类型", reason: "原因" } },
 ] as const;

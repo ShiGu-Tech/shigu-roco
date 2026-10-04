@@ -40,6 +40,19 @@ export function buildBundle(raw: RawDataFiles): DataBundle {
   const marks = indexItems(toArray<Dict>(raw.marks.marks), "id");
   const weather = indexItems(toArray<Dict>(raw.weather.weather), "id");
 
+  // 技能 tag（图鉴描述派生，只作查询面）：蓄力 / 选择 / 巧变 / 迸发 / 传动 / 奉献目标（啃咬·虫群）。
+  for (const skill of Object.values(skills)) {
+    const desc = toStr(skill.description, "");
+    const tags: string[] = [];
+    if (desc.trim().startsWith("蓄力")) tags.push("charge");
+    if (desc.includes("选择")) tags.push("choice");
+    if (desc.includes("巧变")) tags.push("improvise");
+    if (desc.includes("迸发")) tags.push("burst");
+    if (desc.includes("传动")) tags.push("shift");
+    if (desc.includes("受奉献影响")) tags.push("dedicationTarget");
+    if (tags.length) skill.tags = tags;
+  }
+
   for (const [sid, sprite] of Object.entries(sprites)) {
     for (const skillId of toArray<string>(sprite.skillList)) {
       if (!skills[skillId]) warnings.push(`精灵 ${sid} 引用了未知技能: ${skillId}`);
