@@ -129,6 +129,10 @@ export type EffectSpec =
   | { type: "escape"; target?: string }
   /** 行动域 · 允许被限制的换人（清除离场锁）。 */
   | { type: "allowSwitch"; target?: string }
+  /** 交换域 · 自身与对手交换 `hpRatio`（生命比例）/ `skills`（技能栏）/ `stats`（增益与减益）。 */
+  | { type: "swap"; target?: string; what: "hpRatio" | "skills" | "stats" }
+  /** 生命域 · 把自身生命比例设为与对手相同（`from` 默认 opponent）。 */
+  | { type: "setHpRatio"; target?: string; from?: "opponent" }
   /** 行动域 · 入场继承：把 `effects` 排入目标侧「下个入场精灵」队列，换人时执行。 */
   | { type: "scheduleEntry"; target?: string; effects: EffectSpec[] }
   /** 延迟域 · 把 `effects` 排入目标侧队列，于 `delay` 回合后的 `timing` 结算（默认下回合 turnStart）。 */

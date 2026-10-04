@@ -93,5 +93,8 @@
  *          供「获得连击数 +N / −N / +100%」类技能（暴风眼 / 耀眼 / 惊鸿一瞥 / 羽翼庇护 …）经 `addCounter` 纯数据登记。
  * - 0.28.0 眩晕（`simulator/battle.ts` 行动结算）：行动结算前若在者 `counters["stun"] >= 1`，则本回合跳过该行动并清零，
  *          产出 `stun` 事件；供「打断 + 敌下回合眩晕」类技能（摇篮曲 / 芳香诱引 / 龙守望）经 `addCounter stun` 登记。
+ * - 0.29.0 交换 / 生命比例设同（`mechanisms/runtime.ts`）：新增 `swap`（`what: hpRatio` 交换生命比例 /
+ *          `skills` 交换技能栏 / `stats` 交换增益减益）与 `setHpRatio`（自身比例设为与对手相同）；供 恶念交换 /
+ *          隐藏条款 / 欺诈契约 / 假冒 等登记。
  */
-export const ENGINE_VERSION = "0.28.0";
+export const ENGINE_VERSION = "0.29.0";

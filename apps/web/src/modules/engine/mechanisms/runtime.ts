@@ -223,6 +223,37 @@ export class MechanismRuntime {
           events.push({ type: "switch-allowed", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { before } });
           break;
         }
+        case "swap": {
+          const selfSide = command.actorSide === "player" ? state.player : state.enemy;
+          const oppSide = command.actorSide === "player" ? state.enemy : state.player;
+          if (definition.what === "hpRatio") {
+            const aRatio = selfSide.active.maxHp > 0 ? selfSide.active.hp / selfSide.active.maxHp : 0;
+            const bRatio = oppSide.active.maxHp > 0 ? oppSide.active.hp / oppSide.active.maxHp : 0;
+            selfSide.active.hp = Math.max(0, Math.min(selfSide.active.maxHp, Math.floor(selfSide.active.maxHp * bRatio)));
+            oppSide.active.hp = Math.max(0, Math.min(oppSide.active.maxHp, Math.floor(oppSide.active.maxHp * aRatio)));
+          } else if (definition.what === "skills") {
+            const tmp = selfSide.active.loadout;
+            selfSide.active.loadout = oppSide.active.loadout;
+            oppSide.active.loadout = tmp;
+          } else {
+            const buffs = selfSide.active.buffs;
+            selfSide.active.buffs = oppSide.active.buffs;
+            oppSide.active.buffs = buffs;
+            const debuffs = selfSide.active.debuffs;
+            selfSide.active.debuffs = oppSide.active.debuffs;
+            oppSide.active.debuffs = debuffs;
+          }
+          events.push({ type: "swapped", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: command.actorSide, data: { what: definition.what } });
+          break;
+        }
+        case "setHpRatio": {
+          const selfSide = command.actorSide === "player" ? state.player : state.enemy;
+          const oppSide = command.actorSide === "player" ? state.enemy : state.player;
+          const ratio = oppSide.active.maxHp > 0 ? oppSide.active.hp / oppSide.active.maxHp : 0;
+          selfSide.active.hp = Math.max(0, Math.min(selfSide.active.maxHp, Math.floor(selfSide.active.maxHp * ratio)));
+          events.push({ type: "hp-ratio-set", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: command.actorSide, data: { ratio } });
+          break;
+        }
         case "clearStat": {
           if (!active || !targetSide) break;
           const polarity = definition.polarity ?? "all";

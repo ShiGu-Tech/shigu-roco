@@ -81,6 +81,8 @@ export const EFFECT_VOCABULARY: readonly EffectVocabulary[] = [
   { type: "dealDamage", title: "造成伤害", domain: "damage", params: { target: "目标", category: "伤害类型", power: "威力", powerFrom: "威力取值", skillId: "关联技能", element: "伤害系别", basis: "基准", amount: "数值", markId: "关联印记" } },
   { type: "modifyDamage", title: "伤害修饰", domain: "damage", params: { target: "目标", mode: "方式", value: "数值", scope: "作用面" } },
   { type: "setHits", title: "连击段数", domain: "damage", params: { target: "目标", hits: "段数", markId: "按印记", base: "基础段数", perStack: "每层加段", hitsFrom: "段数取值" } },
+  { type: "swap", title: "交换", domain: "stat", params: { target: "目标", what: "交换项" } },
+  { type: "setHpRatio", title: "生命比例设同", domain: "stat", params: { target: "目标", from: "取自" } },
   { type: "setDamageReduction", title: "减伤", domain: "damage", params: { target: "目标", percent: "减伤%", percentFrom: "减伤取值" } },
   { type: "heal", title: "治疗", domain: "heal", params: { target: "目标", amount: "数值", amountFrom: "数值取值", basis: "基准" } },
   // 强化

@@ -77,6 +77,8 @@ const WRITE_NODES: WriteSpec[] = [
   { suffix: "forceSwitch", title: "写入 · 强制换人", target: "self", params: [] },
   { suffix: "escape", title: "写入 · 脱离", target: "self", params: [] },
   { suffix: "allowSwitch", title: "写入 · 解除离场锁", target: "self", params: [] },
+  { suffix: "swap", title: "写入 · 交换", target: "self", params: [{ name: "what", type: "string", required: true }] },
+  { suffix: "setHpRatio", title: "写入 · 生命比例设同", target: "self", params: [{ name: "from", type: "string" }] },
   { suffix: "rotateLoadout", title: "写入 · 技能栏轮转", target: "self", inputs: ["slots"], params: [{ name: "skillId", type: "string" }] },
   { suffix: "addCounter", title: "写入 · 计数器 +", target: "self", inputs: ["delta"], params: [{ name: "key", type: "string", required: true }] },
   { suffix: "setCounter", title: "写入 · 计数器 =", target: "self", inputs: ["value"], params: [{ name: "key", type: "string", required: true }] },
