@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.68.0",
+  "version": "0.70.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -20571,16 +20571,38 @@
       "id": "trait:sp-24-1",
       "ownerType": "trait",
       "ownerId": "sp-24-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onHit",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "刺肤：每受到1次攻击伤害，对攻击自己的精灵造成50威力物理伤害。【待校准】"
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-24-1",
+            "sp-24-2",
+            "sp-25-1",
+            "sp-25-2",
+            "sp-26-1",
+            "sp-26-2"
+          ]
+        },
+        {
+          "path": "event.damageType",
+          "op": "in",
+          "value": [
+            "Physical",
+            "Magic"
+          ]
         }
       ],
-      "note": "特性「刺肤」：待实现"
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "self",
+          "category": "Physical",
+          "power": 50
+        }
+      ],
+      "note": "特性「刺肤」：每受攻击伤害，对攻击者造成 50 威力物伤"
     },
     {
       "id": "trait:sp-27-1",
@@ -20647,31 +20669,76 @@
       "id": "trait:sp-32-1",
       "ownerType": "trait",
       "ownerId": "sp-32-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeFatal",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "化茧：受到致命伤害时，获得1层萌化，并免疫此次伤害。（最多触发2次）【待校准】"
+          "path": "event.spriteId",
+          "op": "in",
+          "value": [
+            "sp-32-1",
+            "sp-33-1",
+            "sp-34-1",
+            "sp-34-2",
+            "sp-34-3",
+            "sp-34-4"
+          ]
+        },
+        {
+          "path": "self.counters.cocoon",
+          "op": "neq",
+          "value": 2
         }
       ],
-      "note": "特性「化茧」：待实现"
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": 1
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "cocoon",
+          "delta": 1
+        },
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "moe",
+          "layers": 1
+        }
+      ],
+      "note": "特性「化茧」：致命伤害时获 1 层萌化并免疫（最多 2 次）"
     },
     {
       "id": "trait:sp-36-1",
       "ownerType": "trait",
       "ownerId": "sp-36-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "保守派：总技能能耗小于4时，自己获得双防+80%。【待校准】"
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-36-1",
+            "sp-37-1",
+            "sp-38-1"
+          ]
+        },
+        {
+          "path": "target.counters.loadoutCost",
+          "op": "lt",
+          "value": 4
         }
       ],
-      "note": "特性「保守派」：待实现"
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 80
+        }
+      ],
+      "note": "特性「保守派」：总技能能耗 <4 时承伤 −80%（近似双防 +80%）"
     },
     {
       "id": "trait:sp-39-1",
@@ -20722,16 +20789,33 @@
       "id": "trait:sp-54-1",
       "ownerType": "trait",
       "ownerId": "sp-54-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "惊吓：能量等于0的精灵，无法对自己造成伤害。【待校准】"
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-54-1",
+            "sp-55-1",
+            "sp-55-2",
+            "sp-56-1",
+            "sp-56-2"
+          ]
+        },
+        {
+          "path": "self.active.energy",
+          "op": "eq",
+          "value": 0
         }
       ],
-      "note": "特性「惊吓」：待实现"
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 100
+        }
+      ],
+      "note": "特性「惊吓」：能量为 0 的精灵无法对自己造成伤害"
     },
     {
       "id": "trait:sp-57-1",
@@ -21579,16 +21663,38 @@
       "id": "trait:sp-177-1",
       "ownerType": "trait",
       "ownerId": "sp-177-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "逐魂鸟：能耗小于等于1的攻击技能，无法对自己造成伤害。【待校准】"
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-177-1",
+            "sp-178-1"
+          ]
+        },
+        {
+          "path": "action.cost",
+          "op": "lte",
+          "value": 1
+        },
+        {
+          "path": "action.category",
+          "op": "in",
+          "value": [
+            "Physical",
+            "Magic"
+          ]
         }
       ],
-      "note": "特性「逐魂鸟」：待实现"
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 100
+        }
+      ],
+      "note": "特性「逐魂鸟」：能耗 ≤1 的攻击技能无法对自己造成伤害"
     },
     {
       "id": "trait:sp-181-1",
@@ -22375,16 +22481,29 @@
       "id": "trait:sp-330-1",
       "ownerType": "trait",
       "ownerId": "sp-330-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "turnEnd",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "星地善良：回合结束时，若场上的己方精灵能量等于0，自己立即替换此精灵。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-330-1",
+            "sp-331-1"
+          ]
+        },
+        {
+          "path": "self.active.energy",
+          "op": "eq",
+          "value": 0
         }
       ],
-      "note": "特性「星地善良」：待实现"
+      "effects": [
+        {
+          "type": "forceSwitch",
+          "target": "self"
+        }
+      ],
+      "note": "特性「星地善良」：回合末若在场精灵能量为 0，强制替换"
     },
     {
       "id": "trait:sp-335-1",
@@ -22630,16 +22749,43 @@
       "id": "trait:sp-376-1",
       "ownerType": "trait",
       "ownerId": "sp-376-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeFatal",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "不死鸟：每场战斗1次，受到致命伤害时保留1血，且敌方获得15层灼烧。【待校准】"
+          "path": "event.spriteId",
+          "op": "in",
+          "value": [
+            "sp-376-1",
+            "sp-377-1",
+            "sp-378-1"
+          ]
+        },
+        {
+          "path": "self.counters.phoenix",
+          "op": "neq",
+          "value": 1
         }
       ],
-      "note": "特性「不死鸟」：待实现"
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": 1
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "phoenix",
+          "delta": 1
+        },
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "burn",
+          "layers": 15
+        }
+      ],
+      "note": "特性「不死鸟」：每场 1 次，致命伤害保留 1 血，敌方获 15 层灼烧"
     },
     {
       "id": "trait:sp-381-1",

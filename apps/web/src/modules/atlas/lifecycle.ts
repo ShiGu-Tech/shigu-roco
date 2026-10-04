@@ -21,7 +21,7 @@ export const ATLAS_STAGES: readonly AtlasStage[] = [
   { id: "resolve", title: "行动结算", note: "队列按优先级 / 速度逐条", triggers: ["beforeAction", "skillUsed", "actionResolved"] },
   { id: "damage", title: "伤害结算", note: "技能伤害链", triggers: ["beforeDamage", "onHit", "afterDamage"] },
   { id: "turn-end", title: "回合结束", note: "按侧结算 + 延迟效果（turnEnd）+ 环境衰减", triggers: ["turnEnd"] },
-  { id: "death", title: "阵亡", note: "生命归零后", triggers: ["beforeDeath", "afterDeath"] },
+  { id: "death", title: "阵亡", note: "生命归零后", triggers: ["beforeFatal", "beforeDeath", "afterDeath"] },
   { id: "cascade", title: "实体级联", note: "任意效果之后随时派发", triggers: ["statusApplied", "statusReached", "markApplied", "markReached", "buffGained", "debuffGained"] },
   { id: "passive", title: "被动查询", note: "按需读取，不计入回合流", triggers: ["passive"] },
 ];

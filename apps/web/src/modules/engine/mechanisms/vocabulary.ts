@@ -59,6 +59,7 @@ export const TRIGGER_VOCABULARY: readonly TriggerMeta[] = [
   { name: "beforeSwitch", title: "换人前", phase: "switch" },
   { name: "afterSwitch", title: "换人后", phase: "switch" },
   { name: "onEntry", title: "入场", phase: "switch" },
+  { name: "beforeFatal", title: "致命拦截", phase: "death" },
   { name: "beforeDeath", title: "阵亡前", phase: "death" },
   { name: "afterDeath", title: "阵亡后", phase: "death" },
   { name: "statusApplied", title: "状态施加", phase: "entity" },

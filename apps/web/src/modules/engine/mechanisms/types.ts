@@ -15,6 +15,7 @@ export type TriggerName =
   | "beforeSwitch"
   | "afterSwitch"
   | "onEntry"
+  | "beforeFatal"
   | "beforeDeath"
   | "afterDeath"
   | "turnEnd"

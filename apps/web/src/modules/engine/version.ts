@@ -119,5 +119,7 @@
  *          `loadoutElements` 携带系别种数）；战斗中自增 `used<Element>`、`usedType<ActionType>`、`skillUsed`、
  *          `reacts`（成功应对）、`charges`（聚能）、`switches`、`faints`；`LastTurn` 补 `cost`；
  *          `applyStatus` 支持 `layersFrom`（动态层数）。供「每使用过 1 次 X 系 / 每应对 / 每聚能 / 每力竭」类特性。
+ * - 0.39.0 致命域 · 致命拦截（`simulator/battle.ts` + `触发 beforeFatal`）：`handleFaints` 在结算阵亡前派发
+ *          `beforeFatal`，机制把生命拉回 >0 即免于阵亡（不死鸟 / 化茧 / 不朽）。
  */
-export const ENGINE_VERSION = "0.38.0";
+export const ENGINE_VERSION = "0.39.0";

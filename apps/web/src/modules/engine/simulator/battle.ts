@@ -647,6 +647,9 @@ export class Simulator {
       if (s.active.hp > 0 || s.active.faintHandled) continue;
       const opp = otherSide(side);
       const deathEvent = { spriteId: s.active.spriteId, killerSide: s.lastHit?.side, skillId: s.lastHit?.skillId };
+      // 致命域 · 致命拦截：先派发 `beforeFatal`，若机制把生命拉回 >0 则免于阵亡（不死鸟 / 化茧 / 不朽）。
+      events.push(...this.triggerState(st, "beforeFatal", { actorSide: side, targetSide: opp, event: deathEvent }));
+      if (s.active.hp > 0) continue;
       events.push(...this.triggerState(st, "beforeDeath", { actorSide: side, targetSide: opp, event: deathEvent }));
       s.active.faintHandled = true;
       s.magic -= perFaint;
