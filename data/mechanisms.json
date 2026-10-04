@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.59.0",
+  "version": "0.60.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -19574,6 +19574,166 @@
         }
       ],
       "note": "特性「超负荷」：攻击技迸发 → 敌方能耗 +1"
+    },
+    {
+      "id": "trait:sp-44-1",
+      "ownerType": "trait",
+      "ownerId": "sp-44-1",
+      "trigger": "afterDeath",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-44-1",
+            "sp-44-2",
+            "sp-44-3",
+            "sp-44-4",
+            "sp-45-1",
+            "sp-45-2",
+            "sp-45-3",
+            "sp-45-4",
+            "sp-46-1",
+            "sp-46-2",
+            "sp-46-3",
+            "sp-46-4"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyMagic",
+          "target": "self",
+          "delta": 1
+        }
+      ],
+      "note": "特性「诈死」：力竭少损失 1 魔力"
+    },
+    {
+      "id": "trait:sp-189-3",
+      "ownerType": "trait",
+      "ownerId": "sp-189-3",
+      "trigger": "afterDeath",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-189-3",
+            "sp-189-4",
+            "sp-190-3",
+            "sp-190-4",
+            "sp-191-3",
+            "sp-191-4",
+            "sp-192-3",
+            "sp-192-4"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyMagic",
+          "target": "self",
+          "delta": -4
+        }
+      ],
+      "note": "特性「御驾亲征」：力竭额外扣 4 魔力（资质提升待校准）"
+    },
+    {
+      "id": "trait:sp-288-2",
+      "ownerType": "trait",
+      "ownerId": "sp-288-2",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-288-2"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "self",
+          "hits": 1
+        }
+      ],
+      "note": "特性「强制过滤」"
+    },
+    {
+      "id": "trait:sp-287-1",
+      "ownerType": "trait",
+      "ownerId": "sp-287-1",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-287-1",
+            "sp-288-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "self",
+          "hits": 2
+        }
+      ],
+      "note": "特性「无差别过滤」"
+    },
+    {
+      "id": "trait:sp-30-1",
+      "ownerType": "trait",
+      "ownerId": "sp-30-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-30-1",
+            "sp-31-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "lifesteal",
+          "delta": 0.5
+        }
+      ],
+      "note": "特性「渴求」"
+    },
+    {
+      "id": "trait:sp-31-2",
+      "ownerType": "trait",
+      "ownerId": "sp-31-2",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "event.enteredSpriteId",
+          "op": "in",
+          "value": [
+            "sp-31-2"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "lifesteal",
+          "delta": 0.5
+        }
+      ],
+      "note": "特性「贪得无厌」：过量回复转物攻待校准"
     }
   ]
 }
