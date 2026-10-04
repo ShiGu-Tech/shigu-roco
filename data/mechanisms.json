@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.80.0",
+  "version": "0.81.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -20814,31 +20814,68 @@
       "id": "trait:sp-39-1",
       "ownerType": "trait",
       "ownerId": "sp-39-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "偏振：受到自己携带技能系别的攻击伤害-40%。【待校准】"
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-39-1",
+            "sp-40-1",
+            "sp-40-2",
+            "sp-40-3",
+            "sp-40-4",
+            "sp-40-5",
+            "sp-40-6"
+          ]
+        },
+        {
+          "path": "target.active.carryElements",
+          "op": "contains",
+          "valueFrom": "event.element"
         }
       ],
-      "note": "特性「偏振」：待实现"
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 40
+        }
+      ],
+      "note": "特性「偏振」：受到自己携带技能系别的攻击伤害 −40%"
     },
     {
       "id": "trait:sp-40-7",
       "ownerType": "trait",
       "ownerId": "sp-40-7",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "完全偏振：抵抗自己携带技能系别的攻击伤害。【待校准】"
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-40-7",
+            "sp-40-8",
+            "sp-40-9",
+            "sp-40-10",
+            "sp-40-11",
+            "sp-40-12"
+          ]
+        },
+        {
+          "path": "target.active.carryElements",
+          "op": "contains",
+          "valueFrom": "event.element"
         }
       ],
-      "note": "特性「完全偏振」：待实现"
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 100
+        }
+      ],
+      "note": "特性「完全偏振」：抵抗自己携带技能系别的攻击伤害"
     },
     {
       "id": "trait:sp-52-1",
@@ -21383,15 +21420,24 @@
       "ownerType": "trait",
       "ownerId": "sp-95-1",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "不移：携带的无额外效果的攻击技能，威力+30%。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-95-1"
+          ]
         }
       ],
-      "note": "特性「不移」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "simple.powerMul",
+          "value": 0.3
+        }
+      ],
+      "note": "特性「不移」：携带的无额外效果的攻击技能威力 +30%"
     },
     {
       "id": "trait:sp-102-1",

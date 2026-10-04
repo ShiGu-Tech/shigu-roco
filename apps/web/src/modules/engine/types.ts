@@ -53,6 +53,8 @@ export interface ActiveSprite {
   entered?: boolean;
   /** 图鉴域 · 系别（运行时从图鉴注入，供「非本系」「携带系别」类条件）。 */
   element?: string[];
+  /** 图鉴域 · 携带技能的系别集合（开局注入，供「受到自己携带技能系别」类条件）。 */
+  carryElements?: string[];
 }
 
 /** 能耗修正条目：挂在精灵身上、由技能 / 特性 / 状态登记，读时按作用域求和。 */

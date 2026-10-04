@@ -983,6 +983,14 @@ export class MechanismRuntime {
     const comboAdd = toNum(attacker.counters?.["combo-add"], 0);
     const comboMul = toNum(attacker.counters?.["combo-mul"], 0);
     if (comboAdd || comboMul) hits = Math.max(1, Math.floor((hits + comboAdd) * (1 + comboMul)));
+    // 规则覆盖 · `simple.powerMul`（不移）：无额外效果的攻击技能威力提升。
+    if (skillId && bundle) {
+      const mods = this.ruleModifiers(state, bundle, attackerSide);
+      if (typeof mods["simple.powerMul"] === "number") {
+        const tags = toArray<string>(getSkill(bundle, skillId).tags);
+        if (tags.includes("simple")) attackerMult *= 1 + (mods["simple.powerMul"] as number);
+      }
+    }
     return { attackerMult, defenderMult, reduction, hits, powerBonus };
   }
 

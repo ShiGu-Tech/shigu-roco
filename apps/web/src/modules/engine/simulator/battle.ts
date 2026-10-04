@@ -89,6 +89,8 @@ export class Simulator {
     }
     c.loadoutCost = totalCost;
     c.loadoutElements = elements.size;
+    // 图鉴域 · 携带系别集合（供「受到自己携带技能系别」类条件）。
+    s.active.carryElements = [...elements];
   }
 
   // ---------------------------------------------------------------- 动作

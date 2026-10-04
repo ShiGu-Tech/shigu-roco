@@ -50,6 +50,10 @@ export function buildBundle(raw: RawDataFiles): DataBundle {
     if (desc.includes("迸发")) tags.push("burst");
     if (desc.includes("传动")) tags.push("shift");
     if (desc.includes("受奉献影响")) tags.push("dedicationTarget");
+    // 无额外效果的攻击技能（仅造成伤害，无回复 / 附加 / 状态 / 修正等），供「不移」类。
+    const isAttack = skill.category === "Physical" || skill.category === "Magic";
+    const hasExtra = /回复|获得|使|附加|印记|蓄力|连击|免疫|降低|提升|先手|应对|吸血|清除|交换|封印|混乱|中毒|灼烧|冻结|寄生|魔攻|物攻|双防|防御|速度|能耗|命中|暴击|无视|选择|巧变|迸发|传动|奉献|反转|复制|偷取|驱散|随机|偷|夺/.test(desc);
+    if (isAttack && !hasExtra) tags.push("simple");
     if (tags.length) skill.tags = tags;
   }
 

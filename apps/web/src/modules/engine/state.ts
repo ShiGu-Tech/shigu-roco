@@ -35,6 +35,7 @@ export function cloneActive(a: ActiveSprite): ActiveSprite {
     actedSinceEntry: a.actedSinceEntry,
     pendingSkill: a.pendingSkill ? { ...a.pendingSkill } : undefined,
     element: a.element ? [...a.element] : undefined,
+    carryElements: a.carryElements ? [...a.carryElements] : undefined,
   };
 }
 

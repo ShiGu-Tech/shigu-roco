@@ -137,5 +137,7 @@
  *          （受伤段）/ `teamMoe` / `fieldMarkKinds` / `fieldBuffKinds`（`refreshDerivedCounters`）。
  * - 0.47.0 内容补齐第四期 D2：规则键 `status.burnGrow` / `status.burnToPoison`（`settleStatus`，双方合并读）/
  *          `turnEnd.extra` / `turnEnd.skip`（`step` 回合末，任一侧声明对双方生效）/ `heal.redirectToDamage`（`heal`）。
+ * - 0.48.0 内容补齐第四期 D3：`ActiveSprite.carryElements`（开局注入携带系别集合）；技能 `simple` tag
+ *          （`buildBundle` 派生：无额外效果的攻击技能）；规则 `simple.powerMul`（`damageModifiers` 读取）。
  */
-export const ENGINE_VERSION = "0.47.0";
+export const ENGINE_VERSION = "0.48.0";
