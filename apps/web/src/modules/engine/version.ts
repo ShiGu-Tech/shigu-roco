@@ -96,5 +96,7 @@
  * - 0.29.0 交换 / 生命比例设同（`mechanisms/runtime.ts`）：新增 `swap`（`what: hpRatio` 交换生命比例 /
  *          `skills` 交换技能栏 / `stats` 交换增益减益）与 `setHpRatio`（自身比例设为与对手相同）；供 恶念交换 /
  *          隐藏条款 / 欺诈契约 / 假冒 等登记。
+ * - 0.30.0 吸血（`mechanisms/runtime.ts` 伤害结算）：攻击方 `counters["lifesteal"]`（比例）按本次实际伤害回复自身生命
+ *          （产出 `lifesteal` 事件）；供 等价交换 等「获得 X% 吸血」经 `addCounter lifesteal` 登记。
  */
-export const ENGINE_VERSION = "0.29.0";
+export const ENGINE_VERSION = "0.30.0";

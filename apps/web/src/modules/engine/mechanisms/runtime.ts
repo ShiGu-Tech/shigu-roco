@@ -753,6 +753,14 @@ export class MechanismRuntime {
       const targetState = targetSide === "player" ? state.player : state.enemy;
       targetState.lastHit = { side: attackerSide, skillId: definition.skillId };
       events.push({ type: "damage", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { value: damage, attackerSide, skillId: definition.skillId, damageType: definition.category, effectiveness, modifiers, breakdown } });
+      // 吸血：攻击方 counters["lifesteal"]（比例）按本次伤害回复自身生命。
+      const attackerState = attackerSide === "player" ? state.player : state.enemy;
+      const lifesteal = toNum(attackerState.active.counters?.lifesteal, 0);
+      if (lifesteal > 0 && damage > 0) {
+        const before = attackerState.active.hp;
+        attackerState.active.hp = Math.min(attackerState.active.maxHp, attackerState.active.hp + Math.floor(damage * lifesteal));
+        events.push({ type: "lifesteal", trigger: command.trigger, mechanismId: command.mechanismId, effectType: "lifesteal", side: attackerSide, data: { value: attackerState.active.hp - before, damage } });
+      }
     }
     return events;
   }

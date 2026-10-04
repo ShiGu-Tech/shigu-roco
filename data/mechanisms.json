@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.42.0",
+  "version": "0.43.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -12661,12 +12661,13 @@
           "layers": 1
         },
         {
-          "type": "unsupported",
-          "effectType": "defenseCounter",
-          "reason": "等价交换：自己获得 50% 吸血【待校准】"
+          "type": "addCounter",
+          "target": "self",
+          "key": "lifesteal",
+          "delta": 0.5
         }
       ],
-      "note": "等价交换：应对攻击成功 → 必定先手 + 本回合承伤 −90%；自己获得 50% 吸血"
+      "note": "等价交换：应对攻击成功 → 必定先手 + 本回合承伤减伤；应对攻击 → 自己获得 50% 吸血"
     },
     {
       "id": "skill:sk-7180210:reduce",
