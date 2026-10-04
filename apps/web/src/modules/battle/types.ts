@@ -1,6 +1,6 @@
 import type { CostMod, StatProfile, StatsData } from "@/modules/engine/types";
 
-export type ActionKind = "skill" | "defend" | "switch" | "wish" | "leader" | "energy";
+export type ActionKind = "skill" | "defend" | "switch" | "wish" | "leader" | "magic" | "energy";
 
 export interface EngineAction {
   kind: ActionKind;
@@ -9,6 +9,8 @@ export interface EngineAction {
   label?: string;
   /** 选择技（明 / 暗）：0 = 明，1 = 暗；省略等价 0。 */
   choice?: 0 | 1;
+  /** 魔法域 · 战前魔法 id（如 `grass` = 草魔法）。 */
+  magicId?: string;
   /** 蓄力域 · 本行动是否为「蓄力后自动释放」。 */
   released?: boolean;
 }

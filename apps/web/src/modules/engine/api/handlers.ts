@@ -129,6 +129,9 @@ function parseSide(raw: Dict) {
     wishChargesLeft: toNum(raw.wishChargesLeft, 0),
     wishCooldown: toNum(raw.wishCooldown, 0),
     leaderUsed: Boolean(raw.leaderUsed),
+    magicChoice: raw.magicChoice === undefined ? undefined : toStr(raw.magicChoice),
+    magicUsed: raw.magicUsed === undefined ? undefined : Boolean(raw.magicUsed),
+    magicActive: raw.magicActive ? { id: toStr(asDict(raw.magicActive).id), turnsLeft: toNum(asDict(raw.magicActive).turnsLeft, 0) } : undefined,
     pendingEffects: Array.isArray(raw.pendingEffects) ? (raw.pendingEffects as import("../mechanisms/types").PendingEffect[]) : undefined,
   };
 }
@@ -151,6 +154,7 @@ export function parseAction(raw: Dict): Action {
     skillId: raw.skillId === undefined ? undefined : toStr(raw.skillId),
     benchId: raw.benchId === undefined ? undefined : toStr(raw.benchId),
     label: raw.label === undefined ? undefined : toStr(raw.label),
+    magicId: raw.magicId === undefined ? undefined : toStr(raw.magicId),
   };
 }
 

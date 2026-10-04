@@ -7,7 +7,7 @@
 import type { RuleModifiers } from "./mechanisms/types";
 
 export type Side = "player" | "enemy";
-export type ActionKind = "skill" | "defend" | "switch" | "wish" | "leader" | "energy";
+export type ActionKind = "skill" | "defend" | "switch" | "wish" | "leader" | "magic" | "energy";
 
 /** 宽松 JSON 对象（游戏数据条目）。 */
 export type Dict = Record<string, unknown>;
@@ -133,6 +133,12 @@ export interface SideState {
   wishChargesLeft: number;
   wishCooldown: number;
   leaderUsed: boolean;
+  /** 魔法域 · 本队战前选定的魔法（如 `grass`）；缺省 = 未带魔法。 */
+  magicChoice?: string;
+  /** 魔法域 · 本场是否已释放过魔法（每场一次）。 */
+  magicUsed?: boolean;
+  /** 魔法域 · 生效中的魔法（按方、跨换人）：`turnsLeft` 为剩余回合。 */
+  magicActive?: { id: string; turnsLeft: number };
   /** 记忆域 · 队伍计数器。 */
   counters?: Record<string, number>;
   /** 记忆域 · 上回合本队动作。 */
@@ -175,6 +181,8 @@ export interface Action {
   label?: string;
   /** 选择技（明 / 暗）：0 = 明，1 = 暗；省略等价 0。 */
   choice?: 0 | 1;
+  /** 魔法域 · 战前魔法 id（如 `grass` = 草魔法）。 */
+  magicId?: string;
   /** 蓄力域 · 本行动是否为「蓄力后自动释放」。 */
   released?: boolean;
 }

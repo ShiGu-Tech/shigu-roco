@@ -174,6 +174,12 @@ export class Simulator {
       actions.push({ kind: "wish", label: "愿力冲击" });
     }
 
+    // 魔法域 · 战前魔法（如草魔法）：每场一次，未释放时列为合法行动。
+    if (side.magicChoice && !side.magicUsed && !side.magicActive) {
+      const def = asDict(asDict(this.bundle.rules.magics)[side.magicChoice]);
+      actions.push({ kind: "magic", magicId: side.magicChoice, label: toStr(def.name, side.magicChoice) });
+    }
+
     const energyMax = toNum(asDict(this.bundle.rules.energy).max, 10);
     // 选择域 · 聚能选择（长久保存制法）：经规则覆盖授予时列出「明 / 暗」分支。
     if (ruleMods["choice.energy"] === true) {
@@ -298,6 +304,23 @@ export class Simulator {
       for (const side of SIDES) this.seedSideCounters(st, side);
     }
 
+    // 魔法域 · 草魔法等：回合开始先回血（优先级最高，早于行动结算），按方、跨换人。
+    for (const side of SIDES) {
+      const s = this.sideState(st, side);
+      const magic = s.magicActive;
+      if (!magic || magic.turnsLeft <= 0) continue;
+      const def = asDict(asDict(rules.magics)[magic.id]);
+      const ratio = toNum(def.healRatio, 0);
+      const target = s.active;
+      if (ratio > 0 && target.hp > 0) {
+        const before = target.hp;
+        target.hp = Math.min(target.maxHp, target.hp + Math.floor(target.maxHp * ratio));
+        events.push({ type: "healed", side, text: `${side} ${toStr(def.name, magic.id)}回血 ${target.hp - before}`, data: { before, after: target.hp, value: target.hp - before, magicId: magic.id } });
+      }
+      magic.turnsLeft -= 1;
+      if (magic.turnsLeft <= 0) s.magicActive = undefined;
+    }
+
     // 技能栏域 · 传动：turnStart 按侧派发，使 `self.active.loadout` 类条件可取到自身（与 turnEnd 一致）。
     for (const side of SIDES) {
       const turnStartCommands = this.mechanisms.dispatch({ state: st, trigger: "turnStart", actorSide: side, targetSide: otherSide(side), event: { turn: st.turn, side } });
@@ -325,20 +348,29 @@ export class Simulator {
       }
     }
 
-    // ① 洛克魔法阶段（愿力）
+    // ① 洛克魔法阶段（愿力 / 战前魔法）
     for (const side of SIDES) {
       const act = actions[side];
-      if (act.kind !== "wish") continue;
       const s = this.sideState(st, side);
-      if (s.wishChargesLeft > 0 && s.wishCooldown === 0) {
-        s.wishChargesLeft -= 1;
-        s.wishCooldown = Math.floor(toNum(asDict(rules.wish).cooldown, 1));
-        events.push({
-          type: "wish",
-          side,
-          text: `${side} 使用愿力冲击，剩余 ${s.wishChargesLeft} 次，冷却 ${s.wishCooldown} 回合`,
-          data: {},
-        });
+      if (act.kind === "wish") {
+        if (s.wishChargesLeft > 0 && s.wishCooldown === 0) {
+          s.wishChargesLeft -= 1;
+          s.wishCooldown = Math.floor(toNum(asDict(rules.wish).cooldown, 1));
+          events.push({
+            type: "wish",
+            side,
+            text: `${side} 使用愿力冲击，剩余 ${s.wishChargesLeft} 次，冷却 ${s.wishCooldown} 回合`,
+            data: {},
+          });
+        }
+      } else if (act.kind === "magic") {
+        const id = act.magicId ?? s.magicChoice;
+        const def = id ? asDict(asDict(rules.magics)[id]) : {};
+        if (id && def.name !== undefined && !s.magicUsed) {
+          s.magicUsed = true;
+          s.magicActive = { id, turnsLeft: Math.max(1, Math.floor(toNum(def.turns, 3))) };
+          events.push({ type: "magic", side, text: `${side} 使用${toStr(def.name, id)}`, data: { magicId: id, turns: s.magicActive.turnsLeft } });
+        }
       }
     }
 
@@ -1134,7 +1166,30 @@ export class Simulator {
     if (e.magic <= 0) return { ended: true, winner: "player", reason: "蓝方魔力耗尽" };
     if (![p.active, ...p.bench].some((s) => s.hp > 0)) return { ended: true, winner: "enemy", reason: "红方精灵全部阵亡" };
     if (![e.active, ...e.bench].some((s) => s.hp > 0)) return { ended: true, winner: "player", reason: "蓝方精灵全部阵亡" };
+    // 回合上限（PVP 50 回合）：到点强制终局，按 剩余魔力 → 存活精灵数 → 总生命占比 定胜负，全同则平局。
+    const maxTurns = Math.floor(toNum(asDict(this.bundle.rules).maxTurns, 0));
+    if (maxTurns > 0 && state.turn > maxTurns) {
+      const cmp = this.compareAtTurnCap(state);
+      const tail = cmp === 0 ? "平局" : cmp > 0 ? "红方胜" : "蓝方胜";
+      return { ended: true, winner: cmp === 0 ? null : cmp > 0 ? "player" : "enemy", reason: `达到 ${maxTurns} 回合上限 · ${tail}` };
+    }
     return { ended: false, winner: null, reason: "" };
+  }
+
+  /** 回合上限的比较：>0 红方优、<0 蓝方优、0 平（剩余魔力 → 存活精灵数 → 总生命占比）。 */
+  private compareAtTurnCap(state: BattleState): number {
+    const stat = (side: BattleState["player"]) => {
+      const sprites = [side.active, ...side.bench];
+      const hp = sprites.reduce((sum, s) => sum + Math.max(0, s.hp), 0);
+      const maxHp = sprites.reduce((sum, s) => sum + Math.max(0, s.maxHp), 0);
+      return { magic: side.magic, alive: sprites.filter((s) => s.hp > 0).length, hpRatio: maxHp > 0 ? hp / maxHp : 0 };
+    };
+    const a = stat(state.player);
+    const b = stat(state.enemy);
+    if (a.magic !== b.magic) return a.magic - b.magic;
+    if (a.alive !== b.alive) return a.alive - b.alive;
+    if (Math.abs(a.hpRatio - b.hpRatio) > 1e-9) return a.hpRatio - b.hpRatio;
+    return 0;
   }
 
   applyLeader(st: BattleState, side: Side): BattleEvent[] {

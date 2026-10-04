@@ -1,7 +1,16 @@
 {
   "$schemaVersion": "0.2",
-  "version": "0.6.1",
+  "version": "0.6.3",
   "updatedAt": "2026-10-04",
+  "maxTurns": 50,
+  "magics": {
+    "grass": {
+      "name": "草魔法",
+      "healRatio": 0.15,
+      "turns": 3,
+      "note": "释放后每回合开始为当前在场精灵回复 15% 最大生命，持续 3 回合；按方不绑定精灵，换人则回下一个；优先级最高（先回血，再结算行动）。【待校准：是否含释放当回合、每场次数】"
+    }
+  },
   "status": {
     "clearOnSwitch": true,
     "persistOnSwitch": [

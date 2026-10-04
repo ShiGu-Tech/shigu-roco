@@ -221,5 +221,9 @@
  * - 0.76.0 继承域 · 动态归属：`ActiveSprite.inheritedFrom` + `inheritTrait` 登记；`MechanismRuntime.dispatch` 对已继承精灵
  *          按原精灵身份**别名**（条件作用域里把 active.spriteId 与事件中的该 id 换成原 id）再派发一次，使被继承者的
  *          **触发型**机制（onEntry / beforeDamage / afterDeath / skillUsed …）照常结算（铭记于月亮；被动规则仍并 `ruleOverrides`）。
+ * - 0.77.0 魔法域 · 战前魔法：新行动类型 `Action.kind:"magic"`（`Action.magicId`）+ `SideState.magicChoice / magicUsed /
+ *          magicActive`；魔法定义走 `rules.magics`（`healRatio` / `turns`）。回合开始**先回血**（早于行动结算）、
+ *          按方不绑精灵（换人回当前精灵），释放当回合不回血。首个数据：草魔法（每回合 15% × 3 回合）。
+ *          【待校准：是否含释放当回合、每场次数】。
  */
-export const ENGINE_VERSION = "0.76.0";
+export const ENGINE_VERSION = "0.77.0";

@@ -91,6 +91,9 @@ export function cloneSide(s: SideState): SideState {
     wishChargesLeft: s.wishChargesLeft,
     wishCooldown: s.wishCooldown,
     leaderUsed: s.leaderUsed,
+    magicChoice: s.magicChoice,
+    magicUsed: s.magicUsed,
+    magicActive: s.magicActive ? { ...s.magicActive } : undefined,
     counters: s.counters ? { ...s.counters } : undefined,
     lastTurn: s.lastTurn ? { ...s.lastTurn } : undefined,
     forcedSwitch: s.forcedSwitch,
@@ -154,6 +157,9 @@ export function makeSide(active: ActiveSprite, opts: Partial<Omit<SideState, "ac
     wishChargesLeft: opts.wishChargesLeft ?? 0,
     wishCooldown: opts.wishCooldown ?? 0,
     leaderUsed: opts.leaderUsed ?? false,
+    magicChoice: opts.magicChoice,
+    magicUsed: opts.magicUsed,
+    magicActive: opts.magicActive,
   };
 }
 
