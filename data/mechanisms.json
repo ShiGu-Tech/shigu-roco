@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.44.0",
+  "version": "0.45.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -13713,16 +13713,24 @@
       "id": "mark:slow-mark",
       "ownerType": "mark",
       "ownerId": "slow-mark",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "markApplied",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "markEffect",
-          "reason": "减速印记：印记持续数值通道 / markApplied 未派发（术语 1032：速度 −10）【待校准】"
+          "path": "event.markId",
+          "op": "eq",
+          "value": "slow-mark"
         }
       ],
-      "note": "减速印记：印记持续数值通道 / markApplied 未派发（术语 1032：速度 −10）"
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "speed",
+          "mode": "flat",
+          "value": -10
+        }
+      ],
+      "note": "减速印记：获得时速度 −10（术语 1032；层数口径待校准）"
     },
     {
       "id": "mark:sprout-mark",
