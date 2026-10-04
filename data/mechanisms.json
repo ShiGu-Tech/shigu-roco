@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.57.0",
+  "version": "0.58.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -19100,6 +19100,265 @@
         }
       ],
       "note": "特性「守望者」：防御应对成功分支待校准"
+    },
+    {
+      "id": "trait:sp-11-1",
+      "ownerType": "trait",
+      "ownerId": "sp-11-1",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-11-1",
+            "sp-11-2",
+            "sp-11-3",
+            "sp-11-4",
+            "sp-11-5",
+            "sp-11-6"
+          ]
+        },
+        {
+          "path": "action.cost",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyDamage",
+          "mode": "multiply",
+          "value": 1.5,
+          "scope": "outgoing"
+        }
+      ],
+      "note": "特性「挺起胸脯」"
+    },
+    {
+      "id": "trait:sp-69-1",
+      "ownerType": "trait",
+      "ownerId": "sp-69-1",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-69-1",
+            "sp-70-1"
+          ]
+        },
+        {
+          "path": "action.cost",
+          "op": "gt",
+          "value": 3
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyDamage",
+          "mode": "multiply",
+          "value": 1.4,
+          "scope": "outgoing"
+        }
+      ],
+      "note": "特性「勇敢」"
+    },
+    {
+      "id": "trait:sp-12-1#2",
+      "ownerType": "trait",
+      "ownerId": "sp-12-1",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-12-1",
+            "sp-12-2",
+            "sp-13-1",
+            "sp-13-2",
+            "sp-14-1",
+            "sp-14-2"
+          ]
+        },
+        {
+          "path": "action.category",
+          "op": "eq",
+          "value": "Defense"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -2,
+          "mode": "add",
+          "duration": "nextAction"
+        }
+      ],
+      "note": "特性「缩壳」"
+    },
+    {
+      "id": "trait:sp-66-1",
+      "ownerType": "trait",
+      "ownerId": "sp-66-1",
+      "trigger": "beforeSwitch",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-66-1",
+            "sp-67-1",
+            "sp-68-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 10
+        }
+      ],
+      "note": "特性「快充」"
+    },
+    {
+      "id": "trait:sp-147-1",
+      "ownerType": "trait",
+      "ownerId": "sp-147-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-147-1",
+            "sp-148-1",
+            "sp-149-1"
+          ]
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Ice"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "burn",
+          "layers": 4,
+          "immuneElements": [
+            "Fire"
+          ]
+        }
+      ],
+      "note": "特性「灵魂灼伤」"
+    },
+    {
+      "id": "trait:sp-147-1#2",
+      "ownerType": "trait",
+      "ownerId": "sp-147-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-147-1",
+            "sp-148-1",
+            "sp-149-1"
+          ]
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Fire"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "freeze",
+          "layers": 2,
+          "immuneElements": [
+            "Ice"
+          ]
+        }
+      ],
+      "note": "特性「灵魂灼伤」：火系 → 敌方冻结"
+    },
+    {
+      "id": "trait:sp-425-1",
+      "ownerType": "trait",
+      "ownerId": "sp-425-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-425-1",
+            "sp-426-1"
+          ]
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Grass"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "burn",
+          "layers": 4,
+          "immuneElements": [
+            "Fire"
+          ]
+        }
+      ],
+      "note": "特性「爆裂玉米」"
+    },
+    {
+      "id": "trait:sp-425-1#2",
+      "ownerType": "trait",
+      "ownerId": "sp-425-1",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-425-1",
+            "sp-426-1"
+          ]
+        },
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Fire"
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "opponent",
+          "statusId": "parasite",
+          "layers": 1,
+          "immuneElements": [
+            "Grass"
+          ]
+        }
+      ],
+      "note": "特性「爆裂玉米」：火系 → 敌方寄生"
     }
   ]
 }

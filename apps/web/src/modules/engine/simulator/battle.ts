@@ -315,7 +315,18 @@ export class Simulator {
       neighborPowerSum = leftPower + rightPower;
       neighborPowerDiff = Math.abs(leftPower - rightPower);
     }
-    return { ...action, slot: index >= 0 ? index + 1 : undefined, neighborPowerSum, neighborPowerDiff } as Action;
+    const skill = getSkill(this.bundle, action.skillId);
+    const cost = effectiveCost(st, this.bundle, side, action.skillId);
+    return {
+      ...action,
+      slot: index >= 0 ? index + 1 : undefined,
+      neighborPowerSum,
+      neighborPowerDiff,
+      cost,
+      category: toStr(skill.category),
+      element: toStr(skill.element),
+      actionType: toStr(skill.actionType),
+    } as Action;
   }
 
   private compareOrder(st: BattleState, a: Side, aAction: Action, b: Side, bAction: Action): number {
