@@ -707,7 +707,8 @@ export class Simulator {
   private applyEnergy(st: BattleState, side: Side): BattleEvent[] {
     const active = this.sideState(st, side).active;
     const energy = asDict(this.bundle.rules.energy);
-    const recover = Math.floor(toNum(energy.recover, 5));
+    const gainReduce = toNum(this.mechanisms.ruleModifiers(st, this.bundle, side)["energy.gainReduce"], 0);
+    const recover = Math.max(0, Math.floor(toNum(energy.recover, 5)) - gainReduce);
     const cap = Math.floor(toNum(energy.max, 10));
     // 规则覆盖：`energy.noCap`（多人宿舍）时聚能不设上限。
     const noCap = this.mechanisms.ruleModifiers(st, this.bundle, side)["energy.noCap"] === true;

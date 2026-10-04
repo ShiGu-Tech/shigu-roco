@@ -159,6 +159,8 @@ export type EffectSpec =
   | { type: "inheritStat"; polarity?: "buff" | "debuff" | "all" }
   | { type: "modifyMagic"; target?: string; delta: number }
   | { type: "modifyEnergy"; target?: string; delta: number; deltaFrom?: DynamicValue; toMax?: boolean }
+  /** 能量域 · 设为指定值（盗魂铃：初始能量 0）。 */
+  | { type: "setEnergy"; target?: string; value: number; valueFrom?: DynamicValue }
   /** 能量域 · 为场下每个精灵回复 `delta` 能量（富养化）。 */
   | { type: "spreadEnergy"; target?: string; delta: number; deltaFrom?: DynamicValue }
   | { type: "modifySwitchLock"; target?: string; delta: number }

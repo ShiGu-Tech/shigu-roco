@@ -28,7 +28,10 @@ function costModMatches(active: ActiveSprite, skillId: string, bundle: DataBundl
  *  `rules` 为 passive 声明的规则覆盖：`cost.signFlip`（对流：增减反转）/ `cost.changeMul`（倾轧：变化幅度倍率）。 */
 export function effectiveCost(state: BattleState, bundle: DataBundle, side: Side, skillId: string, rules?: Record<string, number | boolean>): number {
   const active = side === "player" ? state.player.active : state.enemy.active;
-  const base = toNum(getSkill(bundle, skillId).cost, 0);
+  // 规则覆盖 · `cost.lastTurnSum`（基因编辑）：基础能耗 = 上回合双方使用技能能耗之和。
+  const base = rules?.["cost.lastTurnSum"] === true
+    ? Math.max(0, Math.floor(toNum(state[side].lastTurn?.cost, 0) + toNum(state[side === "player" ? "enemy" : "player"].lastTurn?.cost, 0)))
+    : toNum(getSkill(bundle, skillId).cost, 0);
   const mods = active.costMods ?? [];
   let multiplied = base;
   let added = 0;

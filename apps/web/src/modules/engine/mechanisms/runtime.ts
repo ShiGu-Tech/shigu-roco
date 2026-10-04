@@ -210,9 +210,19 @@ export class MechanismRuntime {
             const max = Math.floor(toNum(asDict(bundle?.rules.energy).max, 10));
             active.energy = Math.max(active.energy, max);
           } else {
-            active.energy = Math.max(0, active.energy + delta);
+            // 规则覆盖 · `energy.gainReduce`（盗魂铃）：自己回复的能量 −N。
+            let amount = delta;
+            if (amount > 0) amount = Math.max(0, amount - toNum(this.ruleModifiers(state, bundle, targetSide)["energy.gainReduce"], 0));
+            active.energy = Math.max(0, active.energy + amount);
           }
           events.push({ type: "energy-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { before, after: active.energy, delta } });
+          break;
+        }
+        case "setEnergy": {
+          if (!active || !targetSide) break;
+          const before = active.energy;
+          active.energy = Math.max(0, Math.floor(definition.valueFrom ? this.dynamicValue(state, command, definition.valueFrom, definition.value, bundle) : definition.value));
+          events.push({ type: "energy-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { before, after: active.energy, delta: active.energy - before } });
           break;
         }
         case "spreadEnergy": {

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { effectiveCost } from "../cost";
 import { Rng } from "../rng";
 import { getBundle } from "../server";
 import { Simulator } from "../simulator/battle";
@@ -72,6 +73,30 @@ describe("batch: 打断 / 元素链 / 免蓄力", () => {
     state.enemy.active.loadout = [skill];
     const t = new Simulator(bundle).step(state, { kind: "skill", skillId: skill }, { kind: "skill", skillId: skill }, new Rng(1));
     expect(t.state.player.active.counters?.["pct-atk"] ?? 0).toBeGreaterThan(0);
+  });
+
+  it("基因编辑：基础能耗 = 上回合双方技能能耗之和", () => {
+    const trait = spriteWithTrait("基因编辑");
+    const skill = skillBy((s) => (s.category === "Physical" || s.category === "Magic") && Number(s.power) > 0);
+    const state = makeState(
+      makeSide(makeActive(trait, { hp: 500, maxHp: 500, energy: 20 })),
+      makeSide(makeActive("sp-14-1", { hp: 500, maxHp: 500, energy: 20 })),
+    );
+    state.player.lastTurn = { cost: 3 };
+    state.enemy.lastTurn = { cost: 2 };
+    const sim = new Simulator(bundle);
+    const mods = sim.mechanisms.ruleModifiers(state, bundle, "player");
+    expect(effectiveCost(state, bundle, "player", skill, mods)).toBe(5);
+  });
+
+  it("盗魂铃：初始能量 0，且在场回复能量 −4", () => {
+    const trait = spriteWithTrait("盗魂铃");
+    const state = makeState(
+      makeSide(makeActive(trait, { hp: 500, maxHp: 500, energy: 10 })),
+      makeSide(makeActive("sp-14-1", { hp: 500, maxHp: 500, energy: 10 })),
+    );
+    const t = new Simulator(bundle).step(state, { kind: "energy" }, { kind: "energy" }, new Rng(1));
+    expect(t.state.player.active.energy).toBe(1);
   });
 
   it("龙守望：下一次技能无需蓄力（吹炎立即释放）", () => {

@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.107.0",
+  "version": "0.109.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -24431,21 +24431,6 @@
       "note": "特性「铭记于月亮」：待实现"
     },
     {
-      "id": "trait:sp-452-1",
-      "ownerType": "trait",
-      "ownerId": "sp-452-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "基因编辑：自己携带技能的基础能耗，变为上回合双方使用的技能能耗之和。【待校准】"
-        }
-      ],
-      "note": "特性「基因编辑」：待实现"
-    },
-    {
       "id": "trait:sp-454-1",
       "ownerType": "trait",
       "ownerId": "sp-454-1",
@@ -24489,21 +24474,6 @@
         }
       ],
       "note": "特性「翻垃圾桶」：待实现"
-    },
-    {
-      "id": "trait:sp-461-1",
-      "ownerType": "trait",
-      "ownerId": "sp-461-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
-        {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "盗魂铃：初始能量为0，首次入场前敌方每聚能1次，回复5能量（可突破上限），在场时自己回复的能量-4。【待校准】"
-        }
-      ],
-      "note": "特性「盗魂铃」：待实现"
     },
     {
       "id": "trait:sp-464-1",
@@ -25685,6 +25655,102 @@
         }
       ],
       "note": "龙守望：下一次技能无需蓄力"
+    },
+    {
+      "id": "trait:sp-452-1#gene",
+      "ownerType": "trait",
+      "ownerId": "sp-452-1",
+      "trigger": "passive",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-452-1",
+            "sp-453-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "cost.lastTurnSum",
+          "value": true
+        }
+      ],
+      "note": "特性「基因编辑」：自己携带技能的基础能耗变为上回合双方使用技能能耗之和"
+    },
+    {
+      "id": "trait:sp-461-1#soul-entry",
+      "ownerType": "trait",
+      "ownerId": "sp-461-1",
+      "trigger": "onEntry",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-461-1",
+            "sp-462-1"
+          ]
+        },
+        {
+          "not": {
+            "path": "self.active.counters.soulInit",
+            "op": "gte",
+            "value": 1
+          }
+        }
+      ],
+      "effects": [
+        {
+          "type": "setCounter",
+          "target": "self",
+          "key": "soulInit",
+          "value": 1
+        },
+        {
+          "type": "setEnergy",
+          "target": "self",
+          "value": 0
+        },
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 0,
+          "deltaFrom": {
+            "path": "opponent.counters.charges",
+            "scale": 5
+          }
+        }
+      ],
+      "note": "特性「盗魂铃」：初始能量为 0；首次入场前敌方每聚能 1 次回复 5 能量"
+    },
+    {
+      "id": "trait:sp-461-1#soul-rule",
+      "ownerType": "trait",
+      "ownerId": "sp-461-1",
+      "trigger": "passive",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-461-1",
+            "sp-462-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "energy.gainReduce",
+          "value": 4
+        }
+      ],
+      "note": "特性「盗魂铃」：在场时自己回复的能量 −4"
     }
   ]
 }

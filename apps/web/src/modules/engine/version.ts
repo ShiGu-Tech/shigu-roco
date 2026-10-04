@@ -181,5 +181,7 @@
  *          新触发器 `interrupt`（取消对手行动时派发，供威慑）；模拟器记元素链计数 `elChainIce` / `elChainFire`（大雪球 / 大火球）。
  * - 0.67.0 回合对比规则：`effectiveStat` 增永久百分比计数器 `pct-<stat>`（合拍）；回合末规则 `drainCostDiff`（石天平）/
  *          `harmony`（合拍）；伤害规则 `power.nonLight`（夺目：非光系威力 +N）。
+ * - 0.68.0 能量 / 能耗规则：新增 `setEnergy`（盗魂铃初始 0）；规则 `cost.lastTurnSum`（基因编辑：基础能耗 = 上回合双方和）
+ *          + `energy.gainReduce`（盗魂铃：回能 −N，作用于聚能与机制回能）。
  */
-export const ENGINE_VERSION = "0.67.0";
+export const ENGINE_VERSION = "0.68.0";
