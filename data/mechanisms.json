@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.65.0",
+  "version": "0.67.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -20475,6 +20475,2152 @@
         }
       ],
       "note": "特性「圣火骑士」"
+    },
+    {
+      "id": "trait:sp-49-1",
+      "ownerType": "trait",
+      "ownerId": "sp-49-1",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-49-1",
+            "sp-50-1",
+            "sp-51-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 0,
+          "percentFrom": {
+            "path": "target.active.energy",
+            "scale": 10
+          }
+        }
+      ],
+      "note": "特性「囤积」：每有 1 能量，双防 +10%（近似为减伤）"
+    },
+    {
+      "id": "trait:sp-463-1",
+      "ownerType": "trait",
+      "ownerId": "sp-463-1",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "target.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-463-1"
+          ]
+        },
+        {
+          "path": "target.active.marks.starfall-mark",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "setDamageReduction",
+          "target": "target",
+          "percent": 0,
+          "percentFrom": {
+            "path": "target.active.marks.starfall-mark",
+            "scale": 10
+          }
+        }
+      ],
+      "note": "特性「宇宙之眼」：敌方每层星陨，物防 +10%（近似为减伤）"
+    },
+    {
+      "id": "trait:sp-4-3",
+      "ownerType": "trait",
+      "ownerId": "sp-4-3",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "草木苏醒时：每回复1能量，物攻和魔攻永久+20%，攻击后重置。【待校准】"
+        }
+      ],
+      "note": "特性「草木苏醒时」：待实现"
+    },
+    {
+      "id": "trait:sp-11-7",
+      "ownerType": "trait",
+      "ownerId": "sp-11-7",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "“国王”的威严：鸭吉吉国王的种族资质大幅增加，能耗为1的技能威力+50%。【待校准】"
+        }
+      ],
+      "note": "特性「“国王”的威严」：待实现"
+    },
+    {
+      "id": "trait:sp-24-1",
+      "ownerType": "trait",
+      "ownerId": "sp-24-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "刺肤：每受到1次攻击伤害，对攻击自己的精灵造成50威力物理伤害。【待校准】"
+        }
+      ],
+      "note": "特性「刺肤」：待实现"
+    },
+    {
+      "id": "trait:sp-27-1",
+      "ownerType": "trait",
+      "ownerId": "sp-27-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "地脉：初始能量为0，入场前己方精灵每放1次地系技能，回复3能量。【待校准】"
+        }
+      ],
+      "note": "特性「地脉」：待实现"
+    },
+    {
+      "id": "trait:sp-29-2",
+      "ownerType": "trait",
+      "ownerId": "sp-29-2",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "地脉馈赠：突破能量上限并立即回复10能量，入场前己方精灵每使用1次地系技能，回复3能量。【待校准】"
+        }
+      ],
+      "note": "特性「地脉馈赠」：待实现"
+    },
+    {
+      "id": "trait:sp-32-1",
+      "ownerType": "trait",
+      "ownerId": "sp-32-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "化茧：受到致命伤害时，获得1层萌化，并免疫此次伤害。（最多触发2次）【待校准】"
+        }
+      ],
+      "note": "特性「化茧」：待实现"
+    },
+    {
+      "id": "trait:sp-36-1",
+      "ownerType": "trait",
+      "ownerId": "sp-36-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "保守派：总技能能耗小于4时，自己获得双防+80%。【待校准】"
+        }
+      ],
+      "note": "特性「保守派」：待实现"
+    },
+    {
+      "id": "trait:sp-39-1",
+      "ownerType": "trait",
+      "ownerId": "sp-39-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "偏振：受到自己携带技能系别的攻击伤害-40%。【待校准】"
+        }
+      ],
+      "note": "特性「偏振」：待实现"
+    },
+    {
+      "id": "trait:sp-40-7",
+      "ownerType": "trait",
+      "ownerId": "sp-40-7",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "完全偏振：抵抗自己携带技能系别的攻击伤害。【待校准】"
+        }
+      ],
+      "note": "特性「完全偏振」：待实现"
+    },
+    {
+      "id": "trait:sp-52-1",
+      "ownerType": "trait",
+      "ownerId": "sp-52-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "复方汤剂：在场时，双方回合结束时的中毒效果会额外触发1次。【待校准】"
+        }
+      ],
+      "note": "特性「复方汤剂」：待实现"
+    },
+    {
+      "id": "trait:sp-54-1",
+      "ownerType": "trait",
+      "ownerId": "sp-54-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "惊吓：能量等于0的精灵，无法对自己造成伤害。【待校准】"
+        }
+      ],
+      "note": "特性「惊吓」：待实现"
+    },
+    {
+      "id": "trait:sp-57-1",
+      "ownerType": "trait",
+      "ownerId": "sp-57-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "做噩梦：敌方精灵离场后，更换入场的精灵失去3能量。【待校准】"
+        }
+      ],
+      "note": "特性「做噩梦」：待实现"
+    },
+    {
+      "id": "trait:sp-59-1",
+      "ownerType": "trait",
+      "ownerId": "sp-59-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "稀兽花宝：根据自己的血脉，入场时获得不同效果。【待校准】"
+        }
+      ],
+      "note": "特性「稀兽花宝」：待实现"
+    },
+    {
+      "id": "trait:sp-60-1",
+      "ownerType": "trait",
+      "ownerId": "sp-60-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "壮胆：队伍存在虫系精灵，自己获得双攻+50%。【待校准】"
+        }
+      ],
+      "note": "特性「壮胆」：待实现"
+    },
+    {
+      "id": "trait:sp-71-1",
+      "ownerType": "trait",
+      "ownerId": "sp-71-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "腐植循环：每回复1能量，同时回复5%生命。【待校准】"
+        }
+      ],
+      "note": "特性「腐植循环」：待实现"
+    },
+    {
+      "id": "trait:sp-73-1",
+      "ownerType": "trait",
+      "ownerId": "sp-73-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "慢热型：初始能量为0，入场前己方精灵每成功应对1次，回复5能量。【待校准】"
+        }
+      ],
+      "note": "特性「慢热型」：待实现"
+    },
+    {
+      "id": "trait:sp-76-1",
+      "ownerType": "trait",
+      "ownerId": "sp-76-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "溶解扩散：每携带1个毒系技能进入战斗，水系技能使敌方获得1层中毒。【待校准】"
+        }
+      ],
+      "note": "特性「溶解扩散」：待实现"
+    },
+    {
+      "id": "trait:sp-78-3",
+      "ownerType": "trait",
+      "ownerId": "sp-78-3",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "溶解腐蚀：每携带1个毒系技能进入战斗，水系技能使敌方获得2层中毒。【待校准】"
+        }
+      ],
+      "note": "特性「溶解腐蚀」：待实现"
+    },
+    {
+      "id": "trait:sp-79-1",
+      "ownerType": "trait",
+      "ownerId": "sp-79-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "无忧无虑：可获得的萌化层数不受限制。【待校准】"
+        }
+      ],
+      "note": "特性「无忧无虑」：待实现"
+    },
+    {
+      "id": "trait:sp-82-1",
+      "ownerType": "trait",
+      "ownerId": "sp-82-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "虫群鼓舞：队伍中每有1只其他的虫系精灵，自己入场时获得攻防速+10%。【待校准】"
+        }
+      ],
+      "note": "特性「虫群鼓舞」：待实现"
+    },
+    {
+      "id": "trait:sp-84-2",
+      "ownerType": "trait",
+      "ownerId": "sp-84-2",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "虫群突袭：队伍中每有1只其他的虫系精灵，自己入场时获得攻防速+15%。【待校准】"
+        }
+      ],
+      "note": "特性「虫群突袭」：待实现"
+    },
+    {
+      "id": "trait:sp-85-1",
+      "ownerType": "trait",
+      "ownerId": "sp-85-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "嫁祸：自己每失去25%生命，连击数+2。【待校准】"
+        }
+      ],
+      "note": "特性「嫁祸」：待实现"
+    },
+    {
+      "id": "trait:sp-88-1",
+      "ownerType": "trait",
+      "ownerId": "sp-88-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "洁癖：离场后，自己的增益和减益会被更换入场的精灵继承。【待校准】"
+        }
+      ],
+      "note": "特性「洁癖」：待实现"
+    },
+    {
+      "id": "trait:sp-91-1",
+      "ownerType": "trait",
+      "ownerId": "sp-91-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "孤傲：敌方精灵离场后，其增益和减益会被更换入场的精灵继承。【待校准】"
+        }
+      ],
+      "note": "特性「孤傲」：待实现"
+    },
+    {
+      "id": "trait:sp-92-1",
+      "ownerType": "trait",
+      "ownerId": "sp-92-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "快锤：携带的能耗小于3的技能，获得迅捷。【待校准】"
+        }
+      ],
+      "note": "特性「快锤」：待实现"
+    },
+    {
+      "id": "trait:sp-93-1",
+      "ownerType": "trait",
+      "ownerId": "sp-93-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "木桶戏法：离场后，更换入场的精灵以木桶状态登场。【待校准】"
+        }
+      ],
+      "note": "特性「木桶戏法」：待实现"
+    },
+    {
+      "id": "trait:sp-95-1",
+      "ownerType": "trait",
+      "ownerId": "sp-95-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "不移：携带的无额外效果的攻击技能，威力+30%。【待校准】"
+        }
+      ],
+      "note": "特性「不移」：待实现"
+    },
+    {
+      "id": "trait:sp-102-1",
+      "ownerType": "trait",
+      "ownerId": "sp-102-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "自由飘：自己每有1层萌化，获得连击数+3。【待校准】"
+        }
+      ],
+      "note": "特性「自由飘」：待实现"
+    },
+    {
+      "id": "trait:sp-105-1",
+      "ownerType": "trait",
+      "ownerId": "sp-105-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "石头大餐：能量不足时，消耗5%生命，代替1能量。【待校准】"
+        }
+      ],
+      "note": "特性「石头大餐」：待实现"
+    },
+    {
+      "id": "trait:sp-107-2",
+      "ownerType": "trait",
+      "ownerId": "sp-107-2",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "盛宴：能量不足时，消耗5%最大生命，代替1能量。生命低于50%时，获得吸血100%。【待校准】"
+        }
+      ],
+      "note": "特性「盛宴」：待实现"
+    },
+    {
+      "id": "trait:sp-108-1",
+      "ownerType": "trait",
+      "ownerId": "sp-108-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "水翼推进：己方精灵每使用1次水系技能，自己入场时获得全技能能耗-1。【待校准】"
+        }
+      ],
+      "note": "特性「水翼推进」：待实现"
+    },
+    {
+      "id": "trait:sp-110-2",
+      "ownerType": "trait",
+      "ownerId": "sp-110-2",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "水翼飞升：己方精灵每使用1次水系技能，自己入场时获得全技能能耗-1，且能耗为0的技能威力+30%。【待校准】"
+        }
+      ],
+      "note": "特性「水翼飞升」：待实现"
+    },
+    {
+      "id": "trait:sp-111-1",
+      "ownerType": "trait",
+      "ownerId": "sp-111-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "石天平：若使用技能能耗高于敌方，回合结束敌方失去能耗之差的能量。【待校准】"
+        }
+      ],
+      "note": "特性「石天平」：待实现"
+    },
+    {
+      "id": "trait:sp-117-2",
+      "ownerType": "trait",
+      "ownerId": "sp-117-2",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "夺目：额外获得三个未携带的随机技能，且非光系技能威力+25%。【待校准】"
+        }
+      ],
+      "note": "特性「夺目」：待实现"
+    },
+    {
+      "id": "trait:sp-118-1",
+      "ownerType": "trait",
+      "ownerId": "sp-118-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "共鸣：携带的「虫鸣」技能威力+20。【待校准】"
+        }
+      ],
+      "note": "特性「共鸣」：待实现"
+    },
+    {
+      "id": "trait:sp-120-3",
+      "ownerType": "trait",
+      "ownerId": "sp-120-3",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "齐鸣：自己携带的「虫鸣」技能威力+20，己方精灵携带的虫系技能获得巧变：虫鸣。【待校准】"
+        }
+      ],
+      "note": "特性「齐鸣」：待实现"
+    },
+    {
+      "id": "trait:sp-121-1",
+      "ownerType": "trait",
+      "ownerId": "sp-121-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "预警：若敌方技能足够击败自己，回合开始时自己获得速度+50。【待校准】"
+        }
+      ],
+      "note": "特性「预警」：待实现"
+    },
+    {
+      "id": "trait:sp-122-2",
+      "ownerType": "trait",
+      "ownerId": "sp-122-2",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "先知：若敌方技能足够击败自己，回合开始时自己获得速度+50，双攻+50%。【待校准】"
+        }
+      ],
+      "note": "特性「先知」：待实现"
+    },
+    {
+      "id": "trait:sp-123-1",
+      "ownerType": "trait",
+      "ownerId": "sp-123-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "下黑手：敌方精灵离场后，更换入场的精灵获得5层中毒。【待校准】"
+        }
+      ],
+      "note": "特性「下黑手」：待实现"
+    },
+    {
+      "id": "trait:sp-131-1",
+      "ownerType": "trait",
+      "ownerId": "sp-131-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "悲悯：己方队伍中每有1只力竭的精灵，自己获得双攻+30%。【待校准】"
+        }
+      ],
+      "note": "特性「悲悯」：待实现"
+    },
+    {
+      "id": "trait:sp-131-2",
+      "ownerType": "trait",
+      "ownerId": "sp-131-2",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "悼亡：双方队伍中每有1只力竭的精灵，自己获得双攻+30%。【待校准】"
+        }
+      ],
+      "note": "特性「悼亡」：待实现"
+    },
+    {
+      "id": "trait:sp-134-1",
+      "ownerType": "trait",
+      "ownerId": "sp-134-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "结晶水：初始能量为0，入场前己方精灵每放1次冰系技能，回复3能量。【待校准】"
+        }
+      ],
+      "note": "特性「结晶水」：待实现"
+    },
+    {
+      "id": "trait:sp-144-2#2",
+      "ownerType": "trait",
+      "ownerId": "sp-144-2",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "抓到你了：自己入场时敌方获得2层冻结，使敌方获得冻结时，也会使其获得全技能能耗+1。【待校准】"
+        }
+      ],
+      "note": "特性「抓到你了」：待实现"
+    },
+    {
+      "id": "trait:sp-145-1",
+      "ownerType": "trait",
+      "ownerId": "sp-145-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "机械变式：若回合内自己携带的技能位置发生变化，该技能能耗永久-1。【待校准】"
+        }
+      ],
+      "note": "特性「机械变式」：待实现"
+    },
+    {
+      "id": "trait:sp-150-1",
+      "ownerType": "trait",
+      "ownerId": "sp-150-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "飓风：对本精灵的技能，若其他翼系精灵携带相同技能，则获得迅捷。被敌方精灵击败时，自己额外损失1点魔力。【待校准】"
+        }
+      ],
+      "note": "特性「飓风」：待实现"
+    },
+    {
+      "id": "trait:sp-162-1",
+      "ownerType": "trait",
+      "ownerId": "sp-162-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "衡量：入场时，复制敌方的增益。在场时，若敌方获得增益自己也会获得。【待校准】"
+        }
+      ],
+      "note": "特性「衡量」：待实现"
+    },
+    {
+      "id": "trait:sp-163-1",
+      "ownerType": "trait",
+      "ownerId": "sp-163-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "威慑：打断敌方时，自己获得双攻+30%，被打断的技能进入2回合冷却。【待校准】"
+        }
+      ],
+      "note": "特性「威慑」：待实现"
+    },
+    {
+      "id": "trait:sp-174-1",
+      "ownerType": "trait",
+      "ownerId": "sp-174-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "多人宿舍：自己的能量可以超过能量上限。【待校准】"
+        }
+      ],
+      "note": "特性「多人宿舍」：待实现"
+    },
+    {
+      "id": "trait:sp-177-1",
+      "ownerType": "trait",
+      "ownerId": "sp-177-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "逐魂鸟：能耗小于等于1的攻击技能，无法对自己造成伤害。【待校准】"
+        }
+      ],
+      "note": "特性「逐魂鸟」：待实现"
+    },
+    {
+      "id": "trait:sp-181-1",
+      "ownerType": "trait",
+      "ownerId": "sp-181-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "身经百练：己方精灵每应对1次，自己入场时水系和武系技能威力+20%。【待校准】"
+        }
+      ],
+      "note": "特性「身经百练」：待实现"
+    },
+    {
+      "id": "trait:sp-183-1",
+      "ownerType": "trait",
+      "ownerId": "sp-183-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "泛音列：使用状态技能后，敌方获得「聒噪」技能的效果，持续3回合。【待校准】"
+        }
+      ],
+      "note": "特性「泛音列」：待实现"
+    },
+    {
+      "id": "trait:sp-185-1",
+      "ownerType": "trait",
+      "ownerId": "sp-185-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "守护者：己方其他精灵每有1层萌化，自己入场时全技能能耗-1。【待校准】"
+        }
+      ],
+      "note": "特性「守护者」：待实现"
+    },
+    {
+      "id": "trait:sp-188-1",
+      "ownerType": "trait",
+      "ownerId": "sp-188-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "腾挪：攻击技能应对1次后，回满能量和生命，变为棋绮后。【待校准】"
+        }
+      ],
+      "note": "特性「腾挪」：待实现"
+    },
+    {
+      "id": "trait:sp-190-1",
+      "ownerType": "trait",
+      "ownerId": "sp-190-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "保卫：防御技能应对2次后，回满能量和生命，变为棋绮后。【待校准】"
+        }
+      ],
+      "note": "特性「保卫」：待实现"
+    },
+    {
+      "id": "trait:sp-191-1",
+      "ownerType": "trait",
+      "ownerId": "sp-191-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "好象坏象：状态技能应对1次后，回满能量和生命，变为棋绮后。【待校准】"
+        }
+      ],
+      "note": "特性「好象坏象」：待实现"
+    },
+    {
+      "id": "trait:sp-192-1",
+      "ownerType": "trait",
+      "ownerId": "sp-192-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "渗透：己方精灵每使用1次武系或地系技能，自己入场时获得攻防+5%。【待校准】"
+        }
+      ],
+      "note": "特性「渗透」：待实现"
+    },
+    {
+      "id": "trait:sp-195-1",
+      "ownerType": "trait",
+      "ownerId": "sp-195-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "营养液泡：获得增益时，额外获得层数+2。【待校准】"
+        }
+      ],
+      "note": "特性「营养液泡」：待实现"
+    },
+    {
+      "id": "trait:sp-203-1",
+      "ownerType": "trait",
+      "ownerId": "sp-203-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "嫉妒：蓄力状态下，可以使用任一携带技能。【待校准】"
+        }
+      ],
+      "note": "特性「嫉妒」：待实现"
+    },
+    {
+      "id": "trait:sp-204-2",
+      "ownerType": "trait",
+      "ownerId": "sp-204-2",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "游弋：蓄力时可以使用任一携带技能，且获得双防+100%。【待校准】"
+        }
+      ],
+      "note": "特性「游弋」：待实现"
+    },
+    {
+      "id": "trait:sp-205-1",
+      "ownerType": "trait",
+      "ownerId": "sp-205-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "噼啪！：入场后首次行动，所选技能使用次数+1。【待校准】"
+        }
+      ],
+      "note": "特性「噼啪！」：待实现"
+    },
+    {
+      "id": "trait:sp-206-2",
+      "ownerType": "trait",
+      "ownerId": "sp-206-2",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "噼啪噼啪！：入场后首次行动，所选技能使用次数+1，且该回合每次行动后回复2能量。【待校准】"
+        }
+      ],
+      "note": "特性「噼啪噼啪！」：待实现"
+    },
+    {
+      "id": "trait:sp-212-1",
+      "ownerType": "trait",
+      "ownerId": "sp-212-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "拨浪鼓：己方精灵每使用1次状态技能，自己入场时毒系和萌系技能威力+10。【待校准】"
+        }
+      ],
+      "note": "特性「拨浪鼓」：待实现"
+    },
+    {
+      "id": "trait:sp-216-1",
+      "ownerType": "trait",
+      "ownerId": "sp-216-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "蒸汽膨胀：己方精灵每使用1次火系技能，自己入场时获得全技能威力+10。【待校准】"
+        }
+      ],
+      "note": "特性「蒸汽膨胀」：待实现"
+    },
+    {
+      "id": "trait:sp-218-2",
+      "ownerType": "trait",
+      "ownerId": "sp-218-2",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "蒸汽革命：己方精灵每使用1次火系技能，自己入场时获得全技能威力+10和物防+5%【待校准】"
+        }
+      ],
+      "note": "特性「蒸汽革命」：待实现"
+    },
+    {
+      "id": "trait:sp-221-1",
+      "ownerType": "trait",
+      "ownerId": "sp-221-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "定向精炼：己方精灵每使用1次防御技能，自己入场时机械系和地系技能威力+10%。【待校准】"
+        }
+      ],
+      "note": "特性「定向精炼」：待实现"
+    },
+    {
+      "id": "trait:sp-224-1",
+      "ownerType": "trait",
+      "ownerId": "sp-224-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "暴食：携带的龙系技能获得迅捷。【待校准】"
+        }
+      ],
+      "note": "特性「暴食」：待实现"
+    },
+    {
+      "id": "trait:sp-231-1",
+      "ownerType": "trait",
+      "ownerId": "sp-231-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "起飞加速：本场战斗首次使用的技能获得迅捷。【待校准】"
+        }
+      ],
+      "note": "特性「起飞加速」：待实现"
+    },
+    {
+      "id": "trait:sp-233-2",
+      "ownerType": "trait",
+      "ownerId": "sp-233-2",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "相争：本场战斗首次使用的技能获得迅捷。拥有迅捷效果的技能先手+1。【待校准】"
+        }
+      ],
+      "note": "特性「相争」：待实现"
+    },
+    {
+      "id": "trait:sp-237-1",
+      "ownerType": "trait",
+      "ownerId": "sp-237-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "耐活王：敌方受到中毒效果伤害时，自己回复等量生命。【待校准】"
+        }
+      ],
+      "note": "特性「耐活王」：待实现"
+    },
+    {
+      "id": "trait:sp-238-3",
+      "ownerType": "trait",
+      "ownerId": "sp-238-3",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "月相：敌方受到中毒效果伤害时，自己回复等量生命。每过量回复10%生命敌方获得1层中毒。【待校准】"
+        }
+      ],
+      "note": "特性「月相」：待实现"
+    },
+    {
+      "id": "trait:sp-239-1",
+      "ownerType": "trait",
+      "ownerId": "sp-239-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "洄游：每次进入蓄力状态，获得全技能能耗永久-2。【待校准】"
+        }
+      ],
+      "note": "特性「洄游」：待实现"
+    },
+    {
+      "id": "trait:sp-246-1",
+      "ownerType": "trait",
+      "ownerId": "sp-246-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "蚀刻：回合结束时，敌方每2层中毒转化为1层中毒印记。【待校准】"
+        }
+      ],
+      "note": "特性「蚀刻」：待实现"
+    },
+    {
+      "id": "trait:sp-249-1",
+      "ownerType": "trait",
+      "ownerId": "sp-249-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "散热：初始能量为0，入场前己方精灵每放1次火系技能，回复3能量。【待校准】"
+        }
+      ],
+      "note": "特性「散热」：待实现"
+    },
+    {
+      "id": "trait:sp-252-1",
+      "ownerType": "trait",
+      "ownerId": "sp-252-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "冰钻：敌方携带技能总能耗每有1点，自己攻击时威力+10%。【待校准】"
+        }
+      ],
+      "note": "特性「冰钻」：待实现"
+    },
+    {
+      "id": "trait:sp-255-1",
+      "ownerType": "trait",
+      "ownerId": "sp-255-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "仁心：敌方受到灼烧伤害时，自己回复等量生命。【待校准】"
+        }
+      ],
+      "note": "特性「仁心」：待实现"
+    },
+    {
+      "id": "trait:sp-261-1",
+      "ownerType": "trait",
+      "ownerId": "sp-261-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "翼轴：1号位技能获得迅捷和传动1。【待校准】"
+        }
+      ],
+      "note": "特性「翼轴」：待实现"
+    },
+    {
+      "id": "trait:sp-270-1",
+      "ownerType": "trait",
+      "ownerId": "sp-270-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "哨兵：回合开始时若敌方技能足够击败自己，自己获得速度+50，行动后脱离。【待校准】"
+        }
+      ],
+      "note": "特性「哨兵」：待实现"
+    },
+    {
+      "id": "trait:sp-272-1",
+      "ownerType": "trait",
+      "ownerId": "sp-272-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "连续负荷：自己技能的迸发效果延长1回合。【待校准】"
+        }
+      ],
+      "note": "特性「连续负荷」：待实现"
+    },
+    {
+      "id": "trait:sp-273-1",
+      "ownerType": "trait",
+      "ownerId": "sp-273-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "倾轧：携带的技能受能耗变化效果的影响翻倍。【待校准】"
+        }
+      ],
+      "note": "特性「倾轧」：待实现"
+    },
+    {
+      "id": "trait:sp-280-1",
+      "ownerType": "trait",
+      "ownerId": "sp-280-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "涂鸦：使用非本系技能时威力+50%。【待校准】"
+        }
+      ],
+      "note": "特性「涂鸦」：待实现"
+    },
+    {
+      "id": "trait:sp-282-1",
+      "ownerType": "trait",
+      "ownerId": "sp-282-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "绝对秩序：受到非敌方系别的技能攻击时伤害-50%。【待校准】"
+        }
+      ],
+      "note": "特性「绝对秩序」：待实现"
+    },
+    {
+      "id": "trait:sp-285-1",
+      "ownerType": "trait",
+      "ownerId": "sp-285-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "正位宝剑：仅可以使用1号位技能。【待校准】"
+        }
+      ],
+      "note": "特性「正位宝剑」：待实现"
+    },
+    {
+      "id": "trait:sp-286-2",
+      "ownerType": "trait",
+      "ownerId": "sp-286-2",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "宝剑王牌：仅可使用1号和3号位技能。【待校准】"
+        }
+      ],
+      "note": "特性「宝剑王牌」：待实现"
+    },
+    {
+      "id": "trait:sp-289-1",
+      "ownerType": "trait",
+      "ownerId": "sp-289-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "不朽：力竭4回合后复活。【待校准】"
+        }
+      ],
+      "note": "特性「不朽」：待实现"
+    },
+    {
+      "id": "trait:sp-291-1",
+      "ownerType": "trait",
+      "ownerId": "sp-291-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "侵蚀：敌方每有1层中毒效果，自己获得连击数+1。【待校准】"
+        }
+      ],
+      "note": "特性「侵蚀」：待实现"
+    },
+    {
+      "id": "trait:sp-299-1",
+      "ownerType": "trait",
+      "ownerId": "sp-299-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "灰色肖像：攻击会使敌方已有的减益层数+3。【待校准】"
+        }
+      ],
+      "note": "特性「灰色肖像」：待实现"
+    },
+    {
+      "id": "trait:sp-302-1",
+      "ownerType": "trait",
+      "ownerId": "sp-302-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "变形活画：行动时，敌方每有1层增益，本次行动技能威力+10%，速度+5。【待校准】"
+        }
+      ],
+      "note": "特性「变形活画」：待实现"
+    },
+    {
+      "id": "trait:sp-307-1",
+      "ownerType": "trait",
+      "ownerId": "sp-307-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "绒粉星光：攻击时，若敌方血脉是非本系的系别血脉，技能威力+100%。【待校准】"
+        }
+      ],
+      "note": "特性「绒粉星光」：待实现"
+    },
+    {
+      "id": "trait:sp-310-1",
+      "ownerType": "trait",
+      "ownerId": "sp-310-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "月光审判：攻击时，若敌方血脉是首领血脉，技能威力+100%。【待校准】"
+        }
+      ],
+      "note": "特性「月光审判」：待实现"
+    },
+    {
+      "id": "trait:sp-317-1",
+      "ownerType": "trait",
+      "ownerId": "sp-317-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "契约的形状：根据捕捉所用的咕噜球，入场时获得不同效果。【待校准】"
+        }
+      ],
+      "note": "特性「契约的形状」：待实现"
+    },
+    {
+      "id": "trait:sp-320-1",
+      "ownerType": "trait",
+      "ownerId": "sp-320-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "对流：自己的能耗增加变为能耗降低；能耗降低变为能耗增加。【待校准】"
+        }
+      ],
+      "note": "特性「对流」：待实现"
+    },
+    {
+      "id": "trait:sp-322-1",
+      "ownerType": "trait",
+      "ownerId": "sp-322-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "月牙雪糕：使用攻击技能时，敌方每有1层冻结，在攻击前使其获得1层星陨印记。【待校准】"
+        }
+      ],
+      "note": "特性「月牙雪糕」：待实现"
+    },
+    {
+      "id": "trait:sp-323-1",
+      "ownerType": "trait",
+      "ownerId": "sp-323-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "血型吸引：敌方每携带1种系别的技能，自己攻击时威力+10。【待校准】"
+        }
+      ],
+      "note": "特性「血型吸引」：待实现"
+    },
+    {
+      "id": "trait:sp-325-1",
+      "ownerType": "trait",
+      "ownerId": "sp-325-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "煤渣草：在场时，所有灼烧的衰减变为增长。【待校准】"
+        }
+      ],
+      "note": "特性「煤渣草」：待实现"
+    },
+    {
+      "id": "trait:sp-327-1",
+      "ownerType": "trait",
+      "ownerId": "sp-327-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "搜刮：敌方每使用1次「聚能」技能或更换精灵，自己入场时获得魔攻+20%。【待校准】"
+        }
+      ],
+      "note": "特性「搜刮」：待实现"
+    },
+    {
+      "id": "trait:sp-329-2",
+      "ownerType": "trait",
+      "ownerId": "sp-329-2",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "扫荡：敌方每使用1次「聚能」技能或更换精灵，自己入场时获得魔攻+20%和魔防+10%。【待校准】"
+        }
+      ],
+      "note": "特性「扫荡」：待实现"
+    },
+    {
+      "id": "trait:sp-330-1",
+      "ownerType": "trait",
+      "ownerId": "sp-330-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "星地善良：回合结束时，若场上的己方精灵能量等于0，自己立即替换此精灵。【待校准】"
+        }
+      ],
+      "note": "特性「星地善良」：待实现"
+    },
+    {
+      "id": "trait:sp-335-1",
+      "ownerType": "trait",
+      "ownerId": "sp-335-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "双向光速：在场时，双方回合结束时的效果会额外触发1次。【待校准】"
+        }
+      ],
+      "note": "特性「双向光速」：待实现"
+    },
+    {
+      "id": "trait:sp-337-1",
+      "ownerType": "trait",
+      "ownerId": "sp-337-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "陨落：在场时，双方回合结束时的效果不会触发。【待校准】"
+        }
+      ],
+      "note": "特性「陨落」：待实现"
+    },
+    {
+      "id": "trait:sp-338-1",
+      "ownerType": "trait",
+      "ownerId": "sp-338-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "张弛有度：周末时自己获得双攻+40%，其他时间获得双防+40%。【待校准】"
+        }
+      ],
+      "note": "特性「张弛有度」：待实现"
+    },
+    {
+      "id": "trait:sp-340-1",
+      "ownerType": "trait",
+      "ownerId": "sp-340-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "天通地明：攻击时，若敌方血脉是污染血脉，技能威力+100%。【待校准】"
+        }
+      ],
+      "note": "特性「天通地明」：待实现"
+    },
+    {
+      "id": "trait:sp-342-1",
+      "ownerType": "trait",
+      "ownerId": "sp-342-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "系统发育：获得能量或生命时，会将等量的能量或生命随机分配给场下的精灵。【待校准】"
+        }
+      ],
+      "note": "特性「系统发育」：待实现"
+    },
+    {
+      "id": "trait:sp-345-1",
+      "ownerType": "trait",
+      "ownerId": "sp-345-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "守望星：触发星陨印记时仅消耗一半层数，仍造成满层伤害。【待校准】"
+        }
+      ],
+      "note": "特性「守望星」：待实现"
+    },
+    {
+      "id": "trait:sp-348-1",
+      "ownerType": "trait",
+      "ownerId": "sp-348-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "狂欢开始：在场时，背包里会变化出随机精灵，随机精灵只能与本精灵相互更换。本精灵受到的克制伤害+25%。【待校准】"
+        }
+      ],
+      "note": "特性「狂欢开始」：待实现"
+    },
+    {
+      "id": "trait:sp-351-1",
+      "ownerType": "trait",
+      "ownerId": "sp-351-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "展翅：在场时，自己携带的普通系技能变为翼系技能，若后于敌方行动，自己受到的伤害+25%。【待校准】"
+        }
+      ],
+      "note": "特性「展翅」：待实现"
+    },
+    {
+      "id": "trait:sp-354-1",
+      "ownerType": "trait",
+      "ownerId": "sp-354-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "大雪球：自己使用2次不同的冰系技能后，敌方获得4层冻结，随后特性重置。【待校准】"
+        }
+      ],
+      "note": "特性「大雪球」：待实现"
+    },
+    {
+      "id": "trait:sp-356-1",
+      "ownerType": "trait",
+      "ownerId": "sp-356-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "大火球：自己使用2次不同的火系技能后，下次技能无需蓄力，随后特性重置。【待校准】"
+        }
+      ],
+      "note": "特性「大火球」：待实现"
+    },
+    {
+      "id": "trait:sp-358-1",
+      "ownerType": "trait",
+      "ownerId": "sp-358-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "换碟：自己携带的音波弹/音爆/金属噪音/午夜噪音威力提升，且获得巧变：同系别技能。【待校准】"
+        }
+      ],
+      "note": "特性「换碟」：待实现"
+    },
+    {
+      "id": "trait:sp-362-1",
+      "ownerType": "trait",
+      "ownerId": "sp-362-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "戏耍：自己无法回复生命，而是将回复生命变为敌方扣除等量生命。【待校准】"
+        }
+      ],
+      "note": "特性「戏耍」：待实现"
+    },
+    {
+      "id": "trait:sp-365-1",
+      "ownerType": "trait",
+      "ownerId": "sp-365-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "焰色反应：在场时，衰减的灼烧变为相同层数的中毒。【待校准】"
+        }
+      ],
+      "note": "特性「焰色反应」：待实现"
+    },
+    {
+      "id": "trait:sp-367-1",
+      "ownerType": "trait",
+      "ownerId": "sp-367-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "魔术帽：在场时，场上双方携带的技能获得巧变：同系别技能。【待校准】"
+        }
+      ],
+      "note": "特性「魔术帽」：待实现"
+    },
+    {
+      "id": "trait:sp-371-1",
+      "ownerType": "trait",
+      "ownerId": "sp-371-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "合拍：本回合与敌方使用的技能在系别/类型/能耗上每有1项相同，回合结束时获得物攻和物防永久+10%。【待校准】"
+        }
+      ],
+      "note": "特性「合拍」：待实现"
+    },
+    {
+      "id": "trait:sp-373-1#2",
+      "ownerType": "trait",
+      "ownerId": "sp-373-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "盲从：可以携带多个复写/借用/取念技能，非幻系技能能耗-2。【待校准】"
+        }
+      ],
+      "note": "特性「盲从」：待实现"
+    },
+    {
+      "id": "trait:sp-376-1",
+      "ownerType": "trait",
+      "ownerId": "sp-376-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "不死鸟：每场战斗1次，受到致命伤害时保留1血，且敌方获得15层灼烧。【待校准】"
+        }
+      ],
+      "note": "特性「不死鸟」：待实现"
+    },
+    {
+      "id": "trait:sp-381-1",
+      "ownerType": "trait",
+      "ownerId": "sp-381-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "流沙统治者：天气为沙暴时，自己获得速度+50。【待校准】"
+        }
+      ],
+      "note": "特性「流沙统治者」：待实现"
+    },
+    {
+      "id": "trait:sp-384-1",
+      "ownerType": "trait",
+      "ownerId": "sp-384-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "盘根木：初始生命为10%，入场前己方精灵每使用1次草系技能，回复30%生命。【待校准】"
+        }
+      ],
+      "note": "特性「盘根木」：待实现"
+    },
+    {
+      "id": "trait:sp-393-1",
+      "ownerType": "trait",
+      "ownerId": "sp-393-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "淬炼火：入场前己方精灵每使用1次火系技能，获得攻防+10%，速度+10。（最多触发10次）【待校准】"
+        }
+      ],
+      "note": "特性「淬炼火」：待实现"
+    },
+    {
+      "id": "trait:sp-396-1",
+      "ownerType": "trait",
+      "ownerId": "sp-396-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "友谊之果：回合结束时，双方队伍中的所有精灵回复1能量。【待校准】"
+        }
+      ],
+      "note": "特性「友谊之果」：待实现"
+    },
+    {
+      "id": "trait:sp-400-1",
+      "ownerType": "trait",
+      "ownerId": "sp-400-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "瞳中倒影：自己或其他精灵离场时，自己与更换入场的精灵交换血量百分比。【待校准】"
+        }
+      ],
+      "note": "特性「瞳中倒影」：待实现"
+    },
+    {
+      "id": "trait:sp-403-1",
+      "ownerType": "trait",
+      "ownerId": "sp-403-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "异类：携带的翼系攻击技能获得选择：能耗+1，攻击时吸血50%。【待校准】"
+        }
+      ],
+      "note": "特性「异类」：待实现"
+    },
+    {
+      "id": "trait:sp-409-1#2",
+      "ownerType": "trait",
+      "ownerId": "sp-409-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "与星星同行：攻击时，将敌方所有印记变为相同层数的星陨印记。【待校准】"
+        }
+      ],
+      "note": "特性「与星星同行」：待实现"
+    },
+    {
+      "id": "trait:sp-410-1",
+      "ownerType": "trait",
+      "ownerId": "sp-410-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "迎宾：自己或其他精灵离场时，更换入场的精灵获得萌化。【待校准】"
+        }
+      ],
+      "note": "特性「迎宾」：待实现"
+    },
+    {
+      "id": "trait:sp-412-1",
+      "ownerType": "trait",
+      "ownerId": "sp-412-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "整点报时：每场战斗1次，回合结束时，若自己累计消耗的能量恰好为12，则回满能量和生命。【待校准】"
+        }
+      ],
+      "note": "特性「整点报时」：待实现"
+    },
+    {
+      "id": "trait:sp-414-1",
+      "ownerType": "trait",
+      "ownerId": "sp-414-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "有求必应：使用「选择」技能后，会额外使用1次另一种「选择」效果。使用任意技能后，该技能冷却1回合。【待校准】"
+        }
+      ],
+      "note": "特性「有求必应」：待实现"
+    },
+    {
+      "id": "trait:sp-417-1",
+      "ownerType": "trait",
+      "ownerId": "sp-417-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "一意孤行：使用「选择」技能后，会额外使用1次相同的「选择」效果。使用任意技能后，该技能冷却1回合。【待校准】"
+        }
+      ],
+      "note": "特性「一意孤行」：待实现"
+    },
+    {
+      "id": "trait:sp-418-1",
+      "ownerType": "trait",
+      "ownerId": "sp-418-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "守护之心：双方场上每有1种不同的增益，自己获得物防+20%。【待校准】"
+        }
+      ],
+      "note": "特性「守护之心」：待实现"
+    },
+    {
+      "id": "trait:sp-420-1",
+      "ownerType": "trait",
+      "ownerId": "sp-420-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "和弦共振：双方场上每有1种不同的印记，自己获得魔攻+50%。【待校准】"
+        }
+      ],
+      "note": "特性「和弦共振」：待实现"
+    },
+    {
+      "id": "trait:sp-422-1",
+      "ownerType": "trait",
+      "ownerId": "sp-422-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "猫精灵的礼物：己方精灵每完整使用1次「选择」技能（「明」和「暗」各1次），自己入场时获得物攻+40%。【待校准】"
+        }
+      ],
+      "note": "特性「猫精灵的礼物」：待实现"
+    },
+    {
+      "id": "trait:sp-432-1",
+      "ownerType": "trait",
+      "ownerId": "sp-432-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "光度换算：携带的火系技能获得选择：使用后失去15%生命，光系技能威力永久+30。【待校准】"
+        }
+      ],
+      "note": "特性「光度换算」：待实现"
+    },
+    {
+      "id": "trait:sp-434-1",
+      "ownerType": "trait",
+      "ownerId": "sp-434-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "长久保存制法：自己的聚能获得选择：偷取敌方3能量。【待校准】"
+        }
+      ],
+      "note": "特性「长久保存制法」：待实现"
+    },
+    {
+      "id": "trait:sp-441-1",
+      "ownerType": "trait",
+      "ownerId": "sp-441-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "博物：在场时，识破精灵的变化效果，解除其伪装。【待校准】"
+        }
+      ],
+      "note": "特性「博物」：待实现"
+    },
+    {
+      "id": "trait:sp-443-1",
+      "ownerType": "trait",
+      "ownerId": "sp-443-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "铭记于月亮：获得自己击败的精灵的特性，每次攻击后自己失去5%生命。【待校准】"
+        }
+      ],
+      "note": "特性「铭记于月亮」：待实现"
+    },
+    {
+      "id": "trait:sp-452-1",
+      "ownerType": "trait",
+      "ownerId": "sp-452-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "基因编辑：自己携带技能的基础能耗，变为上回合双方使用的技能能耗之和。【待校准】"
+        }
+      ],
+      "note": "特性「基因编辑」：待实现"
+    },
+    {
+      "id": "trait:sp-454-1",
+      "ownerType": "trait",
+      "ownerId": "sp-454-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "正模标本：自己队伍中的其他精灵，在力竭1回合后会变为未完虫。【待校准】"
+        }
+      ],
+      "note": "特性「正模标本」：待实现"
+    },
+    {
+      "id": "trait:sp-457-1",
+      "ownerType": "trait",
+      "ownerId": "sp-457-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "风速仪：携带的技能每累计传动8，自己获得1层风起印记。【待校准】"
+        }
+      ],
+      "note": "特性「风速仪」：待实现"
+    },
+    {
+      "id": "trait:sp-459-1",
+      "ownerType": "trait",
+      "ownerId": "sp-459-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "翻垃圾桶：入场时自己未携带的技能位置会变为敌方最近使用过的技能，且能耗-2。【待校准】"
+        }
+      ],
+      "note": "特性「翻垃圾桶」：待实现"
+    },
+    {
+      "id": "trait:sp-461-1",
+      "ownerType": "trait",
+      "ownerId": "sp-461-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "盗魂铃：初始能量为0，首次入场前敌方每聚能1次，回复5能量（可突破上限），在场时自己回复的能量-4。【待校准】"
+        }
+      ],
+      "note": "特性「盗魂铃」：待实现"
+    },
+    {
+      "id": "trait:sp-464-1",
+      "ownerType": "trait",
+      "ownerId": "sp-464-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "旧玩具：己方精灵每使用过1个不同系别的技能，自己入场时获得双攻+10%。【待校准】"
+        }
+      ],
+      "note": "特性「旧玩具」：待实现"
+    },
+    {
+      "id": "trait:sp-466-1",
+      "ownerType": "trait",
+      "ownerId": "sp-466-1",
+      "trigger": "passive",
+      "when": [],
+      "effects": [
+        {
+          "type": "unsupported",
+          "effectType": "traitEffect",
+          "reason": "秋收：处于草系环境中时，机械系技能威力+50%。【待校准】"
+        }
+      ],
+      "note": "特性「秋收」：待实现"
     }
   ]
 }
