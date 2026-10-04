@@ -152,6 +152,10 @@ export type EffectSpec =
   | { type: "beginCharge"; skillId?: string; choice?: 0 | 1 }
   /** 随机层数减益 · 向目标随机属性各扣 `layers` 层（确定性种子）。 */
   | { type: "randomStatDebuff"; target?: string; layers: number; stats?: string[] }
+  /** 奉献域 · 向自身队伍加入 `count` 个奉献（`key` 省略 = 随机：威力/连击/能耗/吸血）。 */
+  | { type: "grantDedication"; target?: string; key?: "power" | "combo" | "cost" | "lifesteal"; value?: number; count?: number }
+  /** 奉献域 · 消耗队伍第一个奉献并作用到 `skillId` 技能本次使用（供带「受奉献影响」tag 的技能）。 */
+  | { type: "consumeDedication"; target?: string; skillId: string }
   /** 天气域 · 延长当前天气回合数（`weatherId` 省略 = 不限；不匹配则不生效）。 */
   | { type: "modifyWeatherTurns"; weatherId?: string; delta: number }
   | { type: "setPriority"; target?: string; value: number }

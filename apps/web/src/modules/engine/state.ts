@@ -71,6 +71,7 @@ export function cloneSide(s: SideState): SideState {
     active: cloneActive(s.active),
     bench: s.bench.map(cloneActive),
     teamMarks: { ...s.teamMarks },
+    dedications: s.dedications ? s.dedications.map((d) => ({ ...d })) : undefined,
     switchLock: s.switchLock,
     seenEnemy: [...s.seenEnemy],
     wishChargesLeft: s.wishChargesLeft,

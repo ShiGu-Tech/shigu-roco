@@ -116,6 +116,8 @@ export interface SideState {
   switchedThisTurn?: boolean;
   /** 最近一次对本侧造成伤害的来源（供阵亡归属）。 */
   lastHit?: { side: Side; skillId?: string };
+  /** 奉献域 · 队伍待生效的奉献（作用于带「受奉献影响」tag 的技能，每次使用消耗一个）。 */
+  dedications?: { key: "power" | "combo" | "cost" | "lifesteal"; value: number }[];
 }
 
 export interface Weather {

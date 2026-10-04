@@ -88,6 +88,8 @@ const WRITE_NODES: WriteSpec[] = [
   { suffix: "modifyWeatherTurns", title: "写入 · 延长天气", target: "self", params: [{ name: "weatherId", type: "string" }, { name: "delta", type: "number", required: true }] },
   { suffix: "beginCharge", title: "写入 · 进入蓄力", target: "self", params: [{ name: "skillId", type: "string" }, { name: "choice", type: "number" }] },
   { suffix: "randomStatDebuff", title: "写入 · 随机属性减益", target: "opponent", inputs: ["layers"], params: [{ name: "stats", type: "string" }] },
+  { suffix: "grantDedication", title: "写入 · 获得奉献", target: "self", params: [{ name: "key", type: "string" }, { name: "value", type: "number" }, { name: "count", type: "number" }] },
+  { suffix: "consumeDedication", title: "写入 · 消耗奉献", target: "self", params: [{ name: "skillId", type: "string", required: true }] },
   { suffix: "setRuleModifier", title: "写入 · 规则覆盖", target: "self", params: [{ name: "key", type: "string", required: true }, { name: "value", type: "json", required: true }] },
   { suffix: "setPriority", title: "写入 · 行动优先级", target: "self", params: [{ name: "value", type: "number", required: true }] },
   { suffix: "forceFirst", title: "写入 · 强制先手", target: "self", params: [] },

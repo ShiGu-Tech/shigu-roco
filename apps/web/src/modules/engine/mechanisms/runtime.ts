@@ -527,6 +527,41 @@ export class MechanismRuntime {
           events.push({ type: "stat-debuffed-random", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { layers: definition.layers, applied } });
           break;
         }
+        case "grantDedication": {
+          const side = targetSide === "player" ? state.player : targetSide === "enemy" ? state.enemy : undefined;
+          if (!side) break;
+          const defaults: { key: "power" | "combo" | "cost" | "lifesteal"; value: number }[] = [
+            { key: "power", value: 20 },
+            { key: "combo", value: 1 },
+            { key: "cost", value: 2 },
+            { key: "lifesteal", value: 0.1 },
+          ];
+          const count = Math.max(1, Math.floor(definition.count ?? 1));
+          const rng = new Rng(hashSeed(state, `${command.mechanismId}:${state.turn}:dedication`));
+          side.dedications ??= [];
+          for (let i = 0; i < count; i++) {
+            const pick = definition.key ? { key: definition.key, value: definition.value ?? defaults.find((d) => d.key === definition.key)?.value ?? 0 } : defaults[rng.int(defaults.length)];
+            side.dedications.push({ key: pick.key, value: pick.value });
+          }
+          events.push({ type: "dedication-granted", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { count, queue: side.dedications.length } });
+          break;
+        }
+        case "consumeDedication": {
+          const side = targetSide === "player" ? state.player : targetSide === "enemy" ? state.enemy : undefined;
+          if (!side?.dedications?.length) break;
+          const consumed = side.dedications.shift()!;
+          const act = side.active;
+          act.counters ??= {};
+          if (consumed.key === "power") act.counters["ded-power"] = toNum(act.counters["ded-power"], 0) + consumed.value;
+          else if (consumed.key === "combo") act.counters["ded-combo"] = toNum(act.counters["ded-combo"], 0) + consumed.value;
+          else if (consumed.key === "lifesteal") act.counters["ded-lifesteal"] = toNum(act.counters["ded-lifesteal"], 0) + consumed.value;
+          else if (consumed.key === "cost") {
+            act.costMods ??= [];
+            act.costMods.push({ scope: "skill", skillId: definition.skillId, delta: -consumed.value, duration: "nextAction", key: `dedication:${command.mechanismId}` } as CostMod);
+          }
+          events.push({ type: "dedication-consumed", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { key: consumed.key, value: consumed.value, skillId: definition.skillId } });
+          break;
+        }
         case "beginCharge": {
           if (!active || !targetSide) break;
           const skillId = definition.skillId;
@@ -786,7 +821,8 @@ export class MechanismRuntime {
       events.push({ type: "damage", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { value: damage, attackerSide, skillId: definition.skillId, damageType: definition.category, effectiveness, modifiers, breakdown } });
       // 吸血：攻击方 counters["lifesteal"]（比例）按本次伤害回复自身生命。
       const attackerState = attackerSide === "player" ? state.player : state.enemy;
-      const lifesteal = toNum(attackerState.active.counters?.lifesteal, 0);
+      const lifesteal = toNum(attackerState.active.counters?.lifesteal, 0) + toNum(attackerState.active.counters?.["ded-lifesteal"], 0);
+      if (attackerState.active.counters?.["ded-lifesteal"]) attackerState.active.counters["ded-lifesteal"] = 0;
       if (lifesteal > 0 && damage > 0) {
         const before = attackerState.active.hp;
         attackerState.active.hp = Math.min(attackerState.active.maxHp, attackerState.active.hp + Math.floor(damage * lifesteal));
@@ -848,6 +884,17 @@ export class MechanismRuntime {
           reduction += d.percent;
         }
       }
+    }
+    // 奉献域 · 一次性威力 / 连击（消耗后清零）。
+    const dedPower = toNum(attacker.counters?.["ded-power"], 0);
+    if (dedPower) {
+      powerBonus += dedPower;
+      attacker.counters!["ded-power"] = 0;
+    }
+    const dedCombo = toNum(attacker.counters?.["ded-combo"], 0);
+    if (dedCombo) {
+      hits += dedCombo;
+      attacker.counters!["ded-combo"] = 0;
     }
     // 记忆域 · 连击数 buff：`combo-add`（+N 段）/ `combo-mul`（+N% 段，1 = +100%）叠加在技能自身段数之上。
     const comboAdd = toNum(attacker.counters?.["combo-add"], 0);

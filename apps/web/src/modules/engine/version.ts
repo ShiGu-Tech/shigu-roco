@@ -110,5 +110,7 @@
  * - 0.35.0 随机属性减益 + 技能 tag（`mechanisms/runtime.ts` / `data.ts`）：新增 `randomStatDebuff`（确定性种子向随机属性
  *          各扣 N 层，供 暗涌印记登记）；`buildBundle` 由图鉴描述派生技能 `tags`（蓄力 / 选择 / 巧变 / 迸发 / 传动 /
  *          奉献目标），仅作查询面。
+ * - 0.36.0 奉献（队伍域）：`SideState.dedications` + `grantDedication`（入队，`key` 省略随机）/ `consumeDedication`
+ *          （消耗一个并作用到技能本次使用：威力 / 连击 / 能耗 / 吸血，一次性计数器 `ded-*` 读取后清零）。
  */
-export const ENGINE_VERSION = "0.35.0";
+export const ENGINE_VERSION = "0.36.0";
