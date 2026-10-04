@@ -170,5 +170,7 @@
  *          连带修正 硬门 / 摇篮曲 等打断类）。
  * - 0.61.0 迅捷族特性：迅捷判定支持规则覆盖授予（`quick.costBelow` / `quick.element.<系>` / `quick.slot1`），
  *          `orderKey` 支持 `quick.priorityBonus`（相争：迅捷技能先手 +N）。
+ * - 0.62.0 使用次数 +1：`ActiveSprite.counters.extraUses` —— 消耗一个计数，本次技能行动额外执行一次
+ *          （`executeSkill` 增 `payCost`，额外执行不重复耗能 / 不重设冷却）。
  */
-export const ENGINE_VERSION = "0.61.0";
+export const ENGINE_VERSION = "0.62.0";

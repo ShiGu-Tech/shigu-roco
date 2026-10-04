@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.99.0",
+  "version": "0.100.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -13081,9 +13081,10 @@
           "layers": 1
         },
         {
-          "type": "unsupported",
-          "effectType": "defenseCounter",
-          "reason": "电磁偏转：下回合所选技能使用次数 +1【待校准】"
+          "type": "addCounter",
+          "target": "self",
+          "key": "extraUses",
+          "delta": 1
         }
       ],
       "note": "电磁偏转：应对攻击成功 → 必定先手 + 本回合承伤 −70%；下回合所选技能使用次数 +1"
@@ -22208,31 +22209,55 @@
       "id": "trait:sp-205-1",
       "ownerType": "trait",
       "ownerId": "sp-205-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "噼啪！：入场后首次行动，所选技能使用次数+1。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-205-1",
+            "sp-206-1"
+          ]
         }
       ],
-      "note": "特性「噼啪！」：待实现"
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "extraUses",
+          "delta": 1
+        }
+      ],
+      "note": "特性「噼啪！」：入场后首次行动，所选技能使用次数 +1"
     },
     {
       "id": "trait:sp-206-2",
       "ownerType": "trait",
       "ownerId": "sp-206-2",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "onEntry",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "噼啪噼啪！：入场后首次行动，所选技能使用次数+1，且该回合每次行动后回复2能量。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-206-2"
+          ]
         }
       ],
-      "note": "特性「噼啪噼啪！」：待实现"
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "extraUses",
+          "delta": 1
+        },
+        {
+          "type": "unsupported",
+          "effectType": "actionRegen",
+          "reason": "该回合每次行动后回复 2 能量 待实现【待校准】"
+        }
+      ],
+      "note": "特性「噼啪噼啪！」：入场后首次行动，所选技能使用次数 +1（行动后回能待实现）"
     },
     {
       "id": "trait:sp-212-1",
@@ -25117,16 +25142,17 @@
             {
               "type": "returnField",
               "target": "self"
+            },
+            {
+              "type": "addCounter",
+              "target": "self",
+              "key": "extraUses",
+              "delta": 1
             }
           ]
-        },
-        {
-          "type": "unsupported",
-          "effectType": "extraUses",
-          "reason": "下回合所选技能使用次数 +1 待实现【待校准】"
         }
       ],
-      "note": "过载回路：回合结束时返场（使用次数 +1 待实现）"
+      "note": "过载回路：回合结束时返场 + 下回合所选技能使用次数 +1"
     },
     {
       "id": "skill:sk-7100300:light",

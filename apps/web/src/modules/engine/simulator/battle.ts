@@ -365,8 +365,14 @@ export class Simulator {
         events.push(...this.applyEnergy(st, side));
         logs.push(`energy: ${side}`);
       } else {
-        events.push(...this.executeSkill(st, side, actionView, rng, beforeCommands, reactedBySide[side] === true, wentFirst, burst));
-        logs.push(`skill: ${side} -> ${entry.action.skillId ?? ""}`);
+        // 使用次数 +1：本行动的技能额外执行（不重复消耗能量）；计数器用完清零。
+        const extra = Math.max(0, Math.floor(toNum(caster.counters?.extraUses, 0)));
+        if (extra > 0) caster.counters!.extraUses = 0;
+        events.push(...this.executeSkill(st, side, actionView, rng, beforeCommands, reactedBySide[side] === true, wentFirst, burst, true));
+        for (let i = 0; i < extra; i++) {
+          events.push(...this.executeSkill(st, side, actionView, rng, beforeCommands, reactedBySide[side] === true, wentFirst, burst, false));
+        }
+        logs.push(`skill: ${side} -> ${entry.action.skillId ?? ""}${extra ? ` ×${extra + 1}` : ""}`);
       }
       entry.status = "resolved";
       caster.actedSinceEntry = true;
@@ -719,27 +725,30 @@ export class Simulator {
     reacted = false,
     wentFirst = false,
     burst = false,
+    payCost = true,
   ): BattleEvent[] {
     const skill = action.skillId ? getSkill(this.bundle, action.skillId) : {};
     const caster = this.sideState(st, side).active;
     const ruleMods = this.mechanisms.ruleModifiers(st, this.bundle, side);
-    const cost = action.skillId ? effectiveCost(st, this.bundle, side, action.skillId, ruleMods) : Math.floor(toNum(skill.cost, 0));
-    // 规则覆盖 · `cost.payWithHp`（盛宴 / 石头大餐）：能量不足时以 5% 最大生命代替 1 点能耗。
-    if (ruleMods["cost.payWithHp"] === true && cost > caster.energy) {
-      const deficit = cost - caster.energy;
-      caster.energy = 0;
-      caster.hp = Math.max(0, caster.hp - Math.round(caster.maxHp * 0.05 * deficit));
-    } else {
-      caster.energy = Math.max(0, caster.energy - Math.max(0, cost));
-    }
-    // 队伍域 · 历史计数：本队累计消耗能量（供「累计消耗恰好为 N」类，如整点报时）。
-    this.bump(st, side, "energySpent", Math.max(0, cost));
-    // 单次（nextAction）能耗条目：本次行动结算后移除。
-    if (caster.costMods?.some((m) => m.duration === "nextAction")) caster.costMods = caster.costMods.filter((m) => m.duration !== "nextAction");
-    const cooldown = Math.max(0, Math.floor(toNum(skill.cooldown, 0)));
-    if (action.skillId && cooldown > 0) {
-      caster.cooldowns ??= {};
-      caster.cooldowns[action.skillId] = cooldown;
+    const cost = payCost && action.skillId ? effectiveCost(st, this.bundle, side, action.skillId, ruleMods) : Math.floor(toNum(skill.cost, 0));
+    if (payCost) {
+      // 规则覆盖 · `cost.payWithHp`（盛宴 / 石头大餐）：能量不足时以 5% 最大生命代替 1 点能耗。
+      if (ruleMods["cost.payWithHp"] === true && cost > caster.energy) {
+        const deficit = cost - caster.energy;
+        caster.energy = 0;
+        caster.hp = Math.max(0, caster.hp - Math.round(caster.maxHp * 0.05 * deficit));
+      } else {
+        caster.energy = Math.max(0, caster.energy - Math.max(0, cost));
+      }
+      // 队伍域 · 历史计数：本队累计消耗能量（供「累计消耗恰好为 N」类，如整点报时）。
+      this.bump(st, side, "energySpent", Math.max(0, cost));
+      // 单次（nextAction）能耗条目：本次行动结算后移除。
+      if (caster.costMods?.some((m) => m.duration === "nextAction")) caster.costMods = caster.costMods.filter((m) => m.duration !== "nextAction");
+      const cooldown = Math.max(0, Math.floor(toNum(skill.cooldown, 0)));
+      if (action.skillId && cooldown > 0) {
+        caster.cooldowns ??= {};
+        caster.cooldowns[action.skillId] = cooldown;
+      }
     }
     const opp = otherSide(side);
     const target = this.sideState(st, opp).active;
