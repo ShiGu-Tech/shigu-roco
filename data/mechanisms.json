@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.74.0",
+  "version": "0.75.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -21276,16 +21276,26 @@
       "id": "trait:sp-93-1",
       "ownerType": "trait",
       "ownerId": "sp-93-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "afterSwitch",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "木桶戏法：离场后，更换入场的精灵以木桶状态登场。【待校准】"
+          "path": "event.from",
+          "op": "in",
+          "value": [
+            "sp-93-1",
+            "sp-94-1"
+          ]
         }
       ],
-      "note": "特性「木桶戏法」：待实现"
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "wooden-barrel-state",
+          "layers": 1
+        }
+      ],
+      "note": "特性「木桶戏法」：离场后换入的精灵以木桶状态登场"
     },
     {
       "id": "trait:sp-95-1",
@@ -23093,31 +23103,84 @@
       "id": "trait:sp-410-1",
       "ownerType": "trait",
       "ownerId": "sp-410-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "afterSwitch",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "迎宾：自己或其他精灵离场时，更换入场的精灵获得萌化。【待校准】"
+          "anyOf": [
+            {
+              "path": "event.from",
+              "op": "in",
+              "value": [
+                "sp-410-1",
+                "sp-411-1"
+              ]
+            },
+            {
+              "path": "target.active.spriteId",
+              "op": "in",
+              "value": [
+                "sp-410-1",
+                "sp-411-1"
+              ]
+            }
+          ]
         }
       ],
-      "note": "特性「迎宾」：待实现"
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "moe",
+          "layers": 1
+        }
+      ],
+      "note": "特性「迎宾」：有精灵离场时，换入的精灵获得 1 层萌化"
     },
     {
       "id": "trait:sp-412-1",
       "ownerType": "trait",
       "ownerId": "sp-412-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "turnEnd",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "整点报时：每场战斗1次，回合结束时，若自己累计消耗的能量恰好为12，则回满能量和生命。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-412-1",
+            "sp-413-1"
+          ]
+        },
+        {
+          "path": "self.counters.energySpent",
+          "op": "eq",
+          "value": 12
+        },
+        {
+          "path": "self.counters.reportDone",
+          "op": "neq",
+          "value": 1
         }
       ],
-      "note": "特性「整点报时」：待实现"
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "reportDone",
+          "delta": 1
+        },
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 100
+        },
+        {
+          "type": "heal",
+          "target": "self",
+          "basis": "maxHp",
+          "amount": 1
+        }
+      ],
+      "note": "特性「整点报时」：每场 1 次：累计消耗恰好 12 能量时回满能量与生命（能量近似为 +100）"
     },
     {
       "id": "trait:sp-414-1",

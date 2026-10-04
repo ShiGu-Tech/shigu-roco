@@ -128,5 +128,6 @@
  *          供「非本系技能」「非敌方系别」类条件（涂鸦 / 绝对秩序 / 流沙统治者）。
  * - 0.43.0 技能栏域 · 槽位限制：`legalActions` 读取 passive 覆盖 `battle.allowedSlots` 位掩码（bit0=1号位…），
  *          只列出允许槽位的技能（正位宝剑 / 宝剑王牌）。
+ * - 0.44.0 队伍域 · 累计消耗能量计数 `energySpent`（`executeSkill` 自增，供「累计消耗恰好为 N」类，如整点报时）。
  */
-export const ENGINE_VERSION = "0.43.0";
+export const ENGINE_VERSION = "0.44.0";

@@ -567,6 +567,8 @@ export class Simulator {
     const caster = this.sideState(st, side).active;
     const cost = action.skillId ? effectiveCost(st, this.bundle, side, action.skillId) : Math.floor(toNum(skill.cost, 0));
     caster.energy = Math.max(0, caster.energy - Math.max(0, cost));
+    // 队伍域 · 历史计数：本队累计消耗能量（供「累计消耗恰好为 N」类，如整点报时）。
+    this.bump(st, side, "energySpent", Math.max(0, cost));
     // 单次（nextAction）能耗条目：本次行动结算后移除。
     if (caster.costMods?.some((m) => m.duration === "nextAction")) caster.costMods = caster.costMods.filter((m) => m.duration !== "nextAction");
     const cooldown = Math.max(0, Math.floor(toNum(skill.cooldown, 0)));
