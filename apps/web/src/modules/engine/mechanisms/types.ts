@@ -158,7 +158,7 @@ export type EffectSpec =
   | { type: "learnSkill"; target?: string; skillId: string; source?: string; duration?: number }
   | { type: "forgetSkill"; target?: string; skillId: string }
   | { type: "replaceSkill"; target?: string; fromSkillId: string; toSkillId: string; duration?: number }
-  | { type: "randomizeSkill"; target?: string; skillId?: string; source: string[]; duration?: number }
+  | { type: "randomizeSkill"; target?: string; skillId?: string; source: string[]; duration?: number; costDelta?: number }
   | { type: "swapSkillSet"; target?: string; from: string; to: string; duration?: number }
   /** 记忆域 · 计数器：`target.active.counters[key] += delta`。 */
   | { type: "addCounter"; target?: string; key: string; delta: number }

@@ -38,6 +38,8 @@ export function effectiveCost(state: BattleState, bundle: DataBundle, side: Side
   }
   // 旧数据兼容：modifySkill.cost 仍可能写在这里。
   added += toNum(active.skillMods?.[skillId]?.cost, 0);
+  // 巧变：临时技能（skillOverrides）自带的能耗修正。
+  added += toNum(active.skillOverrides?.[skillId]?.cost, 0);
   return Math.max(0, Math.floor(multiplied + added));
 }
 

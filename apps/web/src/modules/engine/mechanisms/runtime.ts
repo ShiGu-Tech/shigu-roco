@@ -647,7 +647,7 @@ export class MechanismRuntime {
           active.loadout = active.loadout.includes(current)
             ? active.loadout.map((id) => (id === current ? picked : id))
             : [...active.loadout, picked];
-          recordSkillOverride(active, picked, current, definition.duration ? state.turn + definition.duration : 0);
+          recordSkillOverride(active, picked, current, definition.duration ? state.turn + definition.duration : 0, definition.costDelta);
           events.push({ type: "skill-randomized", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { from: current, to: picked, loadout: active.loadout } });
           break;
         }

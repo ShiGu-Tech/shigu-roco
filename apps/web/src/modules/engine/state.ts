@@ -37,9 +37,9 @@ export function cloneActive(a: ActiveSprite): ActiveSprite {
 }
 
 /** 记录一次临时技能改动，供到期 / 用后还原。expires：-1 永久、0 用后还原、>0 绝对回合。 */
-export function recordSkillOverride(active: ActiveSprite, tempSkillId: string, original: string, expires: number): void {
+export function recordSkillOverride(active: ActiveSprite, tempSkillId: string, original: string, expires: number, cost?: number): void {
   active.skillOverrides ??= {};
-  active.skillOverrides[tempSkillId] = { original, expires };
+  active.skillOverrides[tempSkillId] = cost === undefined ? { original, expires } : { original, expires, cost };
 }
 
 /** 把临时技能还原为原技能（original 为空则移除）。 */

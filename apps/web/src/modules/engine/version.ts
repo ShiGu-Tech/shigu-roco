@@ -100,5 +100,7 @@
  *          （产出 `lifesteal` 事件）；供 等价交换 等「获得 X% 吸血」经 `addCounter lifesteal` 登记。
  * - 0.31.0 天气延长（`mechanisms/runtime.ts`）：新增 `modifyWeatherTurns`（`weatherId` 可省略，匹配则增减当前天气
  *          `turnsLeft`）；供 汇流「雨天延长 4 / 8 回合」登记。
+ * - 0.32.0 巧变能耗（`cost.ts` + `state.ts`）：`skillOverrides` 条目可带 `cost`（临时技能能耗修正），
+ *          `randomizeSkill` 新增 `costDelta`；`effectiveCost` 计入——供「巧变：变为随机技能且能耗 −1」登记。
  */
-export const ENGINE_VERSION = "0.31.0";
+export const ENGINE_VERSION = "0.32.0";

@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.45.0",
+  "version": "0.46.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -12495,11 +12495,6 @@
           "target": "self",
           "statusId": "def-7120300",
           "layers": 1
-        },
-        {
-          "type": "unsupported",
-          "effectType": "defenseCounter",
-          "reason": "毒肽：巧变：毒系状态技能【待校准】"
         }
       ],
       "note": "毒肽：应对攻击成功 → 必定先手 + 本回合承伤 −70%；巧变：毒系状态技能"
@@ -12988,11 +12983,6 @@
           "target": "self",
           "statusId": "def-7100320",
           "layers": 1
-        },
-        {
-          "type": "unsupported",
-          "effectType": "defenseCounter",
-          "reason": "守护咒：巧变：龙系状态技能【待校准】"
         }
       ],
       "note": "守护咒：应对攻击成功 → 必定先手 + 本回合承伤 −90%；巧变：龙系状态技能"
@@ -15230,6 +15220,208 @@
         }
       ],
       "note": "汇流：应对防御成功 → 必定先手 + 雨天再延长 4 回合（共 8）"
+    },
+    {
+      "id": "skill:sk-7120300:improvise",
+      "ownerType": "skill",
+      "ownerId": "sk-7120300",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7120300"
+        }
+      ],
+      "effects": [
+        {
+          "type": "randomizeSkill",
+          "target": "self",
+          "skillId": "sk-7120300",
+          "source": [
+            "sk-7120120",
+            "sk-7120130",
+            "sk-7120140",
+            "sk-7120150",
+            "sk-7120160",
+            "sk-7120230",
+            "sk-7120240",
+            "sk-7120290"
+          ],
+          "costDelta": -1
+        }
+      ],
+      "note": "毒肽：巧变 → 变为随机PoisonStatus技能且能耗 −1，用完还原"
+    },
+    {
+      "id": "skill:sk-7100320:improvise",
+      "ownerType": "skill",
+      "ownerId": "sk-7100320",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7100320"
+        }
+      ],
+      "effects": [
+        {
+          "type": "randomizeSkill",
+          "target": "self",
+          "skillId": "sk-7100320",
+          "source": [
+            "sk-7100170",
+            "sk-7100180",
+            "sk-7100240",
+            "sk-7100300"
+          ],
+          "costDelta": -1
+        }
+      ],
+      "note": "守护咒：巧变 → 变为随机DragonStatus技能且能耗 −1，用完还原"
+    },
+    {
+      "id": "skill:sk-7190430:improvise",
+      "ownerType": "skill",
+      "ownerId": "sk-7190430",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7190430"
+        }
+      ],
+      "effects": [
+        {
+          "type": "randomizeSkill",
+          "target": "self",
+          "skillId": "sk-7190430",
+          "source": [
+            "sk-7190210",
+            "sk-7190220",
+            "sk-7190230",
+            "sk-7190240",
+            "sk-7190250",
+            "sk-7190260",
+            "sk-7190270",
+            "sk-7190350",
+            "sk-7190360",
+            "sk-7190370",
+            "sk-7190380",
+            "sk-7190390",
+            "sk-7190410",
+            "sk-7190420",
+            "sk-7190440",
+            "sk-7190470",
+            "sk-7190500",
+            "sk-7190510"
+          ],
+          "costDelta": -1
+        }
+      ],
+      "note": "叠加态：巧变 → 变为随机Psychicattack技能且能耗 −1，用完还原"
+    },
+    {
+      "id": "skill:sk-7180440:improvise",
+      "ownerType": "skill",
+      "ownerId": "sk-7180440",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7180440"
+        }
+      ],
+      "effects": [
+        {
+          "type": "randomizeSkill",
+          "target": "self",
+          "skillId": "sk-7180440",
+          "source": [
+            "sk-7180070",
+            "sk-7180080",
+            "sk-7180090",
+            "sk-7180100",
+            "sk-7180110",
+            "sk-7180120",
+            "sk-7180130",
+            "sk-7180140",
+            "sk-7180150",
+            "sk-7180240",
+            "sk-7180250",
+            "sk-7180260",
+            "sk-7180270",
+            "sk-7180280",
+            "sk-7180290",
+            "sk-7180300",
+            "sk-7180310",
+            "sk-7180340",
+            "sk-7180380",
+            "sk-7180400",
+            "sk-7180410",
+            "sk-7180420",
+            "sk-7180430",
+            "sk-7180460"
+          ],
+          "costDelta": -1
+        }
+      ],
+      "note": "假冒：巧变 → 变为随机Darkattack技能且能耗 −1，用完还原"
+    },
+    {
+      "id": "skill:sk-7070290:improvise",
+      "ownerType": "skill",
+      "ownerId": "sk-7070290",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7070290"
+        }
+      ],
+      "effects": [
+        {
+          "type": "randomizeSkill",
+          "target": "self",
+          "skillId": "sk-7070290",
+          "source": [
+            "sk-7070010",
+            "sk-7070020",
+            "sk-7070030",
+            "sk-7070040",
+            "sk-7070050",
+            "sk-7070060",
+            "sk-7070070",
+            "sk-7070080",
+            "sk-7070100",
+            "sk-7070110",
+            "sk-7070120",
+            "sk-7070130",
+            "sk-7070140",
+            "sk-7070150",
+            "sk-7070160",
+            "sk-7070170",
+            "sk-7070200",
+            "sk-7070210",
+            "sk-7070220",
+            "sk-7070230",
+            "sk-7070240",
+            "sk-7070250",
+            "sk-7070260",
+            "sk-7070270",
+            "sk-7070280",
+            "sk-7070300",
+            "sk-7070330",
+            "sk-7070340"
+          ],
+          "costDelta": -1
+        }
+      ],
+      "note": "过山车：巧变 → 变为随机Mechanicany技能且能耗 −1，用完还原"
     }
   ]
 }
