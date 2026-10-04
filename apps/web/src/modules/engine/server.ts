@@ -34,7 +34,8 @@ export function getBundle(force = false): DataBundle {
           (skill.category === "Physical" || skill.category === "Magic") &&
           Number(skill.power ?? 0) > 0 &&
           Number(skill.power ?? 0) < POWER_SENTINEL &&
-          !authoredDamageSkills.has(String(skill.id)),
+          !authoredDamageSkills.has(String(skill.id)) &&
+          !String(skill.description ?? "").trim().startsWith("蓄力"),
       )
       .map((skill) => ({
         id: `registered:skill:${String(skill.id)}`,

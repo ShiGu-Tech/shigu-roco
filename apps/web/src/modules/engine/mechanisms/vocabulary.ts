@@ -141,6 +141,7 @@ export const EFFECT_VOCABULARY: readonly EffectVocabulary[] = [
   { type: "setRuleModifier", title: "规则覆盖", domain: "rule", params: { target: "目标", key: "规则键", value: "覆盖值" } },
   { type: "changeWeather", title: "改变天气", domain: "weather", params: { weatherId: "天气", turns: "持续回合" } },
   { type: "modifyWeatherTurns", title: "延长天气", domain: "weather", params: { weatherId: "天气", delta: "回合增减" } },
+  { type: "beginCharge", title: "进入蓄力", domain: "skill", params: { skillId: "技能", choice: "选择" } },
   // 其他
   { type: "unsupported", title: "未支持效果", domain: "other", params: { effectType: "原效果类型", reason: "原因" } },
 ] as const;

@@ -513,6 +513,16 @@ export class MechanismRuntime {
           state.weather = { id: definition.weatherId, turnsLeft: definition.turns ?? 1 };
           events.push({ type: "weather-changed", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, data: { weatherId: definition.weatherId, turns: state.weather.turnsLeft } });
           break;
+        case "beginCharge": {
+          if (!active || !targetSide) break;
+          const skillId = definition.skillId;
+          if (!skillId) break;
+          active.pendingSkill = definition.choice === undefined ? { skillId } : { skillId, choice: definition.choice };
+          const side = targetSide === "player" ? state.player : state.enemy;
+          side.switchLock = (side.switchLock ?? 0) + 1;
+          events.push({ type: "skill-charged", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { skillId } });
+          break;
+        }
         case "modifyWeatherTurns": {
           if (!state.weather) break;
           if (definition.weatherId && state.weather.id !== definition.weatherId) break;

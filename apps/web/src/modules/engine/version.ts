@@ -104,5 +104,8 @@
  *          `randomizeSkill` 新增 `costDelta`；`effectiveCost` 计入——供「巧变：变为随机技能且能耗 −1」登记。
  * - 0.33.0 选择（行动模型）：`Action.choice`（0 明 / 1 暗，省略 = 明）；`legalActions` 对描述含「选择」的技能
  *          列出两条；事件 `event.action.choice` 暴露当前选择，供数据用 `choice neq 1 / eq 1` 分叉。
+ * - 0.34.0 蓄力（行动模型）：`ActiveSprite.pendingSkill` + `beginCharge`（进入蓄力 + 离场锁）；使用时 `step`
+ *          把该侧行动替换为 `released:true` 的自动释放（忽略输入），释放后清空；`server.ts` 跳过描述以「蓄力」开头的
+ *          技能的基础伤害自动生成，改由数据在 release 时机登记。
  */
-export const ENGINE_VERSION = "0.33.0";
+export const ENGINE_VERSION = "0.34.0";

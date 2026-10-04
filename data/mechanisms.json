@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.48.0",
+  "version": "0.49.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -15793,6 +15793,331 @@
         }
       ],
       "note": "马步：选择·暗"
+    },
+    {
+      "id": "skill:sk-7100130:charge",
+      "ownerType": "skill",
+      "ownerId": "sk-7100130",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7100130"
+            },
+            {
+              "path": "event.action.released",
+              "op": "neq",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "beginCharge",
+          "skillId": "sk-7100130"
+        }
+      ],
+      "note": "吹炎：蓄力（下回合自动释放）"
+    },
+    {
+      "id": "skill:sk-7100130:release",
+      "ownerType": "skill",
+      "ownerId": "sk-7100130",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7100130"
+            },
+            {
+              "path": "event.action.released",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 170,
+          "skillId": "sk-7100130"
+        }
+      ],
+      "note": "吹炎：蓄力释放（应对状态威力翻倍待校准）"
+    },
+    {
+      "id": "skill:sk-7100140:charge",
+      "ownerType": "skill",
+      "ownerId": "sk-7100140",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7100140"
+            },
+            {
+              "path": "event.action.released",
+              "op": "neq",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "beginCharge",
+          "skillId": "sk-7100140"
+        }
+      ],
+      "note": "怨力打击：蓄力（下回合自动释放）"
+    },
+    {
+      "id": "skill:sk-7100140:release",
+      "ownerType": "skill",
+      "ownerId": "sk-7100140",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7100140"
+            },
+            {
+              "path": "event.action.released",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 1,
+          "skillId": "sk-7100140"
+        }
+      ],
+      "note": "怨力打击：蓄力释放（「蓄力期间受击 → 威力 = 敌方 3 倍」待校准）"
+    },
+    {
+      "id": "skill:sk-7100150:charge",
+      "ownerType": "skill",
+      "ownerId": "sk-7100150",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7100150"
+            },
+            {
+              "path": "event.action.released",
+              "op": "neq",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "beginCharge",
+          "skillId": "sk-7100150"
+        }
+      ],
+      "note": "升龙咆哮：蓄力（下回合自动释放）"
+    },
+    {
+      "id": "skill:sk-7100150:release",
+      "ownerType": "skill",
+      "ownerId": "sk-7100150",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7100150"
+            },
+            {
+              "path": "event.action.released",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 200,
+          "skillId": "sk-7100150"
+        }
+      ],
+      "note": "升龙咆哮：蓄力释放"
+    },
+    {
+      "id": "skill:sk-7100160:charge",
+      "ownerType": "skill",
+      "ownerId": "sk-7100160",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7100160"
+            },
+            {
+              "path": "event.action.released",
+              "op": "neq",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "beginCharge",
+          "skillId": "sk-7100160"
+        }
+      ],
+      "note": "龙之利爪：蓄力（下回合自动释放）"
+    },
+    {
+      "id": "skill:sk-7100160:release",
+      "ownerType": "skill",
+      "ownerId": "sk-7100160",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7100160"
+            },
+            {
+              "path": "event.action.released",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 130,
+          "skillId": "sk-7100160"
+        },
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "lifesteal",
+          "delta": 0.5
+        }
+      ],
+      "note": "龙之利爪：蓄力释放（吸血 50%）"
+    },
+    {
+      "id": "skill:sk-7100170:charge",
+      "ownerType": "skill",
+      "ownerId": "sk-7100170",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7100170"
+            },
+            {
+              "path": "event.action.released",
+              "op": "neq",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "beginCharge",
+          "skillId": "sk-7100170"
+        }
+      ],
+      "note": "龙吟：蓄力（下回合自动释放）"
+    },
+    {
+      "id": "skill:sk-7100170:release",
+      "ownerType": "skill",
+      "ownerId": "sk-7100170",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7100170"
+            },
+            {
+              "path": "event.action.released",
+              "op": "eq",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": 150
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "spatk",
+          "mode": "percent",
+          "value": 150
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "speed",
+          "mode": "flat",
+          "value": 80
+        }
+      ],
+      "note": "龙吟：蓄力释放（双攻 +150% 速度 +80）"
     }
   ]
 }

@@ -148,6 +148,8 @@ export type EffectSpec =
   | { type: "consumeMark"; target?: string; markId?: string; scope?: "sprite" | "team"; effectsPerLayer?: EffectSpec[]; effectsOnConsume?: EffectSpec[] }
   | { type: "removeMark"; target?: string; markId?: string; layers?: number; scope?: "sprite" | "team" }
   | { type: "changeWeather"; weatherId: string; turns?: number }
+  /** 蓄力域 · 本技能进入蓄力（下回合自动释放）；加离场锁防止蓄力期间被换下。 */
+  | { type: "beginCharge"; skillId?: string; choice?: 0 | 1 }
   /** 天气域 · 延长当前天气回合数（`weatherId` 省略 = 不限；不匹配则不生效）。 */
   | { type: "modifyWeatherTurns"; weatherId?: string; delta: number }
   | { type: "setPriority"; target?: string; value: number }

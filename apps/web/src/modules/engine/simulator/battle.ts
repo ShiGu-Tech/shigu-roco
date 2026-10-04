@@ -92,6 +92,14 @@ export class Simulator {
     const events: BattleEvent[] = [];
     const logs: string[] = [];
     const actions: Record<Side, Action> = { player: playerAction, enemy: enemyAction };
+    // 蓄力域：已蓄力的技能下回合自动释放（占用该侧行动，忽略输入）；在场者阵亡则清除蓄力。
+    for (const side of SIDES) {
+      const s = this.sideState(st, side);
+      const pending = s.active.pendingSkill;
+      if (!pending) continue;
+      if (s.active.hp > 0) actions[side] = { kind: "skill", skillId: pending.skillId, choice: pending.choice, released: true, label: "蓄力释放" };
+      else s.active.pendingSkill = undefined;
+    }
     const rules = this.bundle.rules;
     /** 本回合被置/改/使用的技能，冷却结算时跳过（净 ±N，避免刚置就被 tick）。 */
     const touched: Record<Side, Set<string>> = { player: new Set(), enemy: new Set() };
@@ -216,6 +224,12 @@ export class Simulator {
       }
       entry.status = "resolved";
       caster.actedSinceEntry = true;
+      // 蓄力释放完成：清除待释放并解除离场锁。
+      if (entry.action.released && caster.pendingSkill) {
+        caster.pendingSkill = undefined;
+        const cs = this.sideState(st, side);
+        cs.switchLock = Math.max(0, (cs.switchLock ?? 0) - 1);
+      }
       if (entry.action.kind === "skill") {
         if (entry.action.skillId) touched[side].add(entry.action.skillId);
         const usedSkill = entry.action.skillId ? getSkill(this.bundle, entry.action.skillId) : {};

@@ -39,6 +39,8 @@ export interface ActiveSprite {
   /** 技能池临时改动的还原记录（机制扩展）：临时技能 id → { original, expires }。
    *  original 为空 = 临时新增（到期移除）；expires 为绝对回合（-1 永久、0 表示使用后即还原）。 */
   skillOverrides?: Record<string, { original: string; expires: number; cost?: number }>;
+  /** 蓄力域 · 已蓄力、下回合自动释放的技能（占用该侧行动）。 */
+  pendingSkill?: { skillId: string; choice?: 0 | 1 };
   /** 入场域 · 本次入场后是否已行动过（供「迸发：入场首次行动」类条件）。 */
   actedSinceEntry?: boolean;
   /** 记忆域 · 计数器：任意 key → 值（如每使用/累计类）。 */
@@ -138,6 +140,8 @@ export interface Action {
   label?: string;
   /** 选择技（明 / 暗）：0 = 明，1 = 暗；省略等价 0。 */
   choice?: 0 | 1;
+  /** 蓄力域 · 本行动是否为「蓄力后自动释放」。 */
+  released?: boolean;
 }
 
 export interface BattleEvent {
