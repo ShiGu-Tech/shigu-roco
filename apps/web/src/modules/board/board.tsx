@@ -66,6 +66,11 @@ function choiceGrantsOf(actions: EngineAction[]): ChoiceGrants {
   return { skills, energy };
 }
 
+/** 引擎合法行动里的技能 id 集合（供技能卡屏蔽「受规则/特性限制」的不可用技能）。 */
+function legalSkillIdsOf(actions: EngineAction[]): Set<string> {
+  return new Set(actions.filter((a) => a.kind === "skill" && a.skillId).map((a) => a.skillId as string));
+}
+
 /** 聚能若有明 / 暗分支，替换为两条（其余行动原样）。 */
 function withChoiceGrants(options: ActionOption[], grants: ChoiceGrants | undefined, catalog: Catalog): ActionOption[] {
   if (!grants?.energy) return options;
@@ -135,7 +140,7 @@ export function BattleBoard() {
   const [pendingP, setPendingP] = useState<ActionOption | null>(null);
   const [pendingE, setPendingE] = useState<ActionOption | null>(null);
   const [choicePick, setChoicePick] = useState<{ who: "player" | "enemy"; skillId: string; name: string } | null>(null);
-  const [engineChoice, setEngineChoice] = useState<{ for: BattleState; player: ChoiceGrants; enemy: ChoiceGrants } | null>(null);
+  const [engineChoice, setEngineChoice] = useState<{ for: BattleState; player: ChoiceGrants; enemy: ChoiceGrants; playerSkills: Set<string>; enemySkills: Set<string> } | null>(null);
   const [busy, setBusy] = useState(false);
   const [saveOpen, setSaveOpen] = useState(false);
   const [saveName, setSaveName] = useState("");
@@ -228,7 +233,7 @@ export function BattleBoard() {
     let alive = true;
     Promise.all([legalActions(state, "player"), legalActions(state, "enemy")])
       .then(([player, enemy]) => {
-        if (alive) setEngineChoice({ for: state, player: choiceGrantsOf(player.actions), enemy: choiceGrantsOf(enemy.actions) });
+        if (alive) setEngineChoice({ for: state, player: choiceGrantsOf(player.actions), enemy: choiceGrantsOf(enemy.actions), playerSkills: legalSkillIdsOf(player.actions), enemySkills: legalSkillIdsOf(enemy.actions) });
       })
       .catch(() => {});
     return () => {
@@ -239,6 +244,8 @@ export function BattleBoard() {
   // 仅当授权来自「当前这一帧 state」时才生效，避免异步回填前套用上一帧的授权。
   const playerGrants = engineChoice?.for === state ? engineChoice.player : undefined;
   const enemyGrants = engineChoice?.for === state ? engineChoice.enemy : undefined;
+  const playerLegalSkills = engineChoice?.for === state ? engineChoice.playerSkills : undefined;
+  const enemyLegalSkills = engineChoice?.for === state ? engineChoice.enemySkills : undefined;
 
   const playerOptions = useMemo(
     () => (catalog && state ? withChoiceGrants(deriveActions(state.player, catalog), playerGrants, catalog) : []),
@@ -784,6 +791,7 @@ export function BattleBoard() {
             title="红方场上"
             maxMagic={maxMagic}
             rec={rec}
+            legalSkillIds={playerLegalSkills}
             selectedKey={pendingP ? actionKey(pendingP.action) : null}
             selectedBenchId={pendingP?.action.kind === "switch" ? (pendingP.action.benchId ?? null) : null}
             disabled={busy || anyFaint || Boolean(terminal?.ended)}
@@ -898,6 +906,7 @@ export function BattleBoard() {
             subtitle={enemyUnknown ? "资质未知 · 按中性 5★·60 级估算" : "已知"}
             maxMagic={maxMagic}
             rec={enemyRec}
+            legalSkillIds={enemyLegalSkills}
             selectedKey={pendingE ? actionKey(pendingE.action) : null}
             selectedBenchId={pendingE?.action.kind === "switch" ? (pendingE.action.benchId ?? null) : null}
             disabled={busy || anyFaint || Boolean(terminal?.ended)}

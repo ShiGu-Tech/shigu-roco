@@ -29,10 +29,13 @@ function SkillTile({
   energy,
   cost,
   modifiers,
+  cooldown,
   tone,
   winRate,
+  rank,
   recommended,
   selected,
+  restricted,
   disabled,
   onUse,
   onChangeSlot,
@@ -44,10 +47,15 @@ function SkillTile({
   energy: number;
   cost?: number;
   modifiers?: CostMod[];
+  cooldown?: number;
   tone: Tone;
   winRate?: number;
+  /** 推荐度排名（1 为最优，缺省 = 无推荐数据）。 */
+  rank?: number;
   recommended?: boolean;
   selected?: boolean;
+  /** 受规则 / 特性限制，当前不可用（如只允许某号位）。 */
+  restricted?: boolean;
   disabled?: boolean;
   onUse: (skillId: string) => void;
   onChangeSlot: (index: number, skillId: string) => void;
@@ -55,14 +63,19 @@ function SkillTile({
   const sk = skillId ? skillById(catalog, skillId) : undefined;
   const effective = sk ? (cost ?? sk.cost) : 0;
   const affordable = sk ? effective <= energy : false;
-  const usable = Boolean(sk) && affordable && !disabled;
+  const onCooldown = (cooldown ?? 0) > 0;
+  const usable = Boolean(sk) && affordable && !disabled && !onCooldown && !restricted;
   const [slotOpen, setSlotOpen] = useState(false);
 
   return (
     <div
       className={[
-        "relative min-w-0 rounded-md border bg-card p-2 transition-colors",
-        selected ? "border-primary bg-accent" : "border-border hover:border-primary/40 hover:bg-accent/40",
+        "relative min-w-0 rounded-md border bg-card p-2 transition-all",
+        selected
+          ? "border-primary bg-accent ring-2 ring-primary ring-offset-1 ring-offset-background"
+          : rank === 1
+            ? "border-primary/60 bg-primary/5 hover:border-primary/40"
+            : "border-border hover:border-primary/40 hover:bg-accent/40",
         !sk ? "border-dashed" : "",
       ].join(" ")}
     >
@@ -92,7 +105,7 @@ function SkillTile({
         type="button"
         disabled={!usable}
         onClick={() => sk && onUse(sk.id)}
-        className={`w-full text-left ${usable ? "" : "cursor-not-allowed"}`}
+        className={`w-full text-left transition-transform active:scale-[0.98] ${usable ? "" : "cursor-not-allowed"}`}
       >
         {sk ? (
           <>
@@ -109,7 +122,12 @@ function SkillTile({
                   <span className={`truncate text-sm font-semibold ${affordable ? "" : "text-muted-foreground"}`}>
                     {sk.name}
                   </span>
-                  {recommended && <Badge variant="success">推荐</Badge>}
+                  {recommended ? (
+                    <Badge variant="success" className="shrink-0">推荐</Badge>
+                  ) : rank ? (
+                    <span className="shrink-0 text-[10px] font-medium text-muted-foreground">#{rank}</span>
+                  ) : null}
+                  {selected ? <Badge className="shrink-0">已选</Badge> : null}
                 </div>
                 <div className="mt-0.5 text-[11px] leading-4 text-muted-foreground">
                   <div className="flex flex-wrap items-center gap-x-1.5">
@@ -151,6 +169,17 @@ function SkillTile({
           <div className="flex min-h-[56px] items-center justify-center text-xs text-muted-foreground">无</div>
         )}
       </button>
+      {sk && !usable ? (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-[5] flex items-center justify-center rounded-md bg-muted/60 backdrop-grayscale"
+          title={onCooldown ? `冷却中：还需等待 ${cooldown} 回合` : restricted ? "受特性 / 规则限制，本回合不可用" : affordable ? undefined : "能量不足"}
+        >
+          {onCooldown ? (
+            <span className="tnum text-3xl font-bold leading-none text-foreground/70">{cooldown}</span>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -159,6 +188,7 @@ export function SkillGrid({
   catalog,
   side,
   rec,
+  legalSkillIds,
   tone,
   selectedKey,
   disabled,
@@ -168,24 +198,34 @@ export function SkillGrid({
   catalog: Catalog;
   side: SideState;
   rec: RecommendResult | null;
+  legalSkillIds?: Set<string>;
   tone: Tone;
   selectedKey: string | null;
   disabled?: boolean;
   onUse: (skillId: string) => void;
   onChangeSlot: (index: number, skillId: string) => void;
 }) {
-  const rate = new Map<string, number>();
-  for (const a of rec?.actions ?? []) {
-    rate.set(actionKey(a.action), a.winRate);
-  }
-  const bestKey = rec?.actions[0] ? actionKey(rec.actions[0].action) : null;
+  // 按 skillId 建索引：`actionKey` 含尾随 choice（`skill:<id>:`），不能直接与 tile 比对。
+  const rateById = new Map<string, number>();
+  const rankById = new Map<string, number>();
+  // 推荐度只在「技能」之间排名（全局最优常是聚能，不代表最推荐的技能）。
+  const skillActions = (rec?.actions ?? []).filter((a) => a.action.kind === "skill" && a.action.skillId);
+  skillActions.forEach((a, i) => {
+    const sid = a.action.skillId as string;
+    const prev = rateById.get(sid);
+    if (prev === undefined || a.winRate > prev) rateById.set(sid, a.winRate);
+    if (!rankById.has(sid)) rankById.set(sid, i + 1);
+  });
+  const bestSkillId = skillActions[0]?.action.skillId ?? null;
+  const isSelected = (id: string) => Boolean(id && selectedKey && selectedKey.startsWith(`skill:${id}:`));
+  // 受规则 / 特性限制（如圣剑-X「正位宝剑」只允许 1 号位）而不可用的技能：引擎合法技能集里没有。
+  const isRestricted = (id: string) => Boolean(legalSkillIds && id && !legalSkillIds.has(id));
   const loadout = side.active.loadout;
 
   return (
     <div className="flex flex-col gap-1.5">
       {[0, 1, 2, 3].map((i) => {
         const id = loadout[i] ?? "";
-        const k = `skill:${id}`;
         const sk = id ? skillById(catalog, id) : undefined;
         return (
           <SkillTile
@@ -197,10 +237,13 @@ export function SkillGrid({
             energy={side.active.energy}
             cost={sk ? previewSkillCost(sk, side.active) : undefined}
             modifiers={sk ? costModBreakdown(sk, side.active) : undefined}
+            cooldown={id ? side.active.cooldowns?.[id] ?? 0 : 0}
             tone={tone}
-            winRate={id ? rate.get(k) : undefined}
-            recommended={id ? k === bestKey : false}
-            selected={id ? k === selectedKey : false}
+            winRate={id ? rateById.get(id) : undefined}
+            rank={id ? rankById.get(id) : undefined}
+            recommended={Boolean(id) && id === bestSkillId}
+            selected={isSelected(id)}
+            restricted={isRestricted(id)}
             disabled={disabled}
             onUse={onUse}
             onChangeSlot={onChangeSlot}

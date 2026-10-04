@@ -89,6 +89,7 @@ export function ActiveBoard({
   subtitle,
   maxMagic,
   rec,
+  legalSkillIds,
   selectedKey,
   selectedBenchId,
   disabled,
@@ -107,6 +108,8 @@ export function ActiveBoard({
   subtitle?: string;
   maxMagic: number;
   rec: RecommendResult | null;
+  /** 引擎合法技能集合（缺省 = 未知，不屏蔽）。用于屏蔽「受规则/特性限制」的不可用技能。 */
+  legalSkillIds?: Set<string>;
   selectedKey: string | null;
   selectedBenchId: string | null;
   disabled?: boolean;
@@ -210,6 +213,7 @@ export function ActiveBoard({
             catalog={catalog}
             side={side}
             rec={rec}
+            legalSkillIds={legalSkillIds}
             tone={tone}
             selectedKey={selectedKey}
             disabled={disabled}
