@@ -896,6 +896,17 @@ export class MechanismRuntime {
       hits += dedCombo;
       attacker.counters!["ded-combo"] = 0;
     }
+    // 「下一次攻击」一次性加成（消耗后清零）：next-damage-mul（+N% 伤害）/ next-power-add（+N 威力）。
+    const nextMul = toNum(attacker.counters?.["next-damage-mul"], 0);
+    if (nextMul) {
+      attackerMult *= 1 + nextMul;
+      attacker.counters!["next-damage-mul"] = 0;
+    }
+    const nextAdd = toNum(attacker.counters?.["next-power-add"], 0);
+    if (nextAdd) {
+      powerBonus += nextAdd;
+      attacker.counters!["next-power-add"] = 0;
+    }
     // 记忆域 · 连击数 buff：`combo-add`（+N 段）/ `combo-mul`（+N% 段，1 = +100%）叠加在技能自身段数之上。
     const comboAdd = toNum(attacker.counters?.["combo-add"], 0);
     const comboMul = toNum(attacker.counters?.["combo-mul"], 0);

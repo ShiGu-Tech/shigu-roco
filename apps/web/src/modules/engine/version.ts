@@ -112,5 +112,7 @@
  *          奉献目标），仅作查询面。
  * - 0.36.0 奉献（队伍域）：`SideState.dedications` + `grantDedication`（入队，`key` 省略随机）/ `consumeDedication`
  *          （消耗一个并作用到技能本次使用：威力 / 连击 / 能耗 / 吸血，一次性计数器 `ded-*` 读取后清零）。
+ * - 0.37.0 下一次攻击加成（`mechanisms/runtime.ts`）：伤害结算读一次性计数器 `next-damage-mul`（+N% 伤害）与
+ *          `next-power-add`（+N 威力），读取后清零；供「应对成功后下次攻击威力翻倍 / +50」类（淬火 / 暖气 / 圣火骑士）。
  */
-export const ENGINE_VERSION = "0.36.0";
+export const ENGINE_VERSION = "0.37.0";
