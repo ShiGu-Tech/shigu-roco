@@ -206,7 +206,12 @@ export class MechanismRuntime {
           if (!active || !targetSide) break;
           const before = active.energy;
           const delta = definition.deltaFrom ? this.dynamicValue(state, command, definition.deltaFrom, definition.delta, bundle) : definition.delta;
-          active.energy = Math.max(0, active.energy + delta);
+          if (definition.toMax) {
+            const max = Math.floor(toNum(asDict(bundle?.rules.energy).max, 10));
+            active.energy = Math.max(active.energy, max);
+          } else {
+            active.energy = Math.max(0, active.energy + delta);
+          }
           events.push({ type: "energy-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { before, after: active.energy, delta } });
           break;
         }
@@ -256,6 +261,16 @@ export class MechanismRuntime {
           side.forcedSwitch = true;
           side.switchLock = 0;
           events.push({ type: "escaped", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: {} });
+          break;
+        }
+        case "transform": {
+          if (!active || !targetSide || !bundle) break;
+          const to = definition.spriteId ?? (definition.spriteIdFrom ? toStr(this.dynamicValue(state, command, definition.spriteIdFrom as DynamicRef, 0, bundle)) : "");
+          if (!to || !bundle.sprites[to]) break;
+          const from = active.spriteId;
+          active.spriteId = to;
+          applyProfile(bundle.stats, getSprite(bundle, to), active, active.profile);
+          events.push({ type: "transform", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { from, to } });
           break;
         }
         case "returnField": {

@@ -142,6 +142,8 @@ export type EffectSpec =
   | { type: "escape"; target?: string }
   /** 行动域 · 返场：回合末重新入场（重置 `actedSinceEntry` 触发迸发 + 派发 onEntry；本回合入场者免疫）。 */
   | { type: "returnField"; target?: string }
+  /** 行动域 · 变身：把目标换成指定精灵（`spriteId` 或 `spriteIdFrom`），按原血量比例重算 maxHp / hp（棋绮后 / 未完虫）。 */
+  | { type: "transform"; target?: string; spriteId?: string; spriteIdFrom?: DynamicRef }
   /** 行动域 · 允许被限制的换人（清除离场锁）。 */
   | { type: "allowSwitch"; target?: string }
   /** 交换域 · 自身与对手交换 `hpRatio`（生命比例）/ `skills`（技能栏）/ `stats`（增益与减益）。 */
@@ -155,7 +157,7 @@ export type EffectSpec =
   /** 入场继承 · 继承离场精灵的强化：仅在 `scheduleEntry.effects` 内有效，于换人时由模拟器执行。 */
   | { type: "inheritStat"; polarity?: "buff" | "debuff" | "all" }
   | { type: "modifyMagic"; target?: string; delta: number }
-  | { type: "modifyEnergy"; target?: string; delta: number; deltaFrom?: DynamicValue }
+  | { type: "modifyEnergy"; target?: string; delta: number; deltaFrom?: DynamicValue; toMax?: boolean }
   /** 能量域 · 为场下每个精灵回复 `delta` 能量（富养化）。 */
   | { type: "spreadEnergy"; target?: string; delta: number; deltaFrom?: DynamicValue }
   | { type: "modifySwitchLock"; target?: string; delta: number }

@@ -172,5 +172,7 @@
  *          `orderKey` 支持 `quick.priorityBonus`（相争：迅捷技能先手 +N）。
  * - 0.62.0 使用次数 +1：`ActiveSprite.counters.extraUses` —— 消耗一个计数，本次技能行动额外执行一次
  *          （`executeSkill` 增 `payCost`，额外执行不重复耗能 / 不重设冷却）。
+ * - 0.63.0 变身（D8）：新增 `transform`（换成指定精灵 `spriteId`，按比例重算 maxHp / hp）；`modifyEnergy.toMax`
+ *          （回满能量）。
  */
-export const ENGINE_VERSION = "0.62.0";
+export const ENGINE_VERSION = "0.63.0";

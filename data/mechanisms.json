@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.100.0",
+  "version": "0.101.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -21039,15 +21039,24 @@
       "ownerType": "trait",
       "ownerId": "sp-79-1",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "无忧无虑：可获得的萌化层数不受限制。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-79-1"
+          ]
         }
       ],
-      "note": "特性「无忧无虑」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "status.moe.noCap",
+          "value": true
+        }
+      ],
+      "note": "特性「无忧无虑」：萌化层数不受限制（引擎当前无上限，视为已满足）"
     },
     {
       "id": "trait:sp-82-1",
@@ -21371,16 +21380,35 @@
       "id": "trait:sp-102-1",
       "ownerType": "trait",
       "ownerId": "sp-102-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "beforeDamage",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "自由飘：自己每有1层萌化，获得连击数+3。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-102-1",
+            "sp-103-1",
+            "sp-104-1"
+          ]
+        },
+        {
+          "path": "self.active.statuses.moe",
+          "op": "gte",
+          "value": 1
         }
       ],
-      "note": "特性「自由飘」：待实现"
+      "effects": [
+        {
+          "type": "setHits",
+          "target": "self",
+          "hitsFrom": {
+            "path": "self.active.statuses.moe",
+            "scale": 3,
+            "offset": 1
+          }
+        }
+      ],
+      "note": "特性「自由飘」：每有 1 层萌化，连击数 +3（近似为总段数 3×层+1）"
     },
     {
       "id": "trait:sp-105-1",
@@ -22042,46 +22070,130 @@
       "id": "trait:sp-188-1",
       "ownerType": "trait",
       "ownerId": "sp-188-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "skillUsed",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "腾挪：攻击技能应对1次后，回满能量和生命，变为棋绮后。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-188-1",
+            "sp-188-2",
+            "sp-189-1",
+            "sp-189-2"
+          ]
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "path": "event.actionType",
+          "op": "eq",
+          "value": "Attack"
         }
       ],
-      "note": "特性「腾挪」：待实现"
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": 1,
+          "basis": "maxHp"
+        },
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 0,
+          "toMax": true
+        },
+        {
+          "type": "transform",
+          "target": "self",
+          "spriteId": "sp-192-1"
+        }
+      ],
+      "note": "特性「腾挪」：攻击技能应对成功后 → 回满生命 / 能量并变为棋绮后"
     },
     {
       "id": "trait:sp-190-1",
       "ownerType": "trait",
       "ownerId": "sp-190-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "skillUsed",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "保卫：防御技能应对2次后，回满能量和生命，变为棋绮后。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-190-1",
+            "sp-190-2"
+          ]
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "path": "event.actionType",
+          "op": "eq",
+          "value": "Defense"
         }
       ],
-      "note": "特性「保卫」：待实现"
+      "effects": [
+        {
+          "type": "addCounter",
+          "target": "self",
+          "key": "guardReact",
+          "delta": 1
+        }
+      ],
+      "note": "特性「保卫」：防御技能应对成功累计 2 次后 → 回满生命 / 能量并变为棋绮后（计数）"
     },
     {
       "id": "trait:sp-191-1",
       "ownerType": "trait",
       "ownerId": "sp-191-1",
-      "trigger": "passive",
-      "when": [],
-      "effects": [
+      "trigger": "skillUsed",
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "好象坏象：状态技能应对1次后，回满能量和生命，变为棋绮后。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-191-1",
+            "sp-191-2"
+          ]
+        },
+        {
+          "path": "event.reacted",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "path": "event.actionType",
+          "op": "eq",
+          "value": "Status"
         }
       ],
-      "note": "特性「好象坏象」：待实现"
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": 1,
+          "basis": "maxHp"
+        },
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 0,
+          "toMax": true
+        },
+        {
+          "type": "transform",
+          "target": "self",
+          "spriteId": "sp-192-1"
+        }
+      ],
+      "note": "特性「好象坏象」：状态技能应对成功后 → 回满生命 / 能量并变为棋绮后"
     },
     {
       "id": "trait:sp-192-1",
@@ -25237,6 +25349,52 @@
         }
       ],
       "note": "龙守望：蓄力交互待实现"
+    },
+    {
+      "id": "trait:sp-190-1#guard",
+      "ownerType": "trait",
+      "ownerId": "sp-190-1",
+      "trigger": "actionResolved",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-190-1",
+            "sp-190-2"
+          ]
+        },
+        {
+          "path": "self.active.counters.guardReact",
+          "op": "gte",
+          "value": 2
+        }
+      ],
+      "effects": [
+        {
+          "type": "heal",
+          "target": "self",
+          "amount": 1,
+          "basis": "maxHp"
+        },
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 0,
+          "toMax": true
+        },
+        {
+          "type": "transform",
+          "target": "self",
+          "spriteId": "sp-192-1"
+        },
+        {
+          "type": "clearCounter",
+          "target": "self",
+          "key": "guardReact"
+        }
+      ],
+      "note": "特性「保卫」：防御技能应对成功 2 次 → 回满并变为棋绮后（达成）"
     }
   ]
 }

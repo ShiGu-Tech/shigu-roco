@@ -117,7 +117,7 @@ export const EFFECT_VOCABULARY: readonly EffectVocabulary[] = [
   { type: "clearCostMod", title: "驱散能耗修正", domain: "cost", params: { target: "目标", all: "全部" } },
   { type: "modifyCooldown", title: "冷却修正", domain: "cooldown", params: { target: "目标", skillId: "技能", skillIdFrom: "技能取值", scope: "作用域", delta: "增减", minimum: "下限" } },
   // 能量 / 魔力
-  { type: "modifyEnergy", title: "能量修正", domain: "energy", params: { target: "目标", delta: "增减", deltaFrom: "增减取值" } },
+  { type: "modifyEnergy", title: "能量修正", domain: "energy", params: { target: "目标", delta: "增减", deltaFrom: "增减取值", toMax: "回满" } },
   { type: "spreadEnergy", title: "场下回能", domain: "energy", params: { target: "目标", delta: "每只回复" } },
   { type: "modifyMagic", title: "魔力修正", domain: "magic", params: { target: "目标", delta: "增减" } },
   // 行动
@@ -129,6 +129,7 @@ export const EFFECT_VOCABULARY: readonly EffectVocabulary[] = [
   { type: "forceSwitch", title: "强制换人", domain: "action", params: { target: "目标" } },
   { type: "escape", title: "脱离", domain: "action", params: { target: "目标" } },
   { type: "returnField", title: "返场", domain: "action", params: { target: "目标" } },
+  { type: "transform", title: "变身", domain: "action", params: { target: "目标", spriteId: "精灵", spriteIdFrom: "精灵取值" } },
   { type: "allowSwitch", title: "解除换人限制", domain: "action", params: { target: "目标" } },
   { type: "modifySwitchLock", title: "换人锁修正", domain: "action", params: { target: "目标", delta: "增减" } },
   // 技能栏

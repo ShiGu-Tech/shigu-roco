@@ -82,6 +82,7 @@ const WRITE_NODES: WriteSpec[] = [
   { suffix: "forceSwitch", title: "写入 · 强制换人", target: "self", params: [] },
   { suffix: "escape", title: "写入 · 脱离", target: "self", params: [] },
   { suffix: "returnField", title: "写入 · 返场", target: "self", params: [] },
+  { suffix: "transform", title: "写入 · 变身", target: "self", params: [{ name: "spriteId", type: "string" }] },
   { suffix: "allowSwitch", title: "写入 · 解除离场锁", target: "self", params: [] },
   { suffix: "swap", title: "写入 · 交换", target: "self", params: [{ name: "what", type: "string", required: true }] },
   { suffix: "setHpRatio", title: "写入 · 生命比例设同", target: "self", params: [{ name: "from", type: "string" }] },
