@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.101.0",
+  "version": "0.102.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -21867,15 +21867,26 @@
       "ownerType": "trait",
       "ownerId": "sp-150-1",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "飓风：对本精灵的技能，若其他翼系精灵携带相同技能，则获得迅捷。被敌方精灵击败时，自己额外损失1点魔力。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-150-1",
+            "sp-151-1",
+            "sp-152-1"
+          ]
         }
       ],
-      "note": "特性「飓风」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "quick.sharedWing",
+          "value": true
+        }
+      ],
+      "note": "特性「飓风」：其他翼系精灵携带相同技能 → 迅捷"
     },
     {
       "id": "trait:sp-162-1",
@@ -22532,15 +22543,26 @@
       "ownerType": "trait",
       "ownerId": "sp-231-1",
       "trigger": "passive",
-      "when": [],
-      "effects": [
+      "when": [
         {
-          "type": "unsupported",
-          "effectType": "traitEffect",
-          "reason": "起飞加速：本场战斗首次使用的技能获得迅捷。【待校准】"
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-231-1",
+            "sp-232-1",
+            "sp-233-1"
+          ]
         }
       ],
-      "note": "特性「起飞加速」：待实现"
+      "effects": [
+        {
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "quick.first",
+          "value": true
+        }
+      ],
+      "note": "特性「起飞加速」：本场战斗首次使用的技能获得迅捷"
     },
     {
       "id": "trait:sp-233-2",
@@ -22564,12 +22586,13 @@
           "value": 1
         },
         {
-          "type": "unsupported",
-          "effectType": "firstQuick",
-          "reason": "本场首次使用技能获得迅捷 待实现【待校准】"
+          "type": "setRuleModifier",
+          "target": "self",
+          "key": "quick.first",
+          "value": true
         }
       ],
-      "note": "特性「相争」：拥有迅捷效果的技能先手 +1（首次技能迅捷待实现）"
+      "note": "特性「相争」：本场首次使用的技能获得迅捷；拥有迅捷效果的技能先手 +1"
     },
     {
       "id": "trait:sp-237-1",
@@ -25395,6 +25418,31 @@
         }
       ],
       "note": "特性「保卫」：防御技能应对成功 2 次 → 回满并变为棋绮后（达成）"
+    },
+    {
+      "id": "trait:sp-150-1#death",
+      "ownerType": "trait",
+      "ownerId": "sp-150-1",
+      "trigger": "afterDeath",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-150-1",
+            "sp-151-1",
+            "sp-152-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyMagic",
+          "target": "self",
+          "delta": -1
+        }
+      ],
+      "note": "特性「飓风」：被击败时额外损失 1 点魔力"
     }
   ]
 }

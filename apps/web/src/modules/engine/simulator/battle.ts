@@ -258,7 +258,7 @@ export class Simulator {
       const active = this.sideState(st, side).active;
       const ruleMods = this.mechanisms.ruleModifiers(st, this.bundle, side);
       for (const skillId of active.loadout) {
-        if (!this.skillIsQuick(active, skillId, ruleMods)) continue;
+        if (!this.skillIsQuick(st, side, active, skillId, ruleMods)) continue;
         if (effectiveCost(st, this.bundle, side, skillId, ruleMods) > active.energy) continue;
         quickActions[side] = { kind: "skill", skillId, label: "迅捷" };
         break;
@@ -391,9 +391,15 @@ export class Simulator {
         this.bump(st, side, "skillUsed");
         if (reactedBySide[side] === true) this.bump(st, side, "reacts");
         // 迅捷域 · 已使用迅捷技能的能耗累计（供「疾风连袭」动态能耗）。
-        if (toArray<string>(usedSkill.tags).includes("quick")) {
-          const usedCost = entry.action.skillId ? effectiveCost(st, this.bundle, side, entry.action.skillId, this.mechanisms.ruleModifiers(st, this.bundle, side)) : 0;
+        const usedCost = entry.action.skillId ? effectiveCost(st, this.bundle, side, entry.action.skillId, this.mechanisms.ruleModifiers(st, this.bundle, side)) : 0;
+        if (toArray<string>(usedSkill.tags).includes("quick") || this.skillIsQuick(st, side, caster, entry.action.skillId ?? "", this.mechanisms.ruleModifiers(st, this.bundle, side))) {
           this.bump(st, side, "quickCostSum", usedCost);
+        }
+        // 起飞加速：本场首次使用的技能记为永久迅捷。
+        if (entry.action.skillId && this.mechanisms.ruleModifiers(st, this.bundle, side)["quick.first"] === true && !caster.counters?.firstQuickSet) {
+          caster.counters ??= {};
+          caster.counters.firstQuickSet = 1;
+          caster.counters[`firstQuick.${entry.action.skillId}`] = 1;
         }
         // 已使用过的不同系别种数（供「每使用过 1 个不同系别」类）。
         {
@@ -537,19 +543,27 @@ export class Simulator {
       // 规则覆盖 · 「相争」：拥有迅捷效果的技能先手 +N。
       const mods = this.mechanisms.ruleModifiers(st, this.bundle, side);
       const bonus = toNum(mods["quick.priorityBonus"], 0);
-      if (bonus && this.skillIsQuick(this.sideState(st, side).active, action.skillId, mods)) priority += bonus;
+      if (bonus && this.skillIsQuick(st, side, this.sideState(st, side).active, action.skillId, mods)) priority += bonus;
     }
     return [priority, this.speedOf(st, side)];
   }
 
-  /** 某技能是否「迅捷」：静态 tag，或规则覆盖授予（快锤 能耗< N / 暴食 某系 / 翼轴 1 号位）。 */
-  private skillIsQuick(active: ActiveSprite, skillId: string, mods: Record<string, number | boolean>): boolean {
+  /** 某技能是否「迅捷」：静态 tag，或规则覆盖授予（快锤 能耗< N / 暴食 某系 / 翼轴 1 号位 / 起飞加速 首次技能 / 飓风 翼系共享）。 */
+  private skillIsQuick(st: BattleState, side: Side, active: ActiveSprite, skillId: string, mods: Record<string, number | boolean>): boolean {
     const skill = getSkill(this.bundle, skillId);
     if (toArray<string>(skill.tags).includes("quick")) return true;
     const below = toNum(mods["quick.costBelow"], 0);
     if (below > 0 && toNum(skill.cost, 0) < below) return true;
     if (mods[`quick.element.${toStr(skill.element)}`] === true) return true;
     if (mods["quick.slot1"] === true && active.loadout.indexOf(skillId) === 0) return true;
+    // 起飞加速：本场战斗首次使用过的技能永久带迅捷。
+    if (mods["quick.first"] === true && toNum(active.counters?.[`firstQuick.${skillId}`], 0) > 0) return true;
+    // 飓风：其他翼系精灵携带相同技能 → 迅捷。
+    if (mods["quick.sharedWing"] === true) {
+      const s = this.sideState(st, side);
+      const team = [s.active, ...s.bench].filter((sp) => sp !== active);
+      if (team.some((sp) => toArray<string>(getSprite(this.bundle, sp.spriteId).elements).includes("Wing") && toArray<string>(sp.loadout).includes(skillId))) return true;
+    }
     return false;
   }
 

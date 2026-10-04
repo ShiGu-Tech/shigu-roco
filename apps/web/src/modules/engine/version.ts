@@ -174,5 +174,7 @@
  *          （`executeSkill` 增 `payCost`，额外执行不重复耗能 / 不重设冷却）。
  * - 0.63.0 变身（D8）：新增 `transform`（换成指定精灵 `spriteId`，按比例重算 maxHp / hp）；`modifyEnergy.toMax`
  *          （回满能量）。
+ * - 0.64.0 迅捷族续：`quick.first`（起飞加速 / 相争：本场首次使用技能永久迅捷，模拟器记 `firstQuick.<skill>`）+
+ *          `quick.sharedWing`（飓风：队友翼系携带相同技能 → 迅捷）。
  */
-export const ENGINE_VERSION = "0.63.0";
+export const ENGINE_VERSION = "0.64.0";
