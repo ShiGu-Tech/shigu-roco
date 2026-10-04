@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.58.0",
+  "version": "0.59.0",
   "updatedAt": "2026-10-04",
   "mechanisms": [
     {
@@ -19359,6 +19359,221 @@
         }
       ],
       "note": "特性「爆裂玉米」：火系 → 敌方寄生"
+    },
+    {
+      "id": "trait:sp-125-1",
+      "ownerType": "trait",
+      "ownerId": "sp-125-1",
+      "trigger": "statusApplied",
+      "when": [
+        {
+          "path": "event.statusId",
+          "op": "eq",
+          "value": "poison"
+        },
+        {
+          "path": "event.sourceSpriteId",
+          "op": "in",
+          "value": [
+            "sp-125-1",
+            "sp-126-1",
+            "sp-127-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "atk",
+          "mode": "percent",
+          "value": -40
+        },
+        {
+          "type": "modifyStat",
+          "target": "self",
+          "stat": "speed",
+          "mode": "flat",
+          "value": -40
+        }
+      ],
+      "note": "特性「毒牙」：施加中毒时同给物攻/速度 −40"
+    },
+    {
+      "id": "trait:sp-234-1",
+      "ownerType": "trait",
+      "ownerId": "sp-234-1",
+      "trigger": "statusApplied",
+      "when": [
+        {
+          "path": "event.statusId",
+          "op": "eq",
+          "value": "freeze"
+        },
+        {
+          "path": "event.sourceSpriteId",
+          "op": "in",
+          "value": [
+            "sp-234-1",
+            "sp-235-1",
+            "sp-235-2",
+            "sp-235-3",
+            "sp-236-1",
+            "sp-236-2",
+            "sp-236-3",
+            "sp-236-4",
+            "sp-236-5",
+            "sp-236-6",
+            "sp-236-7",
+            "sp-236-8",
+            "sp-236-9"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyStatus",
+          "target": "self",
+          "statusId": "freeze",
+          "layers": 2,
+          "immuneElements": [
+            "Ice"
+          ]
+        }
+      ],
+      "note": "特性「加个雪球」：施加冻结时 +2 层"
+    },
+    {
+      "id": "trait:sp-142-1#2",
+      "ownerType": "trait",
+      "ownerId": "sp-142-1",
+      "trigger": "statusApplied",
+      "when": [
+        {
+          "path": "event.statusId",
+          "op": "eq",
+          "value": "freeze"
+        },
+        {
+          "path": "event.sourceSpriteId",
+          "op": "in",
+          "value": [
+            "sp-142-1",
+            "sp-143-1",
+            "sp-144-1"
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": 1,
+          "mode": "add"
+        }
+      ],
+      "note": "特性「捉迷藏」：施加冻结时同给能耗 +1"
+    },
+    {
+      "id": "trait:sp-242-1",
+      "ownerType": "trait",
+      "ownerId": "sp-242-1",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-242-1",
+            "sp-243-1"
+          ]
+        },
+        {
+          "path": "event.burst",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "path": "action.element",
+          "op": "eq",
+          "value": "Electric"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "self",
+          "scope": "all",
+          "delta": -2,
+          "mode": "add",
+          "duration": "nextAction"
+        }
+      ],
+      "note": "特性「生物电」"
+    },
+    {
+      "id": "trait:sp-80-1",
+      "ownerType": "trait",
+      "ownerId": "sp-80-1",
+      "trigger": "beforeDamage",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-80-1",
+            "sp-80-2",
+            "sp-81-1",
+            "sp-81-2"
+          ]
+        },
+        {
+          "path": "event.burst",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "addPower",
+          "value": 40
+        }
+      ],
+      "note": "特性「电流刺激」"
+    },
+    {
+      "id": "trait:sp-132-1",
+      "ownerType": "trait",
+      "ownerId": "sp-132-1",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "self.active.spriteId",
+          "op": "in",
+          "value": [
+            "sp-132-1",
+            "sp-133-1"
+          ]
+        },
+        {
+          "path": "event.burst",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkillCost",
+          "target": "opponent",
+          "scope": "all",
+          "delta": 1,
+          "mode": "add",
+          "duration": "turns",
+          "turns": 1
+        }
+      ],
+      "note": "特性「超负荷」：攻击技迸发 → 敌方能耗 +1"
     }
   ]
 }
