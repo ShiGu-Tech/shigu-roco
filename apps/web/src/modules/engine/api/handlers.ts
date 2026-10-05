@@ -145,6 +145,7 @@ export function parseState(raw: Dict): BattleState {
     weather: weather ? { id: toStr(weather.id), turnsLeft: toNum(weather.turnsLeft, 0) } : null,
     seed: toNum(raw.seed, 0),
     onceFired: raw.onceFired ? Object.fromEntries(Object.entries(asDict(raw.onceFired)).map(([k, v]) => [k, Boolean(v)])) : undefined,
+    randomOverrides: raw.randomOverrides ? Object.fromEntries(Object.entries(asDict(raw.randomOverrides)).map(([k, v]) => [k, toStr(v)])) : undefined,
   };
 }
 

@@ -170,6 +170,8 @@ export interface BattleState {
   seed: number;
   /** 本回合已触发过的 `oncePerTurn` 机制（`side:mechanismId`），回合开始清空。 */
   onceFired?: Record<string, boolean>;
+  /** 随机结果覆盖（人工反馈「巧变 / 随机习得 / 随机召唤实际变成了什么」）：机制 id（多项用 `#序`）→ 结果 id。 */
+  randomOverrides?: Record<string, string>;
   /** 日期域 · 一周第几天（0=周日…6=周六），未显式提供时由模拟器按当前日期填充（供「周末」类特性）。 */
   dayOfWeek?: number;
 }

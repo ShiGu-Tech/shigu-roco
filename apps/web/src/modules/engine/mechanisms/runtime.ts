@@ -978,7 +978,9 @@ export class MechanismRuntime {
           const rng = new Rng(hashSeed(state, `${command.mechanismId}:${state.turn}:learn`));
           const learned: string[] = [];
           for (let i = 0; i < count && pool.length; i++) {
-            const picked = pool.splice(rng.int(pool.length), 1)[0];
+            const overridePick = state.randomOverrides?.[`${command.mechanismId}#${i}`];
+            const idx = overridePick ? pool.indexOf(overridePick) : -1;
+            const picked = idx >= 0 ? pool.splice(idx, 1)[0] : pool.splice(rng.int(pool.length), 1)[0];
             active.loadout = [...active.loadout, picked];
             if (definition.duration) recordSkillOverride(active, picked, "", definition.duration < 0 ? -1 : state.turn + definition.duration);
             learned.push(picked);
@@ -1000,7 +1002,9 @@ export class MechanismRuntime {
           const level = toNum(asDict(bundle.rules.level).default, 60);
           const summoned: string[] = [];
           for (let i = 0; i < count && pool.length; i++) {
-            const id = pool.splice(rng.int(pool.length), 1)[0];
+            const overridePick = state.randomOverrides?.[`${command.mechanismId}#${i}`];
+            const idx = overridePick ? pool.indexOf(overridePick) : -1;
+            const id = idx >= 0 ? pool.splice(idx, 1)[0] : pool.splice(rng.int(pool.length), 1)[0];
             const sprite = makeActive(id);
             applyProfile(bundle.stats, getSprite(bundle, id), sprite, { level });
             sprite.summonedBy = summoner.spriteId;
@@ -1077,7 +1081,9 @@ export class MechanismRuntime {
           const pool = source.filter((id) => id && id !== current && !isSentinelSkill(bundle, id));
           if (!current || !pool.length) break;
           const rng = new Rng(hashSeed(state, `${command.mechanismId}:${state.turn}`));
-          const picked = pool[rng.int(pool.length)];
+          // 随机结果覆盖：面板回填的「实际变成了什么」优先于引擎自掷（对局中人工反馈）。
+          const overridePick = state.randomOverrides?.[command.mechanismId];
+          const picked = overridePick && pool.includes(overridePick) ? overridePick : pool[rng.int(pool.length)];
           active.loadout = active.loadout.includes(current)
             ? active.loadout.map((id) => (id === current ? picked : id))
             : [...active.loadout, picked];

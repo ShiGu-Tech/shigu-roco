@@ -225,5 +225,7 @@
  *          magicActive`；魔法定义走 `rules.magics`（`healRatio` / `turns`）。回合开始**先回血**（早于行动结算）、
  *          按方不绑精灵（换人回当前精灵），释放当回合不回血。首个数据：草魔法（每回合 15% × 3 回合）。
  *          【待校准：是否含释放当回合、每场次数】。
+ * - 0.77.1 随机结果覆盖接缝：`BattleState.randomOverrides`（机制 id / 多项 `#序` → 结果 id）；`randomizeSkill` /
+ *          `learnRandomSkills` / `summonRandom` 优先取覆盖值，供对局中人工反馈「实际随机成了什么」（巧变等）。
  */
-export const ENGINE_VERSION = "0.77.0";
+export const ENGINE_VERSION = "0.77.1";

@@ -113,6 +113,7 @@ export function cloneState(s: BattleState): BattleState {
     seed: s.seed,
     // oncePerTurn 触发记录随克隆保留（战斗中途克隆 / MCTS 快照不得重置门）。
     onceFired: s.onceFired ? { ...s.onceFired } : undefined,
+    randomOverrides: s.randomOverrides ? { ...s.randomOverrides } : undefined,
     dayOfWeek: s.dayOfWeek,
   };
 }
