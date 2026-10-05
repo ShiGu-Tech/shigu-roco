@@ -28,6 +28,8 @@ import type { RoomSide, WatchEntry, WatchLogLine, WatchRoom } from "@/modules/wa
 import { saveReplay } from "@/modules/replays/storage";
 import { ENEMY_COLOR, PLAYER_COLOR } from "@/lib/chart-theme";
 import { logRowOf } from "./log";
+import { intelOf, recordMagic, recordSeenSkill, type OpponentIntel } from "./intel";
+import { EnemyIntelCard } from "./intel-card";
 import type { BattleEvent, BattleState, Catalog, EngineAction, RecommendResult, Terminal } from "@/modules/battle/types";
 import { ActiveBoard } from "./active-board";
 import { LineupDetailDialog, LineupLibrary } from "./lineup-library";
@@ -127,6 +129,8 @@ export function BattleBoard() {
   const [playerTeam, setPlayerTeam] = useState<TeamEntry[]>(playerEntries);
   const [enemyTeam, setEnemyTeam] = useState<TeamEntry[]>(enemyEntries);
   const [preset, setPreset] = useState<PresetKey>("standard");
+  /** 真实对战 · 对手情报档案（按对手精灵 spriteId，换人仍记住）。 */
+  const [enemyIntel, setEnemyIntel] = useState<Record<string, OpponentIntel>>({});
 
   const [playerLineups, setPlayerLineups] = useState<Lineup[]>(() => listLineups("player"));
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -316,6 +320,7 @@ export function BattleBoard() {
     try {
       const w = await refresh(st);
       setFrames([{ turn: st.turn, state: st, log: [], history: [{ turn: st.turn, ...w }], terminal: null, label: `回合 ${st.turn}` }]);
+      setEnemyIntel({});
       setCursor(0);
     } catch (e) {
       toast.error((e as Error).message);
@@ -324,12 +329,26 @@ export function BattleBoard() {
     }
   }
 
+  /** 真实对战 · 把对手本回合实际使用的技能 / 魔法记入情报档案。 */
+  function recordEnemyIntel(spriteId: string, action: EngineAction, turn: number) {
+    if (!spriteId) return;
+    setEnemyIntel((prev) => {
+      let intel = intelOf(prev, spriteId);
+      if (action.kind === "skill" && action.skillId) intel = recordSeenSkill(intel, action.skillId, turn);
+      else if (action.kind === "wish") intel = recordMagic(intel, "wish");
+      else if (action.kind === "leader") intel = recordMagic(intel, "leader");
+      else if (action.kind === "magic") intel = recordMagic(intel, "grass");
+      return { ...prev, [spriteId]: intel };
+    });
+  }
+
   async function resolve(pP: ActionOption, pE: ActionOption) {
     if (!current) return;
     const base = current;
     setBusy(true);
     try {
       const res = await simulateTurn(base.state, pP.action, pE.action, base.state.seed);
+      recordEnemyIntel(base.state.enemy.active.spriteId, pE.action, base.state.turn);
       setPendingP(null);
       setPendingE(null);
       // 全景图轨迹埋点（P3）：本回合双方操作 + 事件流，/engine 回来点亮 + 本页内嵌回放。
@@ -918,6 +937,11 @@ export function BattleBoard() {
             onUseOther={(o) => chooseOther("enemy", o)}
             onPickBench={(benchId) => pickBench("enemy", benchId)}
           />
+          {catalog ? (
+            <div className="mt-3">
+              <EnemyIntelCard catalog={catalog} team={enemyTeam} intel={enemyIntel} />
+            </div>
+          ) : null}
         </div>
       </div>
 
