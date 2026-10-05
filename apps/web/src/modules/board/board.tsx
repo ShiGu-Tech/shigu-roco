@@ -16,6 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
 
 import { forcedSwitch, getCatalog, legalActions, recommend, requestLeader, simulateTurn } from "@/modules/battle/client";
 import { SIDE_NAME } from "@/modules/battle/side-labels";
@@ -32,6 +33,7 @@ import { intelOf, recordMagic, recordSeenSkill, type OpponentIntel } from "./int
 import { EnemyIntelCard } from "./intel-card";
 import { IntelMarkDialog } from "./intel-mark-dialog";
 import type { BattleEvent, BattleState, Catalog, EngineAction, RecommendResult, Terminal } from "@/modules/battle/types";
+import { toStr, type Dict } from "@/modules/engine/types";
 import { ActiveBoard } from "./active-board";
 import { LineupDetailDialog, LineupLibrary } from "./lineup-library";
 import { deleteLineup, listLineups, type Lineup } from "./lineups";
@@ -133,6 +135,10 @@ export function BattleBoard() {
   /** 真实对战 · 对手情报档案（按对手精灵 spriteId，换人仍记住）。 */
   const [enemyIntel, setEnemyIntel] = useState<Record<string, OpponentIntel>>({});
   const [markSprite, setMarkSprite] = useState<string | null>(null);
+  /** 随机结果二次选择：上次结算选定的动作（供回退重算）+ 待确认的随机事件。 */
+  const lastActionsRef = useRef<{ p: ActionOption; e: ActionOption } | null>(null);
+  const [randomPrompt, setRandomPrompt] = useState<{ mechanismId: string; from: string; to: string } | null>(null);
+  const [randomPick, setRandomPick] = useState("");
 
   const [playerLineups, setPlayerLineups] = useState<Lineup[]>(() => listLineups("player"));
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -351,6 +357,16 @@ export function BattleBoard() {
     try {
       const res = await simulateTurn(base.state, pP.action, pE.action, base.state.seed);
       recordEnemyIntel(base.state.enemy.active.spriteId, pE.action, base.state.turn);
+      lastActionsRef.current = { p: pP, e: pE };
+      // 随机结果二次选择：本回合出现巧变 / 随机习得 → 让玩家反馈实际变成了什么。
+      let rand: { mechanismId: string; from: string; to: string } | null = null;
+      for (const ev of res.log) {
+        const d = ev.data as Dict;
+        if (ev.type === "skill-randomized" && d?.to !== undefined) { rand = { mechanismId: toStr(d.mechanismId), from: toStr(d.from), to: toStr(d.to) }; break; }
+        if (ev.type === "skill-learned" && d?.skillId !== undefined) { rand = { mechanismId: toStr(d.mechanismId), from: "", to: toStr(d.skillId) }; break; }
+      }
+      setRandomPrompt(rand);
+      setRandomPick("");
       setPendingP(null);
       setPendingE(null);
       // 全景图轨迹埋点（P3）：本回合双方操作 + 事件流，/engine 回来点亮 + 本页内嵌回放。
@@ -390,6 +406,31 @@ export function BattleBoard() {
       }
       setFrames((f) => [...f, frame]);
       setCursor((c) => c + 1);
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  /** 随机结果二次选择：带上覆盖值回退重算上一回合（帧原位替换，不新增回合）。 */
+  async function resimulate() {
+    if (!randomPrompt || !randomPick) return;
+    const base = frames[cursor - 1];
+    const acts = lastActionsRef.current;
+    if (!base || !acts) return;
+    setBusy(true);
+    try {
+      const st = structuredClone(base.state);
+      st.randomOverrides = { ...(st.randomOverrides ?? {}), [randomPrompt.mechanismId]: randomPick };
+      const res = await simulateTurn(st, acts.p.action, acts.e.action, st.seed);
+      setFrames((f) => {
+        const next = [...f];
+        next[cursor] = { ...next[cursor], state: res.state, log: res.log, terminal: res.terminal };
+        return next;
+      });
+      setRandomPrompt(null);
+      setRandomPick("");
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
@@ -844,6 +885,38 @@ export function BattleBoard() {
               onUndo={() => void rollbackTo(cursor - 1)}
             />
           </Panel>
+          {randomPrompt ? (
+            <Panel title="随机结果确认">
+              <div className="flex flex-wrap items-center gap-2 text-[12px]">
+                <span className="text-muted-foreground">
+                  「{skillById(catalog!, randomPrompt.from)?.name ?? randomPrompt.from}」随机为「{skillById(catalog!, randomPrompt.to)?.name ?? randomPrompt.to}」？
+                </span>
+                <NativeSelect value={randomPick} onChange={(e) => setRandomPick(e.target.value)} className="h-7 text-[12px]">
+                  <option value="">— 实际变成了什么 —</option>
+                  {catalog!.allSkills.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </NativeSelect>
+                <Button type="button" size="sm" disabled={busy || !randomPick} onClick={() => void resimulate()}>
+                  按实际重算
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  disabled={busy}
+                  onClick={() => {
+                    setRandomPrompt(null);
+                    setRandomPick("");
+                  }}
+                >
+                  忽略
+                </Button>
+              </div>
+            </Panel>
+          ) : null}
           <Panel
             title="对战记录"
             actions={

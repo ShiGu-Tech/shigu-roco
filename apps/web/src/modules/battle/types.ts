@@ -53,6 +53,8 @@ export interface BattleState {
   enemy: SideState;
   weather: { id: string; turnsLeft: number } | null;
   seed: number;
+  /** 随机结果覆盖（人工反馈巧变 / 随机习得 / 随机召唤的实际结果）：机制 id → 结果 id。 */
+  randomOverrides?: Record<string, string>;
 }
 
 export interface CatalogElement {
