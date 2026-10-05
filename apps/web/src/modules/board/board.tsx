@@ -30,6 +30,7 @@ import { ENEMY_COLOR, PLAYER_COLOR } from "@/lib/chart-theme";
 import { logRowOf } from "./log";
 import { intelOf, recordMagic, recordSeenSkill, type OpponentIntel } from "./intel";
 import { EnemyIntelCard } from "./intel-card";
+import { IntelMarkDialog } from "./intel-mark-dialog";
 import type { BattleEvent, BattleState, Catalog, EngineAction, RecommendResult, Terminal } from "@/modules/battle/types";
 import { ActiveBoard } from "./active-board";
 import { LineupDetailDialog, LineupLibrary } from "./lineup-library";
@@ -131,6 +132,7 @@ export function BattleBoard() {
   const [preset, setPreset] = useState<PresetKey>("standard");
   /** 真实对战 · 对手情报档案（按对手精灵 spriteId，换人仍记住）。 */
   const [enemyIntel, setEnemyIntel] = useState<Record<string, OpponentIntel>>({});
+  const [markSprite, setMarkSprite] = useState<string | null>(null);
 
   const [playerLineups, setPlayerLineups] = useState<Lineup[]>(() => listLineups("player"));
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -939,8 +941,20 @@ export function BattleBoard() {
           />
           {catalog ? (
             <div className="mt-3">
-              <EnemyIntelCard catalog={catalog} team={enemyTeam} intel={enemyIntel} />
+              <EnemyIntelCard catalog={catalog} team={enemyTeam} intel={enemyIntel} onMark={(spriteId) => setMarkSprite(spriteId)} />
             </div>
+          ) : null}
+          {catalog && markSprite ? (
+            <IntelMarkDialog
+              open
+              onOpenChange={(open) => {
+                if (!open) setMarkSprite(null);
+              }}
+              key={markSprite}
+              catalog={catalog}
+              intel={intelOf(enemyIntel, markSprite)}
+              onApply={(next) => setEnemyIntel((prev) => ({ ...prev, [markSprite]: next }))}
+            />
           ) : null}
         </div>
       </div>

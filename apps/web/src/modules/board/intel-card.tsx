@@ -2,19 +2,22 @@
 
 import { Panel } from "@/components/panel";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import type { Catalog } from "@/modules/battle/types";
 import type { OpponentIntel } from "./intel";
 import { skillById, spriteOf } from "./util";
 
-/** 对手情报卡（真实对战）：逐只显示「已见技能」与未知 / 推测标记。 */
+/** 对手情报卡（真实对战）：逐只显示「已见技能」与未知 / 推测标记，可手动标记。 */
 export function EnemyIntelCard({
   catalog,
   team,
   intel,
+  onMark,
 }: {
   catalog: Catalog;
   team: { spriteId: string }[];
   intel: Record<string, OpponentIntel>;
+  onMark: (spriteId: string) => void;
 }) {
   return (
     <Panel title="对手情报" bodyClassName="p-2">
@@ -28,6 +31,9 @@ export function EnemyIntelCard({
               <div className="flex items-center gap-1.5">
                 <span className="truncate font-medium">{sprite?.name ?? entry.spriteId}</span>
                 <Badge variant="outline" className="tnum shrink-0 text-[10px]">技能 {skills.length} 已见</Badge>
+                <Button type="button" size="sm" variant="ghost" className="ml-auto h-5 shrink-0 px-1.5 text-[10px]" onClick={() => onMark(entry.spriteId)}>
+                  标记
+                </Button>
               </div>
               <div className="mt-1 flex flex-wrap gap-1">
                 {skills.length ? (
