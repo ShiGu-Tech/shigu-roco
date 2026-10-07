@@ -7,6 +7,7 @@ import { cn } from "cn";
 
 const ITEMS = [
   { href: "/", label: "对战台" },
+  { href: "/lab", label: "试验台" },
   { href: "/warehouse", label: "精灵仓库" },
   { href: "/data", label: "基础数据" },
   { href: "/engine", label: "引擎" },

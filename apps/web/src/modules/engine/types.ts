@@ -80,6 +80,10 @@ export interface ActiveSprite {
   summonedBy?: string;
   /** 继承域 · 已继承其特性的原精灵 id 列表（铭记于月亮）：派发时把本精灵「身份别名」为该原精灵，使其触发型机制照常结算。 */
   inheritedFrom?: string[];
+  /** 试验台 · 特性开关：`false` = 关闭该精灵的物种特性机制（默认 undefined = 启用）。 */
+  traitEnabled?: boolean;
+  /** 试验台 · 该精灵按图鉴归属的 `trait:*` 机制 id 列表（供开关逐只判定；默认 undefined = 不拦）。 */
+  traitMechanisms?: string[];
 }
 
 /** 能耗修正条目：挂在精灵身上、由技能 / 特性 / 状态登记，读时按作用域求和。 */

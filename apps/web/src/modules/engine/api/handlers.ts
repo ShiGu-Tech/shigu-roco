@@ -95,10 +95,11 @@ function parseCostMods(raw: unknown): ActiveSprite["costMods"] {
   });
 }
 
-function parseActive(raw: Dict): ActiveSprite {
+function parseActive(raw: Dict, bundle?: DataBundle): ActiveSprite {
   const counters = numDict(raw.counters);
+  const spriteId = toStr(raw.spriteId);
   return {
-    spriteId: toStr(raw.spriteId),
+    spriteId,
     hp: toNum(raw.hp, 0),
     maxHp: toNum(raw.maxHp, 1),
     energy: toNum(raw.energy, 0),
@@ -115,14 +116,17 @@ function parseActive(raw: Dict): ActiveSprite {
     skillMods: parseSkillMods(raw.skillMods),
     costMods: parseCostMods(raw.costMods),
     entered: raw.entered === undefined ? undefined : Boolean(raw.entered),
+    traitEnabled: raw.traitEnabled === undefined ? undefined : Boolean(raw.traitEnabled),
+    // 图鉴侧归属：按精灵 id 取该精灵的 `trait:*` 机制（开关逐只判定用）。
+    traitMechanisms: bundle ? traitMechanismsBySprite(bundle).get(spriteId) : undefined,
   };
 }
 
-function parseSide(raw: Dict) {
+function parseSide(raw: Dict, bundle?: DataBundle) {
   return {
     magic: toNum(raw.magic, 0),
-    active: parseActive(asDict(raw.active)),
-    bench: toArray<Dict>(raw.bench).map(parseActive),
+    active: parseActive(asDict(raw.active), bundle),
+    bench: toArray<Dict>(raw.bench).map((item) => parseActive(item, bundle)),
     teamMarks: intDict(raw.teamMarks),
     switchLock: Math.max(0, Math.floor(toNum(raw.switchLock, 0))),
     seenEnemy: toArray<string>(raw.seenEnemy),
@@ -136,12 +140,12 @@ function parseSide(raw: Dict) {
   };
 }
 
-export function parseState(raw: Dict): BattleState {
+export function parseState(raw: Dict, bundle?: DataBundle): BattleState {
   const weather = raw.weather as Dict | null | undefined;
   return {
     turn: toNum(raw.turn, 1),
-    player: parseSide(asDict(raw.player)),
-    enemy: parseSide(asDict(raw.enemy)),
+    player: parseSide(asDict(raw.player), bundle),
+    enemy: parseSide(asDict(raw.enemy), bundle),
     weather: weather ? { id: toStr(weather.id), turnsLeft: toNum(weather.turnsLeft, 0) } : null,
     seed: toNum(raw.seed, 0),
     onceFired: raw.onceFired ? Object.fromEntries(Object.entries(asDict(raw.onceFired)).map(([k, v]) => [k, Boolean(v)])) : undefined,
@@ -220,6 +224,7 @@ function skillSourcesOf(sprite: Dict): Dict {
 
 export function catalog(bundle: DataBundle): Dict {
   const skillIcons = asDict(asDict(bundle.assets).skills);
+  const traitMap = traitMechanismsBySprite(bundle);
   const sprites = Object.entries(bundle.sprites).map(([sid, sp]) => {
     const skills = toArray<string>(sp.skillList)
       .map((skillId) => bundle.skills[skillId])
@@ -236,6 +241,8 @@ export function catalog(bundle: DataBundle): Dict {
       elements: toArray<string>(sp.elements),
       race: asDict(sp.race),
       trait: asDict(sp.trait),
+      // 图鉴侧 · 该精灵归属的 `trait:*` 机制 id（试验台特性开关逐只判定）。
+      traitMechanisms: traitMap.get(sid) ?? [],
       skillSources: skillSourcesOf(sp),
       leaderAllowed: sp.leaderAllowed !== false,
        image: `/images/catalog/sprites/${sid}.webp`,
@@ -255,6 +262,10 @@ export function catalog(bundle: DataBundle): Dict {
     dataUpdatedAt: bundle.dataUpdatedAt,
     elements: toArray(asDict(bundle.elements).elements),
     bloodlines: toArray(asDict(bundle.elements).bloodlines),
+    // 属性克制矩阵 / 系数（前端反推伤害时需要，与引擎 `typeMultiplier` 同源）。
+    elementMatrix: asDict(asDict(bundle.elements).matrix),
+    elementValues: asDict(asDict(bundle.elements).values),
+    elementCombine: asDict(asDict(bundle.elements).combine),
     sprites,
     allSkills,
     statuses: Object.values(bundle.statuses).map((s) => ({ id: toStr(s.id), name: toStr(s.nameZh, toStr(s.name)), nameZh: toStr(s.nameZh, toStr(s.name)), description: toStr(s.description, toStr(s.rawText)), maxStack: toNum(s.maxStack, 0) })),
@@ -288,7 +299,7 @@ export interface RecommendBody {
 }
 
 export function recommend(bundle: DataBundle, body: RecommendBody): RecommendOutput {
-  const state = parseState(asDict(body.state));
+  const state = parseState(asDict(body.state), bundle);
   const options = asDict(body.options);
   const sim = new Simulator(bundle);
 
@@ -321,7 +332,7 @@ export function recommend(bundle: DataBundle, body: RecommendBody): RecommendOut
 
 export function simulateTurn(bundle: DataBundle, body: Dict): Dict {
   const sim = new Simulator(bundle);
-  const state = parseState(asDict(body.state));
+  const state = parseState(asDict(body.state), bundle);
   const rng = new Rng(toNum(body.seed, state.seed));
   const result = sim.step(state, parseAction(asDict(body.playerAction)), parseAction(asDict(body.enemyAction)), rng);
   const term = sim.terminal(result.state);
@@ -335,14 +346,14 @@ export function simulateTurn(bundle: DataBundle, body: Dict): Dict {
 
 export function legalActions(bundle: DataBundle, body: Dict): Dict {
   const sim = new Simulator(bundle);
-  const state = parseState(asDict(body.state));
+  const state = parseState(asDict(body.state), bundle);
   const side = toStr(body.side, "player") as Side;
   return { side, actions: sim.legalActions(state, side) };
 }
 
 export function forcedSwitch(bundle: DataBundle, body: Dict): Dict {
   const sim = new Simulator(bundle);
-  const state = parseState(asDict(body.state));
+  const state = parseState(asDict(body.state), bundle);
   const side = toStr(body.side, "player") as Side;
   const events = sim.forcedSwitch(state, side, toStr(body.benchId));
   return { state, log: eventsToDict(events) };
@@ -350,7 +361,7 @@ export function forcedSwitch(bundle: DataBundle, body: Dict): Dict {
 
 export function leader(bundle: DataBundle, body: Dict): Dict {
   const sim = new Simulator(bundle);
-  const state = parseState(asDict(body.state));
+  const state = parseState(asDict(body.state), bundle);
   const side = toStr(body.side, "player") as Side;
   const events = sim.applyLeader(state, side);
   return { state, log: eventsToDict(events) };
@@ -415,6 +426,45 @@ function findSpriteEntry(bundle: DataBundle, id: string): Dict {
   if (form1) return asDict(form1);
   const prefix = Object.entries(bundle.sprites).find(([key]) => key.startsWith(`${id}-`));
   return prefix ? asDict(prefix[1]) : {};
+}
+
+/** 把机制 ownerId（基 id `sp-47` / 带形态 `sp-48-1`）解析为图鉴键 `sp-<no>-<formId>`。 */
+function spriteCatalogKey(bundle: DataBundle, id: string): string | undefined {
+  if (!id) return undefined;
+  if (bundle.sprites[id]) return id;
+  if (bundle.sprites[`${id}-1`]) return `${id}-1`;
+  return Object.keys(bundle.sprites).find((key) => key.startsWith(`${id}-`));
+}
+
+/** 图鉴侧 · 逐只精灵归属的 `trait:*` 机制 id：
+ *  取机制 ownerId 的精灵 + 其 `event.enteredSpriteId` 适用范围里列出的精灵。
+ *  试验台特性开关据此逐只判定，不依赖 ownerId 与精灵 id 相等。 */
+const traitMechCache = new WeakMap<DataBundle, Map<string, string[]>>();
+function traitMechanismsBySprite(bundle: DataBundle): Map<string, string[]> {
+  const cached = traitMechCache.get(bundle);
+  if (cached) return cached;
+  const map = new Map<string, string[]>();
+  for (const mech of (bundle.mechanisms ?? []) as unknown as Dict[]) {
+    if (mech.ownerType !== "trait") continue;
+    const keys = new Set<string>();
+    const ownerKey = spriteCatalogKey(bundle, toStr(mech.ownerId));
+    if (ownerKey) keys.add(ownerKey);
+    for (const cond of toArray<Dict>(mech.when)) {
+      if (toStr(cond.path) !== "event.enteredSpriteId") continue;
+      const values = Array.isArray(cond.value) ? cond.value : [cond.value];
+      for (const value of values) {
+        const key = spriteCatalogKey(bundle, toStr(value));
+        if (key) keys.add(key);
+      }
+    }
+    for (const key of keys) {
+      const list = map.get(key) ?? [];
+      list.push(toStr(mech.id));
+      map.set(key, list);
+    }
+  }
+  traitMechCache.set(bundle, map);
+  return map;
 }
 
 /** 机制归属显示名：skill→技能名、trait→精灵名·特性名、status/mark/weather→图鉴名。 */
@@ -503,14 +553,14 @@ export function workbenchMechanisms(bundle: DataBundle): Dict {
 /** 调试沙盒 · 合法行动：一次返回双方在该状态下的全部合法行动（供调试台行动选择）。 */
 export function debugLegal(bundle: DataBundle, body: Dict): Dict {
   const sim = new Simulator(bundle);
-  const state = parseState(asDict(body.state));
+  const state = parseState(asDict(body.state), bundle);
   return { player: sim.legalActions(state, "player"), enemy: sim.legalActions(state, "enemy") };
 }
 
 /** 调试沙盒 · 单步：真实结算一回合（≠ 回放快照），返回新状态 + 事件（含 trigger / 伤害 breakdown）+ 下一步双方合法行动。 */
 export function debugStep(bundle: DataBundle, body: Dict): Dict {
   const sim = new Simulator(bundle);
-  const state = parseState(asDict(body.state));
+  const state = parseState(asDict(body.state), bundle);
   const rng = new Rng(toNum(body.seed, state.seed));
   const result = sim.step(state, parseAction(asDict(body.playerAction)), parseAction(asDict(body.enemyAction)), rng);
   const term = sim.terminal(result.state);

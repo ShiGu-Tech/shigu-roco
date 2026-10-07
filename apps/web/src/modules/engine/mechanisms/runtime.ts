@@ -76,7 +76,7 @@ export class MechanismRuntime {
   constructor(readonly registry: MechanismSource) {}
 
   dispatch(context: MechanismContext): EffectCommand[] {
-    const base = this.registry.collect(context);
+    const base = this.registry.collect(context).filter((command) => this.traitAllowed(context.state, command));
     // 继承域 · 动态归属（铭记于月亮）：把「已继承特性」的精灵按其继承来的原精灵身份再派发一次，
     // 使其**触发型**机制（onEntry / beforeDamage / afterDeath …）照常结算（被动规则已并入 `ruleOverrides`，此处跳过）。
     if (context.trigger === "passive") return base;
@@ -94,6 +94,18 @@ export class MechanismRuntime {
       }
     }
     return out;
+  }
+
+  /** 特性开关（试验台）：按**图鉴逐只**判定——精灵的 `traitMechanisms`（图鉴侧归属的 `trait:*` 机制）
+   * 命中该机制、且该精灵 `traitEnabled === false` 时跳过。默认（undefined）= 启用，行为与既有一致。
+   *  注：不再用 `spriteId === ownerId`，因为同一特性可能登记在基础形态下、覆盖多个进化形态。 */
+  private traitAllowed(state: BattleState, command: EffectCommand): boolean {
+    if (command.ownerType !== "trait") return true;
+    for (const side of ["player", "enemy"] as Side[]) {
+      const active = side === "player" ? state?.player?.active : state?.enemy?.active;
+      if (active && active.traitEnabled === false && active.traitMechanisms?.includes(command.mechanismId)) return false;
+    }
+    return true;
   }
 
   /** 继承域 · 当前两侧在场且带继承特性的精灵（owner 为被继承的原精灵 id）。 */

@@ -48,6 +48,8 @@ export function cloneActive(a: ActiveSprite): ActiveSprite {
     disguise: a.disguise,
     summonedBy: a.summonedBy,
     inheritedFrom: a.inheritedFrom ? [...a.inheritedFrom] : undefined,
+    traitEnabled: a.traitEnabled,
+    traitMechanisms: a.traitMechanisms ? [...a.traitMechanisms] : undefined,
   };
 }
 

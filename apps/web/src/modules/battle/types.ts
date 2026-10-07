@@ -33,6 +33,10 @@ export interface ActiveSpriteState {
   skillOverrides?: Record<string, { original: string; expires: number }>;
   /** 记忆域 · 技能持久修正（威力 / 能耗 / 连击 / 先手）。 */
   skillMods?: Record<string, { power?: number; cost?: number; hits?: number; priority?: number }>;
+  /** 记忆域 · 计数器（连击加成 / 眩晕 / 吸血等）。 */
+  counters?: Record<string, number>;
+  /** 试验台 · 特性开关：false = 关闭该精灵物种特性（默认启用）。 */
+  traitEnabled?: boolean;
   /** 能耗域 · 声明式能耗修正条目（与引擎 `costMods` 同构）。 */
   costMods?: CostMod[];
 }
@@ -110,6 +114,8 @@ export interface CatalogSprite {
   elements: string[];
   race: Record<string, number>;
   trait: { name?: string; desc?: string };
+  /** 图鉴侧 · 该精灵归属的 `trait:*` 机制 id（试验台特性开关逐只判定）。 */
+  traitMechanisms?: string[];
   /** 技能 id → 学习来源：level（升级）/ machine（技能石）/ blood（血脉）。 */
   skillSources?: Record<string, string>;
   leaderAllowed: boolean;
@@ -132,6 +138,10 @@ export interface Catalog {
   dataVersion: string;
   dataUpdatedAt: string;
   elements: CatalogElement[];
+  /** 属性克制矩阵 / 系数 / 合成规则（前端反推伤害用；与引擎 `typeMultiplier` 同源）。 */
+  elementMatrix?: Record<string, Record<string, string>>;
+  elementValues?: Record<string, number>;
+  elementCombine?: Record<string, unknown>;
   /** 18 系别血脉（含图标）。 */
   bloodlines?: CatalogBloodline[];
   sprites: CatalogSprite[];

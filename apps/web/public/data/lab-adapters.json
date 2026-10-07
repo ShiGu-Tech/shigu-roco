@@ -1,0 +1,25 @@
+{
+  "version": "0.1.0",
+  "updatedAt": "2026-10-06",
+  "note": "精灵试验台适配表（数据驱动）。印记正/负面按图鉴描述判定，标【待校准】；逐精灵例外可覆盖。",
+  "marks": {
+    "poison-mark": { "polarity": "negative" },
+    "attack-mark": { "polarity": "positive" },
+    "thorn-mark": { "polarity": "negative" },
+    "photosynthesis-mark": { "polarity": "positive" },
+    "wet-mark": { "polarity": "positive" },
+    "electric-charge-mark": { "polarity": "positive" },
+    "wind-mark": { "polarity": "positive" },
+    "spirit-mark": { "polarity": "negative" },
+    "momentum-mark": { "polarity": "positive" },
+    "dragon-devour-mark": { "polarity": "positive" },
+    "slow-mark": { "polarity": "negative" },
+    "starfall-mark": { "polarity": "negative" },
+    "sprout-mark": { "polarity": "positive" },
+    "undertow-mark": { "polarity": "negative" }
+  },
+  "sprites": {
+    "sp-219-1": { "marks": { "maxPositive": 9, "maxNegative": 9 }, "notes": "里拉鳐「吟游之弦」：印记不替换、可同时生效（引擎已登记 marks.replaceDifferent=false），故 UI 不设一对上限" }
+  },
+  "traits": {}
+}
