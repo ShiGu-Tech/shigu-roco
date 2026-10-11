@@ -554,15 +554,36 @@ export class MechanismRuntime {
         }
         case "modifySkill": {
           if (!active || !targetSide) break;
+          const skillMods = (active.skillMods ??= {});
+          const fields = ["power", "cost", "hits", "priority"] as const;
+          const applyTo = (sid: string): void => {
+            if (!sid) return;
+            const mod = (skillMods[sid] ??= {});
+            for (const field of fields) {
+              const delta = definition[field];
+              if (typeof delta === "number") mod[field] = (mod[field] ?? 0) + delta;
+            }
+            events.push({ type: "skill-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { skillId: sid, mod: { ...mod } } });
+          };
+          // 整组技能作用域（`scope:"carried"` / 指定系别 / 每系别至多一）：遍历携带技能。
+          if ((definition.scope === "carried" || definition.elements != null || definition.oncePerElement) && bundle) {
+            const picked = new Set<string>();
+            for (const id of active.loadout ?? []) {
+              if (picked.has(id)) continue;
+              const skill = getSkill(bundle, id);
+              if (!skill) continue;
+              if (definition.elements != null && !definition.elements.includes(toStr(skill.element))) continue;
+              const el = toStr(skill.element);
+              if (definition.oncePerElement && picked.has(`el:${el}`)) continue;
+              picked.add(id);
+              picked.add(`el:${el}`);
+              applyTo(id);
+            }
+            break;
+          }
           const resolvedSkillId = definition.skillIdFrom ? toStr(resolveContextPath({ state, trigger: command.trigger, actorSide: command.actorSide, targetSide: command.targetSide, event: command.event ?? {} }, definition.skillIdFrom)) : definition.skillId;
           if (!resolvedSkillId) break;
-          active.skillMods ??= {};
-          const mod = (active.skillMods[resolvedSkillId] ??= {});
-          for (const field of ["power", "cost", "hits", "priority"] as const) {
-            const delta = definition[field];
-            if (typeof delta === "number") mod[field] = (mod[field] ?? 0) + delta;
-          }
-          events.push({ type: "skill-modified", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { skillId: resolvedSkillId, mod: { ...mod } } });
+          applyTo(resolvedSkillId);
           break;
         }
         case "applyMark": {

@@ -214,7 +214,7 @@ export type EffectSpec =
   /** 记忆域 · 计数器：清除指定 key（省略 = 全部）。 */
   | { type: "clearCounter"; target?: string; key?: string }
   /** 记忆域 · 技能永久修正：对某技能叠加威力 / 能耗 / 连击 / 先手的持久 delta。 */
-  | { type: "modifySkill"; target?: string; skillId?: string; skillIdFrom?: string; power?: number; cost?: number; hits?: number; priority?: number }
+  | { type: "modifySkill"; target?: string; skillId?: string; skillIdFrom?: string; power?: number; cost?: number; hits?: number; priority?: number; scope?: "skill" | "carried"; elements?: string[]; oncePerElement?: boolean }
   /** 规则覆盖通道：按 `passive` 触发器收集，覆盖 `rules.*` 默认值（如印记上限 / 异种互斥）。key 用点路径。 */
   | { type: "setRuleModifier"; target?: string; key: string; value: number | boolean | string }
   | { type: "unsupported"; effectType: string; reason?: string };

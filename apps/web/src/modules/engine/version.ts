@@ -227,5 +227,8 @@
  *          【待校准：是否含释放当回合、每场次数】。
  * - 0.77.1 随机结果覆盖接缝：`BattleState.randomOverrides`（机制 id / 多项 `#序` → 结果 id）；`randomizeSkill` /
  *          `learnRandomSkills` / `summonRandom` 优先取覆盖值，供对局中人工反馈「实际随机成了什么」（巧变等）。
+ * - 0.78.0 技能修正作用域：`modifySkill` 增 `scope:"carried"` / `elements` / `oncePerElement`（对携带技能整组、按系别、每系别至多加威力，供「漫反射」类）
+ * - 0.78.1 换人语义：下场时清空临时属性增减益（`ActiveSprite.buffs` / `debuffs`），与印记 / 状态一并随离场结算；
+ *          永久类以 counters（`flat-*` / `pct-*`）存储，不受影响。供「专注力仅首回合」「跌落 -50% 随离场消失」类。
  */
-export const ENGINE_VERSION = "0.77.1";
+export const ENGINE_VERSION = "0.78.1";

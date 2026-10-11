@@ -985,6 +985,9 @@ export class Simulator {
         }
       }
     }
+    // 属性域 · 下场清空：随离场清除临时属性增减益（永久类走 counters，不受影响）。
+    old.buffs = {};
+    old.debuffs = {};
     // 队伍域 · 历史计数：本方换人次数（供「敌方每更换 1 次」类）。
     this.bump(st, side, "switches");
     this.refreshDerivedCounters(st);
