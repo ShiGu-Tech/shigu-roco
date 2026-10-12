@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.130.0",
+  "version": "0.131.0",
   "updatedAt": "2026-10-11",
   "mechanisms": [
     {
@@ -29919,6 +29919,380 @@
         }
       ],
       "note": "专注力：仅首回合，回合末清除"
+    },
+    {
+      "id": "skill:sk-7190420:base",
+      "ownerType": "skill",
+      "ownerId": "sk-7190420",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7190420"
+        },
+        {
+          "path": "target.active.marks.*",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "skillId": "sk-7190420",
+          "powerFrom": {
+            "path": "self.active.energy",
+            "scale": 0,
+            "offset": 90
+          },
+          "category": "Magic"
+        }
+      ],
+      "note": "sk-7190420:base power=90"
+    },
+    {
+      "id": "skill:sk-7190420:boost",
+      "ownerType": "skill",
+      "ownerId": "sk-7190420",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7190420"
+        },
+        {
+          "path": "target.active.marks.*",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "skillId": "sk-7190420",
+          "powerFrom": {
+            "path": "self.active.energy",
+            "scale": 0,
+            "offset": 130
+          },
+          "category": "Magic"
+        }
+      ],
+      "note": "sk-7190420:boost power=130"
+    },
+    {
+      "id": "skill:sk-7160210:base",
+      "ownerType": "skill",
+      "ownerId": "sk-7160210",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7160210"
+        },
+        {
+          "path": "self.active.debuffs.*",
+          "op": "gte",
+          "value": 0
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "skillId": "sk-7160210",
+          "powerFrom": {
+            "path": "self.active.energy",
+            "scale": 0,
+            "offset": 80
+          },
+          "category": "Magic"
+        }
+      ],
+      "note": "sk-7160210:base power=80"
+    },
+    {
+      "id": "skill:sk-7160210:boost",
+      "ownerType": "skill",
+      "ownerId": "sk-7160210",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7160210"
+        },
+        {
+          "path": "self.active.debuffs.*",
+          "op": "lt",
+          "value": 0
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "skillId": "sk-7160210",
+          "powerFrom": {
+            "path": "self.active.energy",
+            "scale": 0,
+            "offset": 140
+          },
+          "category": "Magic"
+        }
+      ],
+      "note": "sk-7160210:boost power=140"
+    },
+    {
+      "id": "skill:sk-7021210:base",
+      "ownerType": "skill",
+      "ownerId": "sk-7021210",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7021210"
+        },
+        {
+          "path": "self.active.debuffs.*",
+          "op": "gte",
+          "value": 0
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "skillId": "sk-7021210",
+          "powerFrom": {
+            "path": "self.active.energy",
+            "scale": 0,
+            "offset": 80
+          },
+          "category": "Magic"
+        }
+      ],
+      "note": "sk-7021210:base power=80"
+    },
+    {
+      "id": "skill:sk-7021210:boost",
+      "ownerType": "skill",
+      "ownerId": "sk-7021210",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7021210"
+        },
+        {
+          "path": "self.active.debuffs.*",
+          "op": "lt",
+          "value": 0
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "skillId": "sk-7021210",
+          "powerFrom": {
+            "path": "self.active.energy",
+            "scale": 0,
+            "offset": 120
+          },
+          "category": "Magic"
+        }
+      ],
+      "note": "sk-7021210:boost power=120"
+    },
+    {
+      "id": "skill:sk-7020530:base",
+      "ownerType": "skill",
+      "ownerId": "sk-7020530",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020530"
+        },
+        {
+          "path": "opponent.active.energy",
+          "op": "gt",
+          "value": 2
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "skillId": "sk-7020530",
+          "powerFrom": {
+            "path": "self.active.energy",
+            "scale": 0,
+            "offset": 65
+          },
+          "category": "Physical"
+        }
+      ],
+      "note": "sk-7020530:base power=65"
+    },
+    {
+      "id": "skill:sk-7020530:boost",
+      "ownerType": "skill",
+      "ownerId": "sk-7020530",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020530"
+        },
+        {
+          "path": "opponent.active.energy",
+          "op": "lte",
+          "value": 2
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "skillId": "sk-7020530",
+          "powerFrom": {
+            "path": "self.active.energy",
+            "scale": 0,
+            "offset": 325
+          },
+          "category": "Physical"
+        }
+      ],
+      "note": "sk-7020530:boost power=325"
+    },
+    {
+      "id": "skill:sk-7170110:base",
+      "ownerType": "skill",
+      "ownerId": "sk-7170110",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7170110"
+        },
+        {
+          "path": "opponent.active.energy",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "skillId": "sk-7170110",
+          "powerFrom": {
+            "path": "self.active.energy",
+            "scale": 0,
+            "offset": 40
+          },
+          "category": "Magic"
+        }
+      ],
+      "note": "sk-7170110:base power=40"
+    },
+    {
+      "id": "skill:sk-7170110:boost",
+      "ownerType": "skill",
+      "ownerId": "sk-7170110",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7170110"
+        },
+        {
+          "path": "opponent.active.energy",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "skillId": "sk-7170110",
+          "powerFrom": {
+            "path": "self.active.energy",
+            "scale": 0,
+            "offset": 800
+          },
+          "category": "Magic"
+        }
+      ],
+      "note": "sk-7170110:boost power=800"
+    },
+    {
+      "id": "skill:sk-7180310",
+      "ownerType": "skill",
+      "ownerId": "sk-7180310",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7180310"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "powerFrom": {
+            "path": "opponent.counters.faints",
+            "scale": 30,
+            "offset": 85
+          },
+          "skillId": "sk-7180310"
+        }
+      ],
+      "note": "牵连"
+    },
+    {
+      "id": "skill:sk-7090360",
+      "ownerType": "skill",
+      "ownerId": "sk-7090360",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7090360"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "powerFrom": {
+            "path": "opponent.counters.loadoutCost",
+            "scale": 10,
+            "offset": 0
+          },
+          "skillId": "sk-7090360"
+        }
+      ],
+      "note": "冰锋横扫"
     }
   ]
 }
