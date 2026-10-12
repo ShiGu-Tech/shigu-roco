@@ -698,7 +698,7 @@ export class MechanismRuntime {
           const perLayer: EffectCommand[] = [];
           for (let i = 0; i < total; i++) for (const effect of definition.effectsPerLayer ?? []) perLayer.push(nested(effect as EffectDefinition));
           for (const effect of definition.effectsOnConsume ?? []) perLayer.push(nested(effect as EffectDefinition));
-          events.push({ type: "mark-consumed", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { markId: definition.markId ?? null, total } });
+          if (total > 0) events.push({ type: "mark-consumed", trigger: command.trigger, mechanismId: command.mechanismId, effectType: definition.type, side: targetSide, data: { markId: definition.markId ?? null, total } });
           if (perLayer.length) {
             events.push(...this.applyStateCommands(state, perLayer, bundle, depth + 1));
             if (bundle) events.push(...this.applyDamageCommands(state, bundle, perLayer));

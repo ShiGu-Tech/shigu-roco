@@ -9,6 +9,7 @@ import { DataError } from "./data";
 import { loadData } from "./data-node";
 import { getActiveCatalog } from "./catalog";
 import { annotateSkillFlags } from "./catalog/skill-flags";
+import { variableSkillBasePower } from "./catalog/normalize";
 import { toArray } from "./types";
 import type { DataBundle, Dict } from "./types";
 
@@ -35,7 +36,12 @@ export function getBundle(force = false): DataBundle {
     );
     // 威力 ≥ 哨兵值（如「消耗能量越高伤害越高」用 2100000 表示变量）不自动生成基础伤害，避免按哨兵值结算。
     const POWER_SENTINEL = 100000;
-    const skillMechanisms = registered.skills
+    // 变量威力技：激活目录里 `power` 可能是注册时误取的最大值（如穿膛 400），按站点 `damage[0]` 修正基础威力。
+    const correctedSkills = registered.skills.map((skill) => {
+      const base = variableSkillBasePower(skill);
+      return base === undefined || base === skill.power ? skill : { ...skill, power: base };
+    });
+    const skillMechanisms = correctedSkills
       .filter(
         (skill) =>
           (skill.category === "Physical" || skill.category === "Magic") &&
@@ -52,7 +58,7 @@ export function getBundle(force = false): DataBundle {
         when: [{ path: "event.action.skillId", op: "eq", value: String(skill.id) }],
         effects: [{ type: "dealDamage", target: "target", category: String(skill.category), power: Number(skill.power), skillId: String(skill.id) }],
       }));
-    const skillsById = Object.fromEntries(registered.skills.map((skill) => [String(skill.id), skill])) as Record<string, Dict>;
+    const skillsById = Object.fromEntries(correctedSkills.map((skill) => [String(skill.id), skill])) as Record<string, Dict>;
     const mechanisms = [...authored, ...skillMechanisms];
     annotateSkillFlags(skillsById, mechanisms);
     cached = {

@@ -45,7 +45,7 @@ function skillFromData(skill, types) {
     id: `sk-${skill.id}`, skillName: skill.name, nameZh: skill.name, element, elementZh: element.replace(/系$/, ""),
     category: category === "物理" ? "Physical" : category === "魔法" ? "Magic" : category === "防御" ? "Defense" : "Status",
     categoryZh: category, actionType: category === "防御" ? "Defense" : category === "状态" ? "Status" : "Attack", actionTypeZh: category === "防御" ? "防御" : category === "状态" ? "状态" : "攻击",
-    power: Math.max(...damage.map(Number), 0), powerMin: Math.min(...damage.map(Number), 0), powerMax: Math.max(...damage.map(Number), 0), cost: skill.energy_cost ?? 0,
+    power: damage.length ? Number(damage[0]) || 0 : 0, powerMin: Math.min(...damage.map(Number), 0), powerMax: Math.max(...damage.map(Number), 0), cost: skill.energy_cost ?? 0,
     cooldown: Math.max(...(skill.cooldown ?? [0]), 0), hitRate: 100, priority: 0, rawText: skill.description ?? "", description: skill.description ?? "",
     icon: skill.image_url ? absoluteUrl(skill.image_url) : null, categoryIcon: skill.skill_category?.image_url ? absoluteUrl(skill.skill_category.image_url) : null,
     source: absoluteUrl(`/skill/${skill.id}`), sourceData: skill,

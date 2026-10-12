@@ -230,5 +230,8 @@
  * - 0.78.0 技能修正作用域：`modifySkill` 增 `scope:"carried"` / `elements` / `oncePerElement`（对携带技能整组、按系别、每系别至多加威力，供「漫反射」类）
  * - 0.78.1 换人语义：下场时清空临时属性增减益（`ActiveSprite.buffs` / `debuffs`），与印记 / 状态一并随离场结算；
  *          永久类以 counters（`flat-*` / `pct-*`）存储，不受影响。供「专注力仅首回合」「跌落 -50% 随离场消失」类。
+ * - 0.78.2 数据归一：变量威力技（站点 `power_is_variable`）基础威力改取 `damage[0]`（旧实现误取 `Math.max`，
+ *          把「能量≤2→5倍」等条件上限当基础值，穿膛 65→400 等 26 个）；`consumeMark` 在无层数（total=0）时
+ *          不再派发 `mark-consumed` 空事件。
  */
-export const ENGINE_VERSION = "0.78.1";
+export const ENGINE_VERSION = "0.78.2";

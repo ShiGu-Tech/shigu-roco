@@ -11,6 +11,17 @@ const ELEMENT: Record<string, string> = {
 };
 const CATEGORY_ZH: Record<string, string> = { 物理: "物理", 魔法: "魔法", 状态: "状态", 防御: "防御" };
 
+/** 变量威力技（站点 `power_is_variable`）：`damage` 是数组，**首元素才是基础威力**
+ *  （旧实现误取 `Math.max`，把「能量≤2→5倍」等条件上限当成了基础值，如穿膛 65→400）。
+ *  `skill.sourceData` 既可能是原始站点对象，也可能是已 normalize 过的对象（其 `sourceData` 才含 `damage`）。 */
+export function variableSkillBasePower(skill: unknown): number | undefined {
+  const sd = ((skill as Dict)?.sourceData ?? {}) as Dict;
+  const raw = (sd.sourceData ?? sd) as Dict;
+  if (raw.power_is_variable !== true) return undefined;
+  const dmg = Array.isArray(raw.damage) ? (raw.damage as unknown[]).map((n) => Number(n)).filter((n) => Number.isFinite(n)) : [];
+  return dmg.length ? dmg[0] : undefined;
+}
+
 function elementName(name: string, meta: ExternalSnapshot["meta"]): string {
   name = typeof name === "string" ? name : "未知属性";
   if (ELEMENT[name]) return ELEMENT[name];
@@ -108,7 +119,7 @@ export function normalizeSnapshot(snapshot: ExternalSnapshot, registrationId: st
     categoryZh: skill.categoryZh ?? CATEGORY_ZH[skill.cat ?? ""] ?? skill.category ?? skill.cat,
     actionType: skill.actionType ?? (skillCategory(skill.cat) === "Defense" ? "Defense" : skillCategory(skill.cat) === "Status" ? "Status" : "Attack"),
     actionTypeZh: skill.actionTypeZh ?? (skill.cat === "防御" ? "防御" : skill.cat === "状态" ? "状态" : "攻击"),
-    power: skill.power ?? skill.dmgMax ?? skill.dmgMin ?? 0,
+    power: variableSkillBasePower(skill) ?? skill.power ?? skill.dmgMax ?? skill.dmgMin ?? 0,
     powerMin: skill.powerMin ?? skill.dmgMin,
     powerMax: skill.powerMax ?? skill.dmgMax,
     cost: skill.cost ?? skill.energy ?? 0,
@@ -183,3 +194,4 @@ export function normalizeSnapshot(snapshot: ExternalSnapshot, registrationId: st
     elements: { $schemaVersion: "0.2", version: snapshot.meta.catalogVersion, updatedAt: snapshot.meta.generatedAt, elements: types, bloodlines: snapshot.meta.bloodlines ?? [], matrix, values: { counter: 2, counter3: 3, neutral: 1, resisted: 0.5, resisted4: 0.25 }, combine: { mode: "count", clampTo: [0.25, 3] } },
   };
 }
+
