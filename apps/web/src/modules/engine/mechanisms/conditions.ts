@@ -12,6 +12,15 @@ function readPath(root: unknown, path: string): unknown {
     }
     return 0;
   }
+  // 派生比值：`<side>.active.hpRatio` = hp/maxHp；`hpLostRatio` = 1 − hp/maxHp（供「每失去 X% 生命」类）。
+  const last = keys[keys.length - 1];
+  if (last === "hpRatio" || last === "hpLostRatio") {
+    const container = readPath(root, keys.slice(0, -1).join(".")) as { hp?: number; maxHp?: number } | undefined;
+    const hp = Number(container?.hp ?? 0);
+    const maxHp = Number(container?.maxHp ?? 0);
+    const ratio = maxHp > 0 ? hp / maxHp : 0;
+    return last === "hpRatio" ? ratio : 1 - ratio;
+  }
   return keys.reduce<unknown>((value, key) => {
     if (value && typeof value === "object") return (value as Record<string, unknown>)[key];
     return undefined;

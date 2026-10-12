@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.131.0",
+  "version": "0.132.0",
   "updatedAt": "2026-10-11",
   "mechanisms": [
     {
@@ -30293,6 +30293,87 @@
         }
       ],
       "note": "冰锋横扫"
+    },
+    {
+      "id": "skill:sk-7020560",
+      "ownerType": "skill",
+      "ownerId": "sk-7020560",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020560"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "skillId": "sk-7020560",
+          "powerFrom": {
+            "path": "self.active.hpLostRatio",
+            "scale": 100,
+            "offset": 80
+          }
+        }
+      ],
+      "note": "垂死反击：自己每失去5%生命 威力+5"
+    },
+    {
+      "id": "skill:sk-7180400",
+      "ownerType": "skill",
+      "ownerId": "sk-7180400",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7180400"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "skillId": "sk-7180400",
+          "powerFrom": {
+            "path": "self.active.hpLostRatio",
+            "scale": 150,
+            "offset": 75
+          }
+        }
+      ],
+      "note": "血契：自己每失去10%生命 威力+15"
+    },
+    {
+      "id": "skill:sk-7040460",
+      "ownerType": "skill",
+      "ownerId": "sk-7040460",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7040460"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "skillId": "sk-7040460",
+          "powerFrom": {
+            "path": "opponent.active.hpLostRatio",
+            "scale": -100,
+            "offset": 155
+          }
+        }
+      ],
+      "note": "燃尽：敌方每失去5%生命 威力-5"
     }
   ]
 }

@@ -233,5 +233,7 @@
  * - 0.78.2 数据归一：变量威力技（站点 `power_is_variable`）基础威力改取 `damage[0]`（旧实现误取 `Math.max`，
  *          把「能量≤2→5倍」等条件上限当基础值，穿膛 65→400 等 26 个）；`consumeMark` 在无层数（total=0）时
  *          不再派发 `mark-consumed` 空事件。
+ * - 0.79.0 派生取值：`readPath` 支持虚拟路径 `<side>.active.hpRatio` / `hpLostRatio`（hp/maxHp 及其补），
+ *          供「自己/敌方每失去 X% 生命」类条件威力（垂死反击 / 燃尽 / 血契）。
  */
-export const ENGINE_VERSION = "0.78.2";
+export const ENGINE_VERSION = "0.79.0";
