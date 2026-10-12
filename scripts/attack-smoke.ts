@@ -11,14 +11,21 @@ const ids = Object.keys(b.skills).filter((id) => id.startsWith("sk-"));
 const flagged: string[] = [];
 for (const id of ids) {
   const s = b.skills[id] as Record<string, unknown>;
+  if (s.category === "Defense") continue; // 防御技不直接造成伤害（正常）
   const isAtk = (s.category === "Physical" || s.category === "Magic") && Number(s.power ?? 0) > 0;
   if (!isAtk && !authoredDamage.has(id)) continue;
   const atk = makeActive("sp-1-1", { hp: 500, maxHp: 500, energy: 10 });
   atk.loadout = [id]; atk.element = ["Normal"];
   const def = makeActive("sp-1-1", { hp: 500, maxHp: 500, energy: 10 }); def.element = ["Normal"];
   try {
-    const r = sim.step(makeState(makeSide(atk), makeSide(def), { seed: 1 }), { kind: "skill", skillId: id }, { kind: "energy" }, new Rng(1));
-    const dealt = r.events.some((e) => e.side === "enemy" && /damage/i.test(e.type) && Number((e.data as Record<string, unknown>).value ?? 0) > 0);
+    // 跑 2 回合：蓄力技在第 2 回合释放时才有伤害。
+    let state = makeState(makeSide(atk), makeSide(def), { seed: 1 });
+    let dealt = false;
+    for (let turn = 1; turn <= 2; turn++) {
+      const r = sim.step(state, { kind: "skill", skillId: id }, { kind: "energy" }, new Rng(1));
+      state = r.state;
+      if (r.events.some((e) => e.side === "enemy" && /damage/i.test(e.type) && Number((e.data as Record<string, unknown>).value ?? 0) > 0)) dealt = true;
+    }
     if (!dealt) flagged.push(`${s.skillName}(${id}) cat=${s.category} power=${s.power} — 攻击技但未造成伤害`);
   } catch (e) {
     flagged.push(`${s.skillName}(${id}) 抛错: ${(e as Error).message}`);

@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.133.0",
+  "version": "0.134.0",
   "updatedAt": "2026-10-11",
   "mechanisms": [
     {
@@ -1282,28 +1282,6 @@
         }
       ],
       "note": "伺机而动："
-    },
-    {
-      "id": "skill:sk-7020990",
-      "ownerType": "skill",
-      "ownerId": "sk-7020990",
-      "trigger": "beforeAction",
-      "when": [
-        {
-          "path": "event.action.skillId",
-          "op": "eq",
-          "value": "sk-7020990"
-        }
-      ],
-      "effects": [
-        {
-          "type": "dealDamage",
-          "target": "target",
-          "category": "Physical",
-          "power": 160,
-          "skillId": "sk-7020990"
-        }
-      ]
     },
     {
       "id": "skill:sk-7021090",
@@ -5747,104 +5725,6 @@
           "type": "transformMark",
           "target": "opponent",
           "toMarkId": "starfall-mark"
-        }
-      ]
-    },
-    {
-      "id": "starfall:sk-7190510",
-      "ownerType": "skill",
-      "ownerId": "sk-7190510",
-      "trigger": "beforeAction",
-      "when": [
-        {
-          "allOf": [
-            {
-              "path": "event.action.skillId",
-              "op": "eq",
-              "value": "sk-7190510"
-            },
-            {
-              "anyOf": [
-                {
-                  "path": "self.lastTurn.element",
-                  "op": "eq",
-                  "value": "Water"
-                },
-                {
-                  "path": "opponent.lastTurn.element",
-                  "op": "eq",
-                  "value": "Water"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "note": "奇点：上回合双方有精灵使用水系技能 → 敌方 +4 层星陨印记",
-      "effects": [
-        {
-          "type": "dealDamage",
-          "target": "target",
-          "category": "Magic",
-          "power": 60,
-          "skillId": "sk-7190510"
-        },
-        {
-          "type": "applyMark",
-          "target": "opponent",
-          "markId": "starfall-mark",
-          "layers": 4
-        }
-      ]
-    },
-    {
-      "id": "skill:sk-7170350",
-      "ownerType": "skill",
-      "ownerId": "sk-7170350",
-      "trigger": "beforeAction",
-      "when": [
-        {
-          "allOf": [
-            {
-              "path": "event.action.skillId",
-              "op": "eq",
-              "value": "sk-7170350"
-            },
-            {
-              "anyOf": [
-                {
-                  "path": "self.lastTurn.element",
-                  "op": "eq",
-                  "value": "Fire"
-                },
-                {
-                  "path": "opponent.lastTurn.element",
-                  "op": "eq",
-                  "value": "Fire"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "note": "掠影：上回合双方有精灵使用火系技能 → 偷取敌方 3 能量",
-      "effects": [
-        {
-          "type": "dealDamage",
-          "target": "target",
-          "category": "Physical",
-          "power": 65,
-          "skillId": "sk-7170350"
-        },
-        {
-          "type": "modifyEnergy",
-          "target": "opponent",
-          "delta": -3
-        },
-        {
-          "type": "modifyEnergy",
-          "target": "self",
-          "delta": 3
         }
       ]
     },
@@ -17011,7 +16891,7 @@
       "trigger": "beforeDamage",
       "when": [
         {
-          "path": "action.skillId",
+          "path": "event.action.skillId",
           "op": "eq",
           "value": "sk-7020550"
         }
@@ -24160,7 +24040,7 @@
       "trigger": "actionResolved",
       "when": [
         {
-          "path": "action.skillId",
+          "path": "event.action.skillId",
           "op": "eq",
           "value": "sk-7020550"
         }
@@ -30521,6 +30401,163 @@
         }
       ],
       "note": "砂糖弹球：双方体重差越大 威力越高"
+    },
+    {
+      "id": "skill:sk-7170350",
+      "ownerType": "skill",
+      "ownerId": "sk-7170350",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7170350"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "power": 65,
+          "skillId": "sk-7170350"
+        }
+      ],
+      "note": "掠影：造成物伤（无条件）"
+    },
+    {
+      "id": "skill:sk-7170350:steal",
+      "ownerType": "skill",
+      "ownerId": "sk-7170350",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7170350"
+            },
+            {
+              "anyOf": [
+                {
+                  "path": "self.lastTurn.element",
+                  "op": "eq",
+                  "value": "Fire"
+                },
+                {
+                  "path": "opponent.lastTurn.element",
+                  "op": "eq",
+                  "value": "Fire"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifyEnergy",
+          "target": "opponent",
+          "delta": -3
+        },
+        {
+          "type": "modifyEnergy",
+          "target": "self",
+          "delta": 3
+        }
+      ],
+      "note": "掠影：上回合有火系 → 偷敌3能量"
+    },
+    {
+      "id": "skill:sk-7190510",
+      "ownerType": "skill",
+      "ownerId": "sk-7190510",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7190510"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "power": 60,
+          "skillId": "sk-7190510"
+        }
+      ],
+      "note": "奇点：造成魔伤（无条件）"
+    },
+    {
+      "id": "skill:sk-7190510:mark",
+      "ownerType": "skill",
+      "ownerId": "sk-7190510",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "allOf": [
+            {
+              "path": "event.action.skillId",
+              "op": "eq",
+              "value": "sk-7190510"
+            },
+            {
+              "anyOf": [
+                {
+                  "path": "self.lastTurn.element",
+                  "op": "eq",
+                  "value": "Water"
+                },
+                {
+                  "path": "opponent.lastTurn.element",
+                  "op": "eq",
+                  "value": "Water"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "type": "applyMark",
+          "target": "opponent",
+          "markId": "starfall-mark",
+          "layers": 4
+        }
+      ],
+      "note": "奇点：上回合有水系 → 敌方+4星陨印记"
+    },
+    {
+      "id": "skill:sk-7020990",
+      "ownerType": "skill",
+      "ownerId": "sk-7020990",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020990"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "skillId": "sk-7020990",
+          "powerFrom": {
+            "path": "opponent.active.weight",
+            "scale": -1,
+            "offset": 240
+          }
+        }
+      ],
+      "note": "吨位压制：敌方体重越低 威力越高（近似 240−体重）"
     }
   ]
 }
