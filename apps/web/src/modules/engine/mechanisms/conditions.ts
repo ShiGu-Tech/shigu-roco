@@ -65,7 +65,8 @@ export function resolveContextPath(context: MechanismContext, path: string): unk
  *  导出供执行图 `read.ref` 节点复用——条件子图与 `conditionsMatch` 共用同一求值，零语义漂移。 */
 export function resolveRef(root: unknown, ref: DynamicRef): unknown {
   if (typeof ref === "string") return readPath(root, ref);
-  const raw = toNum(readPath(root, ref.path), 0);
+  let raw = toNum(readPath(root, ref.path), 0);
+  if (ref.minus !== undefined) raw -= toNum(readPath(root, ref.minus), 0);
   if (ref.terms) return ref.terms.reduce((sum, term) => sum + term.coef * Math.pow(raw, term.power), 0) + (ref.offset ?? 0);
   return raw * (ref.scale ?? 1) + (ref.offset ?? 0);
 }

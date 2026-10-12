@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.132.0",
+  "version": "0.133.0",
   "updatedAt": "2026-10-11",
   "mechanisms": [
     {
@@ -30374,6 +30374,153 @@
         }
       ],
       "note": "燃尽：敌方每失去5%生命 威力-5"
+    },
+    {
+      "id": "skill:sk-7020440:base",
+      "ownerType": "skill",
+      "ownerId": "sk-7020440",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020440"
+        },
+        {
+          "path": "self.active.energy",
+          "op": "gt",
+          "value": 4
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "skillId": "sk-7020440",
+          "powerFrom": {
+            "path": "self.active.energy",
+            "scale": 0,
+            "offset": 95
+          }
+        }
+      ],
+      "note": "触底强击 基础"
+    },
+    {
+      "id": "skill:sk-7020440:boost",
+      "ownerType": "skill",
+      "ownerId": "sk-7020440",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7020440"
+        },
+        {
+          "path": "self.active.energy",
+          "op": "lte",
+          "value": 4
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Magic",
+          "skillId": "sk-7020440",
+          "powerFrom": {
+            "path": "self.active.energy",
+            "scale": 0,
+            "offset": 215
+          }
+        }
+      ],
+      "note": "触底强击：能量≤能耗 → +120"
+    },
+    {
+      "id": "skill:sk-7080320",
+      "ownerType": "skill",
+      "ownerId": "sk-7080320",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7080320"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "skillId": "sk-7080320",
+          "powerFrom": {
+            "path": "self.active.defense",
+            "minus": "opponent.active.defense",
+            "scale": 1,
+            "offset": 60
+          }
+        }
+      ],
+      "note": "鸣沙陷阱：物防差越高 威力越高"
+    },
+    {
+      "id": "skill:sk-7021000",
+      "ownerType": "skill",
+      "ownerId": "sk-7021000",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7021000"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "skillId": "sk-7021000",
+          "powerFrom": {
+            "path": "opponent.active.weight",
+            "scale": 1,
+            "offset": 0
+          }
+        }
+      ],
+      "note": "以重制重：敌方体重越高 威力越高"
+    },
+    {
+      "id": "skill:sk-7160150",
+      "ownerType": "skill",
+      "ownerId": "sk-7160150",
+      "trigger": "beforeAction",
+      "when": [
+        {
+          "path": "event.action.skillId",
+          "op": "eq",
+          "value": "sk-7160150"
+        }
+      ],
+      "effects": [
+        {
+          "type": "dealDamage",
+          "target": "target",
+          "category": "Physical",
+          "skillId": "sk-7160150",
+          "powerFrom": {
+            "path": "self.active.weight",
+            "minus": "opponent.active.weight",
+            "scale": 1,
+            "offset": 0
+          }
+        }
+      ],
+      "note": "砂糖弹球：双方体重差越大 威力越高"
     }
   ]
 }

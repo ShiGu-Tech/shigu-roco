@@ -196,6 +196,16 @@ export class Simulator {
   step(state: BattleState, playerAction: Action, enemyAction: Action, rng: Rng): StepResult {
     const st = cloneState(state);
     if (st.dayOfWeek === undefined) st.dayOfWeek = new Date().getDay();
+    // 体重：按图鉴给双方在场 + 替补精灵注入 `weight`（供「体重差」类条件威力）。
+    for (const side of SIDES) {
+      const s = st[side];
+      for (const a of [s.active, ...(s.bench ?? [])]) {
+        if (a && a.weight === undefined) {
+          const def = getSprite(this.bundle, a.spriteId) as { weight?: number } | undefined;
+          if (def && def.weight !== undefined) a.weight = def.weight;
+        }
+      }
+    }
     const events: BattleEvent[] = [];
     const logs: string[] = [];
     const actions: Record<Side, Action> = { player: playerAction, enemy: enemyAction };

@@ -9,7 +9,7 @@ import { DataError } from "./data";
 import { loadData } from "./data-node";
 import { getActiveCatalog } from "./catalog";
 import { annotateSkillFlags } from "./catalog/skill-flags";
-import { variableSkillBasePower } from "./catalog/normalize";
+import { variableSkillBasePower, spriteWeight } from "./catalog/normalize";
 import { toArray } from "./types";
 import type { DataBundle, Dict } from "./types";
 
@@ -59,11 +59,16 @@ export function getBundle(force = false): DataBundle {
         effects: [{ type: "dealDamage", target: "target", category: String(skill.category), power: Number(skill.power), skillId: String(skill.id) }],
       }));
     const skillsById = Object.fromEntries(correctedSkills.map((skill) => [String(skill.id), skill])) as Record<string, Dict>;
+    // 图鉴体重（catalog 可能未含）：装配时补 `weight`（kg 中点），供「体重差」类威力。
+    const correctedSprites = registered.sprites.map((sprite) => {
+      const w = spriteWeight(sprite);
+      return w === undefined || w === sprite.weight ? sprite : { ...sprite, weight: w };
+    });
     const mechanisms = [...authored, ...skillMechanisms];
     annotateSkillFlags(skillsById, mechanisms);
     cached = {
       ...base,
-      sprites: Object.fromEntries(registered.sprites.map((sprite) => [String(sprite.id), sprite])),
+      sprites: Object.fromEntries(correctedSprites.map((sprite) => [String(sprite.id), sprite])),
       skills: skillsById,
       statuses: Object.fromEntries(registered.statuses.map((item) => [String(item.id), item])),
       marks: Object.fromEntries(registered.marks.map((mark) => [String(mark.id), mark])),

@@ -42,6 +42,8 @@ export interface ActiveSprite {
   cooldowns?: Record<string, number>;
   faintHandled?: boolean;
   profile?: StatProfile;
+  /** 体重（kg，图鉴 `physical_profile.weight_kg` 中点；由模拟器按图鉴注入，供「体重差」类威力）。 */
+  weight?: number;
   /** 技能池临时改动的还原记录（机制扩展）：临时技能 id → { original, expires }。
    *  original 为空 = 临时新增（到期移除）；expires 为绝对回合（-1 永久、0 表示使用后即还原）。 */
   skillOverrides?: Record<string, { original: string; expires: number; cost?: number }>;

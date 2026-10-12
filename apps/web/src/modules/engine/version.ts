@@ -235,5 +235,8 @@
  *          不再派发 `mark-consumed` 空事件。
  * - 0.79.0 派生取值：`readPath` 支持虚拟路径 `<side>.active.hpRatio` / `hpLostRatio`（hp/maxHp 及其补），
  *          供「自己/敌方每失去 X% 生命」类条件威力（垂死反击 / 燃尽 / 血契）。
+ * - 0.80.0 派生取值 II：`DynamicValue.minus`（两路径相减，如「物防差 / 体重差」）；`ActiveSprite.weight`
+ *          由模拟器按图鉴 `physical_profile.weight_kg`（区间中点）注入，供「体重」类条件威力（以重制重 / 砂糖弹球）；
+ *          `weight` 亦随图鉴装配补入（catalog 可能未含）。
  */
-export const ENGINE_VERSION = "0.79.0";
+export const ENGINE_VERSION = "0.80.0";

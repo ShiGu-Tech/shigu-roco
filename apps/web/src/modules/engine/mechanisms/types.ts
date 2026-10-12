@@ -75,6 +75,8 @@ export type Condition =
  *  需要非线性时可给 `terms`（对取值做多项式，如 `N²+24N−24` → [{ coef:1, power:2 },{ coef:24, power:1 },{ coef:-24, power:0 }]）。 */
 export interface DynamicValue {
   path: string;
+  /** 差值取值：最终基数 = readPath(path) − readPath(minus)（如「物防比敌方高多少」）。 */
+  minus?: string;
   scale?: number;
   offset?: number;
   round?: "floor" | "ceil" | "round" | "none";

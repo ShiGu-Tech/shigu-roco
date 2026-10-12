@@ -9,6 +9,19 @@ const ELEMENT: Record<string, string> = {
   幽系: "Ghost", 幽灵系: "Ghost", 恶系: "Dark", 恶魔系: "Dark", 幻系: "Psychic",
   石系: "Rock",
 };
+/** 图鉴自带体重（`physical_profile.weight_kg` 区间中点，kg）；兼容原始 / 已归一 两种嵌套。 */
+export function spriteWeight(spirit: unknown): number | undefined {
+  const sp = (spirit ?? {}) as Dict;
+  const sd = (sp.sourceData ?? {}) as Dict;
+  const raw = (sd.sourceData ?? sd) as Dict;
+  const profile = (sp.physical_profile ?? raw.physical_profile ?? {}) as Dict;
+  const w = (profile.weight_kg ?? {}) as Dict;
+  const min = Number(w.min);
+  const max = Number(w.max);
+  if (!Number.isFinite(min) || !Number.isFinite(max)) return undefined;
+  return (min + max) / 2;
+}
+
 const CATEGORY_ZH: Record<string, string> = { 物理: "物理", 魔法: "魔法", 状态: "状态", 防御: "防御" };
 
 /** 变量威力技（站点 `power_is_variable`）：`damage` 是数组，**首元素才是基础威力**
@@ -106,6 +119,7 @@ export function normalizeSnapshot(snapshot: ExternalSnapshot, registrationId: st
       image: spirit.portraitOnline ?? spirit.imageOnline ?? spirit.imgOnline ?? null,
       head: spirit.headOnline ?? spirit.head ?? null,
       source: spirit.url ?? snapshot.meta.origin ?? "",
+      weight: spriteWeight(spirit),
       sourceData: spirit,
     };
   });
