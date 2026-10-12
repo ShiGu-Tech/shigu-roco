@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "0.1",
-  "version": "0.134.0",
+  "version": "0.135.0",
   "updatedAt": "2026-10-11",
   "mechanisms": [
     {
@@ -30558,6 +30558,60 @@
         }
       ],
       "note": "吨位压制：敌方体重越低 威力越高（近似 240−体重）"
+    },
+    {
+      "id": "skill:sk-7030210:grow",
+      "ownerType": "skill",
+      "ownerId": "sk-7030210",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "event.element",
+          "op": "eq",
+          "value": "Grass"
+        },
+        {
+          "path": "event.skillId",
+          "op": "neq",
+          "value": "sk-7030210"
+        },
+        {
+          "path": "self.active.loadout",
+          "op": "contains",
+          "value": "sk-7030210"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkill",
+          "target": "self",
+          "skillId": "sk-7030210",
+          "power": 60
+        }
+      ],
+      "note": "光能聚集：每用其他草系技能 本技能威力+60"
+    },
+    {
+      "id": "skill:sk-7040200:grow",
+      "ownerType": "skill",
+      "ownerId": "sk-7040200",
+      "trigger": "skillUsed",
+      "when": [
+        {
+          "path": "event.skillId",
+          "op": "eq",
+          "value": "sk-7040200"
+        }
+      ],
+      "effects": [
+        {
+          "type": "modifySkill",
+          "target": "self",
+          "skillId": "sk-7040200",
+          "power": 20
+        }
+      ],
+      "note": "吹火：每次使用后 本技能威力+20"
     }
   ]
 }
