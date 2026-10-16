@@ -1,13 +1,13 @@
 import Link from "next/link";
 
-import { AppNav } from "./app-nav";
+import { AppNav, AppNavMenu } from "./app-nav";
 import { EngineStatus } from "./engine-status";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-30 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
-        <div className="mx-auto flex h-12 w-full max-w-[1440px] items-center gap-3 px-3 min-[520px]:px-5 min-[860px]:px-8">
+      <header className="sticky top-0 z-30 border-b bg-card/95 pt-[env(safe-area-inset-top)] backdrop-blur supports-[backdrop-filter]:bg-card/80">
+        <div className="mx-auto flex h-12 w-full max-w-[1440px] items-center gap-2 px-3 min-[520px]:gap-3 min-[520px]:px-5 min-[860px]:px-8">
           <Link href="/" className="flex shrink-0 items-center gap-2">
             <span className="grid h-6 w-6 place-items-center rounded-sm bg-primary text-[11px] font-bold text-primary-foreground">
               洛
@@ -17,10 +17,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <AppNav />
           <div className="ml-auto flex items-center gap-2">
             <EngineStatus />
+            <AppNavMenu />
           </div>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-[1440px] flex-1 px-3 py-4 min-[520px]:px-5 min-[860px]:px-8 min-[860px]:py-6">{children}</main>
+      <main className="mx-auto w-full max-w-[1440px] flex-1 px-3 py-3 min-[520px]:px-5 min-[520px]:py-4 min-[860px]:px-8 min-[860px]:py-6">
+        {children}
+      </main>
     </div>
   );
 }

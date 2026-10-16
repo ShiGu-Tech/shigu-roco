@@ -32,6 +32,28 @@ function DialogContent({
   );
 }
 
+/** 移动端底部抽屉：贴底、全宽、上圆角，自带刘海安全区内边距。 */
+function DialogSheet({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Content>) {
+  return (
+    <DialogPrimitive.Portal>
+      <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-overlay" />
+      <DialogPrimitive.Content
+        className={cn(
+          "fixed inset-x-0 bottom-0 z-50 flex max-h-[85vh] flex-col overflow-hidden rounded-t-md border-t bg-card pb-[env(safe-area-inset-bottom)] shadow-lift focus:outline-none",
+          className,
+        )}
+        {...props}
+      >
+        {children}
+      </DialogPrimitive.Content>
+    </DialogPrimitive.Portal>
+  );
+}
+
 /** 弹窗头部（标题 + 右侧关闭）。 */
 function DialogHeader({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
@@ -67,6 +89,7 @@ export {
   DialogTrigger,
   DialogClose,
   DialogContent,
+  DialogSheet,
   DialogHeader,
   DialogBody,
   DialogFooter,

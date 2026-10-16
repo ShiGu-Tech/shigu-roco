@@ -253,6 +253,26 @@ export function BattleBoard() {
     };
   }, [state, phase]);
 
+  // 深链开局：/board?player=<阵容id>&enemy=<阵容id>（首页「进入对战」、队伍列表「进入对战台」都用它）。
+  // 用 window.location.search 而不是 useSearchParams：本页是客户端组件，避免被要求包 Suspense 边界。
+  const autoStartRef = useRef(false);
+  useEffect(() => {
+    if (!catalog || autoStartRef.current) return;
+    const params = new URLSearchParams(window.location.search);
+    const playerId = params.get("player");
+    const enemyId = params.get("enemy");
+    if (!playerId || !enemyId) return;
+    const playerLineup = listLineups("player").find((lineup) => lineup.id === playerId);
+    const enemyLineup = listLineups("enemy").find((lineup) => lineup.id === enemyId);
+    if (!playerLineup || !enemyLineup) return;
+    autoStartRef.current = true;
+    void start(
+      playerLineup.entries.map((entry) => ({ spriteId: entry.spriteId, setup: emptySetup() })),
+      enemyLineup.entries.map((entry) => ({ spriteId: entry.spriteId, skillsUnknown: true })),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [catalog]);
+
   // 仅当授权来自「当前这一帧 state」时才生效，避免异步回填前套用上一帧的授权。
   const playerGrants = engineChoice?.for === state ? engineChoice.player : undefined;
   const enemyGrants = engineChoice?.for === state ? engineChoice.enemy : undefined;

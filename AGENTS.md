@@ -29,8 +29,7 @@ docs/                         设计稿（索引进 docs/README.md）
 scripts/                      setup / dev / 同步 / 静态包导出
 ```
 
-- 前端：`@/*` → `apps/web/src/*`；业务按 `src/modules/<name>/` 组织，纯逻辑与展示分离。
-- 引擎：`modules/engine/` 包内按 `types / rng / data / stats / effects / simulator / mcts / opponent / api / worker` 分层。
+- 前端：`@/*` → `apps/web/src/*`；业务按 `src/modules/<name>/` 组织，纯逻辑与展示分离。- 引擎：`modules/engine/` 包内按 `types / rng / data / stats / effects / simulator / mcts / opponent / api / worker` 分层。
 - 运行时资源只认激活图鉴（`data/registry/catalogs/`）；引擎参数只认 `data/*.json`；**无静态兜底**，缺激活图鉴直接报错。代码中不得出现精灵 / 技能 / 倍率等游戏数据魔法数字（算法常量除外）。
 - **引擎独立版本**：`apps/web/src/modules/engine/version.ts` 的 `ENGINE_VERSION` 单独编号，与业务 `package.json` 版本分开计。**新增技能 / 印记 / 状态 / 天气 / 特性 / 规则参数等数据不 bump**；只有新增机制能力（新触发器 / 新效果命令 / 新结算阶段）才 bump minor，修正结算语义 bump patch，契约破坏性变更 bump major。详见《引擎版本与维护-设计-v0.1》。
 
@@ -42,6 +41,8 @@ scripts/                      setup / dev / 同步 / 静态包导出
 - 浏览器交互自验：`pwsh scripts/cdp-smoke.ps1 -Url <url> -WaitText <文案> [-ClickText "按钮,按钮"] [-Actions "click:文案|edit:输入框匹配=值|check:文案|checkabsent:文案"] -Out <png>`（CDP 真时驱动 headless Edge：等待文本 / 点击按钮或画布节点 / 有序动作回路 / 文本断言（失败退出码 1）/ 横向溢出断言 / 截图）。**注意**：headless `--virtual-time-budget` 不等 Web Worker 回话（Worker 页面会永远停在加载态），验证走 Worker 的页面必须用本脚本真时等待；`--timeout` 在 Edge 上不生效。
 - 数据改动：必须过引擎测试（`catalog.test.ts` 归一化 + `data.ts` 引用校验）；注册后经 `/api/engine/health` 确认 counts 与 warnings。
 - 每次改动完成：跑 `pnpm check`，并在本地 `26900` 冒烟相关页面（引擎内置，无需单独启动）。
+- **手机 / 局域网真机调试**：`$env:ROCO_DEV_ORIGINS="<开发机局域网 IP>"; pnpm dev`，手机开 `http://<IP>:26900`。Next dev 默认把跨来源的 `/_next/*` 当不安全请求拦掉（日志刷 `Blocked cross-origin request`），不放行则页面骨架在、客户端不水合，表现为**卡在「正在加载引擎数据…」**。
+- **不要直接用 `crypto.randomUUID()`**：它只在**安全上下文**（HTTPS / localhost）可用，经 `http://<IP>:port` 打开（局域网 / 内网部署）时不存在，会抛 `crypto.randomUUID is not a function` 并卡住初始化。统一用 `@/lib/id` 的 `newId()`（随机源三级兜底）。
 
 ## 数据维护流程
 

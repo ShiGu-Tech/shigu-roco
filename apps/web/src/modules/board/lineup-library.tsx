@@ -111,47 +111,48 @@ export function LineupLibrary({
                 type="button"
                 onClick={() => onToggle(lineup)}
                 aria-pressed={selected}
-                className="flex min-w-0 flex-1 items-center gap-3 text-left"
+                className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1.5 text-left"
               >
                 <span
                   className={cn(
-                    "grid h-5 w-5 shrink-0 place-items-center rounded-full border text-[11px] font-semibold",
+                    "order-1 grid h-5 w-5 shrink-0 place-items-center rounded-full border text-[11px] font-semibold",
                     selected ? "border-primary bg-primary text-primary-foreground" : "border-border text-transparent",
                   )}
                 >
                   {selected ? order + 1 : "•"}
                 </span>
-                <span className="flex shrink-0 -space-x-1">
+                {/* 窄屏：名称与元信息独占一行（否则 6 个头像会把名称挤成"测试…"）；≥520px 回到头像右侧 */}
+                <span className="order-2 min-w-0 flex-1 basis-[calc(100%-2rem)] min-[520px]:order-3 min-[520px]:basis-0">
+                  <span className="block truncate text-[13px] font-semibold">{lineup.name}</span>
+                  <span className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[11px] text-muted-foreground">
+                    <Badge variant="outline" className="tnum">{lineup.entries.length} 只</Badge>
+                    {lineup.entries.some((e) => e.setup) && <Badge variant="outline">含资质</Badge>}
+                    <span className="tnum">更新 {formatTime(lineup.updatedAt)}</span>
+                  </span>
+                </span>
+                <span className="order-3 flex shrink-0 -space-x-1 min-[520px]:order-2">
                   {lineup.entries.slice(0, 6).map((entry, i) => (
                     <SpriteImage
                       key={`${entry.spriteId}-${i}`}
                       sprite={spriteOf(catalog, entry.spriteId)}
                       size="sm"
-                      className="h-8 w-8 rounded-sm"
+                      className="h-7 w-7 rounded-sm min-[520px]:h-8 min-[520px]:w-8"
                     />
                   ))}
                 </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[13px] font-semibold">{lineup.name}</span>
-                  <span className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
-                    <Badge variant="outline" className="tnum">{lineup.entries.length} 只</Badge>
-                    {lineup.entries.some((e) => e.setup) && <Badge variant="outline">含资质</Badge>}
-                    <span>更新 {formatTime(lineup.updatedAt)}</span>
-                  </span>
-                </span>
               </button>
               <div className="flex shrink-0 gap-1.5">
-                <Button type="button" size="sm" variant="outline" onClick={() => onView(lineup)}>
+                <Button type="button" size="sm" variant="outline" className="h-9 px-3 min-[520px]:h-8" onClick={() => onView(lineup)}>
                   详情
                 </Button>
-                <Button type="button" size="sm" variant="outline" onClick={() => onEdit(lineup)}>
+                <Button type="button" size="sm" variant="outline" className="h-9 px-3 min-[520px]:h-8" onClick={() => onEdit(lineup)}>
                   编辑
                 </Button>
                 <Button
                   type="button"
                   size="sm"
                   variant="ghost"
-                  className="text-muted-foreground hover:text-destructive"
+                  className="h-9 px-3 text-muted-foreground hover:text-destructive min-[520px]:h-8"
                   onClick={() => onDelete(lineup)}
                 >
                   删除

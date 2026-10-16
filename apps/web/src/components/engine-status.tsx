@@ -38,13 +38,18 @@ export function EngineStatus() {
   }, []);
 
   return (
-    <span className="inline-flex items-center gap-2 rounded-sm border bg-card px-2 py-1 text-[11px] text-muted-foreground">
-      <span className={cn("h-1.5 w-1.5 rounded-full", info.ok ? "bg-success" : "bg-destructive")} />
+    <span className="inline-flex items-center gap-1.5 rounded-sm border bg-card px-2 py-1 text-[11px] text-muted-foreground min-[520px]:gap-2">
+      <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", info.ok ? "bg-success" : "bg-destructive")} />
       {info.ok ? (
-        <span className="tnum">
-          引擎 <span className="font-mono">v{info.engine}</span> · 数据 <span className="font-mono">{info.version}</span>
-          {info.sprites ? <span className="hidden min-[860px]:inline"> · 精灵 {info.sprites} / 技能 {info.skills}</span> : null}
-        </span>
+        <>
+          {/* ≥520px：引擎 + 数据 + 精灵/技能计数（≥860px 才出计数） */}
+          <span className="tnum hidden min-[520px]:inline">
+            引擎 <span className="font-mono">v{info.engine}</span> · 数据 <span className="font-mono">{info.version}</span>
+            {info.sprites ? <span className="hidden min-[860px]:inline"> · 精灵 {info.sprites} / 技能 {info.skills}</span> : null}
+          </span>
+          {/* <520px：只留引擎版本，够判断"能不能用" */}
+          <span className="font-mono tnum min-[520px]:hidden">v{info.engine}</span>
+        </>
       ) : (
         "引擎未就绪"
       )}
