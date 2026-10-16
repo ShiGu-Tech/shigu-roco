@@ -1,3 +1,5 @@
+import { newId } from "@/lib/id";
+
 import type { BattleState } from "./types";
 
 const SAVES_KEY = "roco.saves";
@@ -46,7 +48,7 @@ export function listSaves(): SaveEntry[] {
 }
 
 export function saveState(name: string, state: BattleState): SaveEntry[] {
-  const entry: SaveEntry = { id: crypto.randomUUID(), name, createdAt: Date.now(), state };
+  const entry: SaveEntry = { id: newId(), name, createdAt: Date.now(), state };
   const next = [entry, ...listSaves()].slice(0, 50);
   write(SAVES_KEY, next);
   return next;

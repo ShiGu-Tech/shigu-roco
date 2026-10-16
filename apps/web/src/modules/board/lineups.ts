@@ -1,5 +1,7 @@
 /** 阵容库：把「我方 6 只（含资质 / 技能）」或「对方 6 只（只精灵）」存到 localStorage，供快速套用。 */
 
+import { newId } from "@/lib/id";
+
 import type { TeamEntry } from "./util";
 
 const KEY = "roco.lineups";
@@ -46,7 +48,7 @@ export function saveLineup(scope: LineupScope, name: string, entries: TeamEntry[
   const trimmed = name.trim();
   const existing = all.find((l) => l.scope === scope && l.name === trimmed);
   const entry: Lineup = {
-    id: existing?.id ?? crypto.randomUUID(),
+    id: existing?.id ?? newId(),
     scope,
     name: trimmed,
     updatedAt: Date.now(),

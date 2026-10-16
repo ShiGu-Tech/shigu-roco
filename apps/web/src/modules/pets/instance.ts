@@ -8,6 +8,7 @@
  */
 
 import { STAT_KEYS, type StatKey } from "../engine/stats";
+import { newId } from "@/lib/id";
 import type { StatProfile } from "../engine/types";
 import type { Catalog, CatalogSprite, CatalogSkill } from "../battle/types";
 
@@ -45,11 +46,6 @@ export const MAX_SKILLS = 4;
 /** 加点项数兜底上限（权威值优先取 `stats.individual.investCount`）。 */
 export const DEFAULT_MAX_INVEST = 3;
 
-function randomId(): string {
-  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") return crypto.randomUUID();
-  return `pet-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
-}
-
 /** 空白实例（id 为空，保存时再分配）。 */
 export function emptyInstance(spriteId: string, now = Date.now()): PetInstance {
   return {
@@ -67,7 +63,7 @@ export function emptyInstance(spriteId: string, now = Date.now()): PetInstance {
 
 /** 新建实例（带稳定 id）。 */
 export function newInstance(spriteId: string, now = Date.now()): PetInstance {
-  return { ...emptyInstance(spriteId, now), id: randomId() };
+  return { ...emptyInstance(spriteId, now), id: newId() };
 }
 
 /** 实例 ⇄ 养成配置（对战台 / 弹窗编辑用）。 */

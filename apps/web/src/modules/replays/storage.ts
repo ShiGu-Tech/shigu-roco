@@ -6,6 +6,7 @@
  */
 
 import type { Catalog } from "@/modules/battle/types";
+import { newId } from "@/lib/id";
 
 import type { Replay, ReplayCatalog, ReplayFrame } from "./types";
 
@@ -124,7 +125,7 @@ export function saveReplay(input: SaveReplayInput): SaveReplayResult {
   const first = frames[0];
 
   const replay: Replay = {
-    id: crypto.randomUUID(),
+    id: newId(),
     name: input.name.trim() || `对战记录 ${new Date().toLocaleString("zh-CN")}`,
     createdAt: Date.now(),
     catalogKey: replayCatalogKey(input.catalog),

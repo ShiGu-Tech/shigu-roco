@@ -23,6 +23,7 @@ import { activeFromSprite, emptyActive } from "@/modules/battle/state";
 import type { ActiveSpriteState, BattleEvent, BattleState, Catalog, EngineAction, SideState } from "@/modules/battle/types";
 import { computeStats } from "@/modules/engine/stats";
 import { PANEL_ORDER, STAT_LABEL } from "@/modules/engine/calc";
+import { newId } from "@/lib/id";
 import { bloodlineOptions } from "@/modules/pets/instance";
 import { actionKey, deriveActions, spriteOf, type ActionOption } from "@/modules/board/util";
 import { logRowOf } from "@/modules/board/log";
@@ -53,11 +54,6 @@ interface LabStateInternal extends LabState {
 
 type SideKey = "self" | "opp";
 
-function uid(): string {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
-  return Math.random().toString(36).slice(2) + Date.now().toString(36);
-}
-
 function initialEnergy(catalog: Catalog): number {
   const rules = catalog.rules as { energy?: { initial?: number } };
   return Number(rules.energy?.initial ?? 10);
@@ -69,7 +65,7 @@ function makePet(catalog: Catalog, spriteId: string, setup: PetSetup): LabPet {
     ? activeFromSprite(sprite, catalog.stats, initialEnergy(catalog), profileFromSetup(setup))
     : emptyActive();
   if (setup.skills.length) state.loadout = setup.skills.slice(0, 4);
-  return { id: uid(), spriteId, setup, state };
+  return { id: newId(), spriteId, setup, state };
 }
 
 function newSide(catalog: Catalog, spriteId: string): LabSide {
@@ -655,7 +651,7 @@ export function PetLab() {
     const result: InteractionResult = { defender: rec.defender, damage: rec.damage };
     if (rec.dropPct != null) result.dropPct = rec.dropPct;
     if (rec.remainPct != null) result.remainPct = rec.remainPct;
-    const it: Interaction = { id: uid(), turn, selfSkillId: rec.selfSkillId, oppSkillId: rec.oppSkillId, result };
+    const it: Interaction = { id: newId(), turn, selfSkillId: rec.selfSkillId, oppSkillId: rec.oppSkillId, result };
     setLab((prev) => (prev ? { ...prev, interactions: [...prev.interactions, it] } : prev));
     runPreviewRef.current(it);
   }
@@ -733,7 +729,7 @@ export function PetLab() {
               interactions: [
                 ...prev.interactions,
                 {
-                  id: uid(),
+                  id: newId(),
                   turn: lab.turn,
                   selfSkillId: selfAction.kind === "skill" ? selfAction.skillId : undefined,
                   oppSkillId: oppAction.kind === "skill" ? oppAction.skillId : undefined,
