@@ -71,10 +71,22 @@ scripts/                      setup / dev / 同步 / 静态包导出
 - **data 不入镜像**：`data/registry`（~526MB）被 `.dockerignore` 排除，compose 以 `./data:/app/data` 挂载（`ROCO_DATA_DIR=/app/data`）——同步图鉴、工作台写回 `mechanisms.json` 均无需重建镜像；引擎参数 `data/*.json` 会进镜像作缺省，挂载后以宿主为准。
 - **冒烟**：与 dev 相同（`scripts/cdp-smoke.ps1 -Url http://127.0.0.1:26900/...`）；**停止**：`docker compose down`。镜像版本升级随发布改 `compose.yaml` 的 `image:` 与构建命令两处 tag。
 
+## 线上部署（roco.shigu.zone）
+
+线上入口 `https://roco.shigu.zone` → 宿主机 `cspy-site`（`1.15.111.245`）的 nginx → `127.0.0.1:18488` → 容器 `shigu-rock:3000`。部署目录 `/opt/shigu-infra/shigu-roco/`（compose.yaml + .env + `data/`）。设计稿与首次部署步骤见 [`docs/operations/线上部署与发布-v0.1.md`](docs/operations/线上部署与发布-v0.1.md)。
+
+- **发版**：`pwsh scripts/release.ps1 -Version x.y.z`（质量门禁 → 增量同步 `data/` → 构建 → `docker save`+scp → 远端 load + `docker compose up -d` + nginx reload → 冒烟）。`-SkipChecks` / `-SkipData` / `-SkipUpload` / `-SkipNginx` 按需跳过；部署失败重跑用 `-SkipChecks -SkipData -SkipUpload`（镜像已在服务器 `/tmp`）。
+- **compose 一份两用**：宿主端口参数化 `127.0.0.1:${ROCO_HOST_PORT:-26900}:3000`——本地不写 `.env` 用 26900，服务器 `.env` 写 `18488`；**不要把服务器端口写死进 compose**。
+- **data 增量同步**：图鉴注册目录按 `registrationId` 命名且不可变，只补新增；逐个文件 `scp`（每目录一个大文件 ~130MB），失败重跑即续传。
+- **镜像分发不引入仓库**：`docker save` → `scp` → `docker load`（与 ShiGuZone 同法）。清理旧镜像时**保留本次与上一次**供回滚。
+- **证书**：`certbot --nginx -d roco.shigu.zone --redirect --keep-until-expiring`（HTTP-01，nginx 认证器，`certbot.timer` 自动续期）。**前置是 DNS 先解析到 `1.15.111.245`**。通配证书那条 `manual` + DNS-01 的路（hook 在 `/tmp/opencode/`）不要复制。
+- **发布前必做**：数据改动后重跑 `pnpm static:export` 并提交 `apps/web/public/data/bundle.json`，否则浏览器 Worker 用旧机制。
+
 ## 端口
 
 | 服务 | 端口 |
 | --- | --- |
-| Next.js 前端（内置 TS 引擎） | 26900 |
+| Next.js 前端（内置 TS 引擎，本地 dev / Docker） | 26900 |
+| 线上（`roco.shigu.zone`，服务器 `cspy-site` 环回） | 18488 |
 
 （避开参考项目 ShiGuZone 的 26841；原 Python 引擎 26901 已废弃。）

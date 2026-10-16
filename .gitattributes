@@ -1,0 +1,5 @@
+# 换行符约定（与 ShiGuZone/main 一致）：
+# 部署到 Linux 的文本（nginx conf / compose / 脚本）必须是 LF，PowerShell 走 CRLF。
+* text=auto eol=lf
+*.ps1 text eol=crlf
+*.bat text eol=crlf

@@ -1,13 +1,14 @@
-# 本地 Docker 部署：单服务（Next standalone + 内置 TS 引擎；离线 · 单人 · 无数据库）。
+# Docker 部署：单服务（Next standalone + 内置 TS 引擎；离线 · 单人 · 无数据库）。
+# 本地：与 dev 共用 26900——先停 dev（pnpm dev 的 Next 进程）再 docker compose up -d。
+# 线上（cspy-site /opt/shigu-infra/shigu-roco）：.env 里 ROCO_HOST_PORT=18488，由 nginx 反代 roco.shigu.zone。
 # 镜像 tag 与 package.json 版本同步；构建：docker build -t shigu-rock:<版本> --build-arg APP_VERSION=<版本> .
-# 注意：与 dev 共用 26900——先停 dev（pnpm dev 的 Next 进程）再 up。
 services:
   shigu-rock:
-    image: shigu-rock:0.45.1
+    image: shigu-rock:0.128.1
     container_name: shigu-rock
     restart: unless-stopped
     ports:
-      - "127.0.0.1:26900:3000"
+      - "127.0.0.1:${ROCO_HOST_PORT:-26900}:3000"
     environment:
       ROCO_DATA_DIR: /app/data
     volumes:
