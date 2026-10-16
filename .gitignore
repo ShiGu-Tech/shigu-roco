@@ -24,3 +24,7 @@ data/watch/
 .idea/
 .DS_Store
 Thumbs.db
+
+# --- Next 16 dev 自动生成的 agent 规则文件（不入仓） ---
+apps/web/AGENTS.md
+apps/web/CLAUDE.md
