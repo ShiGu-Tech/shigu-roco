@@ -1,0 +1,84 @@
+/* Neumorphism Theme for Bike Shop */
+
+/* 深色 Neumorphism 调色板 */
+.shop-dark {
+  --shop-bg: #1a1f3a;
+  --shop-card: #252d47;
+  --shop-card-hover: #2d3754;
+  --shop-primary: #3b82f6;
+  --shop-primary-light: #60a5fa;
+  --shop-primary-dark: #1e40af;
+  --shop-accent: #0ea5e9;
+  --shop-text-primary: #ffffff;
+  --shop-text-secondary: #cbd5e1;
+  --shop-text-muted: #94a3b8;
+  --shop-border: #3f4755;
+  --shop-shadow: rgba(0, 0, 0, 0.3);
+}
+
+/* Neumorphism 阴影系统 */
+.neomorph-raised {
+  box-shadow:
+    -2px -2px 6px rgba(255, 255, 255, 0.05),
+    2px 2px 6px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.3s ease;
+}
+
+.neomorph-raised:hover {
+  box-shadow:
+    -3px -3px 8px rgba(255, 255, 255, 0.08),
+    3px 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+.neomorph-pressed {
+  box-shadow:
+    inset -2px -2px 6px rgba(255, 255, 255, 0.05),
+    inset 2px 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.neomorph-soft {
+  box-shadow:
+    0 4px 15px rgba(0, 0, 0, 0.2),
+    inset -1px -1px 3px rgba(255, 255, 255, 0.05);
+}
+
+/* 蓝色渐变分割线 */
+.gradient-divider {
+  position: relative;
+  background: linear-gradient(135deg, #1a1f3a 0%, #3b82f6 100%);
+}
+
+/* 毛玻璃效果 */
+.frosted-glass {
+  background: rgba(37, 45, 71, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* 平滑过渡 */
+.shop-transition {
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease,
+    box-shadow 0.3s ease,
+    color 0.3s ease;
+}
+
+/* 响应式文字 */
+@media (max-width: 640px) {
+  .text-hero {
+    @apply text-3xl;
+  }
+  .text-title {
+    @apply text-xl;
+  }
+}
+
+@media (min-width: 641px) {
+  .text-hero {
+    @apply text-4xl;
+  }
+  .text-title {
+    @apply text-2xl;
+  }
+}

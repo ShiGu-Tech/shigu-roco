@@ -4,6 +4,7 @@ import { Toaster } from "sonner";
 import { AppShell } from "@/components/app-shell";
 
 import "./globals.css";
+import "@/modules/shop/shop-theme.css";
 
 export const metadata: Metadata = {
   title: "洛克王国世界 · PVP 决策辅助",

@@ -13,6 +13,7 @@ const ITEMS = [
   { href: "/warehouse", label: "精灵仓库" },
   { href: "/lineups", label: "队伍列表" },
   { href: "/replays", label: "对战记录" },
+  { href: "/shop", label: "🚲 商城示例" },
 ];
 
 function useActiveHref() {
