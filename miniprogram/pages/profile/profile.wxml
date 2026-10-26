@@ -1,0 +1,6 @@
+<!--profile.wxml-->
+<view class="profile-container">
+  <view class="placeholder">
+    <text>我的页面开发中...</text>
+  </view>
+</view>

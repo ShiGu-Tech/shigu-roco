@@ -1,0 +1,140 @@
+<!--index.wxml - 童话黄风格-->
+<view class="container" style="background: linear-gradient(180deg, {{theme.colors.bgStart}}, {{theme.colors.bgMiddle}}, {{theme.colors.bgEnd}});">
+  
+  <!-- 顶部装饰 - 童话城堡主题 -->
+  <view class="header safe-area-inset-top">
+    <view class="castle-decor">
+      <text class="castle">🏰</text>
+    </view>
+    <view class="title-group">
+      <text class="app-title" style="color: {{theme.colors.textPrimary}};">洛克王国</text>
+      <text class="app-subtitle" style="color: {{theme.colors.textSecondary}};">PVP 助手</text>
+    </view>
+    <text class="tagline" style="color: {{theme.colors.textMuted}};">✨ 温暖童话风 ✨</text>
+  </view>
+
+  <!-- 主内容 -->
+  <view class="main-content">
+    
+    <!-- 主按钮 - 大而温暖 -->
+    <view class="primary-section">
+      <button 
+        class="main-btn {{loading ? 'loading' : ''}}"
+        style="background: linear-gradient(135deg, {{theme.colors.primary}}, {{theme.colors.primaryDark}}); box-shadow: 0 8rpx 24rpx {{theme.colors.primary}}40;"
+        bindtap="handlePhotoUpload"
+        disabled="{{loading}}"
+        hover-class="btn-press"
+      >
+        <view class="btn-inner">
+          <view class="icon-large">
+            <text wx:if="{{!loading}}">📷</text>
+            <text class="rotate" wx:if="{{loading}}">✨</text>
+          </view>
+          
+          <view class="btn-text-group">
+            <text class="btn-main" style="color: white;">
+              {{loading ? '魔法识别中...' : '拍照识别'}}
+            </text>
+            <text class="btn-sub" style="color: rgba(255,255,255,0.9);">
+              {{loading ? '请稍候片刻 🎭' : '对准屏幕拍一张'}}
+            </text>
+          </view>
+        </view>
+      </button>
+    </view>
+
+    <!-- 分割线 - 可爱版 -->
+    <view class="divider-section">
+      <text class="divider-deco">🌙 或者 ⭐</text>
+    </view>
+
+    <!-- 次要功能卡 -->
+    <view class="secondary-section">
+      <view 
+        class="action-card"
+        style="background: {{theme.colors.card}}; border: 2rpx solid {{theme.colors.cardBorder}}; box-shadow: {{theme.shadows.soft}};"
+        bindtap="goToManual"
+        hover-class="card-hover"
+      >
+        <text class="action-icon">✏️</text>
+        <view class="action-info">
+          <text class="action-name" style="color: {{theme.colors.textPrimary}};">手动输入</text>
+          <text class="action-desc" style="color: {{theme.colors.textSecondary}};">自己选择精灵</text>
+        </view>
+      </view>
+
+      <view 
+        class="action-card"
+        style="background: {{theme.colors.card}}; border: 2rpx solid {{theme.colors.cardBorder}}; box-shadow: {{theme.shadows.soft}};"
+        bindtap="goToHistory"
+        hover-class="card-hover"
+      >
+        <text class="action-icon">📖</text>
+        <view class="action-info">
+          <text class="action-name" style="color: {{theme.colors.textPrimary}};">历史对局</text>
+          <text class="action-desc" style="color: {{theme.colors.textSecondary}};">查看之前的战斗</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 特色说明 - 可爱卡片 -->
+    <view 
+      class="feature-section"
+      style="background: {{theme.colors.card}}; border: 2rpx dashed {{theme.colors.primary}}; box-shadow: {{theme.shadows.card}};"
+    >
+      <text class="feature-title" style="color: {{theme.colors.textPrimary}};">💫 为什么选我们</text>
+      
+      <view class="feature-list">
+        <view class="feature-item">
+          <text class="feature-emoji">⚡</text>
+          <view class="feature-text">
+            <text class="feature-label" style="color: {{theme.colors.textPrimary}};">秒级推荐</text>
+            <text class="feature-hint" style="color: {{theme.colors.textSecondary}};">2 秒给出最优选择</text>
+          </view>
+        </view>
+
+        <view class="feature-item">
+          <text class="feature-emoji">🛡️</text>
+          <view class="feature-text">
+            <text class="feature-label" style="color: {{theme.colors.textPrimary}};">完全安全</text>
+            <text class="feature-hint" style="color: {{theme.colors.textSecondary}};">不读内存，合规工具</text>
+          </view>
+        </view>
+
+        <view class="feature-item">
+          <text class="feature-emoji">📴</text>
+          <view class="feature-text">
+            <text class="feature-label" style="color: {{theme.colors.textPrimary}};">离线运行</text>
+            <text class="feature-hint" style="color: {{theme.colors.textSecondary}};">无需网络也能用</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 主题切换 - 可爱的chip -->
+    <view class="theme-section">
+      <text class="theme-title" style="color: {{theme.colors.textPrimary}};">🎨 选择主题</text>
+      <scroll-view class="theme-scroll" scroll-x>
+        <view 
+          wx:for="{{themeList}}" 
+          wx:key="key"
+          class="theme-chip {{item.active ? 'active' : ''}}"
+          style="{{item.active ? 'background: ' + theme.colors.primary + '; border: 2rpx solid ' + theme.colors.primaryDark : 'background: ' + theme.colors.card + '; border: 2rpx solid ' + theme.colors.cardBorder}}"
+          bindtap="switchTheme"
+          data-theme="{{item.key}}"
+        >
+          <text class="chip-label" style="color: {{item.active ? 'white' : theme.colors.textPrimary}};">
+            {{item.name}}
+          </text>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 底部 -->
+  <view class="footer safe-area-inset-bottom">
+    <text class="footer-text" style="color: {{theme.colors.textMuted}};">
+      ✨ 基于公开规则 · 算法透明 ✨
+    </text>
+  </view>
+</view>

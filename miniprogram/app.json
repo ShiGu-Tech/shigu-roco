@@ -1,0 +1,34 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/battle/battle",
+    "pages/profile/profile"
+  ],
+  "window": {
+    "navigationBarTitleText": "洛克 PVP 助手",
+    "navigationBarBackgroundColor": "#F59E0B",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#FFFBF7",
+    "backgroundTextStyle": "dark",
+    "enablePullDownRefresh": false
+  },
+  "tabBar": {
+    "color": "#B45309",
+    "selectedColor": "#F59E0B",
+    "backgroundColor": "#FFFBF7",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

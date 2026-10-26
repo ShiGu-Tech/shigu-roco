@@ -1,0 +1,7 @@
+<!--battle.wxml-->
+<view class="battle-container">
+  <view class="placeholder">
+    <text>对战页面开发中...</text>
+    <text>（已完成首页，接下来会实现此页）</text>
+  </view>
+</view>

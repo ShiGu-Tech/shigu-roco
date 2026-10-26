@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>对战舞台原型 · 洛克 PVP 助手</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:linear-gradient(160deg,#FFFAEB,#FEF8E7 45%,#FFF9F0);
+    min-height:100vh; padding:28px; color:#92400E;
+  }
+  .wrap { max-width:1080px; margin:0 auto; }
+  h1 { font-size:22px; font-weight:800; letter-spacing:.5px; }
+  h1 span { font-size:13px; font-weight:500; color:#B45309; margin-left:10px; }
+  .sub { font-size:13px; color:#B45309; margin:6px 0 20px; }
+  .stage-card {
+    background:#FFFBF7; border:2px solid rgba(252,211,77,.35); border-radius:24px;
+    box-shadow:0 12px 32px rgba(245,158,11,.12); overflow:hidden;
+  }
+  canvas { display:block; width:100%; height:auto; background:#FFFDF7; }
+  .bar {
+    display:flex; align-items:center; gap:10px; padding:14px 18px;
+    border-top:1px solid rgba(252,211,77,.25); background:#FFFDF9; flex-wrap:wrap;
+  }
+  button {
+    font-family:inherit; border:none; cursor:pointer; border-radius:14px;
+    padding:11px 20px; font-size:14px; font-weight:700; transition:.15s;
+  }
+  button:active { transform:scale(.96); }
+  .primary { background:linear-gradient(135deg,#FCD34D,#F59E0B); color:#fff; box-shadow:0 6px 16px rgba(245,158,11,.35); }
+  .ghost { background:#FFF6DE; color:#92400E; border:1.5px solid rgba(245,158,11,.3); }
+  .hint { font-size:12px; color:#B45309; margin-left:auto; }
+  .log {
+    margin-top:16px; background:#FFFBF7; border:1.5px solid rgba(252,211,77,.3);
+    border-radius:18px; padding:14px 18px; font-size:13px; line-height:1.9; color:#7C2D12;
+  }
+  .log b { color:#B45309; }
+  .tag { display:inline-block; padding:1px 8px; border-radius:99px; font-size:11px; font-weight:700; margin-right:6px; }
+  .t-player { background:#FEF3C7; color:#92400E; }
+  .t-enemy { background:#E0F2FE; color:#0369A1; }
+  .t-sys { background:#F3E8FF; color:#7E22CE; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>⚔️ 对战舞台原型<span>程序化战斗动画 · Canvas 2D</span></h1>
+  <p class="sub">素材：本地图鉴头像（128px）｜动画：待机浮动 / 冲刺 / 受击闪白 / 击退 / 伤害数字 / 粒子 / 震屏 / 血条缓动</p>
+
+  <div class="stage-card">
+    <canvas id="stage" width="1080" height="560"></canvas>
+    <div class="bar">
+      <button class="primary" id="play">▶ 播放一个回合</button>
+      <button class="ghost" id="idle">重置</button>
+      <button class="ghost" id="slow">速度 1×</button>
+      <span class="hint">点击「播放」看完整结算过程</span>
+    </div>
+  </div>
+
+  <div class="log" id="log">
+    <div><span class="tag t-sys">就绪</span>点「播放一个回合」，引擎事件将驱动舞台动画。</div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('stage');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  // 本地图鉴头像（相对路径，打开本文件即可）
+  const ASSETS = {
+    player: '../../../apps/web/public/images/catalog/heads/sp-1-1.webp',
+    enemy:  '../../../apps/web/public/images/catalog/heads/sp-445-1.webp',
+  };
+
+  const IMG = {};
+  for (const [k, src] of Object.entries(ASSETS)) {
+    const im = new Image();
+    im.src = src;
+    im.onload = () => { IMG[k] = im; };
+    im.onerror = () => { console.warn('素材加载失败，使用占位:', src); };
+  }
+
+  // ---------- 场景实体 ----------
+  const P = {
+    side: 'player', name: '迪莫', element: '光', level: 60, stars: 5,
+    hp: 563, maxHp: 563, energy: 7, maxEnergy: 10,
+    x: 300, y: 400, homeX: 300, homeY: 400, scale: 1.9, facing: 1,
+    flash: 0, shake: 0, offsetX: 0, offsetY: 0, bob: 0,
+    buffs: ['物防 +2', '速度 -1'],
+  };
+  const E = {
+    side: 'enemy', name: '银月狼王', element: '幽灵·幻', level: 60, stars: 5,
+    hp: 500, maxHp: 500, energy: 6, maxEnergy: 10,
+    x: 780, y: 400, homeX: 780, homeY: 400, scale: 1.9, facing: -1,
+    flash: 0, shake: 0, offsetX: 0, offsetY: 0, bob: 0,
+    buffs: [],
+  };
+
+  let time = 0;
+  let speed = 1;
+  let particles = [];
+  let floaters = [];      // 伤害数字
+  let banner = null;      // 技能名横幅
+  let turnBadge = { turn: 3, alpha: 0 };
+  let logLines = [];
+  let queue = [];         // 时间轴任务
+  let playing = false;
+
+  const easeOut = t => 1 - Math.pow(1 - t, 3);
+  const easeInOut = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2;
+  const lerp = (a,b,t) => a + (b-a)*t;
+
+  // ---------- 时间轴 ----------
+  function at(ms, fn) { queue.push({ t: ms, fn, done:false }); }
+  function playTimeline() {
+    queue = []; playing = true; particles = []; floaters = [];
+
+    at(0, () => {
+      turnBadge = { turn: 3, alpha: 0 };
+      log('sys', '回合 3 开始');
+    });
+    at(120, () => { turnBadge.alpha = 1; });
+
+    // 我方出手
+    at(650, () => {
+      banner = { text: '械斗', sub: '普通 · 攻击', color: '#F59E0B', alpha: 0, life: 0 };
+      log('player', '红方 · 迪莫 使用「械斗」');
+    });
+    at(650, () => lunge(P, E, 380));
+    at(980, () => {
+      hit(E, 126, 138);
+      log('enemy', '蓝方 · 银月狼王 受到 126 点伤害');
+    });
+    at(1180, () => {
+      floaters.push({ x: E.x, y: E.y-90, text: '126', color:'#EF4444', alpha:1, vy:-1.2, life:0, kind:'damage' });
+      particles.push(...burst(E.x, E.y-40, 18, '#FCA5A5'));
+      shakeScreen(10);
+    });
+
+    // 敌方反击
+    at(1750, () => {
+      banner = { text: '月影突袭', sub: '幽灵 · 攻击', color: '#6366F1', alpha: 0, life: 0 };
+      log('enemy', '蓝方 · 银月狼王 使用「月影突袭」');
+    });
+    at(1750, () => lunge(E, P, 400));
+    at(2100, () => {
+      hit(P, 88, 96);
+      log('player', '红方 · 迪莫 受到 88 点伤害');
+    });
+    at(2300, () => {
+      floaters.push({ x: P.x, y: P.y-90, text: '88', color:'#EF4444', alpha:1, vy:-1.2, life:0, kind:'damage' });
+      particles.push(...burst(P.x, P.y-40, 14, '#FCA5A5'));
+      shakeScreen(8);
+    });
+
+    // 状态提示
+    at(2850, () => {
+      floaters.push({ x: P.x, y: P.y-130, text: '物防 +2', color:'#10B981', alpha:1, vy:-0.8, life:0, kind:'buff' });
+      log('player', '红方 · 迪莫 获得「物防 +2」');
+    });
+
+    at(3400, () => {
+      playing = false;
+      log('sys', '回合结算完成');
+    });
+  }
+
+  function log(kind, text) {
+    logLines.unshift({ kind, text });
+    logLines = logLines.slice(0, 6);
+    const el = document.getElementById('log');
+    el.innerHTML = logLines.map(l => {
+      const cls = l.kind === 'player' ? 't-player' : l.kind === 'enemy' ? 't-enemy' : 't-sys';
+      const tag = l.kind === 'player' ? '红方' : l.kind === 'enemy' ? '蓝方' : '系统';
+      return `<div><span class="tag ${cls}">${tag}</span>${l.text}</div>`;
+    }).join('');
+  }
+
+  // ---------- 动作 ----------
+  function lunge(attacker, target, dur) {
+    const dir = attacker.side === 'player' ? 1 : -1;
+    const start = time;
+    const from = attacker.x;
+    const to = attacker.x + dir * 110;
+    (function step() {
+      const t = Math.min(1, (time - start) / dur);
+      const k = t < .45 ? easeOut(t/.45) : 1 - easeInOut((t-.45)/.55) * 0.92;
+      attacker.x = lerp(from, to, k);
+      if (t < 1) requestAnimationFrame(step);
+      else attacker.x = attacker.homeX;
+    })();
+  }
+
+  function hit(target, dmg, maxDmg) {
+    target.hp = Math.max(0, target.hp - dmg);
+    target.flash = 1;
+    const dir = target.side === 'player' ? -1 : 1;
+    const start = time, dur = 260;
+    (function knock() {
+      const t = Math.min(1, (time - start) / dur);
+      target.offsetX = Math.sin(t * Math.PI) * 26 * dir;
+      if (t < 1) requestAnimationFrame(knock);
+      else target.offsetX = 0;
+    })();
+  }
+
+  function shakeScreen(amount) {
+    const start = time, dur = 260;
+    (function tick() {
+      const t = Math.min(1, (time - start) / dur);
+      const k = (1 - t) * amount;
+      canvas.style.transform = `translate(${(Math.random()-.5)*k}px, ${(Math.random()-.5)*k}px)`;
+      if (t < 1) requestAnimationFrame(tick);
+      else canvas.style.transform = '';
+    })();
+  }
+
+  function burst(x, y, n, color) {
+    const arr = [];
+    for (let i=0;i<n;i++) {
+      const a = Math.random() * Math.PI * 2;
+      const v = 1.5 + Math.random() * 3.2;
+      arr.push({ x, y, vx: Math.cos(a)*v, vy: Math.sin(a)*v - 1, life: 0, maxLife: 34 + Math.random()*20, color, r: 1.5 + Math.random()*2.5 });
+    }
+    return arr;
+  }
+
+  // ---------- 绘制 ----------
+  function drawBackground() {
+    // 天空
+    const sky = ctx.createLinearGradient(0,0,0,H);
+    sky.addColorStop(0,'#FFFDF6'); sky.addColorStop(.55,'#FFF8E3'); sky.addColorStop(1,'#FEF3D6');
+    ctx.fillStyle = sky; ctx.fillRect(0,0,W,H);
+
+    // 远山
+    ctx.fillStyle = 'rgba(253,230,138,.35)';
+    ctx.beginPath();
+    ctx.moveTo(0, 360);
+    ctx.bezierCurveTo(180, 280, 300, 350, 460, 320);
+    ctx.bezierCurveTo(620, 290, 760, 345, 1080, 305);
+    ctx.lineTo(1080, 430); ctx.lineTo(0, 430); ctx.closePath(); ctx.fill();
+
+    ctx.fillStyle = 'rgba(251,191,36,.18)';
+    ctx.beginPath();
+    ctx.moveTo(0, 400);
+    ctx.bezierCurveTo(240, 350, 420, 410, 640, 375);
+    ctx.bezierCurveTo(840, 345, 960, 400, 1080, 372);
+    ctx.lineTo(1080, 470); ctx.lineTo(0, 470); ctx.closePath(); ctx.fill();
+
+    // 云
+    drawCloud(150, 110, 1.0, .5);
+    drawCloud(820, 90, .8, .42);
+    drawCloud(520, 150, .55, .3);
+
+    // 地面
+    const ground = ctx.createLinearGradient(0, 420, 0, H);
+    ground.addColorStop(0,'#FDE68A'); ground.addColorStop(1,'#FCD34D');
+    ctx.fillStyle = ground;
+    ctx.beginPath();
+    ctx.ellipse(W/2, 560, W*0.75, 150, 0, 0, Math.PI*2);
+    ctx.fill();
+
+    // 站台阴影
+    shadow(P.x, 448, 130, 26);
+    shadow(E.x, 448, 130, 26);
+  }
+
+  function drawCloud(x,y,s,a) {
+    ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.arc(x, y, 34*s, 0, Math.PI*2);
+    ctx.arc(x+40*s, y-12*s, 28*s, 0, Math.PI*2);
+    ctx.arc(x+78*s, y, 32*s, 0, Math.PI*2);
+    ctx.arc(x+40*s, y+14*s, 30*s, 0, Math.PI*2);
+    ctx.fill(); ctx.restore();
+  }
+
+  function shadow(x,y,rx,ry) {
+    ctx.save(); ctx.fillStyle='rgba(146,64,14,.13)';
+    ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI*2); ctx.fill(); ctx.restore();
+  }
+
+  function drawSprite(s) {
+    const bob = Math.sin(time/620 + (s.side==='player'?0:1.6)) * 4;
+    const x = s.x + s.offsetX;
+    const y = s.y + s.offsetY + bob;
+
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(s.facing * 1, 1);
+
+    // 光晕
+    const glow = ctx.createRadialGradient(0,-40,10, 0,-40,110);
+    glow.addColorStop(0, s.side==='player' ? 'rgba(253,224,71,.35)' : 'rgba(165,180,252,.3)');
+    glow.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = glow;
+    ctx.beginPath(); ctx.arc(0,-40,110,0,Math.PI*2); ctx.fill();
+
+    // 头像
+    const img = IMG[s.side];
+    const size = 128 * s.scale;
+    if (img) {
+      ctx.drawImage(img, -size/2, -size/2 - 40, size, size);
+    } else {
+      // 占位
+      ctx.fillStyle = '#FDE68A';
+      ctx.beginPath(); ctx.arc(0,-40,size/2,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#92400E'; ctx.font = 'bold 40px sans-serif'; ctx.textAlign='center';
+      ctx.fillText(s.side==='player'?'迪':'狼', 0, -26);
+    }
+
+    // 受击闪白
+    if (s.flash > 0.01) {
+      ctx.globalCompositeOperation = 'source-atop';
+      ctx.fillStyle = `rgba(255,255,255,${s.flash})`;
+      ctx.fillRect(-size/2, -size/2-40, size, size);
+      ctx.globalCompositeOperation = 'source-over';
+    }
+    ctx.restore();
+  }
+
+  function drawHud(s) {
+    const isP = s.side === 'player';
+    const x = isP ? 70 : W - 70 - 330;
+    const y = 34;
+    const w = 330;
+
+    ctx.save();
+    // 卡片
+    roundRect(x, y, w, 96, 18);
+    ctx.fillStyle = 'rgba(255,253,247,.92)';
+    ctx.shadowColor = 'rgba(245,158,11,.15)'; ctx.shadowBlur = 16; ctx.shadowOffsetY = 4;
+    ctx.fill(); ctx.shadowColor='transparent';
+    ctx.strokeStyle = isP ? 'rgba(252,211,77,.7)' : 'rgba(165,180,252,.7)';
+    ctx.lineWidth = 2; ctx.stroke();
+
+    // 名字
+    ctx.fillStyle = '#78350F';
+    ctx.font = 'bold 21px -apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(s.name, x+18, y+30);
+
+    // 标签
+    ctx.font = '12px -apple-system,sans-serif';
+    ctx.fillStyle = isP ? '#B45309' : '#4338CA';
+    ctx.fillText(isP ? '红方 · Lv.60 ★5' : '蓝方 · Lv.60 ★5', x+18, y+50);
+
+    // 血条
+    const bx = x+18, by = y+60, bw = w-36, bh = 10;
+    roundRect(bx, by, bw, bh, 5);
+    ctx.fillStyle = '#FEF3C7'; ctx.fill();
+
+    const ratio = s.hp / s.maxHp;
+    const grad = ctx.createLinearGradient(bx, 0, bx+bw, 0);
+    if (isP) { grad.addColorStop(0,'#FBBF24'); grad.addColorStop(1,'#F59E0B'); }
+    else { grad.addColorStop(0,'#818CF8'); grad.addColorStop(1,'#6366F1'); }
+    roundRect(bx, by, Math.max(4, bw*ratio), bh, 5);
+    ctx.fillStyle = grad; ctx.fill();
+
+    // 数值
+    ctx.font = 'bold 12px -apple-system,sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#92400E';
+    ctx.fillText(`${s.hp} / ${s.maxHp}`, x+w-18, y+52);
+
+    // 能量
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#B45309';
+    ctx.font = '11px -apple-system,sans-serif';
+    ctx.fillText(`⚡ ${s.energy}/${s.maxEnergy}`, x+18, y+86);
+
+    // 增益
+    if (s.buffs.length) {
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#059669';
+      ctx.fillText(s.buffs.join(' · '), x+w-18, y+86);
+    }
+    ctx.restore();
+  }
+
+  function roundRect(x,y,w,h,r) {
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.arcTo(x+w,y,x+w,y+h,r);
+    ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r);
+    ctx.arcTo(x,y,x+w,y,r);
+    ctx.closePath();
+  }
+
+  function drawTurnBadge() {
+    if (turnBadge.alpha <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = turnBadge.alpha;
+    ctx.textAlign = 'center';
+    ctx.font = 'bold 15px -apple-system,sans-serif';
+    const label = `回合 ${turnBadge.turn}`;
+    const w = 110, h = 34, x = W/2-w/2, y = 22;
+    roundRect(x, y, w, h, 17);
+    ctx.fillStyle = 'rgba(255,251,235,.95)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(252,211,77,.8)';
+    ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#92400E';
+    ctx.fillText(label, W/2, y+22);
+    ctx.restore();
+  }
+
+  function drawBanner() {
+    if (!banner) return;
+    banner.alpha = Math.min(1, banner.alpha + .06);
+    ctx.save();
+    ctx.globalAlpha = banner.alpha;
+    ctx.textAlign = 'center';
+    // 斜带
+    const y = 175;
+    const g = ctx.createLinearGradient(W/2-220, 0, W/2+220, 0);
+    g.addColorStop(0,'rgba(255,255,255,0)');
+    g.addColorStop(.25,'rgba(255,251,235,.92)');
+    g.addColorStop(.75,'rgba(255,251,235,.92)');
+    g.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(W/2-240, y-34, 480, 68);
+    ctx.fillStyle = banner.color;
+    ctx.font = 'bold 30px -apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.fillText(banner.text, W/2, y+2);
+    ctx.fillStyle = '#A16207';
+    ctx.font = '13px -apple-system,sans-serif';
+    ctx.fillText(banner.sub, W/2, y+24);
+    ctx.restore();
+  }
+
+  function drawFloatTexts() {
+    for (const f of floaters) {
+      f.life++;
+      f.y += f.vy;
+      f.vy *= .985;
+      f.alpha = Math.max(0, 1 - f.life/62);
+      if (f.alpha <= 0) continue;
+      ctx.save();
+      ctx.globalAlpha = f.alpha;
+      ctx.textAlign = 'center';
+      const size = f.kind === 'damage' ? 44 : 24;
+      ctx.font = `900 ${size}px -apple-system,"PingFang SC",sans-serif`;
+      ctx.lineWidth = 7; ctx.strokeStyle = 'rgba(255,255,255,.95)';
+      ctx.strokeText(f.text, f.x, f.y);
+      ctx.fillStyle = f.color;
+      ctx.fillText(f.text, f.x, f.y);
+      ctx.restore();
+    }
+    floaters = floaters.filter(f => f.alpha > 0);
+  }
+
+  function drawParticles() {
+    for (const p of particles) {
+      p.life++;
+      p.x += p.vx; p.y += p.vy;
+      p.vy += .12; p.vx *= .97;
+      const a = Math.max(0, 1 - p.life/p.maxLife);
+      ctx.save();
+      ctx.globalAlpha = a;
+      ctx.fillStyle = p.color;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
+      ctx.restore();
+    }
+    particles = particles.filter(p => p.life < p.maxLife);
+  }
+
+  // ---------- 主循环 ----------
+  let last = performance.now();
+  let elapsed = 0;
+  function frame(now) {
+    const dt = Math.min(50, now - last);
+    last = now;
+    elapsed += dt * speed;
+    time = elapsed;
+
+    // 时间轴推进
+    for (const q of queue) {
+      if (!q.done && elapsed >= q.t) { q.done = true; q.fn(); }
+    }
+
+    // 更新
+    P.flash = Math.max(0, P.flash - dt/240);
+    E.flash = Math.max(0, E.flash - dt/240);
+    if (banner) { banner.life += dt; if (banner.life > 900) banner = null; }
+    if (turnBadge.alpha > 0 && elapsed > 3200) turnBadge.alpha = Math.max(0, turnBadge.alpha - .02);
+
+    // 绘制
+    ctx.clearRect(0,0,W,H);
+    drawBackground();
+    // 按 y 排序
+    const order = P.y <= E.y ? [P,E] : [E,P];
+    for (const s of order) drawSprite(s);
+    drawHud(P); drawHud(E);
+    drawTurnBadge();
+    drawBanner();
+    drawParticles();
+    drawFloatTexts();
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  // ---------- 控件 ----------
+  document.getElementById('play').onclick = () => { if (!playing) playTimeline(); };
+  document.getElementById('idle').onclick = () => {
+    queue = []; playing = false; particles = []; floaters = []; banner = null;
+    P.hp = P.maxHp; E.hp = E.maxHp; P.x = P.homeX; E.x = E.homeX;
+    logLines = []; log('sys','已重置');
+  };
+  document.getElementById('slow').onclick = (e) => {
+    speed = speed === 1 ? .6 : speed === .6 ? 1.5 : 1;
+    e.target.textContent = `速度 ${speed}×`;
+  };
+})();
+</script>
+</body>
+</html>

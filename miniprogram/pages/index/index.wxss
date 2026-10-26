@@ -1,0 +1,294 @@
+/* index.wxss - 童话黄温暖风格 */
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* ===== 顶部区域 ===== */
+.header {
+  padding: 48rpx 40rpx 32rpx;
+  text-align: center;
+}
+
+.castle-decor {
+  font-size: 64rpx;
+  margin-bottom: 16rpx;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8rpx); }
+}
+
+.title-group {
+  margin-bottom: 12rpx;
+}
+
+.app-title {
+  display: block;
+  font-size: 52rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  margin-bottom: 4rpx;
+}
+
+.app-subtitle {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.tagline {
+  display: block;
+  font-size: 22rpx;
+  margin-top: 8rpx;
+  letter-spacing: 1rpx;
+}
+
+/* ===== 主内容 ===== */
+.main-content {
+  flex: 1;
+  padding: 0 32rpx 48rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 32rpx;
+}
+
+/* ===== 主按钮 ===== */
+.primary-section {
+  margin-bottom: 16rpx;
+}
+
+.main-btn {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 32rpx;
+  overflow: visible;
+  background-clip: padding-box;
+}
+
+.main-btn::after {
+  border: none;
+}
+
+.btn-press {
+  transform: scale(0.96);
+  opacity: 0.9;
+}
+
+.main-btn.loading {
+  opacity: 0.85;
+}
+
+.btn-inner {
+  padding: 48rpx 40rpx;
+  display: flex;
+  align-items: center;
+  gap: 28rpx;
+}
+
+.icon-large {
+  width: 120rpx;
+  height: 120rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64rpx;
+  flex-shrink: 0;
+}
+
+.icon-large .rotate {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.btn-text-group {
+  flex: 1;
+  text-align: left;
+}
+
+.btn-main {
+  display: block;
+  font-size: 42rpx;
+  font-weight: 700;
+  margin-bottom: 8rpx;
+  line-height: 1.2;
+}
+
+.btn-sub {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/* ===== 分割线 ===== */
+.divider-section {
+  text-align: center;
+  margin: 8rpx 0;
+}
+
+.divider-deco {
+  font-size: 28rpx;
+  font-weight: 600;
+  letter-spacing: 4rpx;
+}
+
+/* ===== 次要功能卡 ===== */
+.secondary-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.action-card {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 28rpx;
+  border-radius: 24rpx;
+  transition: all 0.2s;
+}
+
+.card-hover {
+  transform: translateY(-4rpx);
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.08) !important;
+}
+
+.action-icon {
+  font-size: 48rpx;
+  flex-shrink: 0;
+}
+
+.action-info {
+  flex: 1;
+}
+
+.action-name {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 600;
+  margin-bottom: 4rpx;
+}
+
+.action-desc {
+  display: block;
+  font-size: 24rpx;
+  font-weight: 400;
+}
+
+/* ===== 特性卡 ===== */
+.feature-section {
+  border-radius: 28rpx;
+  padding: 32rpx;
+}
+
+.feature-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 700;
+  margin-bottom: 24rpx;
+  text-align: center;
+}
+
+.feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16rpx;
+}
+
+.feature-emoji {
+  font-size: 40rpx;
+  margin-top: 4rpx;
+  flex-shrink: 0;
+}
+
+.feature-text {
+  flex: 1;
+}
+
+.feature-label {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  margin-bottom: 4rpx;
+}
+
+.feature-hint {
+  display: block;
+  font-size: 22rpx;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/* ===== 主题选择 ===== */
+.theme-section {
+  margin-bottom: 24rpx;
+}
+
+.theme-title {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 700;
+  margin-bottom: 16rpx;
+}
+
+.theme-scroll {
+  white-space: nowrap;
+  padding: 4rpx 0;
+}
+
+.theme-chip {
+  display: inline-block;
+  padding: 12rpx 24rpx;
+  border-radius: 40rpx;
+  margin-right: 12rpx;
+  transition: all 0.2s;
+  border: 2rpx solid;
+}
+
+.theme-chip.active {
+  transform: scale(1.08);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.12);
+}
+
+.chip-label {
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+/* ===== 底部 ===== */
+.footer {
+  padding: 24rpx 40rpx;
+  text-align: center;
+}
+
+.footer-text {
+  font-size: 20rpx;
+  letter-spacing: 1rpx;
+}
+
+/* ===== 安全区域 ===== */
+.safe-area-inset-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}

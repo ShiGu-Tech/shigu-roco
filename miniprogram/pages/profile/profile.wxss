@@ -1,0 +1,14 @@
+/* profile.wxss */
+.profile-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48rpx;
+}
+
+.placeholder {
+  text-align: center;
+  color: #DDD6FE;
+  font-size: 32rpx;
+}
